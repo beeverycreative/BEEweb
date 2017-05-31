@@ -68,8 +68,8 @@ class BeePrinter(Printer):
     def connect(self, port=None, baudrate=None, profile=None):
         """
          This method is responsible for establishing the connection to the printer when there are
-         any connected clients (browser or beepanel) to the server. 
-         
+         any connected clients (browser or beepanel) to the server.
+
          Ignores port, baudrate parameters. They are kept just for interface compatibility
         """
         try:
@@ -125,6 +125,10 @@ class BeePrinter(Printer):
                 # starts the progress monitor if a print is on going
                 if self.is_printing():
                     self._comm.startPrintStatusProgressMonitor()
+
+            elif lastFile is not None and (not self.is_printing() and not self.is_shutdown() and not self.is_paused()):
+                # if a connection is established with a printer that is not printing, unselects any previous file
+                self._comm.unselectFile()
 
             # gets current Filament profile data
             self._currentFilamentProfile = self.getSelectedFilamentProfile()
@@ -535,7 +539,7 @@ class BeePrinter(Printer):
     def getNozzleTypes(self):
         """
         Gets the list of nozzles available for the printer connected
-        :return: 
+        :return:
         """
         if (self.getPrinterNameNormalized()== "beethefirst"):
             return {'nz1': {'id': 'NZ400', 'value': 0.4}}
@@ -964,9 +968,9 @@ class BeePrinter(Printer):
     def on_client_connected(self, event, payload):
         """
         Event listener to execute when a client (browser) connects to the server
-        :param event: 
-        :param payload: 
-        :return: 
+        :param event:
+        :param payload:
+        :return:
         """
         # Only appends the client address to the list. The connection monitor thread will automatically handle
         # the connection itself
@@ -983,9 +987,9 @@ class BeePrinter(Printer):
     def on_client_disconnected(self, event, payload):
         """
         Event listener to execute when a client (browser) disconnects from the server
-        :param event: 
-        :param payload: 
-        :return: 
+        :param event:
+        :param payload:
+        :return:
         """
         if payload['remoteAddress'] in self._connectedClients:
             self._connectedClients.remove(payload['remoteAddress'])
