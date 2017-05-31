@@ -276,6 +276,16 @@ BEEwb.transformOps.duplicateModel = function(modelObj) {
         var xShift = BEEwb.helpers.calculateObjectShift(geometry);
 
         var objClone = new THREE.Mesh(geometry, material);
+
+        objClone.rotation.set(
+            BEEwb.main.selectedObject.rotation.x ,
+            BEEwb.main.selectedObject.rotation.y,
+            BEEwb.main.selectedObject.rotation.z);
+        objClone.scale.set(
+            BEEwb.main.selectedObject.scale.x,
+            BEEwb.main.selectedObject.scale.y,
+            BEEwb.main.selectedObject.scale.z);
+
         objClone.position.set(xShift, 0, 0);
 
         BEEwb.main.scene.add(objClone);

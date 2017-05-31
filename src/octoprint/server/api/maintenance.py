@@ -286,9 +286,7 @@ def getNozzleList():
 
 	resp = printer.getNozzleTypes()
 
-	return jsonify({
-		"nozzles": resp
-	})
+	return jsonify(nozzles)
 
 
 @api.route("/maintenance/get_filament_spool", methods=["GET"])

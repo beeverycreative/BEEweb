@@ -174,14 +174,14 @@ class BeePrinter(Printer):
             self._logger.info("Cannot load file: printer not connected or currently busy")
             return
 
+        if path is not None and isinstance(path, PrintingFileInformation):
+            self._comm._currentFile = path
+            return
+
         # special case where we want to recover the file information after a disconnect/connect during a print job
         if path is None or not os.path.exists(path) or not os.path.isfile(path):
             self._comm._currentFile = PrintingFileInformation('shutdown_recover_file')
             return # In case the server was restarted during connection break-up and path variable is passed empty from the connect method
-
-        if isinstance(path, PrintingFileInformation):
-            self._comm._currentFile = path
-            return
 
         recovery_data = self._fileManager.get_recovery_data()
         if recovery_data:
@@ -532,6 +532,14 @@ class BeePrinter(Printer):
         except Exception as ex:
             self._logger.error(ex)
 
+    def getNozzleTypes(self):
+        """
+        Gets the list of nozzles available for the printer connected
+        :return: 
+        """
+        if (self.getPrinterNameNormalized()== "beethefirst"):
+            return {'nz1': {'id': 'NZ400', 'value': 0.4}}
+        return settings().get(["nozzleTypes"])
 
     def getNozzleTypeString(self):
         """

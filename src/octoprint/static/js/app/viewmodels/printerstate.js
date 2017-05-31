@@ -44,7 +44,7 @@ $(function() {
         self.enablePreparePrint = ko.pureComputed(function() {
             return self.loginState.isUser() && !self.connection.isConnecting()
                 && !self.connection.isErrorOrClosed() && !self.filename()
-                && !self.isPrinting() && !self.isPaused() && !self.isShutdown() && !self.isHeating();
+                && !self.isPrinting() && !self.isPaused() && !self.isShutdown() && !self.isHeating() && !self.isResuming();
         });
         self.showInsufficientFilament = ko.pureComputed(function() {
             return self.loginState.isUser && self.insufficientFilament()
@@ -71,7 +71,7 @@ $(function() {
              return self.loginState.isUser() && self.filename() != undefined;
         });
         self.showShutdownAndChangeFilament = ko.pureComputed(function() {
-            return !self.isShutdown() && self.loginState.isUser() && self.isPaused();
+            return !self.isShutdown() && self.loginState.isUser() && self.isPaused() && self.printerName()!="BEETHEFIRST";
         });
         self.showFilename = ko.pureComputed(function() {
             return self.isSelectedFile() && !self.connection.isErrorOrClosed();
@@ -124,7 +124,7 @@ $(function() {
         };
 
         self.printFromMemory = function() {
-
+            $('#printFromMemoryDiv').addClass('hidden');
             $.ajax({
                 url: BEE_CUSTOM_API_BASEURL + "print_from_memory",
                 type: "POST",
@@ -133,6 +133,9 @@ $(function() {
                 success: function(response) {
                     $('#printFromMemoryDiv').addClass('hidden');
                     $('#preparePrint').removeClass('hidden');
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    $('#printFromMemoryDiv').removeClass('hidden');
                 }
             });
         };
@@ -272,7 +275,11 @@ $(function() {
                     return _.sprintf("%d seconds  ( %d%% )", transferTimeLeft, self.progressString());
                 return _.sprintf("%d minutes %d seconds  ( %d%% )", transferTimeLeft/60,(transferTimeLeft%60), self.progressString());
             }
-            return _.sprintf("%dº / 200º  ", self.progressString()*200/100);
+            if (self.isHeating()) {
+                return _.sprintf("%dº / 200º  ", self.progressString()*200/100);
+            }
+            //Paused or Shutdown
+            return _.sprintf("%d%%", self.progressString());
         });
         self.pauseString = ko.pureComputed(function() {
             if (self.isPaused())
