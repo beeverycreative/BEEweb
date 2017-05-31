@@ -25,9 +25,10 @@
                          </div>
                          <div class="span7 text-right">
                              <a href="https://beeverycreative.com/order-here/" class="btn btn-maintenance green" target="_blank" >{{ _('Buy filament') }}</a>
-                             <a href="#maintenance_changeFilament" class="btn btn-maintenance yellow" data-bind="click: showFilamentChange" >
+                             <button class="btn btn-maintenance yellow"
+                                data-bind="click: showFilamentChange, enable: !printerState.isBusy()" >
                                  <span class="m-icon filamenticon"></span>{{ _('Change filament now') }}
-                             </a>
+                             </button>
                          </div>
                     </div>
                     <div class="modal-row">
@@ -40,9 +41,9 @@
                              </p>
                         </div>
                         <div class="span7 text-right">
-                             <a href="#maintenance_calibration" class="btn btn-maintenance yellow" data-bind="click: showCalibration" >
+                             <button class="btn btn-maintenance yellow" data-bind="click: showCalibration, enable: !printerState.isBusy()" >
                                 <span class="m-icon calibrateicon"></span>{{ _('Calibrate now') }}
-                             </a>
+                             </button>
                         </div>
                     </div>
 
@@ -56,9 +57,10 @@
                             </p>
                         </div>
                         <div class="span7 text-right">
-                            <a href="#maintenance_extruderMaintenance" class="btn btn-maintenance yellow" data-bind="click: showExtruderMaintenance">
+                            <button class="btn btn-maintenance yellow"
+                                data-bind="click: showExtruderMaintenance, enable: !printerState.isBusy()">
                                 <span class="m-icon extrudericon"></span>{{ _('Start extruder maintenance') }}
-                            </a>
+                            </button>
                         </div>
                     </div>
 
@@ -72,9 +74,10 @@
                              </p>
                         </div>
                         <div class="span7 text-right">
-                            <a href="#maintenance_replaceNozzle" class="btn btn-maintenance yellow" data-bind="click: showReplaceNozzle">
+                            <button class="btn btn-maintenance yellow"
+                                data-bind="click: showReplaceNozzle, enable: !printerState.isBusy()">
                                 <span class="m-icon nozzleicon"></span>{{ _('Switch nozzle now') }}
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -105,7 +108,8 @@
             </div>
             <div class="span8"></div>
             <div class="span2">
-                <button id="maintenanceCloseButton" class="btn btn-block" data-dismiss="modal" aria-hidden="true" data-bind="click: cancelOperations">
+                <button id="maintenanceCloseButton" class="btn btn-block" data-dismiss="modal" aria-hidden="true"
+                    data-bind="click: cancelOperations, visible: !printerState.isBusy()">
                     <i class="icon-remove"></i> {{ _('Close') }}
                 </button>
                 <button id="maintenanceOkButton" class="btn btn-block btn-primary    hidden" data-dismiss="modal"

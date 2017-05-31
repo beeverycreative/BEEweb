@@ -76,6 +76,10 @@ $(function() {
         self.showFilename = ko.pureComputed(function() {
             return self.isSelectedFile() && !self.connection.isErrorOrClosed();
         });
+        self.isBusy = ko.pureComputed(function() {
+            return self.isOperational() && (self.isPrinting() || self.isShutdown() || self.isHeating()
+             || self.isTransferring() || self.isPaused() || self.isResuming());
+        });
 
         /**
          * Expands the status/print buttons panel to a larger size
