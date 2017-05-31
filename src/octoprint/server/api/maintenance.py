@@ -284,7 +284,7 @@ def getNozzleList():
 	if not printer.is_operational():
 		return make_response("Printer is not operational", 409)
 
-	resp = printer.getNozzleTypes()
+	nozzles = printer.getNozzleTypes()
 
 	return jsonify(nozzles)
 
