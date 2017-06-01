@@ -211,10 +211,6 @@ def index():
 
 	# settings dialog
 	templates["settings"]["entries"] = dict(
-		section_printer=(gettext("Printer"), None),
-		#serial=(gettext("Serial Connection"), dict(template="dialogs/settings/serialconnection.jinja2", _div="settings_serialConnection", custom_bindings=False)),
-		printerprofiles=(gettext("Printer Profiles"), dict(template="dialogs/settings/printerprofiles.jinja2", _div="settings_printerProfiles", custom_bindings=False)),
-
 		section_features=(gettext("General Settings"), None),
 	)
 	templates["settings"]["entries"]["logs"] = (gettext("Logs"), dict(template="dialogs/settings/logs.jinja2", _div="settings_logs"))
@@ -224,6 +220,10 @@ def index():
 
 	# Settings for developer mode
 	if enable_devMode:
+		templates["settings"]["entries"]["section_printer"]=(gettext("Printer"), None),
+		#templates["settings"]["entries"]["serial"]=(gettext("Serial Connection"), dict(template="dialogs/settings/serialconnection.jinja2", _div="settings_serialConnection", custom_bindings=False)),
+		templates["settings"]["entries"]["printerprofiles"]=(gettext("Printer Profiles"), dict(template="dialogs/settings/printerprofiles.jinja2", _div="settings_printerProfiles", custom_bindings=False)),
+
 		templates["settings"]["entries"]["folders"] = (gettext("Folders"), dict(template="dialogs/settings/folders.jinja2", _div="settings_folders", custom_bindings=False))
 		templates["settings"]["entries"]["appearance"] = (gettext("Appearance"),dict(template="dialogs/settings/appearance.jinja2", _div="settings_appearance", custom_bindings=False))
 		templates["settings"]["entries"]["temperatures"] = (gettext("Temperatures"), dict(template="dialogs/settings/temperatures.jinja2", _div="settings_temperature", custom_bindings=False))
