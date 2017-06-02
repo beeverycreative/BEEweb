@@ -26,7 +26,7 @@
                          <div class="span7 text-right">
                              <a href="https://beeverycreative.com/order-here/" class="btn btn-maintenance green" target="_blank" >{{ _('Buy filament') }}</a>
                              <button class="btn btn-maintenance yellow"
-                                data-bind="click: showFilamentChange, enable: !printerState.isBusy()" >
+                                data-bind="click: showFilamentChange, enable: !printerState.isBusy() && !printerState.isErrorOrClosed()" >
                                  <span class="m-icon filamenticon"></span>{{ _('Change filament now') }}
                              </button>
                          </div>
@@ -41,7 +41,8 @@
                              </p>
                         </div>
                         <div class="span7 text-right">
-                             <button class="btn btn-maintenance yellow" data-bind="click: showCalibration, enable: !printerState.isBusy()" >
+                             <button class="btn btn-maintenance yellow"
+                                data-bind="click: showCalibration, enable: !printerState.isBusy() && !printerState.isErrorOrClosed()" >
                                 <span class="m-icon calibrateicon"></span>{{ _('Calibrate now') }}
                              </button>
                         </div>
@@ -58,7 +59,7 @@
                         </div>
                         <div class="span7 text-right">
                             <button class="btn btn-maintenance yellow"
-                                data-bind="click: showExtruderMaintenance, enable: !printerState.isBusy()">
+                                data-bind="click: showExtruderMaintenance, enable: !printerState.isBusy() && !printerState.isErrorOrClosed()">
                                 <span class="m-icon extrudericon"></span>{{ _('Start extruder maintenance') }}
                             </button>
                         </div>
@@ -75,7 +76,7 @@
                         </div>
                         <div class="span7 text-right">
                             <button class="btn btn-maintenance yellow"
-                                data-bind="click: showReplaceNozzle, enable: !printerState.isBusy()">
+                                data-bind="click: showReplaceNozzle, enable: !printerState.isBusy() && !printerState.isErrorOrClosed()">
                                 <span class="m-icon nozzleicon"></span>{{ _('Switch nozzle now') }}
                             </button>
                         </div>
