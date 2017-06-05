@@ -68,8 +68,8 @@ class BeePrinter(Printer):
     def connect(self, port=None, baudrate=None, profile=None):
         """
          This method is responsible for establishing the connection to the printer when there are
-         any connected clients (browser or beepanel) to the server. 
-         
+         any connected clients (browser or beepanel) to the server.
+
          Ignores port, baudrate parameters. They are kept just for interface compatibility
         """
         try:
@@ -88,7 +88,6 @@ class BeePrinter(Printer):
                     return False
 
             self._comm = BeeCom(callbackObject=self, printerProfileManager=self._printerProfileManager)
-            self._comm.confirmConnection()
 
             # returns in case the connection with the printer was not established
             if self._comm is None:
@@ -110,6 +109,9 @@ class BeePrinter(Printer):
                 printer_id = printer_name.lower().replace(' ', '')
             self._printerProfileManager.select(printer_id)
 
+            # Updates the printer connection state
+            self._comm.confirmConnection()
+
             # if the printer is printing or in shutdown mode selects the last selected file for print
             # and starts the progress monitor
             lastFile = settings().get(['lastPrintJobFile'])
@@ -123,6 +125,10 @@ class BeePrinter(Printer):
                 # starts the progress monitor if a print is on going
                 if self.is_printing():
                     self._comm.startPrintStatusProgressMonitor()
+
+            elif lastFile is not None and (not self.is_printing() and not self.is_shutdown() and not self.is_paused()):
+                # if a connection is established with a printer that is not printing, unselects any previous file
+                self._comm.unselectFile()
 
             # gets current Filament profile data
             self._currentFilamentProfile = self.getSelectedFilamentProfile()
@@ -172,14 +178,14 @@ class BeePrinter(Printer):
             self._logger.info("Cannot load file: printer not connected or currently busy")
             return
 
-        # special case where we want to recover the file information after a disconnect/connect during a print job
-        if path is None:
-            self._comm._currentFile = PrintingFileInformation('shutdown_recover_file')
-            return # In case the server was restarted during connection break-up and path variable is passed empty from the connect method
-
-        if isinstance(path, PrintingFileInformation):
+        if path is not None and isinstance(path, PrintingFileInformation):
             self._comm._currentFile = path
             return
+
+        # special case where we want to recover the file information after a disconnect/connect during a print job
+        if path is None or not os.path.exists(path) or not os.path.isfile(path):
+            self._comm._currentFile = PrintingFileInformation('shutdown_recover_file')
+            return # In case the server was restarted during connection break-up and path variable is passed empty from the connect method
 
         recovery_data = self._fileManager.get_recovery_data()
         if recovery_data:
@@ -530,6 +536,14 @@ class BeePrinter(Printer):
         except Exception as ex:
             self._logger.error(ex)
 
+    def getNozzleTypes(self):
+        """
+        Gets the list of nozzles available for the printer connected
+        :return:
+        """
+        if (self.getPrinterNameNormalized()== "beethefirst"):
+            return {'nz1': {'id': 'NZ400', 'value': 0.4}}
+        return settings().get(["nozzleTypes"])
 
     def getNozzleTypeString(self):
         """
@@ -752,6 +766,8 @@ class BeePrinter(Printer):
     def is_preparing_print(self):
         return self._comm is not None and self._comm.isPreparingPrint()
 
+    def is_transferring(self):
+        return self._comm is not None and self._comm.isTransferring()
 
     def is_heating(self):
         return self._comm is not None and (self._comm.isHeating() or self._comm.isPreparingPrint())
@@ -952,9 +968,9 @@ class BeePrinter(Printer):
     def on_client_connected(self, event, payload):
         """
         Event listener to execute when a client (browser) connects to the server
-        :param event: 
-        :param payload: 
-        :return: 
+        :param event:
+        :param payload:
+        :return:
         """
         # Only appends the client address to the list. The connection monitor thread will automatically handle
         # the connection itself
@@ -971,9 +987,9 @@ class BeePrinter(Printer):
     def on_client_disconnected(self, event, payload):
         """
         Event listener to execute when a client (browser) disconnects from the server
-        :param event: 
-        :param payload: 
-        :return: 
+        :param event:
+        :param payload:
+        :return:
         """
         if payload['remoteAddress'] in self._connectedClients:
             self._connectedClients.remove(payload['remoteAddress'])
@@ -1091,11 +1107,17 @@ class BeePrinter(Printer):
         if printTime is None:
             self._elapsedTime = 0
 
+        try:
+            fileSize=int(self._selectedFile['filesize'])
+        except Exception:
+            fileSize=None
+
         self._stateMonitor.set_progress({
             "completion": self._progress * 100 if self._progress is not None else None,
             "filepos": filepos,
             "printTime": int(self._elapsedTime * 60) if self._elapsedTime is not None else None,
-            "printTimeLeft": int(self._printTimeLeft) if self._printTimeLeft is not None else None
+            "printTimeLeft": int(self._printTimeLeft) if self._printTimeLeft is not None else None,
+            "fileSizeBytes": fileSize
         })
 
         if completion:
@@ -1125,6 +1147,7 @@ class BeePrinter(Printer):
             "error": self.is_error(),
             "paused": self.is_paused(),
             "ready": self.is_ready(),
+            "transfering":  self.is_transferring(),
             "sdReady": self.is_sd_ready(),
             "heating": self.is_heating(),
             "shutdown": self.is_shutdown(),

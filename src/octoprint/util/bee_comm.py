@@ -280,6 +280,9 @@ class BeeCom(MachineCom):
     def isResuming(self):
         return self._state == self.STATE_RESUMING
 
+    def isTransferring(self):
+        return self._state == self.STATE_PREPARING_PRINT
+
     def getStateString(self):
         """
         Returns the current printer state
@@ -288,7 +291,7 @@ class BeeCom(MachineCom):
         if self._state == self.STATE_CLOSED:
             return "Disconnected"
         elif self._state == self.STATE_PREPARING_PRINT:
-            return "Preparing..."
+            return "Transferring"
         elif self._state == self.STATE_HEATING:
             return "Heating"
         elif self._state == self.STATE_SHUTDOWN:
@@ -890,7 +893,8 @@ class BeeCom(MachineCom):
 
         while self._beeCommands.isHeating():
             time.sleep(1)
-            self._heatingProgress = round(self._beeCommands.getHeatingState(), 2)
+            temperatureValue = self._beeCommands.getHeatingState()
+            self._heatingProgress = 0.0 if temperatureValue is None else round(temperatureValue, 2)
             # makes use of the same method that is used for the print job progress, to update
             # the heating progress since we are going to use the same progress bar
             self._callback._setProgressData(self._heatingProgress, 0, 0, 0)

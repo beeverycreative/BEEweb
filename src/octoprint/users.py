@@ -198,6 +198,7 @@ class FilebasedUserManager(UserManager):
 		UserManager.__init__(self)
 
 		userfile = settings().get(["accessControl", "userfile"])
+		self._forceDevMode = settings().get(["accessControl", "forceDeveloperMode"])
 		if userfile is None:
 			userfile = os.path.join(settings().getBaseFolder("base"), "users.yaml")
 		self._userfile = userfile
@@ -231,6 +232,10 @@ class FilebasedUserManager(UserManager):
 		else:
 			self._customized = False
 			self._devMode = False
+
+		# Fetches the forceDeveloperMode setting to override any user specific setting and allow for desktop developer mode
+		if self._forceDevMode is True:
+			self._devMode = True
 
 	def _save(self, force=False):
 		if not self._dirty and not force:

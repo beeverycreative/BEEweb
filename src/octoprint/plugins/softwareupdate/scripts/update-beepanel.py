@@ -15,7 +15,7 @@ from octoprint.settings import settings
 def _get_git_executables():
 	GITS = ["git"]
 	if sys.platform == "win32":
-		GITS = ["git.cmd", "git.exe"]
+		GITS = ["git.cmd", "git.exe", "..\\Git\\bin\\git.exe"]
 	return GITS
 
 

@@ -515,7 +515,19 @@ $(function() {
         });
 
         // reload overlay
-        $("#reloadui_overlay_reload").click(function() { location.reload(); });
+        $("#reloadui_overlay_reload").click(function() {
+            $.ajax({
+                url: window.location.href,
+                method: "GET",
+                headers: {
+                    "Pragma": "no-cache",
+                    "Expires": -1,
+                    "Cache-Control": "no-cache"
+                }
+            }).done(function () {
+                window.location.reload(true);
+            });
+        });
 
         //~~ view model binding
 
@@ -653,6 +665,6 @@ $(function() {
 
         $('#slicing_configuration_dialog .form-horizontal .control-label').on('click', function(){
             $(this).toggleClass('closed');
-        })
+        });
     }
 );

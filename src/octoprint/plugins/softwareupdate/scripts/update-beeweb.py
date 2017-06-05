@@ -15,7 +15,7 @@ from octoprint.settings import settings
 def _get_git_executables():
     GITS = ["git"]
     if sys.platform == "win32":
-        GITS = ["git.cmd", "git.exe"]
+        GITS = ["git.cmd", "git.exe", "..\\Git\\bin\\git.exe"]
     return GITS
 
 
@@ -174,7 +174,7 @@ def install_source(python_executable, folder, user=False, sudo=False):
         # If the update is running on Windows tries to remove cache files from the client app
         if sys.platform == "win32":
             app_data_folder = os.getenv('APPDATA')
-            pattern = app_data_folder + '\\beesoft-nativefier*\\Cache\\*'
+            pattern = app_data_folder + '\\beesoft-*\\Cache\\*'
         elif sys.platform == "darwin":
             from AppKit import NSSearchPathForDirectoriesInDomains
             # http://developer.apple.com/DOCUMENTATION/Cocoa/Reference/Foundation/Miscellaneous/Foundation_Functions/Reference/reference.html#//apple_ref/c/func/NSSearchPathForDirectoriesInDomains
@@ -184,7 +184,7 @@ def install_source(python_executable, folder, user=False, sudo=False):
             app_data_folder = NSSearchPathForDirectoriesInDomains(14, 1, True)[0]
             pattern = app_data_folder + '/beesoft-*/Cache/*'
         else:
-            pattern = os.path.expanduser(os.path.join("~", "." + '/beesoft-nativefier*/Cache/*'))
+            pattern = os.path.expanduser(os.path.join("~", "." + '/beesoft-*/Cache/*'))
 
         for item in glob(pattern):
             if os.path.exists(item):

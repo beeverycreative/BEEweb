@@ -1067,7 +1067,7 @@ $(function() {
         self._getNozzleSizes = function() {
 
             $.ajax({
-                url: API_BASEURL + "maintenance/nozzle_sizes",
+                url: API_BASEURL + "maintenance/get_nozzle_list",
                 type: "GET",
                 dataType: "json",
                 success: function(data) {

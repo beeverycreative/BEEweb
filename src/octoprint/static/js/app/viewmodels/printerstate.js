@@ -12,6 +12,7 @@ $(function() {
         self.isErrorOrClosed = ko.observable(undefined);
         self.isOperational = ko.observable(undefined);
         self.isPrinting = ko.observable(undefined);
+        self.isTransferring = ko.observable(undefined);
         self.isHeating = ko.observable(undefined);
         self.isPaused = ko.observable(undefined);
         self.isError = ko.observable(undefined);
@@ -44,7 +45,7 @@ $(function() {
         self.enablePreparePrint = ko.pureComputed(function() {
             return self.loginState.isUser() && !self.connection.isConnecting()
                 && !self.connection.isErrorOrClosed() && !self.filename()
-                && !self.isPrinting() && !self.isPaused() && !self.isShutdown() && !self.isHeating();
+                && !self.isPrinting() && !self.isPaused() && !self.isShutdown() && !self.isHeating() && !self.isResuming();
         });
         self.showInsufficientFilament = ko.pureComputed(function() {
             return self.loginState.isUser && self.insufficientFilament()
@@ -71,10 +72,14 @@ $(function() {
              return self.loginState.isUser() && self.filename() != undefined;
         });
         self.showShutdownAndChangeFilament = ko.pureComputed(function() {
-            return !self.isShutdown() && self.loginState.isUser() && self.isPaused();
+            return !self.isShutdown() && self.loginState.isUser() && self.isPaused() && self.printerName()!="BEETHEFIRST";
         });
         self.showFilename = ko.pureComputed(function() {
             return self.isSelectedFile() && !self.connection.isErrorOrClosed();
+        });
+        self.isBusy = ko.pureComputed(function() {
+            return self.isOperational() && (self.isPrinting() || self.isShutdown() || self.isHeating()
+             || self.isTransferring() || self.isPaused() || self.isResuming());
         });
 
         /**
@@ -124,7 +129,7 @@ $(function() {
         };
 
         self.printFromMemory = function() {
-
+            $('#printFromMemoryDiv').addClass('hidden');
             $.ajax({
                 url: BEE_CUSTOM_API_BASEURL + "print_from_memory",
                 type: "POST",
@@ -133,6 +138,9 @@ $(function() {
                 success: function(response) {
                     $('#printFromMemoryDiv').addClass('hidden');
                     $('#preparePrint').removeClass('hidden');
+                },
+                error: function(XMLHttpRequest, textStatus, errorThrown) {
+                    $('#printFromMemoryDiv').removeClass('hidden');
                 }
             });
         };
@@ -144,6 +152,7 @@ $(function() {
         self.filepos = ko.observable(undefined);
         self.printTime = ko.observable(undefined);
         self.printTimeLeft = ko.observable(undefined);
+        self.fileSizeBytes = ko.observable(undefined);
         self.printTimeLeftOrigin = ko.observable(undefined);
         self.sd = ko.observable(undefined);
         self.timelapse = ko.observable(undefined);
@@ -259,6 +268,23 @@ $(function() {
             if (!self.progress()) {
                 return "";
             }
+            if (self.isPrinting()){
+                return _.sprintf("%d%%", self.progressString());
+            }
+            if (self.isTransferring()){
+                //is transferring file
+                transferTime= 5 + self.fileSizeBytes() / 85000;
+                transferTimeLeft=transferTime-self.progressString()*transferTime/100;
+                if(transferTimeLeft<1)
+                    return _.sprintf("Just a few seconds  ( %d%% )", self.progressString());
+                if(transferTimeLeft<60)
+                    return _.sprintf("%d seconds  ( %d%% )", transferTimeLeft, self.progressString());
+                return _.sprintf("%d minutes %d seconds  ( %d%% )", transferTimeLeft/60,(transferTimeLeft%60), self.progressString());
+            }
+            if (self.isHeating()) {
+                return _.sprintf("%dº / 200º  ", self.progressString()*200/100);
+            }
+            //Paused or Shutdown
             return _.sprintf("%d%%", self.progressString());
         });
         self.pauseString = ko.pureComputed(function() {
@@ -344,6 +370,7 @@ $(function() {
             self.isPrinting(data.flags.printing);
             self.isError(data.flags.error);
             self.isReady(data.flags.ready);
+            self.isTransferring(data.flags.transfering);
             self.isSdReady(data.flags.sdReady);
             self.isHeating(data.flags.heating);
             self.isShutdown(data.flags.shutdown);
@@ -448,6 +475,7 @@ $(function() {
             self.filepos(data.filepos);
             self.printTime(data.printTime);
             self.printTimeLeft(data.printTimeLeft);
+            self.fileSizeBytes(data.fileSizeBytes);
             self.printTimeLeftOrigin(data.printTimeLeftOrigin);
         };
 

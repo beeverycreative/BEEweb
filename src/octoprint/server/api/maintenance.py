@@ -284,11 +284,9 @@ def getNozzleList():
 	if not printer.is_operational():
 		return make_response("Printer is not operational", 409)
 
-	resp = printer.getNozzleTypes()
+	nozzles = printer.getNozzleTypes()
 
-	return jsonify({
-		"nozzles": resp
-	})
+	return jsonify(nozzles)
 
 
 @api.route("/maintenance/get_filament_spool", methods=["GET"])
