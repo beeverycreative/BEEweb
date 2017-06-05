@@ -697,7 +697,7 @@ def git_pieces_from_vcs(tag_prefix, root, verbose, run_command=run_command):
 
     GITS = ["git"]
     if sys.platform == "win32":
-        GITS = ["git.cmd", "git.exe"]
+        GITS = ["git.cmd", "git.exe", "..\\Git\\bin\\git.exe"]
     # if there is a tag matching tag_prefix, this yields TAG-NUM-gHEX[-dirty]
     # if there isn't one, this yields HEX[-dirty] (no NUM)
     describe_out = run_command(GITS, ["describe", "--tags", "--dirty",
@@ -825,7 +825,7 @@ def git_pieces_from_lookup(lookup, root, verbose, run_command=run_command):
     """Extract version information based on provided lookup data."""
     GITS = ["git"]
     if sys.platform == "win32":
-        GITS = ["git.cmd", "git.exe"]
+        GITS = ["git.cmd", "git.exe", "..\\Git\\bin\\git.exe"]
 
     stdout = run_command(GITS, ["rev-parse", "--abbrev-ref", "HEAD"],
                          cwd=root)
@@ -1239,7 +1239,7 @@ def git_pieces_from_vcs(tag_prefix, root, verbose, run_command=run_command):
 
     GITS = ["git"]
     if sys.platform == "win32":
-        GITS = ["git.cmd", "git.exe"]
+        GITS = ["git.cmd", "git.exe", "..\\Git\\bin\\git.exe"]
     # if there is a tag matching tag_prefix, this yields TAG-NUM-gHEX[-dirty]
     # if there isn't one, this yields HEX[-dirty] (no NUM)
     describe_out = run_command(GITS, ["describe", "--tags", "--dirty",
@@ -1367,7 +1367,7 @@ def git_pieces_from_lookup(lookup, root, verbose, run_command=run_command):
     """Extract version information based on provided lookup data."""
     GITS = ["git"]
     if sys.platform == "win32":
-        GITS = ["git.cmd", "git.exe"]
+        GITS = ["git.cmd", "git.exe", "..\\Git\\bin\\git.exe"]
 
     stdout = run_command(GITS, ["rev-parse", "--abbrev-ref", "HEAD"],
                          cwd=root)
@@ -1433,7 +1433,7 @@ def git_pieces_from_lookup(lookup, root, verbose, run_command=run_command):
 def do_vcs_install(manifest_in, versionfile_source, ipy):
     GITS = ["git"]
     if sys.platform == "win32":
-        GITS = ["git.cmd", "git.exe"]
+        GITS = ["git.cmd", "git.exe", "..\\Git\\bin\\git.exe"]
     files = [manifest_in, versionfile_source]
     if ipy:
         files.append(ipy)
