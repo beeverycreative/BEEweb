@@ -4,7 +4,7 @@ $(function() {
 
         self.loginState = parameters[0];
         self.printerProfiles = parameters[1];
-        self.printerState = parameters[2];
+        //self.printerState = parameters[2];
 
         self.file = ko.observable(undefined);
         self.target = undefined;
@@ -189,12 +189,15 @@ $(function() {
                 && self.slicer() != undefined
                 && self.sliceButtonControl()
                 //&& self.profile() != undefined
-                && (!(self.printerState.isPrinting() || self.printerState.isPaused()) || !self.slicerSameDevice());
+                &&(
+                //!(self.printerState.isPrinting() || self.printerState.isPaused()) ||
+                !self.slicerSameDevice());
         });
 
         self.sliceButtonTooltip = ko.pureComputed(function() {
             if (!self.enableSliceButton()) {
-                if ((self.printerState.isPrinting() || self.printerState.isPaused()) && self.slicerSameDevice()) {
+                if (//(self.printerState.isPrinting() || self.printerState.isPaused()) &&
+                    self.slicerSameDevice()) {
                     return gettext("Cannot slice on the same device while printing");
                 } else {
                     return gettext("Cannot slice, not all parameters specified");
@@ -492,7 +495,7 @@ $(function() {
 
     OCTOPRINT_VIEWMODELS.push([
         SlicingViewModel,
-        ["loginStateViewModel", "printerProfilesViewModel", "printerStateViewModel"],
+        ["loginStateViewModel", "printerProfilesViewModel", /*"printerStateViewModel"*/],
         "#slicing_configuration_dialog"
     ]);
 });
