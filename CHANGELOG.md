@@ -1,22 +1,42 @@
 # OctoPrint Changelog
 
-## 1.3.3rc2 (2017-05-17)
+## 1.3.4 (2017-06-01)
+
+### Note for owners of Malyan M200/Monoprice Select Mini
+
+OctoPrint's firmware autodetection is now able to detect this printer. Currently when this printer is detected, the following firmware specific features will be enabled automatically:
+
+  * Always assume SD card is present (`feature.sdAlwaysAvailable`)
+  * Send a checksum with the command: Always (`feature.alwaysSendChecksum`)
+
+Since the firmware is a very special kind of beast and its sources are so far unavailable, only tests with a real printer will show if those are sufficient settings for communication with this printer to fully function correctly. Thus, if you run into any issues with enabled firmware autodetection on this printer model, please add a comment in [#1762](https://github.com/foosel/OctoPrint/issues/1762) and explain what kind of communication problem you are seeing. Also make sure to include a [`serial.log`](https://github.com/foosel/OctoPrint/blob/master/CONTRIBUTING.md#where-can-i-find-those-log-files-you-keep-talking-about)!
 
 ### Bug fixes
 
-  * [#1917](https://github.com/foosel/OctoPrint/issues/1917) (regression) - Fix job data resetting on print job completion.
-  * [#1918](https://github.com/foosel/OctoPrint/issues/1918) (regression) - Fix "save as default" checkbox not being disabled when other controls are disabled.
-  * [#1919](https://github.com/foosel/OctoPrint/issues/1919) (regression) - Fix call to no longer existing function in Plugin Manager UI.
+  * [#1942](https://github.com/foosel/OctoPrint/issues/1942) - Fixed crash on startup in case of an invalid default printer profile combined with "auto-connect on startup" being selected and the printer available to connect to.
 
-([Commits](https://github.com/foosel/OctoPrint/compare/1.3.3rc1...1.3.3rc2))
+### More information
 
-## 1.3.3rc1 (2017-05-11)
+  * [Commits](https://github.com/foosel/OctoPrint/compare/1.3.1...1.3.2)
+  * Release Candidates:
+    * None since this constitutes a hotfix release to fix an apparently very rare bug introduced with 1.3.3 that seems to be affecting a small number of users.
+
+## 1.3.3 (2017-05-31)
+
+### Note for owners of Malyan M200/Monoprice Select Mini
+
+OctoPrint's firmware autodetection is now able to detect this printer. Currently when this printer is detected, the following firmware specific features will be enabled automatically:
+
+  * Always assume SD card is present (`feature.sdAlwaysAvailable`)
+  * Send a checksum with the command: Always (`feature.alwaysSendChecksum`)
+
+Since the firmware is a very special kind of beast and its sources are so far unavailable, only tests with a real printer will show if those are sufficient settings for communication with this printer to fully function correctly. Thus, if you run into any issues with enabled firmware autodetection on this printer model, please add a comment in [#1762](https://github.com/foosel/OctoPrint/issues/1762) and explain what kind of communication problem you are seeing. Also make sure to include a [`serial.log`](https://github.com/foosel/OctoPrint/blob/master/CONTRIBUTING.md#where-can-i-find-those-log-files-you-keep-talking-about)!
 
 ### Improvements
 
   * [#478](https://github.com/foosel/OctoPrint/issues/478) - Made webcam stream container fixed height (with selectable aspect ratio) to prevent jumps of the controls beneath it on load.
   * [#748](https://github.com/foosel/OctoPrint/issues/748) - Added delete confirmation and bulk delete for timelapses. See also the discussion in brainstorming ticket [#1807](https://github.com/foosel/OctoPrint/issues/1807).
-  * [#1092](https://github.com/foosel/OctoPrint/issues/1092) - Added new event to the file manager: `FileAdded`, `FileRemoved`, `FolderAdded`, `FolderRemoved`. Contrary to the `Upload` event, `FileAdded` will always fire when a file was added to storage through the file manager, not only when added through the web interface. Extended documentation accordingly.
+  * [#1092](https://github.com/foosel/OctoPrint/issues/1092) - Added new events to the file manager: `FileAdded`, `FileRemoved`, `FolderAdded`, `FolderRemoved`. Contrary to the `Upload` event, `FileAdded` will always fire when a file was added to storage through the file manager, not only when added through the web interface. Extended documentation accordingly.
   * [#1521](https://github.com/foosel/OctoPrint/issues/1521) - Software update plugin: Display timestamp of last version cache refresh in "Advanced options" area.
   * [#1734](https://github.com/foosel/OctoPrint/issues/1734) - Treat default/initial printer profile like all other printer profiles, persisting it to disk instead of `config.yaml` and allowing deletion. OctoPrint will migrate the existing default profile to the new location on first start.
   * [#1734](https://github.com/foosel/OctoPrint/issues/1734) - Better communication of what actions are available for printer profiles.
@@ -63,7 +83,7 @@
 
   * [#202](https://github.com/foosel/OctoPrint/issues/202) - Fixed an issue with the drag-n-drop area flickering if the mouse was moved too slow while dragging (see also [#1867](https://github.com/foosel/OctoPrint/pull/1867)).
   * [#1671](https://github.com/foosel/OctoPrint/issues/1671) - Removed obsolete entry of no longer available filter for empty folders from file list options.
-  * [#1821](https://github.com/foosel/OctoPrint/issues/1821) - Fixed a wrong default value for "capture post roll images" in timelapse configuration.
+  * [#1821](https://github.com/foosel/OctoPrint/issues/1821) - Properly reset "Capture post roll images" setting in timelapse configuration when switching from "off" to "timed" timelapse mode.
   * [#1822](https://github.com/foosel/OctoPrint/issues/1822) - Properly reset file metadata when a file is overwritten with a new version.
   * [#1836](https://github.com/foosel/OctoPrint/issues/1836) - Fixed order of `PrintCancelled` and `PrintFailed` events on print cancel.
   * [#1837](https://github.com/foosel/OctoPrint/issues/1837) - Fixed a race condition causing OctoPrint trying to read data from the current job on job cancel that was no longer there.
@@ -76,6 +96,10 @@
   * [#1897](https://github.com/foosel/OctoPrint/issues/1897) - Removed possibility to concurrently try to perform multiple tests of the configured snapshot URL.
   * [#1906](https://github.com/foosel/OctoPrint/issues/1906) - Fixed interpretation of `G92` in GCODE analysis.
   * [#1907](https://github.com/foosel/OctoPrint/issues/1907) - Don't send temperature commands with tool parameter when a shared nozzle is defined.
+  * [#1917](https://github.com/foosel/OctoPrint/issues/1917) (regression) - Fix job data resetting on print job completion.
+  * [#1918](https://github.com/foosel/OctoPrint/issues/1918) (regression) - Fix "save as default" checkbox not being disabled when other controls are disabled.
+  * [#1919](https://github.com/foosel/OctoPrint/issues/1919) (regression) - Fix call to no longer existing function in Plugin Manager UI.
+  * [#1934](https://github.com/foosel/OctoPrint/issues/1934) (regression) - Fix consecutive timed timelapse captures without configured post roll.
   * Fixed API key QR Code being shown (for "n/a" value) when no API key was set.
   * Fixed timelapse configuration API not returning 400 status code on some bad parameters.
   * Fixed a typo (see also [#1826](https://github.com/foosel/OctoPrint/pull/1826)).
@@ -87,7 +111,13 @@
   * Use `pip` instead of `python setup.py develop` in `octoprint dev plugin:install` command to avoid issues on Windows.
   * Docs: Fixed a wrong command in the plugin tutorial (see also [#1860](https://github.com/foosel/OctoPrint/pull/1860)).
 
-([Commits](https://github.com/foosel/OctoPrint/compare/1.3.2...1.3.3rc1))
+### More information
+
+- [Commits](https://github.com/foosel/OctoPrint/compare/1.3.2...1.3.3)
+- Release Candidates:
+  - [1.3.3rc1](https://github.com/foosel/OctoPrint/releases/tag/1.3.3rc1)
+  - [1.3.3rc2](https://github.com/foosel/OctoPrint/releases/tag/1.3.3rc2)
+  - [1.3.3rc3](https://github.com/foosel/OctoPrint/releases/tag/1.3.3rc3)
 
 ## 1.3.2 (2017-03-16)
 

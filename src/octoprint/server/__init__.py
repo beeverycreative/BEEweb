@@ -479,12 +479,15 @@ class Server(object):
 		eventManager.fire(events.Events.STARTUP)
 
 		# auto connect
-		#if self._settings.getBoolean(["serial", "autoconnect"]):
-		#	(port, baudrate) = self._settings.get(["serial", "port"]), self._settings.getInt(["serial", "baudrate"])
-		#	printer_profile = printerProfileManager.get_default()
-		#	connectionOptions = get_connection_options()
-		#	if port in connectionOptions["ports"]:
-		#		printer.connect(port=port, baudrate=baudrate, profile=printer_profile["id"] if "id" in printer_profile else "_default")
+		# if self._settings.getBoolean(["serial", "autoconnect"]):
+		# 	try:
+		# 		(port, baudrate) = self._settings.get(["serial", "port"]), self._settings.getInt(["serial", "baudrate"])
+		# 		printer_profile = printerProfileManager.get_default()
+		# 		connectionOptions = printer.__class__.get_connection_options()
+		# 		if port in connectionOptions["ports"]:
+		# 				printer.connect(port=port, baudrate=baudrate, profile=printer_profile["id"] if "id" in printer_profile else "_default")
+		# 	except:
+		# 		self._logger.exception("Something went wrong while attempting to automatically connect to the printer")
 
 		if self._settings.getBoolean(["usb", "autoconnect"]):
 			printer_profile = printerProfileManager.get_default()
