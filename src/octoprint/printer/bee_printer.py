@@ -767,7 +767,7 @@ class BeePrinter(Printer):
     def is_connecting(self):
         return self._isConnecting
 
-    def get_state_string(self):
+    def get_state_string(self, state=None):
         """
          Returns a human readable string corresponding to the current communication state.
         """
