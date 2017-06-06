@@ -36,7 +36,7 @@
     css: {stl: !$root.isGcode($data) }"></div>
 
     <script type="text/html" id="files_template_machinecode">
-        <div class="title" data-bind="css: $root.getSuccessClass($data), style: { 'font-weight': $root.listHelper.isSelected($data) ? 'bold' : 'normal' }, text: name, attr: { title: name }"></div>
+        <div class="title muted" data-bind="style: { 'font-weight': $root.listHelper.isSelected($data) ? 'bold' : 'normal' }, text: name, attr: { title: name }"></div>
         <!--<div class="uploaded">{{ _('Uploaded') }}: <span data-bind="text: formatTimeAgo(date)"></span></div>-->
         <!--<div class="size">{{ _('Size') }}: <span data-bind="text: formatSize(size)"></span></div>-->
         <div class="additionalInfo hide" data-bind="html: $root.getAdditionalData($data)"></div>
