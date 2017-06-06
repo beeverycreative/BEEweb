@@ -455,6 +455,7 @@ a.brand{
 .btn-ghost .m-icon { float: left; margin: 0px -20px 0 20px;}
 .btn-prepareprint .m-icon,
 .fileinput-button .m-icon { float: left; margin: 0px -10px 0 10px;}
+.createinput-button .m-icon { float: left; margin: 0px -10px 0 10px;}
 .btn-print .m-icon {float: left; }
 .modal-header h3 span.m-icon {
     margin-right: 15px;
@@ -1071,6 +1072,18 @@ input + span.add-on{
 }
 .fileinput-button:hover{
     background: #aeab9d;
+}
+.createinput-button{
+    font: 200 15px "din-light", sans-serif;
+    text-align: center;
+    color: #fff;
+    text-shadow: none;
+    padding: 9px;
+    margin: 0 !important;
+    transition: all 0.2s ease;
+}
+.createinput-button:hover{
+    background: #0d0d0d;
 }
 .progress{
     height: 22px !important;

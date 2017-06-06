@@ -24,8 +24,9 @@
         {% endif %}
     </div>
     <div class="row-fluid folder-button">
-        <span class="btn addfolder-button span12" data-bind="click: function() { if ($root.loginState.isUser()) { $root.showAddFolderDialog(); } }, css: {disabled: !$root.loginState.isUser()}">
-            <i class="icon-folder-close"></i> {{ _('Create folder...') }}
+        <span class="createinput-button span12" data-bind="click: function() { if ($root.loginState.isUser()) { $root.showAddFolderDialog(); } }, css: {disabled: !$root.loginState.isUser()}">
+            <span class="icon-folder-close"></span>
+            <span>{{ _('Create folder...') }}</span>
         </span>
     </div>
     <div id="gcode_upload_progress" class="progress progress-text-centered">
@@ -44,7 +45,7 @@
 
     <!-- ko slimScrolledForeach: filesAndFolders -->
     <div class="entry" data-bind="attr: { id: $root.getEntryId($data) }, template: { name: $root.templateFor($data), data: $data },
-        css: {stl: !$root.isGcode($data) }"></div>
+        css: {stl: $root.isStl($data) , folder: $root.isFolder($data)}"></div>
     <!-- /ko -->
     <script type="text/html" id="files_template_machinecode">
         <div class="title" data-bind="css: $root.getSuccessClass($data), style: { 'font-weight': $root.listHelper.isSelected($data) ? 'bold' : 'normal' }, text: name, attr: { title: name }"></div>
@@ -74,10 +75,10 @@
     </script>
 
     <script type="text/html" id="files_template_folder">
-        <div class="title clickable" data-bind="click: $root.changeFolder, style: { 'font-weight': $root.listHelper.isSelected($data) ? 'bold' : 'normal' }"><i class="icon-folder-open"></i> <span data-bind="text: name"></span></div>
-        <!--<div class="size">{{ _('Size') }}: <span data-bind="text: formatSize(size)"></span></div>-->
         <div class="btn-group action-buttons">
+            <div class="btn btn-mini hugebtn " data-bind="click: $root.changeFolder, style: { 'font-weight': $root.listHelper.isSelected($data) ? 'bold' : 'normal' }"></i> <span data-bind="text: name"></span></div>
             <div class="btn btn-mini smabtn" data-bind="click: function(data, event) { if ($root.enableRemove($data)) { $root.removeFolder($data, event); } else { return; } }, css: {disabled: !$root.enableRemove($data)}" title="{{ _('Remove') }}"><i class="icon-trash"></i></div>
+            <!--<div class="size">{{ _('Size') }}: <span data-bind="text: formatSize(size)"></span></div>-->
         </div>
     </script>
 </div>

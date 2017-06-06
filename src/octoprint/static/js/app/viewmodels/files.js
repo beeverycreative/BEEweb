@@ -540,7 +540,16 @@ $(function() {
                 return true;
             return false;
         };
-
+        self.isStl = function(data) {
+            if(data.type == 'model')
+                return true;
+            return false;
+        };
+        self.isFolder = function(data) {
+            if(data.type == 'folder')
+                return true;
+            return false;
+        };
         self.getEntryId = function(data) {
             return "gcode_file_" + md5(data["origin"] + ":" + data["path"]);
         };
