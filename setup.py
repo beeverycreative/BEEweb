@@ -44,7 +44,6 @@ INSTALL_REQUIRES = [
 	"Click>=6.2,<6.3",
 	"awesome-slugify>=1.6.5,<1.7",
 	"feedparser>=5.2.1,<5.3",
-	"feedparser>=5.2.1,<5.3",
 	"chainmap>=1.0.2,<1.1",
 	"future>=0.15,<0.16",
 	"scandir>=1.3,<1.4",
