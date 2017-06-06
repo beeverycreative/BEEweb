@@ -1,3 +1,29 @@
+
+{% if desktopApp == True %}
+<div id="reloadui_overlay" xmlns="http://www.w3.org/1999/html">
+    <div id="reloadui_overlay_background"></div>
+    <div id="reloadui_overlay_wrapper">
+        <div class="container">
+            <div class="hero-unit">
+                <h1>{{ _('Update complete') }}</h1>
+                <p>{{ _('In order to finalize the update, please complete the following steps: ') }}</p>
+                <span>
+                    <strong>1. {{ _('Press the Alt key in order to show the top menu bar.') }}</strong>
+                </span>
+                <br /><br />
+                <span>
+                    <strong>2. {{ _('Click to open the Edit menu on the top bar, and then click on the option "Clear App Data".') }}</strong>
+                </span>
+                <br /><br />
+                <span>
+                    <strong>3. {{ _('Confirm the action to clear the application cache.') }}</strong>
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% else %}
 <div id="reloadui_overlay" xmlns="http://www.w3.org/1999/html">
     <div id="reloadui_overlay_background"></div>
     <div id="reloadui_overlay_wrapper">
@@ -12,3 +38,4 @@
         </div>
     </div>
 </div>
+{% endif %}

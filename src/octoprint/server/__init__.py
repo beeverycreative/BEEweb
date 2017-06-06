@@ -83,6 +83,8 @@ del versions
 LOCALES = []
 LANGUAGES = set()
 
+DESKTOP_APP = False  # Flag to signal if the application is running in "desktop" mode. It will be based on the used server port
+
 @identity_loaded.connect_via(app)
 def on_identity_loaded(sender, identity):
 	user = load_user(identity.id)
@@ -337,6 +339,11 @@ class Server(object):
 			self._host = s.get(["server", "host"])
 		if self._port is None:
 			self._port = s.getInt(["server", "port"])
+
+		# This is not a very pretty hack, but it's the most practical way to signal if the application is running in desktop
+		# mode, and thus
+		if self._port == 5007:
+			octoprint.server.DESKTOP_APP = True
 
 		ioloop = IOLoop()
 		ioloop.install()

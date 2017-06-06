@@ -361,7 +361,7 @@ def index():
 	#~~ prepare full set of template vars for rendering
 
 	now = datetime.datetime.utcnow()
- 	# Removed the hasBeenCustomized verification to allow custom user for beepanel
+	# Removed the hasBeenCustomized verification to allow custom user for beepanel
 	first_run = settings().getBoolean(["server", "firstRun"]) and userManager.enabled # and not userManager.hasBeenCustomized()
 
 	render_kwargs = dict(
@@ -381,7 +381,8 @@ def index():
 		pluginNames=plugin_names,
 		locales=locales,
 		now=now,
-		supportedExtensions=map(lambda ext: ".{}".format(ext), get_all_extensions())
+		supportedExtensions=map(lambda ext: ".{}".format(ext), get_all_extensions()),
+		desktopApp=octoprint.server.DESKTOP_APP
 	)
 	render_kwargs.update(plugin_vars)
 
