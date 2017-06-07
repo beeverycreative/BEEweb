@@ -380,9 +380,6 @@ $(function() {
         };
 
         self.slice = function(modelToRemoveAfterSlice) {
-            if (!self.enableSliceButton()) {
-                return;
-            }
 
             // Selects the slicing profile based on the color and resolution
             if (self.selColor() != null && self.selResolution() != null) {
