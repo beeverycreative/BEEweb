@@ -81,7 +81,7 @@
                             <input type="radio" id="density5" name="density" data-bind="checked: selDensity" value="Custom"/>
                                 <label class="radio " for="density5">
                                     <span class="icon den5icon"></span>
-                                    <input type="number" min="0" max="100" placeholder="X %" data-bind="value: customDensity"/>
+                                    <input id="custom_density" type="number" min="0" max="100" placeholder="X %" data-bind="value: customDensity"/>
                                 </label>
                         </div>
                     </div>
@@ -196,4 +196,8 @@ $('#slicing_form').on('keyup keypress', function(e) {
         return false;
     }
 });
+
+$('#custom_density').on('click change keyup', function (e) {
+    $('#density5').prop('checked', true);
+})
 </script>
