@@ -339,10 +339,11 @@ $(function() {
                     }
                 },
                 error: function() {
-                    while (fetchTemperatureRetries > 0)
+                    while (fetchTemperatureRetries > 0) {
                         setTimeout(function() { self._updateTempProgress() }, 2000);
                         fetchTemperatureRetries -= 1;
                     }
+                }
             });
         };
 

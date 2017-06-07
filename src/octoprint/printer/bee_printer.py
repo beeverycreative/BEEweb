@@ -154,6 +154,7 @@ class BeePrinter(Printer):
             if self._comm.isOperational():
                 return True
         except Exception:
+            self._isConnecting = False
             self._logger.exception("Error connecting to BVC printer")
 
         return False
