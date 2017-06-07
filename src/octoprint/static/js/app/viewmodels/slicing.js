@@ -189,9 +189,7 @@ $(function() {
                 && self.slicer() != undefined
                 && self.sliceButtonControl()
                 //&& self.profile() != undefined
-                &&(
-                //!(self.printerState.isPrinting() || self.printerState.isPaused()) ||
-                !self.slicerSameDevice());
+                //&&( !(self.printerState.isPrinting() || self.printerState.isPaused()) || !self.slicerSameDevice());
         });
 
         self.sliceButtonTooltip = ko.pureComputed(function() {
@@ -207,10 +205,13 @@ $(function() {
             }
         });
 
-        self.requestData = function() {
+        self.requestData = function(callback) {
             return OctoPrint.slicing.listAllSlicersAndProfiles()
                 .done(function(data) {
                     self.fromResponse(data);
+                    if (callback !== undefined) {
+                        callback();
+                    }
                 });
         };
 
