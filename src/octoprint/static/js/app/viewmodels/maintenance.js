@@ -148,6 +148,8 @@ $(function() {
             self.replaceNozzleStep0();
             self.extMaintStep0();
 
+            self._resetProgressBars();
+
             // Goes to home position
             //self._sendCustomCommand('G28');
 
@@ -171,10 +173,30 @@ $(function() {
             self.replaceNozzleStep0();
             self.extMaintStep0();
 
+            self._resetProgressBars();
+
             // Goes to home position
             self._sendCustomCommand('G28');
 
             self._hideMovingMessage();
+        };
+
+        self._resetProgressBars = function () {
+            // Resets nozzle switch temperature progress
+            var tempProgress = $("#temperature-progress-replace-nozzle");
+            var tempProgressBar = $(".bar", tempProgress);
+
+            var progressStr = 0 + "%";
+            tempProgressBar.css('width', progressStr);
+            tempProgressBar.text(progressStr);
+
+            // Resets change filament temperature progress
+            tempProgress = $("#temperature_progress");
+            tempProgressBar = $(".bar", tempProgress);
+
+            progressStr = 0 + "%";
+            tempProgressBar.css('width', progressStr);
+            tempProgressBar.text(progressStr);
         };
 
         self._showMovingMessage = function() {
@@ -921,11 +943,13 @@ $(function() {
         };
 
         self.replaceNozzleStep0 = function() {
+            $('#replaceNozzleStep1').removeClass('hidden');
             $('#replaceNozzleStep2').addClass('hidden');
             $('#replaceNozzleStep3').addClass('hidden');
-            $('#replaceNozzleStep1').removeClass('hidden');
             $('#replaceNozzleStep4').addClass('hidden');
             $('#replaceNozzleStep5').addClass('hidden');
+            $('#replaceNozzleStep6').addClass('hidden');
+            $('#replaceNozzleStep7').addClass('hidden');
         };
 
         self.nextStepReplaceNozzle1 = function() {
@@ -937,6 +961,8 @@ $(function() {
             $('#replaceNozzleStep3').addClass('hidden');
             $('#replaceNozzleStep4').addClass('hidden');
             $('#replaceNozzleStep5').addClass('hidden');
+            $('#replaceNozzleStep6').addClass('hidden');
+            $('#replaceNozzleStep7').addClass('hidden');
         };
 
         self.nextStepReplaceNozzle2 = function() {
@@ -944,6 +970,9 @@ $(function() {
             self._heatingDone();
 
             $('#replaceNozzleStep3').removeClass('hidden');
+            $('#replaceNozzleStep7').addClass('hidden');
+            $('#replaceNozzleStep6').addClass('hidden');
+            $('#replaceNozzleStep5').addClass('hidden');
             $('#replaceNozzleStep1').addClass('hidden');
             $('#replaceNozzleStep2').addClass('hidden');
             $('#replaceNozzleStep4').addClass('hidden');
@@ -951,6 +980,8 @@ $(function() {
 
         self.nextStepReplaceNozzle3 = function() {
             $('#replaceNozzleStep4').removeClass('hidden');
+            $('#replaceNozzleStep7').addClass('hidden');
+            $('#replaceNozzleStep6').addClass('hidden');
             $('#replaceNozzleStep5').addClass('hidden');
             $('#replaceNozzleStep3').addClass('hidden');
             $('#replaceNozzleStep1').addClass('hidden');
@@ -959,10 +990,38 @@ $(function() {
 
         self.nextStepReplaceNozzle4 = function() {
             $('#replaceNozzleStep5').removeClass('hidden');
+            $('#replaceNozzleStep7').addClass('hidden');
+            $('#replaceNozzleStep6').addClass('hidden');
             $('#replaceNozzleStep4').addClass('hidden');
             $('#replaceNozzleStep3').addClass('hidden');
             $('#replaceNozzleStep1').addClass('hidden');
             $('#replaceNozzleStep2').addClass('hidden');
+        };
+
+        self.nextStepReplaceNozzle5 = function() {
+            $('#replaceNozzleStep6').removeClass('hidden');
+            $('#replaceNozzleStep7').addClass('hidden');
+            $('#replaceNozzleStep5').addClass('hidden');
+            $('#replaceNozzleStep4').addClass('hidden');
+            $('#replaceNozzleStep3').addClass('hidden');
+            $('#replaceNozzleStep1').addClass('hidden');
+            $('#replaceNozzleStep2').addClass('hidden');
+        };
+
+        self.nextStepReplaceNozzle6 = function() {
+            $('#replaceNozzleStep7').removeClass('hidden');
+            $('#replaceNozzleStep4').addClass('hidden');
+            $('#replaceNozzleStep3').addClass('hidden');
+            $('#replaceNozzleStep1').addClass('hidden');
+            $('#replaceNozzleStep2').addClass('hidden');
+            $('#replaceNozzleStep5').addClass('hidden');
+            $('#replaceNozzleStep6').addClass('hidden');
+        };
+
+        self.proceedToChangeFilament = function() {
+            $('#maintenance_replaceNozzle').addClass('hidden');
+
+            self.showFilamentChange();
         };
 
         self.saveNozzle = function() {
@@ -991,8 +1050,8 @@ $(function() {
                         self.commandLock(false);
                         self.operationLock(false);
 
-                        // Gets the available filament list
-                        self._getFilamentProfiles(self.nextStepReplaceNozzle4);
+                        // Moves to the next step
+                        self.nextStepReplaceNozzle6();
                     } else {
                         self.saveNozzleResponseError(true);
                         self.commandLock(false);
@@ -1019,6 +1078,7 @@ $(function() {
                 contentType: "application/json; charset=UTF-8",
                 success: function() {
                     $('#progress-bar-replace-nozzle').removeClass('hidden');
+                    $('#replace-nozzle-heating-done').addClass('hidden');
 
                     self._updateTempProgressReplaceNozzle();
 
