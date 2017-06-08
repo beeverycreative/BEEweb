@@ -4,10 +4,10 @@ import threading
 from time import sleep
 
 
-class BvcPrinterStatusDetectionThread(threading.Thread):
+class StatusDetectionMonitorThread(threading.Thread):
 
 	def __init__(self, bee_comm):
-		super(BvcPrinterStatusDetectionThread, self).__init__()
+		super(StatusDetectionMonitorThread, self).__init__()
 		self.USB_POLL_INTERVAL = 3  # seconds
 		self._logger = logging.getLogger()
 		self._controlFlag = True
@@ -41,6 +41,6 @@ class BvcPrinterStatusDetectionThread(threading.Thread):
 				self._logger.info("BVC Printer Shutdown detected.")
 				self.bee_comm.setShutdownState()
 
-	def stop_connection_monitor(self):
+	def stop_status_monitor(self):
 		self._controlFlag = False
 		self._logger.info("BVC Printer status monitor stopped.")

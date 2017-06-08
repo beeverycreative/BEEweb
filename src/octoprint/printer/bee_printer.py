@@ -11,7 +11,7 @@ from octoprint.printer.standard import Printer
 from octoprint.printer import PrinterInterface
 from octoprint.settings import settings
 from octoprint.server.util.connection_util import ConnectionMonitorThread
-from octoprint.server.util.printer_status_detection_util import BvcPrinterStatusDetectionThread
+from octoprint.server.util.printer_status_detection_util import StatusDetectionMonitorThread
 from octoprint.events import eventManager, Events
 from octoprint.slicing import SlicingManager
 from octoprint.filemanager import FileDestinations
@@ -141,7 +141,7 @@ class BeePrinter(Printer):
 
             # Starts the printer status monitor thread
             if self._bvc_status_thread is None:
-                self._bvc_status_thread = BvcPrinterStatusDetectionThread(self._comm)
+                self._bvc_status_thread = StatusDetectionMonitorThread(self._comm)
                 self._bvc_status_thread.start()
 
             self._isConnecting = False
@@ -173,7 +173,7 @@ class BeePrinter(Printer):
             self._bvc_conn_thread.start()
 
         if (self._bvc_status_thread is not None):
-            self._bvc_status_thread.stop_connection_monitor()
+            self._bvc_status_thread.stop_status_monitor()
             self._bvc_status_thread = None
 
     def select_file(self, path, sd, printAfterSelect=False, pos=None):
