@@ -1544,13 +1544,21 @@ td.settings_users_actions .m-icon {
     background: #518359;
     display: inline-block;
 }
+#add_folder_dialog .modal-footer .btn-primary {
+    padding: 20px 0;
+    width: 150px;
+    text-transform: uppercase;
+    color: #fff;
+    background: #518359;
+    display: inline-block;
+}
 #maintenance_dialog .modal-footer .btn-primary {
     padding: 20px 0;
     text-transform: uppercase;
     color: #fff;
     background: #518359;
 }
-#maintenanceCloseButton, #login_dialog .modal-footer .btn, #cancelMaintenance, #aboutbee_dialog .modal-footer .btn{
+#maintenanceCloseButton, #maintenance_dialog .modal-footer .btn, #login_dialog .modal-footer .btn, #cancelMaintenance, #aboutbee_dialog .modal-footer .btn{
     padding: 20px;
     background: transparent;
     color: #898989;
