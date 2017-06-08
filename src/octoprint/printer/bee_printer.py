@@ -11,7 +11,7 @@ from octoprint.printer.standard import Printer
 from octoprint.printer import PrinterInterface
 from octoprint.settings import settings
 from octoprint.server.util.connection_util import ConnectionMonitorThread
-from octoprint.server.util.printer_status_detection_util import bvc_printer_status_detection
+from octoprint.server.util.printer_status_detection_util import BvcPrinterStatusDetectionThread
 from octoprint.events import eventManager, Events
 from octoprint.slicing import SlicingManager
 from octoprint.filemanager import FileDestinations
@@ -39,6 +39,7 @@ class BeePrinter(Printer):
         self._insufficientFilamentForCurrent = False
         self._isConnecting = False
         self._bvc_conn_thread = None
+        self._bvc_status_thread = None
 
         # Initializes the slicing manager for filament profile information
         self._slicingManager = SlicingManager(settings().getBaseFolder("slicingProfiles"), printerProfileManager)
@@ -139,10 +140,9 @@ class BeePrinter(Printer):
             eventManager().subscribe(Events.PRINT_DONE, self.on_print_finished)
 
             # Starts the printer status monitor thread
-            import threading
-            bvc_status_thread = threading.Thread(target=bvc_printer_status_detection, args=(self._comm, ))
-            bvc_status_thread.daemon = True
-            bvc_status_thread.start()
+            if self._bvc_status_thread is None:
+                self._bvc_status_thread = BvcPrinterStatusDetectionThread(self._comm)
+                self._bvc_status_thread.start()
 
             self._isConnecting = False
 
@@ -151,7 +151,7 @@ class BeePrinter(Printer):
                 self._bvc_conn_thread.stop_connection_monitor()
                 self._bvc_conn_thread = None
 
-            if self._comm.isOperational():
+            if self._comm != None and self._comm.isOperational():
                 return True
         except Exception:
             self._isConnecting = False
@@ -172,6 +172,9 @@ class BeePrinter(Printer):
             self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
             self._bvc_conn_thread.start()
 
+        if (self._bvc_status_thread is not None):
+            self._bvc_status_thread.stop_connection_monitor()
+            self._bvc_status_thread = None
 
     def select_file(self, path, sd, printAfterSelect=False, pos=None):
 
