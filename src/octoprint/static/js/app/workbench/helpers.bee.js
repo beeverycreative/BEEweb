@@ -205,27 +205,30 @@ BEEwb.helpers.centerModelBasedOnBoundingBox = function(geometry) {
     var centerZ = 0.5 * ( bbox.max.z - bbox.min.z );
 
     // Checks if the object is out of center in any axis
-    if ( bbox.min.x >= 0 ) {
+    //Check x axis
+    if ( bbox.min.x >= 0) {
         xShift = bbox.min.x + centerX;
-    }
-
-    if ( bbox.min.y >= 0 ) {
-        yShift = bbox.min.y + centerY;
-    }
-
-    if ( bbox.min.z >= 0 ) {
-        zShift = bbox.min.z + centerZ;
-    }
-
-    if ( bbox.max.x <= 0 ) {
+    } else if ( bbox.max.x <= 0) {
+        xShift = bbox.max.x - centerX;
+    } else{
         xShift = bbox.max.x - centerX;
     }
 
-    if ( bbox.max.y <= 0 ) {
+    //Check y axis
+    if ( bbox.min.y >= 0) {
+        yShift = bbox.min.y + centerY;
+    } else if ( bbox.max.y <= 0) {
+        yShift = bbox.max.y - centerY;
+    } else{
         yShift = bbox.max.y - centerY;
     }
 
-    if ( bbox.max.z <= 0 ) {
+    //Check z axis
+    if ( bbox.min.z >= 0) {
+        zShift = bbox.min.z + centerZ;
+    } else if ( bbox.max.z <= 0 ) {
+        zShift = bbox.max.z - centerZ;
+    } else{
         zShift = bbox.max.z - centerZ;
     }
 
