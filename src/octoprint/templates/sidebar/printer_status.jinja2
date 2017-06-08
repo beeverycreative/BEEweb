@@ -118,7 +118,7 @@
                     <span data-bind="text: 'Filament: '"></span><strong data-bind="text: formatFilament(data())"></strong>
                     <!-- /ko -->
                 </div>
-                <div >
+                <div data-bind="visible: timelapse">
                     {{ _('Timelapse') }}: <strong data-bind="text: timelapseString"></strong>
                 </div>
             </div>
