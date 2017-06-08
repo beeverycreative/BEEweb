@@ -38,7 +38,7 @@
     </div>
 </div>
 <div class="gcode_files" >
-    <div class="entry back clickable" data-bind="visible: currentPath() != '', click: function() { $root.navigateUp(); }" style="display: none">
+    <div class="entry back clickable folder" data-bind="visible: currentPath() != '', click: function() { $root.navigateUp(); }" style="display: none">
         <div class="back-arrow"><i class="icon-arrow-left"></i> {{  _('Back') }}</div>
         <div class="back-path"><small class="muted">{{ _('Currently in') }} <span data-bind="text: currentPath"></span></small></div>
     </div>
