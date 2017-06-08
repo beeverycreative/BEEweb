@@ -461,6 +461,7 @@ a.brand{
 .modal-footer-btn .m-icon,
 .btn-ghost .m-icon { float: left; margin: 0px -20px 0 20px;}
 .btn-prepareprint .m-icon,
+.btn-print-from-memory .m-icon,
 .fileinput-button .m-icon { float: left; margin: 0px -10px 0 10px;}
 .btn-print .m-icon {float: left; }
 .modal-header h3 span.m-icon {
@@ -707,6 +708,7 @@ a.brand{
     font-size: 14px;
     text-align: right;
     word-break: break-word;
+    text-decoration: underline;
 }
 
 #showPrintDetails .progress{
@@ -935,8 +937,12 @@ input + span.add-on{
 .btn-print-from-memory {
     background-color: #32312b !important;
     color: #fff !important;
-    border: solid !important;;
-    border-width: 1px !important;;
+    border: 1px solid !important;
+    width: 100% !important;
+    right: 27% !important;
+    bottom: 25px !important;
+    box-shadow: none !important;
+    padding: 15px !important;
 }
 .btn-software-update {
     font-size: 15px !important;

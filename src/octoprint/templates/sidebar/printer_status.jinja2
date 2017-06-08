@@ -85,9 +85,11 @@
     <span class="white-label-message" data-bind="text: printerName " /></strong>
     <span class="white-label-message">{{ _('has a file in its internal memory.') }}</span>
     <p>{{ _('It corresponds to the last file that was printed. Press the button below to print it.') }}</p>
+    <br />
     <button class="btn btn-print-from-memory" id="print_from_memory"
         data-bind="click: printFromMemory, enable: enablePrintFromMemory()">
-        {{ _('Print from internal memory') }}
+        <span class="m-icon printwicon" ></span>
+        {{ _('Repeat last Print') }}
     </button>
 </div>
 <div id="noPrinterConnected" data-bind="visible: noPrinterDetected" class="hidden">
