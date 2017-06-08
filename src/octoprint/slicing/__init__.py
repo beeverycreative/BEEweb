@@ -20,6 +20,7 @@ __copyright__ = "Copyright (C) 2014 The OctoPrint Project - Released under terms
 
 
 import os
+import time
 
 try:
 	from os import scandir
@@ -548,6 +549,8 @@ class SlicingManager(object):
 
 		profiles = dict()
 		slicer_profile_path = self.get_slicer_profile_path(slicer)
+		print("Retriving all profiles....")
+		start_time = time.time()
 		for entry in scandir(slicer_profile_path):
 			if not entry.name.endswith(".profile") or octoprint.util.is_hidden_path(entry.name):
 				# we are only interested in profiles and no hidden files
@@ -555,6 +558,8 @@ class SlicingManager(object):
 
 			profile_name = entry.name[:-len(".profile")]
 			profiles[profile_name] = self._load_profile_from_path(slicer, entry.path, require_configured=require_configured)
+		elapsed_time = time.time() - start_time
+		print ("Retriving Profiles take "+ str(elapsed_time) +" s")
 		return profiles
 
 	def all_profiles_list(self, slicer, require_configured=False, from_current_printer=True):
