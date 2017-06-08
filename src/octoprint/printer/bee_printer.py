@@ -141,7 +141,7 @@ class BeePrinter(Printer):
 
             # Starts the printer status monitor thread
             if self._bvc_status_thread is None:
-                self._bvc_status_thread = BvcPrinterStatusDetectionThread(self._comm)
+                self._bvc_status_thread = StatusDetectionMonitorThread(self._comm)
                 self._bvc_status_thread.start()
 
             self._isConnecting = False
