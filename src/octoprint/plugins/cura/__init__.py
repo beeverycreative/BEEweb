@@ -47,7 +47,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		return cura_engine is not None and os.path.isfile(cura_engine) and os.access(cura_engine, os.X_OK)
 
 	def _is_profile_available(self):
-		return bool(self._slicing_manager.all_profiles("cura", require_configured=False))
+		return bool(self._slicing_manager.all_profiles_list("cura", require_configured=False))
 
 	##~~ TemplatePlugin API
 
