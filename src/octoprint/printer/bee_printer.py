@@ -151,7 +151,7 @@ class BeePrinter(Printer):
                 self._bvc_conn_thread.stop_connection_monitor()
                 self._bvc_conn_thread = None
 
-            if self._comm != None and self._comm.isOperational():
+            if self._comm is not None and self._comm.isOperational():
                 return True
         except Exception:
             self._isConnecting = False
@@ -168,11 +168,10 @@ class BeePrinter(Printer):
 
         # Starts the connection monitor thread only if there are any connected clients
         if len(self._connectedClients) > 0 and self._bvc_conn_thread is None:
-            import threading
             self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
             self._bvc_conn_thread.start()
 
-        if (self._bvc_status_thread is not None):
+        if self._bvc_status_thread is not None:
             self._bvc_status_thread.stop_status_monitor()
             self._bvc_status_thread = None
 

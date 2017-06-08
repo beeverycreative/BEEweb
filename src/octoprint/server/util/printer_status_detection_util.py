@@ -11,12 +11,12 @@ class StatusDetectionMonitorThread(threading.Thread):
 		self.USB_POLL_INTERVAL = 3  # seconds
 		self._logger = logging.getLogger()
 		self._controlFlag = True
-		self.bee_comm=bee_comm
+		self.bee_comm = bee_comm
 
 	def run(self):
 		"""
 		Thread  to check the current status of a connected BVC printer
-	
+
 		:param bee_comm: BVC printer connection object
 		:return:
 		"""
