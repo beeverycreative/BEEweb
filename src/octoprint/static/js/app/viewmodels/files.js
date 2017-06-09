@@ -104,6 +104,13 @@ $(function() {
                     if (b["size"] === undefined || a["size"] > b["size"]) return -1;
                     if (a["size"] < b["size"]) return 1;
                     return 0;
+                },
+                "type": function(a, b) {
+                // sorts descending
+                if (a["type"] == "folder"       && (b["type"] == "model"        || b["type"] == "machinecode")) return -1;
+                if (a["type"] == "model"        && (b["type"] == "machinecode"  && b["type"] != "folder"))      return -1;
+                if (a["type"] == "machinecode"  && (b["type"] == "model"        || b["type"] == "folder"))      return 1;
+                return 0;
                 }
             },
             {
