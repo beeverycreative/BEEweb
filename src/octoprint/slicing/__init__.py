@@ -512,7 +512,7 @@ class SlicingManager(object):
 		if not name:
 			raise ValueError("name must be set")
 
-		if require_exists and not name in self.all_profiles(slicer, require_configured=require_configured):
+		if require_exists and not name in self.all_profiles_list(slicer, require_configured=require_configured):
 			raise UnknownProfile(slicer, name)
 
 		default_profiles = settings().get(["slicing", "defaultProfiles"])
