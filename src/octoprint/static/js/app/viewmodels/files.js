@@ -83,6 +83,12 @@ $(function() {
                     if (b["size"] === undefined || a["size"] > b["size"]) return -1;
                     if (a["size"] < b["size"]) return 1;
                     return 0;
+                },
+                "type": function(a, b) {
+                    // sorts descending
+                    if (b["size"] === undefined || a["type"] == "model" && b["type"] == "machinecode" ) return -1;
+                    if (a["type"] == "machinecode"  && b["type"] == "model"  ) return 1;
+                    return 0;
                 }
             },
             {
