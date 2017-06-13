@@ -967,10 +967,10 @@ class BeeCom(MachineCom):
     def _flashFirmware(self, firmware_file_name, firmware_path, version):
         """
         Auxiliary method that performs that calls the low level driver flash firmware operation
-        :param firmware_file_name: 
-        :param firmware_path: 
-        :param version: 
-        :return: 
+        :param firmware_file_name:
+        :param firmware_path:
+        :param version:
+        :return:
         """
         from os.path import join
         _logger = logging.getLogger()
