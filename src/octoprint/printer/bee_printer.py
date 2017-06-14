@@ -1125,7 +1125,7 @@ class BeePrinter(Printer):
             "printTime": int(self._elapsedTime * 60) if self._elapsedTime is not None else None,
             "printTimeLeft": int(self._printTimeLeft) if self._printTimeLeft is not None else None,
             "fileSizeBytes": fileSize,
-			"temperatureTarget": temperatureTarget
+            "temperatureTarget": temperatureTarget
         })
 
         if completion:
