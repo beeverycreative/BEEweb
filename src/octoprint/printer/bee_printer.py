@@ -544,7 +544,7 @@ class BeePrinter(Printer):
         Gets the list of nozzles available for the printer connected
         :return:
         """
-        if (self.getPrinterNameNormalized()== "beethefirst"):
+        if self.getPrinterNameNormalized() == "beethefirst":
             return {'nz1': {'id': 'NZ400', 'value': 0.4}}
         return settings().get(["nozzleTypes"])
 
@@ -882,14 +882,14 @@ class BeePrinter(Printer):
             if progress >= 1 \
                     and self._comm.getCommandsInterface().isPreparingOrPrinting() is False:
 
+                self._comm.getCommandsInterface().stopStatusMonitor()
+                self._runningCalibrationTest = False
+
                 # Runs the print finish communications callback
                 self._comm.triggerPrintFinished()
 
                 self._setProgressData()
                 self._resetPrintProgress()
-
-                self._comm.getCommandsInterface().stopStatusMonitor()
-                self._runningCalibrationTest = False
 
 
     def on_comm_file_selected(self, filename, filesize, sd):
