@@ -1115,12 +1115,17 @@ class BeePrinter(Printer):
         except Exception:
             fileSize=None
 
+        temperatureTarget = self._comm.getCommandsInterface().getTargetTemperature()
+        if temperatureTarget == 0 :
+            temperatureTarget = None
+
         self._stateMonitor.set_progress({
             "completion": self._progress * 100 if self._progress is not None else None,
             "filepos": filepos,
             "printTime": int(self._elapsedTime * 60) if self._elapsedTime is not None else None,
             "printTimeLeft": int(self._printTimeLeft) if self._printTimeLeft is not None else None,
-            "fileSizeBytes": fileSize
+            "fileSizeBytes": fileSize,
+			"temperatureTarget": temperatureTarget
         })
 
         if completion:
