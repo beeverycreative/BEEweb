@@ -307,7 +307,6 @@ $(function() {
         self.changeFilamentStepFinalStep = function() {
             $('#maintenanceOkButton').removeClass('hidden');
             $('#maintenanceCloseButton').addClass('hidden');
-            $('#maintenanceNextButton').addClass('hidden');
         };
 
         self.startHeating = function() {
