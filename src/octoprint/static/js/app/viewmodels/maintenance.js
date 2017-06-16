@@ -278,9 +278,7 @@ $(function() {
             $('#step4').addClass('hidden');
             $('#step3').addClass('hidden');
             $('#step1').addClass('hidden');
-            if (self._hasClass($('#maintenanceNextButton'),'hidden')){
-                $('#maintenanceNextButton').addClass('hidden');
-            }
+            $('#maintenanceNextButton').addClass('hidden');
         };
 
         self.nextStep3 = function() {
@@ -886,9 +884,7 @@ $(function() {
             $('#extMaintStep2').addClass('hidden');
             $('#extMaintStep1').addClass('hidden');
             $('#extMaintStep4').addClass('hidden');
-            if (self._hasClass($('#maintenanceNextButton'),'hidden')){
-                $('#maintenanceNextButton').addClass('hidden');
-            }
+            $('#maintenanceNextButton').addClass('hidden');
         };
 
         self.nextStepExtMaint3 = function() {
@@ -950,6 +946,7 @@ $(function() {
                         if (progress >= 100) {
 
                             $('#ext-mtn-4').removeClass('hidden');
+                            $('#maintenanceNextButton').removeClass('hidden');
                             $('#progress-bar-ext-mtn').addClass('hidden');
                         } else {
 
@@ -999,7 +996,7 @@ $(function() {
         self.nextStepReplaceNozzle1 = function() {
             // Starts the heating operation
             self.startHeatingReplaceNozzle();
-
+            $('#maintenanceNextButton').addClass('hidden');
             $('#replaceNozzleStep2').removeClass('hidden');
             $('#replaceNozzleStep1').addClass('hidden');
             $('#replaceNozzleStep3').addClass('hidden');
@@ -1020,9 +1017,6 @@ $(function() {
             $('#replaceNozzleStep1').addClass('hidden');
             $('#replaceNozzleStep2').addClass('hidden');
             $('#replaceNozzleStep4').addClass('hidden');
-            if (self._hasClass($('#maintenanceNextButton'),'hidden')){
-                $('#maintenanceNextButton').addClass('hidden');
-            }
         };
 
         self.nextStepReplaceNozzle3 = function() {
@@ -1164,6 +1158,7 @@ $(function() {
                         if (progress >= 100) {
                             $('#replace-nozzle-heating-done').removeClass('hidden');
                             $('#progress-bar-replace-nozzle').addClass('hidden');
+                            $('#maintenanceNextButton').removeClass('hidden');
 
                         } else {
                             setTimeout(function() { self._updateTempProgressReplaceNozzle() }, 2000);
