@@ -305,11 +305,6 @@ $(function() {
             $('#maintenanceOkButton').removeClass('hidden');
         };
 
-        self.changeFilamentStepFinalStep = function() {
-            $('#maintenanceOkButton').addClass('hidden');
-            $('#maintenanceCloseButton').addClass('hidden');
-        };
-
         self.startHeating = function() {
             cancelTemperatureUpdate = false;
             self.heatingDone(false);
@@ -415,7 +410,6 @@ $(function() {
                 type: "POST",
                 dataType: "json",
                 success: function() {
-                    self.changeFilamentStepFinalStep();
                     self.commandLock(false);
                     self._hideMovingMessage();
                 },
@@ -514,8 +508,6 @@ $(function() {
                     if (response.indexOf('ok') > -1) {
                         self.filamentWeightSaveSuccess(true);
 
-                        // Updates the filament weight label
-                        self.changeFilamentStepFinalStep();
 
                         self.commandLock(false);
                         self.operationLock(false);
