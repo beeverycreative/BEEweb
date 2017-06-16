@@ -278,7 +278,9 @@ $(function() {
             $('#step4').addClass('hidden');
             $('#step3').addClass('hidden');
             $('#step1').addClass('hidden');
-            $('#maintenanceNextButton').addClass('hidden');
+            if (!self.heatingDone()){
+                $('#maintenanceNextButton').addClass('hidden');
+            }
         };
 
         self.nextStep3 = function() {
@@ -884,7 +886,9 @@ $(function() {
             $('#extMaintStep2').addClass('hidden');
             $('#extMaintStep1').addClass('hidden');
             $('#extMaintStep4').addClass('hidden');
-            $('#maintenanceNextButton').addClass('hidden');
+            if (!self.heatingDone()){
+                $('#maintenanceNextButton').addClass('hidden');
+            }
         };
 
         self.nextStepExtMaint3 = function() {
@@ -996,7 +1000,9 @@ $(function() {
         self.nextStepReplaceNozzle1 = function() {
             // Starts the heating operation
             self.startHeatingReplaceNozzle();
-            $('#maintenanceNextButton').addClass('hidden');
+            if (!self.heatingDone()){
+                $('#maintenanceNextButton').addClass('hidden');
+            }
             $('#replaceNozzleStep2').removeClass('hidden');
             $('#replaceNozzleStep1').addClass('hidden');
             $('#replaceNozzleStep3').addClass('hidden');
