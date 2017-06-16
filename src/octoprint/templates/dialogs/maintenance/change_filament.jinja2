@@ -33,11 +33,6 @@
                         </div>
                     </div>
                 </div>
-                <button id="submit-filament" title="Save Filament" class="btn btn-primary pull-right yellow"
-                    data-bind="click: saveFilament, enable: printerState.isOperational() && !commandLock()
-                    && printerState.isReady() && !printerState.isPrinting() && loginState.isUser() && selectedFilament">
-                        <i class="icon-arrow-right"></i> {{ _('Next')}}
-                </button>
                 <div class="alert alert-danger text-center" data-bind="visible: filamentResponseError">
                      <span><i class="icon-exclamation-sign"></i> {{ _('An error occurred while saving. Please make sure a filament code is selected and try again.')}}</span>
                 </div>
@@ -77,11 +72,6 @@
         </span>
     </div>
     <br />
-    <button id="change-filament-heating-done" title="Next" class="btn btn-primary pull-right yellow hidden"
-        data-bind="click: nextStep3, enable: printerState.isOperational() && !commandLock()
-        && printerState.isReady() && !printerState.isPrinting() && loginState.isUser() && selectedFilament">
-            <i class="icon-arrow-right"></i> {{ _('Next')}}
-    </button>
 </div>
 
 <div id="step3" class="hidden">
@@ -136,14 +126,6 @@
             <i class="icon-exclamation-sign"></i>
             <small>{{ _('Please take note of the amount of filament in spool, so you can re-use the spool later on.' ) }}</small>
         </span>
-    </div>
-
-    <div class="row-fluid">
-        <button id="save-filament" title="Save Filament" class="btn btn-primary yellow pull-right"
-        data-bind="click: nextStep4, enable: printerState.isOperational() && !commandLock()
-        && printerState.isReady() && !printerState.isPrinting() && loginState.isUser()">
-            <i class="icon-arrow-right"></i> {{ _('Next')}}
-        </button>
     </div>
 
 </div>

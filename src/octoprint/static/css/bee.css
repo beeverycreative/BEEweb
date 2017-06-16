@@ -1539,6 +1539,15 @@ td.settings_users_actions .m-icon {
     text-shadow: none;
 }
 
+#maintenanceNextButton {
+    padding: 20px;
+    background: #ffcc00;
+    color: #000;
+    border: none;
+    box-shadow: none;
+    text-shadow: none;
+}
+
 .slider .slider-selection{
     background: #ffcc00 !important;
 }
