@@ -19,6 +19,14 @@ $(function() {
 
         self.maintenanceDialog = $('#maintenance_dialog');
         self.filamentProfiles = ko.observableArray();
+
+        self.changeFilament = ko.observable(false);
+        self.calibrating = ko.observable(false);
+        self.extruderMaintenance = ko.observable(false);
+        self.switchNozzle = ko.observable(false);
+
+        self.processStage = ko.observable(0);
+
         // Helper to store the filament profiles and order them alphabetically
         self.profiles = new ItemListHelper(
             "plugin_cura_profiles",
@@ -136,9 +144,16 @@ $(function() {
             $('#maintenance_extruderMaintenance').addClass('hidden');
             $('#maintenance_replaceNozzle').addClass('hidden');
 
+            $('#maintenanceNextButton').addClass('hidden');
             $('#maintenanceOkButton').addClass('hidden');
             $('#maintenanceCloseButton').removeClass('hidden');
 
+
+            self.changeFilament(false);
+            self.calibrating (false);
+            self.extruderMaintenance (false);
+            self.switchNozzle (false);
+            self.processStage(0);
             // Cancels any heating process
             self.cancelHeating();
 
@@ -166,7 +181,7 @@ $(function() {
             $('#maintenance_replaceNozzle').addClass('hidden');
 
             $('#maintenanceCloseButton').removeClass('hidden');
-
+            self.processStage(0);
             // Returns the operations to the initial step screens
             self.changeFilamentStep0();
             self.calibrationStep0();
@@ -207,6 +222,10 @@ $(function() {
             $('#maintenance_warning_box').addClass('hidden');
         };
 
+
+        self._hasClass = function (element, cls) {
+            return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
+        }
         /***************************************************************************/
         /************             Filament Change functions             ************/
         /***************************************************************************/
@@ -215,9 +234,9 @@ $(function() {
             $('#cancelMaintenance').removeClass('hidden');
 
             $('#maintenance_changeFilament').removeClass('hidden');
-
+            $('#maintenanceNextButton').removeClass('hidden');
             $('#maintenanceCloseButton').addClass('hidden');
-
+            self.changeFilament(true);
             // Starts heating automatically
             self.startHeating();
         };
@@ -253,6 +272,9 @@ $(function() {
             $('#step4').addClass('hidden');
             $('#step3').addClass('hidden');
             $('#step1').addClass('hidden');
+            if (self._hasClass($('#maintenanceNextButton'),'hidden')){
+                $('#maintenanceNextButton').addClass('hidden');
+            }
         };
 
         self.nextStep3 = function() {
@@ -270,11 +292,13 @@ $(function() {
             $('#step3').addClass('hidden');
             $('#step2').addClass('hidden');
             $('#step1').addClass('hidden');
+            $('#maintenanceNextButton').addClass('hidden');
         };
 
         self.changeFilamentStepFinalStep = function() {
             $('#maintenanceOkButton').removeClass('hidden');
             $('#maintenanceCloseButton').addClass('hidden');
+            $('#maintenanceNextButton').addClass('hidden');
         };
 
         self.startHeating = function() {
@@ -354,6 +378,7 @@ $(function() {
 
                         if (progress >= 100) {
                             $('#change-filament-heating-done').removeClass('hidden');
+                            $('#maintenanceNextButton').removeClass('hidden');
                             $('#progress-bar-div').addClass('hidden');
                         } else {
                             setTimeout(function() { self._updateTempProgress() }, 2000);
@@ -692,6 +717,7 @@ $(function() {
 
                     $('#maintenanceOkButton').removeClass('hidden');
                     $('#cancelMaintenance').removeClass('hidden');
+                    $('#maintenanceNextButton').addClass('hidden');
                 },
                 error: function() {
                     self.commandLock(false);
@@ -820,7 +846,8 @@ $(function() {
             $('#cancelMaintenance').removeClass('hidden');
 
             $('#maintenance_extruderMaintenance').removeClass('hidden');
-
+            $('#maintenanceNextButton').removeClass('hidden');
+            self.extruderMaintenance(true);
             // Starts the heating operation
             self.startHeatingExtMaint();
 
@@ -849,6 +876,9 @@ $(function() {
             $('#extMaintStep2').addClass('hidden');
             $('#extMaintStep1').addClass('hidden');
             $('#extMaintStep4').addClass('hidden');
+            if (self._hasClass($('#maintenanceNextButton'),'hidden')){
+                $('#maintenanceNextButton').addClass('hidden');
+            }
         };
 
         self.nextStepExtMaint3 = function() {
@@ -860,6 +890,7 @@ $(function() {
             $('#extMaintStep2').addClass('hidden');
             $('#extMaintStep1').addClass('hidden');
 
+            $('#maintenanceNextButton').addClass('hidden');
             $('#maintenanceOkButton').removeClass('hidden');
             $('#maintenanceCloseButton').addClass('hidden');
         };
@@ -933,6 +964,9 @@ $(function() {
         /***************************************************************************/
 
         self.showReplaceNozzle = function() {
+            self.switchNozzle(true);
+
+            $('#maintenanceNextButton').removeClass('hidden');
             $('#maintenanceList').addClass('hidden');
             $('#cancelMaintenance').removeClass('hidden');
 
@@ -976,6 +1010,9 @@ $(function() {
             $('#replaceNozzleStep1').addClass('hidden');
             $('#replaceNozzleStep2').addClass('hidden');
             $('#replaceNozzleStep4').addClass('hidden');
+            if (self._hasClass($('#maintenanceNextButton'),'hidden')){
+                $('#maintenanceNextButton').addClass('hidden');
+            }
         };
 
         self.nextStepReplaceNozzle3 = function() {
@@ -1221,6 +1258,142 @@ $(function() {
                     self.filamentResponseError(true);
                 }
             });
+        };
+
+        self.nextOperations = function() {
+            self.processStage(self.processStage()+1);
+            if (self.calibrating()) {
+                console.log("calibrating next");
+
+            }
+            if (self.switchNozzle()) {
+                if(self.processStage()==1)
+                {
+                    self.nextStepReplaceNozzle1();
+                }
+                if(self.processStage()==2)
+                {
+                    self.nextStepReplaceNozzle2();
+                }
+                if(self.processStage()==3)
+                {
+                    self.nextStepReplaceNozzle3();
+                }
+                if(self.processStage()==4)
+                {
+                    self.nextStepReplaceNozzle4();
+                }
+                if(self.processStage()==5)
+                {
+                    self.nextStepReplaceNozzle5();
+                }
+                if(self.processStage()==6)
+                {
+                    self.nextStepReplaceNozzle6();
+                }
+
+
+            }
+            if (self.changeFilament()) {
+                if(self.processStage()==1)
+                {
+                    self.saveFilament();
+                }
+                if(self.processStage()==2)
+                {
+                    self.nextStep3();
+                }
+                if(self.processStage()==3)
+                {
+                    self.nextStep4();
+                }
+            }
+            if (self.extruderMaintenance()) {
+                if(self.processStage()==1)
+                {
+                    self.nextStepExtMaint1();
+                }
+                if(self.processStage()==2)
+                {
+                    self.nextStepExtMaint2();
+                }
+                if(self.processStage()==3)
+                {
+                    self.nextStepExtMaint3();
+                }
+            }
+        };
+    self.nextButtonEnable = function() {
+            if (self.calibrating()) {
+
+            }
+            if (self.switchNozzle()) {
+                if(self.processStage()==0)
+                {
+
+                    return self.printerState.isOperational() && !self.commandLock()
+                        && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser();
+                }
+                if(self.processStage()==1)
+                {
+                    return self.printerState.isOperational() && !self.commandLock()
+                        && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser();
+                }
+                if(self.processStage()==2)
+                {
+                    return self.printerState.isOperational() && !self.commandLock()
+                        && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser();
+                }
+                if(self.processStage()==3)
+                {
+                    return self.printerState.isOperational() && !self.commandLock()
+                        && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser();
+                }
+                if(self.processStage()==4)
+                {
+                    return self.printerState.isOperational() && !self.commandLock()
+                        && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser();
+                }
+                if(self.processStage()==5)
+                {
+                    return self.printerState.isOperational() && !self.commandLock()
+                        && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser() && self.selectedNozzle;
+                }
+            }
+            if (self.changeFilament()) {
+                if(self.processStage()==0)
+                {
+                    return  self.printerState.isOperational() && !self.commandLock()
+                    && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser() && self.selectedFilament;
+                }
+                if(self.processStage()==1)
+                {
+                    return  self.printerState.isOperational() && !self.commandLock()
+                    && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser() && self.selectedFilament;
+                }
+                if(self.processStage()==2)
+                {
+                    return  self.printerState.isOperational() && !self.commandLock()
+                    && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser();
+                }
+            }
+            if (self.extruderMaintenance()) {
+                if(self.processStage()==0)
+                {
+                    return  self.printerState.isOperational() && !self.commandLock()
+                    && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser();
+                }
+                if(self.processStage()==1)
+                {
+                    return  self.printerState.isOperational() && !self.commandLock()
+                    && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser();
+                }
+                if(self.processStage()==2)
+                {
+                    return  self.printerState.isOperational() && !self.commandLock()
+                    && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser();
+                }
+            }
         };
 
         /***************************************************************************/

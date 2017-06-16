@@ -56,11 +56,6 @@
             </span>
         </div>
     </div>
-    <button id="next-step-replace-nozzle2" title="{{ _('Next')}}" class="btn btn-primary pull-right yellow"
-        data-bind="click: nextStepReplaceNozzle1, enable: printerState.isOperational() && !commandLock()
-        && printerState.isReady() && !printerState.isPrinting() && loginState.isUser()">
-            <i class="icon-arrow-right"></i> {{ _('Next')}}
-    </button>
 </div>
 
 <div id="replaceNozzleStep2" class="hidden">
@@ -95,11 +90,6 @@
         </span>
     </div>
     <br />
-    <button id="replace-nozzle-heating-done" title="{{ _('Next')}}" class="btn btn-primary pull-right yellow hidden"
-        data-bind="click: nextStepReplaceNozzle2, enable: printerState.isOperational() && !commandLock()
-        && printerState.isReady() && !printerState.isPrinting() && loginState.isUser()">
-            <i class="icon-arrow-right"></i> {{ _('Next')}}
-    </button>
 </div>
 
 <div id="replaceNozzleStep3" class="hidden">
@@ -133,11 +123,6 @@
     </div>
     <br /><br />
 
-    <button id="next-step-replace-nozzle3" title="{{ _('Next')}}" class="btn btn-primary pull-right yellow"
-        data-bind="click: nextStepReplaceNozzle3, enable: printerState.isOperational() && !commandLock()
-        && printerState.isReady() && !printerState.isPrinting() && loginState.isUser()">
-            <i class="icon-arrow-right"></i> {{ _('Next')}}
-    </button>
 </div>
 
 <div id="replaceNozzleStep4" class="hidden">
@@ -166,11 +151,6 @@
         </span>
     </div>
 
-    <button id="next-step-replace-nozzle4" title="{{ _('Next')}}" class="btn btn-primary pull-right yellow"
-        data-bind="click: nextStepReplaceNozzle4, enable: printerState.isOperational() && !commandLock()
-        && printerState.isReady() && !printerState.isPrinting() && loginState.isUser()">
-            <i class="icon-arrow-right"></i> {{ _('Next')}}
-    </button>
     <br />
 </div>
 
@@ -201,11 +181,6 @@
         </span>
     </div>
 
-    <button id="next-step-replace-nozzle5" title="{{ _('Next')}}" class="btn btn-primary pull-right yellow"
-        data-bind="click: nextStepReplaceNozzle5, enable: printerState.isOperational() && !commandLock()
-        && printerState.isReady() && !printerState.isPrinting() && loginState.isUser()">
-            <i class="icon-arrow-right"></i> {{ _('Next')}}
-    </button>
     <br />
 </div>
 
@@ -227,11 +202,6 @@
                     <div class="row-fluid">
                         <select data-bind="options: nozzleSizes, optionsText: 'name', optionsValue: 'key', value: selectedNozzle, optionsCaption: '{{ _('Select nozzle size...') }}'"></select>
 
-                        <button id="submit-nozzle" title="Save Nozzle" class="btn btn-primary pull-right yellow"
-                        data-bind="click: saveNozzle, enable: printerState.isOperational() && !commandLock()
-                        && printerState.isReady() && !printerState.isPrinting() && loginState.isUser() && selectedNozzle">
-                            <i class="icon-arrow-right"></i> {{ _('Next')}}
-                        </button>
                     </div>
                     <p>{{ _('NOTICE: 0.6 mm nozzles are marked around their perimeter, as you can observe in the above image.') }}
                 </p>
