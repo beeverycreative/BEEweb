@@ -63,6 +63,7 @@ $(function() {
         self.filamentSelected = ko.observable(false);
         self.filamentResponseError = ko.observable(false);
         self.heatingDone = ko.observable(false);
+        self.heatingAchiveTargerTemperature = ko.observable(false);
 
         self.nozzleSizes = ko.observableArray([]);
 
@@ -154,6 +155,7 @@ $(function() {
             self.extruderMaintenance (false);
             self.switchNozzle (false);
             self.processStage(0);
+            self.heatingAchiveTargerTemperature(false);
             // Cancels any heating process
             self.cancelHeating();
 
@@ -187,6 +189,7 @@ $(function() {
             self.calibrating (false);
             self.extruderMaintenance (false);
             self.switchNozzle (false);
+            self.heatingAchiveTargerTemperature(false);
 
             // Returns the operations to the initial step screens
             self.changeFilamentStep0();
@@ -278,7 +281,7 @@ $(function() {
             $('#step4').addClass('hidden');
             $('#step3').addClass('hidden');
             $('#step1').addClass('hidden');
-            if (!self.heatingDone()){
+            if (!self.heatingDone() && !self.heatingAchiveTargerTemperature()){
                 $('#maintenanceNextButton').addClass('hidden');
             }
         };
@@ -383,6 +386,7 @@ $(function() {
                         tempProgressBar.text(progressStr);
 
                         if (progress >= 100) {
+                            self.heatingAchiveTargerTemperature(true);
                             $('#change-filament-heating-done').removeClass('hidden');
                             $('#maintenanceNextButton').removeClass('hidden');
                             $('#progress-bar-div').addClass('hidden');
@@ -886,7 +890,7 @@ $(function() {
             $('#extMaintStep2').addClass('hidden');
             $('#extMaintStep1').addClass('hidden');
             $('#extMaintStep4').addClass('hidden');
-            if (!self.heatingDone()){
+            if (!self.heatingDone() && !self.heatingAchiveTargerTemperature()){
                 $('#maintenanceNextButton').addClass('hidden');
             }
         };
@@ -948,7 +952,7 @@ $(function() {
                         tempProgressBar.text(progressStr);
 
                         if (progress >= 100) {
-
+                            self.heatingAchiveTargerTemperature(true);
                             $('#ext-mtn-4').removeClass('hidden');
                             $('#maintenanceNextButton').removeClass('hidden');
                             $('#progress-bar-ext-mtn').addClass('hidden');
@@ -1000,7 +1004,7 @@ $(function() {
         self.nextStepReplaceNozzle1 = function() {
             // Starts the heating operation
             self.startHeatingReplaceNozzle();
-            if (!self.heatingDone()){
+            if (!self.heatingDone() && !self.heatingAchiveTargerTemperature()){
                 $('#maintenanceNextButton').addClass('hidden');
             }
             $('#replaceNozzleStep2').removeClass('hidden');
@@ -1073,6 +1077,7 @@ $(function() {
             self.extruderMaintenance (false);
             self.switchNozzle (false);
             self.processStage(0);
+            self.heatingAchiveTargerTemperature(false);
 
             self.showFilamentChange();
         };
@@ -1162,6 +1167,7 @@ $(function() {
                         tempProgressBar.text(progressStr);
 
                         if (progress >= 100) {
+                            self.heatingAchiveTargerTemperature(true);
                             $('#replace-nozzle-heating-done').removeClass('hidden');
                             $('#progress-bar-replace-nozzle').addClass('hidden');
                             $('#maintenanceNextButton').removeClass('hidden');
