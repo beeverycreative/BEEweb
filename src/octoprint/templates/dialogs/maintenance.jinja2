@@ -117,6 +117,10 @@
                         aria-hidden="true" data-bind="click: finishOperations">
                         {{ _('OK') }}
                 </button>
+                <button id="maintenanceNextButton" class="btn btn-block yellow hidden"
+                        aria-hidden="true" data-bind="click: nextOperations,  enable: nextButtonEnable()">
+                        <i class="icon-arrow-right"></i> {{ _('Next') }}
+                </button>
             </div>
 
         </div>
