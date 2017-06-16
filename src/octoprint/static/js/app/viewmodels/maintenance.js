@@ -1357,7 +1357,7 @@ $(function() {
                 }
             }
             if (self.switchNozzle()) {
-                if(self.processStage() == 0 || self.processStage() == 2 || self.processStage() == 3 || self.processStage() == 4)
+                if(self.processStage() == 0 || self.processStage() == 1 || self.processStage() == 2 || self.processStage() == 3 || self.processStage() == 4)
                 {
                     return self.printerState.isOperational() && !self.commandLock()
                         && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser();
@@ -1381,7 +1381,7 @@ $(function() {
                 }
             }
             if (self.extruderMaintenance()) {
-                if(self.processStage() == 0 || self.processStage() == 2 || self.processStage() == 3 )
+                if(self.processStage() == 0  || self.processStage() == 1  || self.processStage() == 2 || self.processStage() == 3 )
                 {
                     return  self.printerState.isOperational() && !self.commandLock()
                         && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser();
