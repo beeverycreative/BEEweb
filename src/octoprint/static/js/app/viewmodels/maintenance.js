@@ -302,10 +302,11 @@ $(function() {
             $('#step2').addClass('hidden');
             $('#step1').addClass('hidden');
             $('#maintenanceNextButton').addClass('hidden');
+            $('#maintenanceOkButton').removeClass('hidden');
         };
 
         self.changeFilamentStepFinalStep = function() {
-            $('#maintenanceOkButton').removeClass('hidden');
+            $('#maintenanceOkButton').addClass('hidden');
             $('#maintenanceCloseButton').addClass('hidden');
         };
 
