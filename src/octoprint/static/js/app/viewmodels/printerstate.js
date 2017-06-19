@@ -272,9 +272,9 @@ $(function() {
             }
             if (self.isTransferring()){
                 //is transferring file
-                transferTime= 5 + self.fileSizeBytes() / 85000;
-                transferTimeLeft=transferTime-self.progressString()*transferTime/100;
-                if(transferTimeLeft<1)
+                transferTime = 5 + self.fileSizeBytes() / 85000;
+                transferTimeLeft = transferTime-self.progressString()*transferTime/100;
+                if(transferTimeLeft < 1)
                     return _.sprintf("Just a few seconds  ( %d%% )", self.progressString());
                 if(transferTimeLeft<60)
                     return _.sprintf("%d seconds  ( %d%% )", transferTimeLeft, self.progressString());

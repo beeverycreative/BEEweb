@@ -905,13 +905,13 @@ class BeeCom(MachineCom):
         if self._currentFile is not None:
             # Starts the real printing operation
             self._changeState(self.STATE_PRINTING)
+            self._currentFile.start()
 
             payload = {
                 "file": self._currentFile.getFilename(),
                 "filename": os.path.basename(self._currentFile.getFilename()),
                 "origin": self._currentFile.getFileLocation()
             }
-
             eventManager().fire(Events.PRINT_STARTED, payload)
 
             # starts the progress status thread
