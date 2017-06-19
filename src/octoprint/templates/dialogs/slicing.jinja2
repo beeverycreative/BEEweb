@@ -9,7 +9,7 @@
         </div>
         <div data-bind="visible: enableSlicingDialog()">
             <!--<p>{{ _('Please configure which slicer and which slicing profile to use and name the GCode file to slice to below, or click "Cancel" if you do not wish to slice the file now.') }}</p>-->
-            <form class="form-horizontal">
+            <form id="slicing_form" class="form-horizontal">
                <!-- <div class="control-group">
                     <label class="control-label">{{ _('Slicer') }}</label>
                     <div class="controls">
@@ -88,7 +88,7 @@
                             <input type="radio" id="density5" name="density" data-bind="checked: selDensity" value="Custom"/>
                                 <label class="radio " for="density5">
                                     <span class="icon den5icon"></span>
-                                    <input type="number" min="0" max="100" placeholder="X %" data-bind="value: customDensity"/>
+                                    <input id="custom_density" type="number" min="0" max="100" placeholder="X %" data-bind="value: customDensity"/>
                                 </label>
                         </div>
                     </div>
@@ -195,3 +195,16 @@
         </a>
     </div>
 </div>
+<script>
+$('#slicing_form').on('keyup keypress', function(e) {
+    var keyCode = e.keyCode || e.which;
+    if (keyCode === 13) {
+        e.preventDefault();
+        return false;
+    }
+});
+
+$('#custom_density').on('click change keyup', function (e) {
+    $('#density5').prop('checked', true);
+})
+</script>

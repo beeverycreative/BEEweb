@@ -153,6 +153,7 @@ $(function() {
         self.printTime = ko.observable(undefined);
         self.printTimeLeft = ko.observable(undefined);
         self.fileSizeBytes = ko.observable(undefined);
+        self.temperatureTarget = ko.observable(undefined);
         self.printTimeLeftOrigin = ko.observable(undefined);
         self.sd = ko.observable(undefined);
         self.timelapse = ko.observable(undefined);
@@ -273,16 +274,16 @@ $(function() {
             }
             if (self.isTransferring()){
                 //is transferring file
-                transferTime= 5 + self.fileSizeBytes() / 85000;
-                transferTimeLeft=transferTime-self.progressString()*transferTime/100;
-                if(transferTimeLeft<1)
+                transferTime = 5 + self.fileSizeBytes() / 85000;
+                transferTimeLeft = transferTime-self.progressString()*transferTime/100;
+                if(transferTimeLeft < 1)
                     return _.sprintf("Just a few seconds  ( %d%% )", self.progressString());
                 if(transferTimeLeft<60)
                     return _.sprintf("%d seconds  ( %d%% )", transferTimeLeft, self.progressString());
                 return _.sprintf("%d minutes %d seconds  ( %d%% )", transferTimeLeft/60,(transferTimeLeft%60), self.progressString());
             }
             if (self.isHeating()) {
-                return _.sprintf("%dº / 200º  ", self.progressString()*200/100);
+                return _.sprintf("%dº / %dº  ",self.progressString()*self.temperatureTarget()/100, self.temperatureTarget());
             }
             //Paused or Shutdown
             return _.sprintf("%d%%", self.progressString());
@@ -476,6 +477,7 @@ $(function() {
             self.printTime(data.printTime);
             self.printTimeLeft(data.printTimeLeft);
             self.fileSizeBytes(data.fileSizeBytes);
+            self.temperatureTarget(data.temperatureTarget);
             self.printTimeLeftOrigin(data.printTimeLeftOrigin);
         };
 

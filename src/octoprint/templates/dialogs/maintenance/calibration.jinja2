@@ -58,14 +58,6 @@
         </span>
     </div>
     <br />
-    <div class="row-fluid">
-        <div class="span12">
-            <button id="calib-next-step-3" title="Next Step" class="btn btn-primary pull-right yellow"
-               data-bind="click: nextStepCalibration1, enable: printerState.isOperational() && !commandLock()
-               && printerState.isReady() && !printerState.isPrinting() && loginState.isUser()">
-                <i class="icon-arrow-right"></i> {{ _('Next Step')}}</button>
-        </div>
-    </div>
 </div>
 
 
@@ -89,14 +81,6 @@
         <span>{{ _('You have correctly calibrated the table once the paper is neither stuck nor completely loose.' ) }}</span>
     </div>
     <br />
-    <div class="row-fluid">
-        <div class="span12">
-            <button id="calib-next-step-4" title="Next Step" class="btn btn-primary pull-right yellow"
-               data-bind="click: nextStepCalibration2, enable: printerState.isOperational() && !commandLock()
-               && printerState.isReady() && !printerState.isPrinting() && loginState.isUser()">
-                <i class="icon-arrow-right"></i> {{ _('Next Step')}}</button>
-        </div>
-    </div>
 </div>
 
 
@@ -120,15 +104,6 @@
         <span>{{ _('You have correctly calibrated the table once the paper is neither stuck nor completely loose.' ) }}</span>
     </div>
     <br />
-    <div class="row-fluid">
-        <div class="span12">
-            <button id="calib-next-step-5" title="Next Step" class="btn btn-primary pull-right yellow"
-               data-bind="click: nextStepCalibration3, enable: printerState.isOperational() && !commandLock()
-               && printerState.isReady() && !printerState.isPrinting() && loginState.isUser()">
-                <i class="icon-arrow-right"></i> {{ _('Next Step')}}
-            </button>
-        </div>
-    </div>
 </div>
 
 <div id="calibrationStep4" class="hidden">

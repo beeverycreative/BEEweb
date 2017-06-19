@@ -905,13 +905,13 @@ class BeeCom(MachineCom):
         if self._currentFile is not None:
             # Starts the real printing operation
             self._changeState(self.STATE_PRINTING)
+            self._currentFile.start()
 
             payload = {
                 "file": self._currentFile.getFilename(),
                 "filename": os.path.basename(self._currentFile.getFilename()),
                 "origin": self._currentFile.getFileLocation()
             }
-
             eventManager().fire(Events.PRINT_STARTED, payload)
 
             # starts the progress status thread
@@ -967,10 +967,10 @@ class BeeCom(MachineCom):
     def _flashFirmware(self, firmware_file_name, firmware_path, version):
         """
         Auxiliary method that performs that calls the low level driver flash firmware operation
-        :param firmware_file_name: 
-        :param firmware_path: 
-        :param version: 
-        :return: 
+        :param firmware_file_name:
+        :param firmware_path:
+        :param version:
+        :return:
         """
         from os.path import join
         _logger = logging.getLogger()

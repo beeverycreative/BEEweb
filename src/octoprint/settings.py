@@ -299,7 +299,8 @@ default_settings = {
 	"slicing": {
 		"enabled": True,
 		"defaultSlicer": "cura",
-		"defaultProfiles": None
+		"defaultProfiles": None,
+		"profilesFormatXml": False  # false if profiles are '.profile'
 	},
 	"events": {
 		"enabled": True,

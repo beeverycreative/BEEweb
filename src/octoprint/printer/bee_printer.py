@@ -11,7 +11,7 @@ from octoprint.printer.standard import Printer
 from octoprint.printer import PrinterInterface
 from octoprint.settings import settings
 from octoprint.server.util.connection_util import ConnectionMonitorThread
-from octoprint.server.util.printer_status_detection_util import bvc_printer_status_detection
+from octoprint.server.util.printer_status_detection_util import StatusDetectionMonitorThread
 from octoprint.events import eventManager, Events
 from octoprint.slicing import SlicingManager
 from octoprint.filemanager import FileDestinations
@@ -39,6 +39,7 @@ class BeePrinter(Printer):
         self._insufficientFilamentForCurrent = False
         self._isConnecting = False
         self._bvc_conn_thread = None
+        self._bvc_status_thread = None
 
         # Initializes the slicing manager for filament profile information
         self._slicingManager = SlicingManager(settings().getBaseFolder("slicingProfiles"), printerProfileManager)
@@ -139,10 +140,9 @@ class BeePrinter(Printer):
             eventManager().subscribe(Events.PRINT_DONE, self.on_print_finished)
 
             # Starts the printer status monitor thread
-            import threading
-            bvc_status_thread = threading.Thread(target=bvc_printer_status_detection, args=(self._comm, ))
-            bvc_status_thread.daemon = True
-            bvc_status_thread.start()
+            if self._bvc_status_thread is None:
+                self._bvc_status_thread = StatusDetectionMonitorThread(self._comm)
+                self._bvc_status_thread.start()
 
             self._isConnecting = False
 
@@ -151,9 +151,10 @@ class BeePrinter(Printer):
                 self._bvc_conn_thread.stop_connection_monitor()
                 self._bvc_conn_thread = None
 
-            if self._comm.isOperational():
+            if self._comm is not None and self._comm.isOperational():
                 return True
         except Exception:
+            self._isConnecting = False
             self._logger.exception("Error connecting to BVC printer")
 
         return False
@@ -167,10 +168,12 @@ class BeePrinter(Printer):
 
         # Starts the connection monitor thread only if there are any connected clients
         if len(self._connectedClients) > 0 and self._bvc_conn_thread is None:
-            import threading
             self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
             self._bvc_conn_thread.start()
 
+        if self._bvc_status_thread is not None:
+            self._bvc_status_thread.stop_status_monitor()
+            self._bvc_status_thread = None
 
     def select_file(self, path, sd, printAfterSelect=False, pos=None):
 
@@ -541,7 +544,7 @@ class BeePrinter(Printer):
         Gets the list of nozzles available for the printer connected
         :return:
         """
-        if (self.getPrinterNameNormalized()== "beethefirst"):
+        if self.getPrinterNameNormalized() == "beethefirst":
             return {'nz1': {'id': 'NZ400', 'value': 0.4}}
         return settings().get(["nozzleTypes"])
 
@@ -879,14 +882,14 @@ class BeePrinter(Printer):
             if progress >= 1 \
                     and self._comm.getCommandsInterface().isPreparingOrPrinting() is False:
 
+                self._comm.getCommandsInterface().stopStatusMonitor()
+                self._runningCalibrationTest = False
+
                 # Runs the print finish communications callback
                 self._comm.triggerPrintFinished()
 
                 self._setProgressData()
                 self._resetPrintProgress()
-
-                self._comm.getCommandsInterface().stopStatusMonitor()
-                self._runningCalibrationTest = False
 
 
     def on_comm_file_selected(self, filename, filesize, sd):
@@ -1112,12 +1115,17 @@ class BeePrinter(Printer):
         except Exception:
             fileSize=None
 
+        temperatureTarget = self._comm.getCommandsInterface().getTargetTemperature()
+        if temperatureTarget == 0 :
+            temperatureTarget = None
+
         self._stateMonitor.set_progress({
             "completion": self._progress * 100 if self._progress is not None else None,
             "filepos": filepos,
             "printTime": int(self._elapsedTime * 60) if self._elapsedTime is not None else None,
             "printTimeLeft": int(self._printTimeLeft) if self._printTimeLeft is not None else None,
-            "fileSizeBytes": fileSize
+            "fileSizeBytes": fileSize,
+            "temperatureTarget": temperatureTarget
         })
 
         if completion:
