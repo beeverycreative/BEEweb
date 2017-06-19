@@ -431,7 +431,8 @@ def _get_render_kwargs(templates, plugin_names, plugin_vars, now):
 		templates=templates,
 		pluginNames=plugin_names,
 		locales=locales,
-		supportedExtensions=extensions
+		supportedExtensions=extensions,
+		desktopApp=octoprint.server.DESKTOP_APP
 	)
 	render_kwargs.update(plugin_vars)
 
