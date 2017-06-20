@@ -231,10 +231,10 @@ $(function() {
             $('#maintenance_warning_box').addClass('hidden');
         };
 
-
         self._hasClass = function (element, cls) {
             return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
-        }
+        };
+
         /***************************************************************************/
         /************             Filament Change functions             ************/
         /***************************************************************************/

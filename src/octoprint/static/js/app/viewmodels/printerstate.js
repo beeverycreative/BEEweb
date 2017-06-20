@@ -272,16 +272,16 @@ $(function() {
             }
             if (self.isTransferring()){
                 //is transferring file
-                transferTime = 5 + self.fileSizeBytes() / 85000;
-                transferTimeLeft = transferTime-self.progressString()*transferTime/100;
+                var transferTime = 5 + self.fileSizeBytes() / 85000;
+                var transferTimeLeft = transferTime - self.progressString() * transferTime / 100;
                 if(transferTimeLeft < 1)
                     return _.sprintf("Just a few seconds  ( %d%% )", self.progressString());
                 if(transferTimeLeft<60)
                     return _.sprintf("%d seconds  ( %d%% )", transferTimeLeft, self.progressString());
-                return _.sprintf("%d minutes %d seconds  ( %d%% )", transferTimeLeft/60,(transferTimeLeft%60), self.progressString());
+                return _.sprintf("%d minutes %d seconds  ( %d%% )", transferTimeLeft / 60, (transferTimeLeft % 60), self.progressString());
             }
             if (self.isHeating()) {
-                return _.sprintf("%dº / %dº  ",self.progressString()*self.temperatureTarget()/100, self.temperatureTarget());
+                return _.sprintf("%dº / %dº  ", self.progressString() * self.temperatureTarget() / 100, self.temperatureTarget());
             }
             //Paused or Shutdown
             return _.sprintf("%d%%", self.progressString());

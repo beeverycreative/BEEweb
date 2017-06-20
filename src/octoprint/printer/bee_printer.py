@@ -40,6 +40,7 @@ class BeePrinter(Printer):
         self._isConnecting = False
         self._bvc_conn_thread = None
         self._bvc_status_thread = None
+        self._current_temperature = 0.0
 
         # Initializes the slicing manager for filament profile information
         self._slicingManager = SlicingManager(settings().getBaseFolder("slicingProfiles"), printerProfileManager)
@@ -740,7 +741,18 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().getNozzleTemperature()
+            temp = self._comm.getCommandsInterface().getNozzleTemperature()
+
+            if not self.is_heating():
+                self._current_temperature = temp
+            else:
+                # small verification to prevent temperature update errors coming from the printer due to sensor noise
+                # the temperature is only updated to a new value if it's greater than the previous when the printer is
+                # heating
+                if temp > self._current_temperature:
+                    self._current_temperature = temp
+
+            return self._current_temperature
         except Exception as ex:
             self._logger.error(ex)
 
