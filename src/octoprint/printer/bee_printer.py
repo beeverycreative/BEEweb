@@ -41,6 +41,7 @@ class BeePrinter(Printer):
         self._bvc_conn_thread = None
         self._bvc_status_thread = None
         self._current_temperature = 0.0
+        self._lastJogTime = None
 
         # Initializes the slicing manager for filament profile information
         self._slicingManager = SlicingManager(settings().getBaseFolder("slicingProfiles"), printerProfileManager)
@@ -295,6 +296,12 @@ class BeePrinter(Printer):
 
         bee_commands = self._comm.getCommandsInterface()
 
+
+        # protection against several repeated jog moves within a short period of time
+        if self._lastJogTime is not None:
+            while (time.time() - self._lastJogTime) < 0.5:
+                time.sleep(0.25)
+
         if axis == 'x':
             bee_commands.move(amount, 0, 0, None, movement_speed)
         elif axis == 'y':
@@ -302,6 +309,7 @@ class BeePrinter(Printer):
         elif axis == 'z':
             bee_commands.move(0, 0, amount, None, movement_speed)
 
+        self._lastJogTime = time.time()
 
     def home(self, axes):
         """
