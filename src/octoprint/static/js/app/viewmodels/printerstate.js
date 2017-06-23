@@ -205,7 +205,15 @@ $(function() {
         });
         self.printTimeLeftString = ko.pureComputed(function() {
             if (self.printTimeLeft() == undefined) {
-                if (!self.printTime() || !(self.isPrinting() || self.isPaused())) {
+                if ( self.isPaused()) {
+                    return "-";
+                }else if (!self.printTime() || !(self.isPrinting() )){
+                    if (self.lastPrintTime()){
+                        return formatFuzzyPrintTime(self.lastPrintTime() * ( 100 - self.progressString()) / 100);
+                    }
+                    if (self.estimatedPrintTime()){
+                        return formatFuzzyPrintTime(self.estimatedPrintTime() * ( 100 - self.progressString()) / 100);
+                    }
                     return "-";
                 } else {
                     return gettext("Still stabilizing...");
@@ -263,12 +271,20 @@ $(function() {
                 return 0;
             return self.progress();
         });
+        self.progressPercentageString = ko.pureComputed(function() {
+            if (!self.progress() || self.progress() < 0)
+                return "-";
+            return _.sprintf("%d%%", self.progressString());
+        });
         self.progressBarString = ko.pureComputed(function() {
             if (!self.progress()) {
                 return "";
             }
             if (self.isPrinting()){
-                return _.sprintf("%d%%", self.progressString());
+                var printTimeLeftString = "";
+                if(self.printTimeLeftString() != "-")
+                    printTimeLeftString= _.sprintf("( %s remaining)", self.printTimeLeftString());
+                return _.sprintf("%d%% %s", self.progressString(), printTimeLeftString);
             }
             if (self.isTransferring()){
                 //is transferring file
