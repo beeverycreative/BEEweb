@@ -418,7 +418,7 @@ $(function() {
             // BVC Support
             if (self.support() == 'Everywhere') {
                 data['profile.support'] = 'everywhere';
-            } else if (self.platformAdhesion() == 'Touching Platform') {
+            } else if (self.support() == 'Touching Platform') {
                 data['profile.support'] = 'buildplate';
             } else {
                 data['profile.support'] = 'none';
