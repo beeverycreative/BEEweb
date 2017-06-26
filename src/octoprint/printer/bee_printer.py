@@ -350,7 +350,7 @@ class BeePrinter(Printer):
         bee_commands.move(0, 0, 0, amount, extrusion_speed)
 
 
-    def startHeating(self, targetTemperature=200):
+    def startHeating(self, targetTemperature=210):
         """
         Starts the heating procedure
         :param targetTemperature:
@@ -763,6 +763,16 @@ class BeePrinter(Printer):
         except Exception as ex:
             self._logger.error(ex)
 
+    def set_nozzle_temperature(self, temperature):
+        """
+        Saves the selected nozzle temperature
+        :param temperature:
+        :return:
+        """
+        try:
+            return self._comm.getCommandsInterface().setNozzleTemperature(temperature)
+        except Exception as ex:
+            self._logger.error(ex)
 
     def isRunningCalibrationTest(self):
         """
