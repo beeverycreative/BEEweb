@@ -3,7 +3,7 @@ $(function() {
         var self = this;
         var cancelTemperatureUpdate = false;
         var fetchTemperatureRetries = 5;
-        var TARGET_TEMPERATURE = 200;
+        var TARGET_TEMPERATURE = 210;
 
         self.loginState = parameters[0];
         self.users = parameters[1];
@@ -231,10 +231,10 @@ $(function() {
             $('#maintenance_warning_box').addClass('hidden');
         };
 
-
         self._hasClass = function (element, cls) {
             return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
-        }
+        };
+
         /***************************************************************************/
         /************             Filament Change functions             ************/
         /***************************************************************************/

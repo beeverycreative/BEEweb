@@ -78,6 +78,10 @@
         <span class="m-icon printwicon" ></span>
         {{ _('Print...') }}
     </button>
+    <button class="btn-toggle-print-memory" id="print_memory" data-toggle="tooltip" title="{{ _('Printer options') }}"
+        data-bind="click: togglePrintFromMemory, enable: enablePreparePrint">
+        <span class="s-icon dropdownwicon" ></span>
+    </button>
 </div>
 
 <div id="printFromMemoryDiv" class="hidden">
@@ -108,7 +112,7 @@
                     {{ _('Print Time') }} (hh:mm): <strong data-bind="text: printTimeString"></strong><br>
                     <!--{{ _('Printed') }}: <strong data-bind="text: byteString"></strong><br>-->
                     <span data-bind="visible: isPrinting">{{ _('Completion') }}:
-                        <strong data-bind="text: progressBarString"></strong>
+                        <strong data-bind="text: progressPercentageString"></strong>
                     </span><br>
                 </div>
                 <br />

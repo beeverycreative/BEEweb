@@ -40,6 +40,8 @@ class BeePrinter(Printer):
         self._isConnecting = False
         self._bvc_conn_thread = None
         self._bvc_status_thread = None
+        self._current_temperature = 0.0
+        self._lastJogTime = None
 
         # Initializes the slicing manager for filament profile information
         self._slicingManager = SlicingManager(settings().getBaseFolder("slicingProfiles"), printerProfileManager)
@@ -153,9 +155,8 @@ class BeePrinter(Printer):
 
             if self._comm is not None and self._comm.isOperational():
                 return True
-        except Exception:
-            self._isConnecting = False
-            self._logger.exception("Error connecting to BVC printer")
+        except Exception as ex:
+            self._handleConnectionException(ex)
 
         return False
 
@@ -294,6 +295,12 @@ class BeePrinter(Printer):
 
         bee_commands = self._comm.getCommandsInterface()
 
+
+        # protection against several repeated jog moves within a short period of time
+        if self._lastJogTime is not None:
+            while (time.time() - self._lastJogTime) < 0.5:
+                time.sleep(0.25)
+
         if axis == 'x':
             bee_commands.move(amount, 0, 0, None, movement_speed)
         elif axis == 'y':
@@ -301,6 +308,7 @@ class BeePrinter(Printer):
         elif axis == 'z':
             bee_commands.move(0, 0, amount, None, movement_speed)
 
+        self._lastJogTime = time.time()
 
     def home(self, axes):
         """
@@ -342,7 +350,7 @@ class BeePrinter(Printer):
         bee_commands.move(0, 0, 0, amount, extrusion_speed)
 
 
-    def startHeating(self, targetTemperature=200):
+    def startHeating(self, targetTemperature=210):
         """
         Starts the heating procedure
         :param targetTemperature:
@@ -740,10 +748,31 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().getNozzleTemperature()
+            temp = self._comm.getCommandsInterface().getNozzleTemperature()
+
+            if not self.is_heating():
+                self._current_temperature = temp
+            else:
+                # small verification to prevent temperature update errors coming from the printer due to sensor noise
+                # the temperature is only updated to a new value if it's greater than the previous when the printer is
+                # heating
+                if temp > self._current_temperature:
+                    self._current_temperature = temp
+
+            return self._current_temperature
         except Exception as ex:
             self._logger.error(ex)
 
+    def set_nozzle_temperature(self, temperature):
+        """
+        Saves the selected nozzle temperature
+        :param temperature:
+        :return:
+        """
+        try:
+            return self._comm.getCommandsInterface().setNozzleTemperature(temperature)
+        except Exception as ex:
+            self._logger.error(ex)
 
     def isRunningCalibrationTest(self):
         """
@@ -1161,6 +1190,22 @@ class BeePrinter(Printer):
             "shutdown": self.is_shutdown(),
             "resuming": self.is_resuming(),
         }
+
+
+    def _handleConnectionException(self, ex):
+
+        self._logger.exception("Error connecting to BVC printer: %s" % str(ex))
+
+        self._isConnecting = False
+        self._comm = None
+
+        # Starts the connection monitor thread only if there are any connected clients and the thread was stopped
+        if len(self._connectedClients) > 0 and self._bvc_conn_thread is None:
+            self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
+            self._bvc_conn_thread.start()
+        # stops the status thread if it was started previously
+        if self._bvc_status_thread is not None:
+            self._bvc_status_thread.stop()
 
 
     def _sendUsageStatistics(self, operation):

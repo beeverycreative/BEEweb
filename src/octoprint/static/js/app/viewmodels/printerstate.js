@@ -72,7 +72,7 @@ $(function() {
              return self.loginState.isUser() && self.filename() != undefined;
         });
         self.showShutdownAndChangeFilament = ko.pureComputed(function() {
-            return !self.isShutdown() && self.loginState.isUser() && self.isPaused() && self.printerName()!="BEETHEFIRST";
+            return !self.isShutdown() && self.loginState.isUser() && self.isPaused();
         });
         self.showFilename = ko.pureComputed(function() {
             return self.isSelectedFile() && !self.connection.isErrorOrClosed();
@@ -207,7 +207,15 @@ $(function() {
         });
         self.printTimeLeftString = ko.pureComputed(function() {
             if (self.printTimeLeft() == undefined) {
-                if (!self.printTime() || !(self.isPrinting() || self.isPaused())) {
+                if ( self.isPaused()) {
+                    return "-";
+                }else if (!self.printTime() || !(self.isPrinting() )){
+                    if (self.lastPrintTime()){
+                        return formatFuzzyPrintTime(self.lastPrintTime() * ( 100 - self.progressString()) / 100);
+                    }
+                    if (self.estimatedPrintTime()){
+                        return formatFuzzyPrintTime(self.estimatedPrintTime() * ( 100 - self.progressString()) / 100);
+                    }
                     return "-";
                 } else {
                     return gettext("Still stabilizing...");
@@ -265,25 +273,33 @@ $(function() {
                 return 0;
             return self.progress();
         });
+        self.progressPercentageString = ko.pureComputed(function() {
+            if (!self.progress() || self.progress() < 0)
+                return "-";
+            return _.sprintf("%d%%", self.progressString());
+        });
         self.progressBarString = ko.pureComputed(function() {
             if (!self.progress()) {
                 return "";
             }
             if (self.isPrinting()){
-                return _.sprintf("%d%%", self.progressString());
+                var printTimeLeftString = "";
+                if(self.printTimeLeftString() != "-")
+                    printTimeLeftString= _.sprintf("( %s remaining)", self.printTimeLeftString());
+                return _.sprintf("%d%% %s", self.progressString(), printTimeLeftString);
             }
             if (self.isTransferring()){
                 //is transferring file
-                transferTime = 5 + self.fileSizeBytes() / 85000;
-                transferTimeLeft = transferTime-self.progressString()*transferTime/100;
+                var transferTime = 5 + self.fileSizeBytes() / 85000;
+                var transferTimeLeft = transferTime - self.progressString() * transferTime / 100;
                 if(transferTimeLeft < 1)
                     return _.sprintf("Just a few seconds  ( %d%% )", self.progressString());
                 if(transferTimeLeft<60)
                     return _.sprintf("%d seconds  ( %d%% )", transferTimeLeft, self.progressString());
-                return _.sprintf("%d minutes %d seconds  ( %d%% )", transferTimeLeft/60,(transferTimeLeft%60), self.progressString());
+                return _.sprintf("%d minutes %d seconds  ( %d%% )", transferTimeLeft / 60, (transferTimeLeft % 60), self.progressString());
             }
             if (self.isHeating()) {
-                return _.sprintf("%dº / %dº  ",self.progressString()*self.temperatureTarget()/100, self.temperatureTarget());
+                return _.sprintf("%dº / %dº  ", self.progressString() * self.temperatureTarget() / 100, self.temperatureTarget());
             }
             //Paused or Shutdown
             return _.sprintf("%d%%", self.progressString());

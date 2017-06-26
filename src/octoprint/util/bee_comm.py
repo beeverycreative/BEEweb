@@ -199,8 +199,12 @@ class BeeCom(MachineCom):
             self._beeCommands.stopStatusMonitor()
 
         if self._beeConn is not None:
-            self._beeConn.close()
-            self._changeState(self.STATE_CLOSED)
+            try:
+                self._beeConn.close()
+            except Exception as ex:
+                self._logger.error(ex)
+
+        self._changeState(self.STATE_CLOSED)
 
     def _changeState(self, newState):
         if self._state == newState:
@@ -894,7 +898,14 @@ class BeeCom(MachineCom):
         while self._beeCommands.isHeating():
             time.sleep(1)
             temperatureValue = self._beeCommands.getHeatingState()
-            self._heatingProgress = 0.0 if temperatureValue is None else round(temperatureValue, 2)
+            if temperatureValue is None:
+                self._heatingProgress = 0.0
+            elif temperatureValue > self._heatingProgress:
+                # small verification to prevent temperature update errors coming from the printer due to sensor noise
+                # the temperature is only updated to a new value if it's greater than the previous when the printer is
+                # heating
+                self._heatingProgress = round(temperatureValue, 2)
+
             # makes use of the same method that is used for the print job progress, to update
             # the heating progress since we are going to use the same progress bar
             self._callback._setProgressData(self._heatingProgress, 0, 0, 0)

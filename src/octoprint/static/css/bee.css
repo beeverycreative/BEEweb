@@ -449,6 +449,7 @@ a.brand{
 .refreshwicon { background: url('../img/icons/refresh_white.svg'); }
 .cubewicon { background: url('../img/icons/cube_white.svg'); }
 .openfoldericon { background: url('../img/icons/open_folder.svg'); }
+.dropdownwicon { background: url('../img/icons/dropdown_white.svg'); }
 /* green */
 .checkgreenicon  { background: url('../img/icons/ok_green.svg'); }
 /* dynamic icons - change with media queries */
@@ -710,7 +711,9 @@ a.brand{
     font-size: 14px;
     text-align: right;
     word-break: break-word;
-    text-decoration: underline;
+}
+#printer-name-link:hover, #printer-name-link:focus {
+    text-decoration: none;
 }
 
 #showPrintDetails .progress{
@@ -875,8 +878,20 @@ input + span.add-on{
 }
 
 .btn-prepareprint{
-    width: 100% !important;
+    width: 84% !important;
     right: 27% !important;
+    bottom: 25px !important;
+    font: 200 16px "din-light", sans-serif;
+    text-transform: uppercase;
+    box-shadow: none !important;
+    border: none !important;
+    color: #fff;
+    background: #518359;
+    padding: 15px;
+    margin-right: -2px;
+}
+.btn-toggle-print-memory {
+    width: 15% !important;
     bottom: 25px !important;
     font: 200 16px "din-light", sans-serif;
     text-transform: uppercase;
