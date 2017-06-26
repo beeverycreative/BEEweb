@@ -155,9 +155,8 @@ class BeePrinter(Printer):
 
             if self._comm is not None and self._comm.isOperational():
                 return True
-        except Exception:
-            self._isConnecting = False
-            self._logger.exception("Error connecting to BVC printer")
+        except Exception as ex:
+            self._handleConnectionException(ex)
 
         return False
 
@@ -1181,6 +1180,22 @@ class BeePrinter(Printer):
             "shutdown": self.is_shutdown(),
             "resuming": self.is_resuming(),
         }
+
+
+    def _handleConnectionException(self, ex):
+
+        self._logger.exception("Error connecting to BVC printer: %s" % str(ex))
+
+        self._isConnecting = False
+        self._comm = None
+
+        # Starts the connection monitor thread only if there are any connected clients and the thread was stopped
+        if len(self._connectedClients) > 0 and self._bvc_conn_thread is None:
+            self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
+            self._bvc_conn_thread.start()
+        # stops the status thread if it was started previously
+        if self._bvc_status_thread is not None:
+            self._bvc_status_thread.stop()
 
 
     def _sendUsageStatistics(self, operation):
