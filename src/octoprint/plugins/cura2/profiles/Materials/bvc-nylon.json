@@ -1,0 +1,10 @@
+{
+    "id": "bvc-nylon",
+    "name": "BVC Nylon",
+    "version": 2,
+    "inherits": "generic_nylon",
+    "brand": "BeeVeryCreative",	
+    "overrides": {
+    }
+}
+

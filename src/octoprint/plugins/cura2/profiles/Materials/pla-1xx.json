@@ -1,0 +1,15 @@
+{
+    "id": "pla-1xx",
+    "name": "Pla - 1xx",
+    "version": 2,
+    "inherits": "generic_pla",
+    "brand": "BeeVeryCreative",	
+
+    "overrides": {
+
+        "print_temperature":    { "default_value": "210"   },
+        "material_flow":        { "default_value": "104.5" },
+        "cool_min_layer_time":  { "default_value": "5"     }
+    }
+}
+

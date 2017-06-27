@@ -23,7 +23,6 @@ __copyright__ = "Copyright (C) 2014 The OctoPrint Project - Released under terms
 
 import os
 import json
-import xml.etree.ElementTree
 import octoprint.plugin
 import octoprint.events
 import octoprint.util
@@ -751,126 +750,71 @@ class JsonProfileReader:
 		self.slicer_profile_path = slicer_profile_path
 
 	def getHeader(self, xmlFilePath, name):
-		root = xml.etree.ElementTree.parse(self.slicer_profile_path + "/" + xmlFilePath).getroot()
-
-		# get generic values
-		for child in root:
-			if child.tag == name:
-				return child.text
 		return ""
 
 	def getValue(self, xmlFilePath, key, printerID=None, resolution=None, nozzleSize=None):
-		# get a specific value
-
-		if printerID != None or resolution != None or nozzleSize != None:
-			if printerID == None or resolution == None or nozzleSize == None:
-				self._logger.exception(
-					"Error while getting Values from profile , if you specifi printer you need to set the resolution and nozzle size")
-				return None
-
-		list = self.getValuesList(xmlFilePath, printerID=None, resolution=None, nozzleSize=None)
-
-		return self.castValue(list[key])
-
-	def getValuesList(self, xmlFilePath, printerID=None, resolution=None, nozzleSize=None):
-		if printerID != None or resolution != None or nozzleSize != None:
-			if printerID == None or resolution == None or nozzleSize == None:
-				self._logger.exception(
-					"Error while getting Values from profile , if you specifi printer you need to set the resolution and nozzle size")
-				return None
-		try:
-			dic = self.getGenericValuesList(xmlFilePath).copy()
-			dic.update(self.getRestrictValuesList(xmlFilePath))
-			return self.castValues(dic)
-		except:
-			self._logger.exception("Error while getting Values from profile ")
-
-		return None
-
-	def getRestrictValuesList(self, xmlFilePath, printerID, resolution, nozzleSize):
-		# get values from xml
-		# nozzleSize = 400 or 600
-		# if printer id is provided, specific values from printer override generic values
-
-		if printerID != None or resolution != None or nozzleSize != None:
-			if printerID == None or resolution == None or nozzleSize == None:
-				self._logger.exception(
-					"Error while getting Values from profile , if you specifi printer you need to set the resolution and nozzle size")
-				return {}
-
-		resolution = resolution.lower()
-		if resolution == "high+":
-			resolution = "highplus"
-		nozzleSize = str(int(nozzleSize))
-
-		try:
-			with open(self.slicer_profile_path + "/" + xmlFilePath) as data_file:
-				root = json.load(data_file)
-			dic = {}
-
-			# get specific values
-			if printerID != None and dic != None:
-				# find printer
-				for child in root:
-					if child.tag == "printer" and child.attrib["type"] == printerID:
-						# find nozzle size
-						for nozzle in child:
-							if nozzle.attrib["type"] == nozzleSize:
-								# find resolution
-								for res in nozzle:
-									if res.attrib["type"] == resolution:
-										# Update values
-										for newElement in res:
-											dic[newElement.attrib["name"]] = newElement.attrib["value"]
-
-			return self.castValues(dic)
-		except:
-			self._logger.exception("Error while getting Values from profile ")
-
-		return {}
-
-	def getGenericValuesList(self, xmlFilePath):
-		# get generic values for Profile
-
-		try:
-			root = xml.etree.ElementTree.parse(self.slicer_profile_path + "/" + xmlFilePath).getroot()
-			dic = {}
-
-			# get generic values
-			for child in root:
-				if child.tag == "defaults":
-					for child1 in child:
-						dic[child1.attrib["name"]] = child1.attrib["value"]
-			return self.castValues(dic)
-		except:
-			self._logger.exception("Error while getting Values from profile ")
-
-		return {}
+		return ""
 
 	def isPrinterCompatible(self, xmlFilePath, printerID):
-		# check if printer is can use this filament profile
-		try:
-			root = xml.etree.ElementTree.parse(self.slicer_profile_path + "/" + xmlFilePath).getroot()
-			for child in root:
-				if child.tag == "printer":
-					if child.attrib["type"] == printerID:
-						return True
-		except:
-			self._logger.exception("Error while getting Values from profile ")
-
 		return False
 
-	def isPrinterAndNozzleCompatible(self, xmlFilePath, printerID, nozzleSize):
+	def isPrinterAndNozzleCompatible(self, filament_id, printer_id, nozzle_id):
 		# check if printer is can use this filament profile
 		try:
-			root = xml.etree.ElementTree.parse(self.slicer_profile_path + "/" + xmlFilePath).getroot()
-			for child in root:
-				if child.tag == "printer":
-					if child.attrib["type"] == printerID:
-						# find nozzle size
-						for nozzle in child:
-							if nozzle.attrib["type"] == nozzleSize:
-								return True
+			#check nozzle
+			for entry in os.listdir(self.slicer_profile_path + "Definition/"):
+				if not entry.endswith(".json"):
+					# we are only interested in profiles and no hidden files
+					continue
+
+				if printer_id not in entry.lower():
+					continue
+
+				with open('profiles/Definition/' + entry) as data_file:
+					printer_json = json.load(data_file)
+
+			if 'nozzles_supported' in printer_json:
+				if nozzle_id not in str(printer_json['nozzles_supported']):
+					return False
+
+
+
+			#Check filament with nozzle
+			custom = True
+			for entry in os.listdir(self.slicer_profile_path + "Quality/"):
+				if not entry.endswith(".json"):
+					# we are only interested in profiles and no hidden files
+					continue
+
+				if filament_id not in entry.lower():
+					continue
+
+				# creates a shallow slicing profile
+				with open('profiles/Quality/' + entry) as data_file:
+					filament_json = json.load(data_file)
+					custom = False
+			if custom:
+				for entry in os.listdir(self.slicer_profile_path + "Variants/"):
+					if not entry.endswith(".json"):
+						# we are only interested in profiles and no hidden files
+						continue
+
+					if filament_id not in entry.lower():
+						continue
+
+					# creates a shallow slicing profile
+					with open('profiles/Variants/' + entry) as data_file:
+						filament_json = json.load(data_file)
+
+
+			if 'nozzles_supported' in filament_json:
+				if nozzle_id not in str(filament_json['nozzles_supported']):
+					return False
+
+			if 'PrinterGroups' in filament_json:
+				for list in filament_json['PrinterGroups']:
+					if printer_id in list['group_printers']:
+						return True
 		except:
 			self._logger.exception("Error while getting Values from profile ")
 
