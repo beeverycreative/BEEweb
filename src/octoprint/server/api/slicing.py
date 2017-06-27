@@ -164,22 +164,30 @@ def slicingDelSlicerProfile(slicer, name):
 	return NO_CONTENT
 
 def _getSlicingProfilesData(slicer, require_configured=False):
-	profiles = slicingManager.all_profiles_list(slicer,
-												require_configured=require_configured,
-												from_current_printer=True)
-	# gets the nozzle size to filter the slicing profiles by nozzle type
-	nozzle = printer.getNozzleTypeString()
-	printer_name = printer.getPrinterNameNormalized()
-
 	result = dict()
-	for name, profile in profiles.items():
-		if nozzle is not None and not nozzle in name:
-			continue
+	if slicer == "cura2":
+		profiles = slicingManager.all_profiles_list_json(slicer,
+													require_configured=require_configured,
+													nozzle_size=printer.getNozzleTypeString().replace("nz", ""),
+													from_current_printer=True)
+		for name, profile in profiles.items():
+			result[name] = _getSlicingProfileData(slicer, name, profile)
+	else:
+		profiles = slicingManager.all_profiles_list(slicer,
+													require_configured=require_configured,
+													from_current_printer=True)
+		# gets the nozzle size to filter the slicing profiles by nozzle type
+		nozzle = printer.getNozzleTypeString()
+		printer_name = printer.getPrinterNameNormalized()
 
-		if printer_name is not None and not printer_name in name:
-			continue
+		for name, profile in profiles.items():
+			if nozzle is not None and not nozzle in name:
+				continue
 
-		result[name] = _getSlicingProfileData(slicer, name, profile)
+			if printer_name is not None and not printer_name in name:
+				continue
+
+			result[name] = _getSlicingProfileData(slicer, name, profile)
 	return result
 
 def _getSlicingProfileData(slicer, name, profile):

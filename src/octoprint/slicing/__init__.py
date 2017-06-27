@@ -10,6 +10,9 @@ In this module the slicing support of OctoPrint is encapsulated.
 
 .. autoclass:: SlicingManager
    :members:
+
+.. autoclass:: JsonProfileReader
+   :members: 
 """
 
 from __future__ import absolute_import
@@ -18,8 +21,9 @@ __author__ = "Gina Häußge <osd@foosel.net>"
 __license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 __copyright__ = "Copyright (C) 2014 The OctoPrint Project - Released under terms of the AGPLv3 License"
 
-
 import os
+import json
+import xml.etree.ElementTree
 import octoprint.plugin
 import octoprint.events
 import octoprint.util
@@ -198,8 +202,8 @@ class SlicingManager(object):
 		return self._slicers[slicer]
 
 	def slice(self, slicer_name, source_path, dest_path, profile_name, callback,
-	          callback_args=None, callback_kwargs=None, overrides=None,
-	          on_progress=None, on_progress_args=None, on_progress_kwargs=None, printer_profile_id=None, position=None):
+			  callback_args=None, callback_kwargs=None, overrides=None, resolution=None, nozzle_size=None,
+			  on_progress=None, on_progress_args=None, on_progress_kwargs=None, printer_profile_id=None, position=None):
 		"""
 		Slices ``source_path`` to ``dest_path`` using slicer ``slicer_name`` and slicing profile ``profile_name``.
 		Since slicing happens asynchronously, ``callback`` will be called when slicing has finished (either successfully
@@ -554,13 +558,65 @@ class SlicingManager(object):
 			if from_current_printer and printer_id not in entry.lower():
 				continue
 
-			#path = os.path.join(slicer_profile_path, entry)
+			# path = os.path.join(slicer_profile_path, entry)
 			profile_name = entry[:-len(".profile")]
 
 			# creates a shallow slicing profile
 			profiles[profile_name] = self._create_shallow_profile(profile_name, slicer, require_configured)
 		return profiles
 
+	def all_profiles_list_json(self, slicer, require_configured=False, from_current_printer=True, nozzle_size=None):
+		"""
+		Retrieves all profiles for slicer ``slicer`` but avoiding to parse every single profile file for better performance
+		If ``require_configured`` is set to True (default is False), only will return the profiles if the ``slicer``
+		is already configured, otherwise a :class:`SlicerNotConfigured` exception will be raised.
+		Arguments:
+			slicer (str): Identifier of the slicer for which to retrieve all slicer profiles
+			require_configured (boolean): Whether to require the slicer ``slicer`` to be already configured (True)
+				or not (False, default). If False and the slicer is not yet configured, a :class:`~octoprint.slicing.exceptions.SlicerNotConfigured`
+				exception will be raised.
+			from_current_printer (boolean): Whether to select only profiles from the current or default printer
+			nozzle_size (string) : value of nozzle size (ex: 400 )
+		Returns:
+			list of SlicingProfile: A list of all :class:`SlicingProfile` instances available for the slicer ``slicer``.
+		Raises:
+			~octoprint.slicing.exceptions.UnknownSlicer: The slicer ``slicer`` is unknown.
+			~octoprint.slicing.exceptions.SlicerNotConfigured: The slicer ``slicer`` is not configured and ``require_configured`` was True.
+		"""
+
+		if not slicer in self.registered_slicers:
+			raise UnknownSlicer(slicer)
+		if require_configured and not slicer in self.configured_slicers:
+			raise SlicerNotConfigured(slicer)
+		profiles = dict()
+		slicer_profile_path = self.get_slicer_profile_path(slicer)
+
+		if from_current_printer:
+			# adds an '_' to the end to avoid false positive string lookups for the printer names
+			printer_name = self._printer_profile_manager.get_current_or_default()['name']
+			printer_id = printer_name.replace(' ', '')
+			# removes the A suffix of some models for filament lookup matching
+			if printer_id.endswith('A'):
+				printer_id = printer_id[:-1]
+
+			printer_id = printer_id.upper()
+
+		json_profile_reader = JsonProfileReader(slicer_profile_path)
+		for entry in os.listdir(slicer_profile_path):
+			if not entry.endswith(".json") or octoprint.util.is_hidden_path(entry):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			if from_current_printer:
+				if not json_profile_reader.isPrinterAndNozzleCompatible(entry, printer_id, nozzle_size):
+					continue
+
+			# path = os.path.join(slicer_profile_path, entry)
+			profile_name = entry[:-len(".json")]
+
+			# creates a shallow slicing profile
+			profiles[profile_name] = self._create_shallow_profile(profile_name, slicer, "json", require_configured)
+		return profiles
 
 	def get_slicer_profile_path(self, slicer):
 		"""
@@ -685,3 +741,154 @@ class SlicingManager(object):
 		return octoprint.slicing.SlicingProfile(properties["type"],
 												"unknown", profile_dict, display_name=formatted_name,
 												description=description)
+
+
+class JsonProfileReader:
+	slicer_profile_path = None
+
+	def __init__(self, slicer_profile_path):
+		self._logger = logging.getLogger(__name__)
+		self.slicer_profile_path = slicer_profile_path
+
+	def getHeader(self, xmlFilePath, name):
+		root = xml.etree.ElementTree.parse(self.slicer_profile_path + "/" + xmlFilePath).getroot()
+
+		# get generic values
+		for child in root:
+			if child.tag == name:
+				return child.text
+		return ""
+
+	def getValue(self, xmlFilePath, key, printerID=None, resolution=None, nozzleSize=None):
+		# get a specific value
+
+		if printerID != None or resolution != None or nozzleSize != None:
+			if printerID == None or resolution == None or nozzleSize == None:
+				self._logger.exception(
+					"Error while getting Values from profile , if you specifi printer you need to set the resolution and nozzle size")
+				return None
+
+		list = self.getValuesList(xmlFilePath, printerID=None, resolution=None, nozzleSize=None)
+
+		return self.castValue(list[key])
+
+	def getValuesList(self, xmlFilePath, printerID=None, resolution=None, nozzleSize=None):
+		if printerID != None or resolution != None or nozzleSize != None:
+			if printerID == None or resolution == None or nozzleSize == None:
+				self._logger.exception(
+					"Error while getting Values from profile , if you specifi printer you need to set the resolution and nozzle size")
+				return None
+		try:
+			dic = self.getGenericValuesList(xmlFilePath).copy()
+			dic.update(self.getRestrictValuesList(xmlFilePath))
+			return self.castValues(dic)
+		except:
+			self._logger.exception("Error while getting Values from profile ")
+
+		return None
+
+	def getRestrictValuesList(self, xmlFilePath, printerID, resolution, nozzleSize):
+		# get values from xml
+		# nozzleSize = 400 or 600
+		# if printer id is provided, specific values from printer override generic values
+
+		if printerID != None or resolution != None or nozzleSize != None:
+			if printerID == None or resolution == None or nozzleSize == None:
+				self._logger.exception(
+					"Error while getting Values from profile , if you specifi printer you need to set the resolution and nozzle size")
+				return {}
+
+		resolution = resolution.lower()
+		if resolution == "high+":
+			resolution = "highplus"
+		nozzleSize = str(int(nozzleSize))
+
+		try:
+			with open(self.slicer_profile_path + "/" + xmlFilePath) as data_file:
+				root = json.load(data_file)
+			dic = {}
+
+			# get specific values
+			if printerID != None and dic != None:
+				# find printer
+				for child in root:
+					if child.tag == "printer" and child.attrib["type"] == printerID:
+						# find nozzle size
+						for nozzle in child:
+							if nozzle.attrib["type"] == nozzleSize:
+								# find resolution
+								for res in nozzle:
+									if res.attrib["type"] == resolution:
+										# Update values
+										for newElement in res:
+											dic[newElement.attrib["name"]] = newElement.attrib["value"]
+
+			return self.castValues(dic)
+		except:
+			self._logger.exception("Error while getting Values from profile ")
+
+		return {}
+
+	def getGenericValuesList(self, xmlFilePath):
+		# get generic values for Profile
+
+		try:
+			root = xml.etree.ElementTree.parse(self.slicer_profile_path + "/" + xmlFilePath).getroot()
+			dic = {}
+
+			# get generic values
+			for child in root:
+				if child.tag == "defaults":
+					for child1 in child:
+						dic[child1.attrib["name"]] = child1.attrib["value"]
+			return self.castValues(dic)
+		except:
+			self._logger.exception("Error while getting Values from profile ")
+
+		return {}
+
+	def isPrinterCompatible(self, xmlFilePath, printerID):
+		# check if printer is can use this filament profile
+		try:
+			root = xml.etree.ElementTree.parse(self.slicer_profile_path + "/" + xmlFilePath).getroot()
+			for child in root:
+				if child.tag == "printer":
+					if child.attrib["type"] == printerID:
+						return True
+		except:
+			self._logger.exception("Error while getting Values from profile ")
+
+		return False
+
+	def isPrinterAndNozzleCompatible(self, xmlFilePath, printerID, nozzleSize):
+		# check if printer is can use this filament profile
+		try:
+			root = xml.etree.ElementTree.parse(self.slicer_profile_path + "/" + xmlFilePath).getroot()
+			for child in root:
+				if child.tag == "printer":
+					if child.attrib["type"] == printerID:
+						# find nozzle size
+						for nozzle in child:
+							if nozzle.attrib["type"] == nozzleSize:
+								return True
+		except:
+			self._logger.exception("Error while getting Values from profile ")
+
+		return False
+
+	def castValues(self, dicionary):
+		for item in dicionary:
+			dicionary[item] = self.castValue(dicionary[item])
+
+		return dicionary
+
+	def castValue(self, value):
+		if value in ['true', 'True']:
+			return True
+		if value in ['false', 'False']:
+			return False
+		if value.isdigit():
+			return int(value)
+		if '.' in value:
+			return float(value)
+		return value.lower()
