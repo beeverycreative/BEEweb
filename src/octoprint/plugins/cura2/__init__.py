@@ -148,7 +148,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 	def get_settings_defaults(self):
 		return dict(
-			cura_engine=None,
+			cura_engine2=None,
 			default_profile=None,
 			debug_logging=False
 		)
@@ -156,7 +156,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 	##~~ SlicerPlugin API
 
 	def is_slicer_configured(self):
-		cura_engine = self._settings.get(["cura_engine"])
+		cura_engine = self._settings.get(["cura_engine2"])
 		if cura_engine is not None and os.path.exists(cura_engine):
 			return True
 		else:
@@ -229,7 +229,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 				engine_settings = self._convert_to_engine(profile_path, printer_profile, posX, posY)
 
-				executable = self._settings.get(["cura_engine"])
+				executable = self._settings.get(["cura_engine2"])
 				if not executable:
 					return False, "Path to CuraEngine is not configured "
 

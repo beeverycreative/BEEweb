@@ -22,7 +22,9 @@ cp -R BEEwebPi/src/filesystem/home/pi/.beeweb ~/.beeweb
 
 # Installs the default slicer
 sudo cp BEEwebPi/src/slicers/Cura/Linux/CuraEngine /usr/local/bin/cura_engine
+sudo cp BEEwebPi/src/slicers/Cura/Linux/CuraEngine2 /usr/local/bin/cura_engine2
 sudo chmod +x /usr/local/bin/cura_engine
+sudo chmod +x /usr/local/bin/cura_engine2
 
 # installs dependencies
 python setup.py install

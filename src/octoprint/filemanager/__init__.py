@@ -238,7 +238,7 @@ class FileManager(object):
 		return self._slicing_manager.default_slicer
 
 	def slice(self, slicer_name, source_location, source_path, dest_location, dest_path,
-	          position=None, profile=None, printer_profile_id=None, overrides=None, callback=None, callback_args=None):
+	          position=None, profile=None, printer_profile_id=None, overrides=None, callback=None, callback_args=None, resolution=None, nozzle_size=None):
 		absolute_source_path = self.path_on_disk(source_location, source_path)
 
 		def stlProcessed(source_location, source_path, tmp_path, dest_location, dest_path, start_time, printer_profile_id, callback, callback_args, _error=None, _cancelled=False, _analysis=None):
@@ -311,6 +311,8 @@ class FileManager(object):
 		                            position=position,
 		                            callback_args=args,
 		                            overrides=overrides,
+									resolution=resolution,
+									nozzle_size = nozzle_size,
 		                            printer_profile_id=printer_profile_id,
 		                            on_progress=self.on_slicing_progress,
 		                            on_progress_args=(slicer_name, source_location, source_path, dest_location, dest_path))
