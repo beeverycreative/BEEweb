@@ -1,8 +1,9 @@
 {
-    "id": "BEEVERYCREATIVE-beeinschoola",
-    "name": "BEEINSCHOOLA",
+    "id": "BEEVERYCREATIVE-beethefirstplus",
+    "name": "BEETHEFIRSTPLUS",
     "version": 2,
     "inherits": "fdmprinter",
+    "nozzles_supported": [0.4, 0.6],
     "metadata": {
         "visible": true,
         "author": "BEEVERYCREATIVE",
