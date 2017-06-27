@@ -274,7 +274,7 @@ default_settings = {
 		"enabled": True,
 		"defaultSlicer": "cura",
 		"defaultProfiles": None,
-		"profilesFormatXml": False  # false if profiles are '.profile'
+		"cura2": True  # false if default Slicer is cura 15.04
 	},
 	"events": {
 		"enabled": True,
