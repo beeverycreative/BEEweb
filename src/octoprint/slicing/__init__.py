@@ -754,13 +754,13 @@ class JsonProfileReader:
 		self._logger = logging.getLogger(__name__)
 		self.slicer_profile_path = slicer_profile_path
 
-	def getHeader(self, xmlFilePath, name):
+	def getHeader(self, filament_id, nameField):
 		return ""
 
-	def getValue(self, xmlFilePath, key, printerID=None, resolution=None, nozzleSize=None):
+	def getValue(self, filament_id, key, printer_id=None, resolution=None, nozzle_id=None):
 		return ""
 
-	def isPrinterCompatible(self, xmlFilePath, printerID):
+	def isPrinterCompatible(self, filament_id, printer_id):
 		return False
 
 	def isPrinterAndNozzleCompatible(self, filament_id, printer_id, nozzle_id):
@@ -781,7 +781,6 @@ class JsonProfileReader:
 					if 'nozzles_supported' in printer_json:
 						if nozzle_id not in str(printer_json['nozzles_supported']):
 							return False
-
 
 			#Check filament with nozzle
 			custom = True
@@ -810,7 +809,6 @@ class JsonProfileReader:
 					with open(self.slicer_profile_path + "/Variants/" + entry) as data_file:
 						filament_json = json.load(data_file)
 
-
 			if 'nozzles_supported' in filament_json:
 				if str(float(nozzle_id)/1000) not in str(filament_json['nozzles_supported']):
 					return False
@@ -827,7 +825,6 @@ class JsonProfileReader:
 	def castValues(self, dicionary):
 		for item in dicionary:
 			dicionary[item] = self.castValue(dicionary[item])
-
 		return dicionary
 
 	def castValue(self, value):
