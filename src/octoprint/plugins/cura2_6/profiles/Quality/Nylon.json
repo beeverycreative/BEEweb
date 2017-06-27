@@ -26,7 +26,7 @@
             }
         },
         {
-            "group_printers": ["hellobeprusa"],
+            "group_printers": ["hellobeeprusa"],
             "quality": {
                 "low": {		
 		    "wall_thickness":  { "default_value": "0.6" },

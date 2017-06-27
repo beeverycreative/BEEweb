@@ -31,7 +31,7 @@
             }
         },
         {
-            "group_printers": ["hellobeprusa"],
+            "group_printers": ["hellobeeprusa"],
             "quality": {
                 "low": {		
 		    "speed_print":  { "default_value": 60  },

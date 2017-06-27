@@ -1,9 +1,8 @@
 {
-    "id": "Nozzle 0.4",
+    "id": "nozzle-0_4",
     "name": "0.4",
     "version": 2,
-
     "overrides": {
-        "machine_nozzle_size": { "default_value": "0.4" },
+        "machine_nozzle_size": { "default_value": "0.4" }
     }
 }
