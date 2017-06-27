@@ -87,7 +87,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		name, _ = os.path.splitext(filename)
 
 		# default values for name, display name and description
-		profile_name = _sanitize_name(name)
+		profile_name = name
 		profile_display_name = name
 		profile_description = "Imported from {filename} on {date}".format(filename=filename, date=octoprint.util.get_formatted_datetime(datetime.datetime.now()))
 		profile_allow_overwrite = False
@@ -175,7 +175,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 	def get_slicer_default_profile(self):
 		path = self._settings.get(["default_profile"])
 		if not path:
-			path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "profiles", "default.profile.yaml")
+			path = os.path.join(os.path.dirname(os.path.realpath(__file__)), "profiles/Printers", "_default.json")
 		return self.get_slicer_profile(path)
 
 	def get_slicer_profile(self, path):
@@ -184,8 +184,8 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		display_name = None
 		description = None
 		if "_display_name" in profile_dict:
-			display_name = profile_dict["_display_name"]
-			del profile_dict["_display_name"]
+			display_name = profile_dict["name"]
+			del profile_dict["name"]
 		if "_description" in profile_dict:
 			description = profile_dict["_description"]
 			del profile_dict["_description"]
@@ -381,36 +381,20 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 				self._logger.info(u"Cancelled slicing of %s" % machinecode_path)
 
 	def _load_profile(self, path):
-		import yaml
+		import json
 		profile_dict = dict()
 		with open(path, "r") as f:
 			try:
-				profile_dict = yaml.safe_load(f)
+				profile_dict = json.load(f)
 			except:
 				raise IOError("Couldn't read profile from {path}".format(path=path))
 		return profile_dict
 
 	def _save_profile(self, path, profile, allow_overwrite=True):
-		import yaml
+		import json
 		with octoprint.util.atomic_write(path, "wb", max_permissions=0o666) as f:
-			yaml.safe_dump(profile, f, default_flow_style=False, indent="  ", allow_unicode=True)
+			json.dump(profile, f, indent="  ")
 
-	def _convert_to_engine(self, profile_path, printer_profile, posX, posY):
-		profile = Profile(self._load_profile(profile_path), printer_profile, posX, posY)
-		return profile.convert_to_engine()
-
-def _sanitize_name(name):
-	if name is None:
-		return None
-
-	if "/" in name or "\\" in name:
-		raise ValueError("name must not contain / or \\")
-
-	import string
-	valid_chars = "-_.() {ascii}{digits}".format(ascii=string.ascii_letters, digits=string.digits)
-	sanitized_name = ''.join(c for c in name if c in valid_chars)
-	sanitized_name = sanitized_name.replace(" ", "_")
-	return sanitized_name.lower()
 
 __plugin_name__ = "CuraEngine (<= 2.6)"
 __plugin_author__ = "Bruno Andrade"

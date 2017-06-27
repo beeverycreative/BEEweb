@@ -667,9 +667,13 @@ class SlicingManager(object):
 		if not name:
 			raise ValueError("name must be set")
 
-		name = self._sanitize(name)
+		if settings().get(["slicing", "cura2"]) and slicer == "cura2":
+			json_profile_reader = JsonProfileReader(self.get_slicer_profile_path(slicer))
+			path=json_profile_reader.pathToPrinter(self._desanitize(name))
+		else:
+			name = self._sanitize(name)
+			path = os.path.join(self.get_slicer_profile_path(slicer), "{name}.profile".format(name=name))
 
-		path = os.path.join(self.get_slicer_profile_path(slicer), "{name}.profile".format(name=name))
 		if not os.path.realpath(path).startswith(os.path.realpath(self._profile_path)):
 			raise IOError("Path to profile {name} tried to break out of allows sub path".format(**locals()))
 		if must_exist and not (os.path.exists(path) and os.path.isfile(path)):
@@ -688,6 +692,21 @@ class SlicingManager(object):
 		sanitized_name = ''.join(c for c in name if c in valid_chars)
 		sanitized_name = sanitized_name.replace(" ", "_")
 		return sanitized_name
+
+	def _desanitize(self, name):
+		if name is None:
+			return None
+
+		if "/" in name or "\\" in name:
+			raise ValueError("name must not contain / or \\")
+
+		import string
+		valid_chars = "-_.() {ascii}{digits}".format(ascii=string.ascii_letters, digits=string.digits)
+		sanitized_name = ''.join(c for c in name if c in valid_chars)
+		sanitized_name = sanitized_name.replace("_", " ")
+		pos= sanitized_name.index(' bee')
+		sanitized_name =sanitized_name[:pos]
+		return str(sanitized_name)
 
 	def _load_profile_from_path(self, slicer, path, require_configured=False):
 		return self.get_slicer(slicer, require_configured=require_configured).get_slicer_profile(path)
@@ -762,6 +781,30 @@ class JsonProfileReader:
 
 	def isPrinterCompatible(self, filament_id, printer_id):
 		return False
+
+	def pathToPrinter(self,filament_id):
+		custom = True
+		for entry in os.listdir(self.slicer_profile_path + "/Quality/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			if filament_id.lower() not in entry.lower():
+				continue
+
+			return self.slicer_profile_path + "/Quality/" + entry
+		if custom:
+			for entry in os.listdir(self.slicer_profile_path + "/Variants/"):
+				if not entry.endswith(".json"):
+					# we are only interested in profiles and no hidden files
+					continue
+
+				if filament_id.lower() not in entry.lower():
+					continue
+
+				# creates a shallow slicing profile
+				return self.slicer_profile_path + "/Variants/" + entry
+		return None
 
 	def isPrinterAndNozzleCompatible(self, filament_id, printer_id, nozzle_id):
 		# check if printer is can use this filament profile
