@@ -554,13 +554,20 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 		for field in overrides:
 			if field == "fill_density":
-				engine_settings["infill_sparse_density"]["default_value"] =overrides[field]
+				engine_settings = self.merge_profile_key(engine_settings, "infill_sparse_density", overrides[field])
+
 			if field == "platform_adhesion":
-				if overrides[field] in ["none","brim","raft","skirt"]:
-					engine_settings["platform_adhesion"]["default_value"]  = overrides[field]
+				if overrides[field] in ["none", "brim", "raft", "skirt"]:
+					engine_settings = self.merge_profile_key(engine_settings, "adhesion_type", overrides[field])
+
 			if field == "support":
-				if overrides[field] in ["none","everywhere","buildplate"]:
-					engine_settings["platform_adhesion"]["default_value"] = overrides[field]
+				if overrides[field] in [ "none" "everywhere", "buildplate"]:
+					engine_settings = self.merge_profile_key(engine_settings, "support_type", overrides[field])
+					if overrides[field] == "buildplate":
+						engine_settings = self.merge_profile_key(engine_settings, "support_enable", True)
+					elif overrides[field] == "everywhere":
+						engine_settings = self.merge_profile_key(engine_settings, "support_enable", True)
+						engine_settings = self.merge_profile_key(engine_settings, "support_bottom_distance", "0.15")
 		return engine_settings
 
 	def getPrinterOverrides(self, printer_id, slicer_profile_path):
@@ -651,7 +658,12 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 			overrides_Values = self.merge_dicts(self.getParentOverrides(filament_json['inherits'], nozzle_id, slicer_profile_path), overrides_Values)
 		return overrides_Values
 
-
+	def merge_profile_key(self, profile, key, value):
+		if key in profile:
+			profile[key]["default_value"] = value
+		else :
+			profile[key] = {'default_value': value}
+		return profile
 
 
 __plugin_name__ = "CuraEngine (<= 2.6)"
