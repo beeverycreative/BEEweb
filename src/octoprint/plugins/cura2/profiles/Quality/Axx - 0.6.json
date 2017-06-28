@@ -16,7 +16,7 @@
     },
     "PrinterGroups":[
         {
-            "group_printers": ["beethefirst","beethefirst+","beethefirsta","beeme","beeinschool","beeinschoola"],
+            "group_printers": ["beethefirst","beethefirstplus","beethefirsta","beeme","beeinschool","beeinschoola"],
             "quality": {
                 "low": {		
 		    "speed_print":  { "default_value": 60  },
