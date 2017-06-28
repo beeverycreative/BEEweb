@@ -198,7 +198,7 @@ class SlicingManager(object):
 		return self._slicers[slicer]
 
 	def slice(self, slicer_name, source_path, dest_path, profile_name, callback,
-	          callback_args=None, callback_kwargs=None, overrides=None,
+	          callback_args=None, callback_kwargs=None, overrides=None, resolution=None, nozzle_size=None,
 	          on_progress=None, on_progress_args=None, on_progress_kwargs=None, printer_profile_id=None, position=None):
 		"""
 		Slices ``source_path`` to ``dest_path`` using slicer ``slicer_name`` and slicing profile ``profile_name``.

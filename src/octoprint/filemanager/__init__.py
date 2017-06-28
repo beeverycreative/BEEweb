@@ -237,7 +237,7 @@ class FileManager(object):
 	def default_slicer(self):
 		return self._slicing_manager.default_slicer
 
-	def slice(self, slicer_name, source_location, source_path, dest_location, dest_path,
+	def slice(self, slicer_name, source_location, source_path, dest_location, dest_path, resolution=None, nozzle_size=None,
 	          position=None, profile=None, printer_profile_id=None, overrides=None, callback=None, callback_args=None):
 		absolute_source_path = self.path_on_disk(source_location, source_path)
 
@@ -311,6 +311,8 @@ class FileManager(object):
 		                            position=position,
 		                            callback_args=args,
 		                            overrides=overrides,
+									resolution=resolution,
+									nozzle_size=nozzle_size,
 		                            printer_profile_id=printer_profile_id,
 		                            on_progress=self.on_slicing_progress,
 		                            on_progress_args=(slicer_name, source_location, source_path, dest_location, dest_path))
