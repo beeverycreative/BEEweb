@@ -15,7 +15,7 @@ import json
 import octoprint.plugin
 import octoprint.util
 import octoprint.slicing
-import octoprint.settings
+from octoprint.settings import settings
 
 from .profile import Profile
 
@@ -141,17 +141,21 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		octoprint.plugin.SettingsPlugin.on_settings_save(self, data)
 
 		new_debug_logging = self._settings.get_boolean(["debug_logging"])
+
+		settings().set(["slicing", "cura2"], self._settings.get_boolean(["cura2"]))
 		if old_debug_logging != new_debug_logging:
 			if new_debug_logging:
 				self._cura_logger.setLevel(logging.DEBUG)
 			else:
 				self._cura_logger.setLevel(logging.CRITICAL)
 
+
 	def get_settings_defaults(self):
 		return dict(
 			cura_engine2=None,
 			default_profile=None,
-			debug_logging=False
+			debug_logging=False,
+			cura2=settings().get(["slicing", "cura2"])
 		)
 
 	##~~ SlicerPlugin API
