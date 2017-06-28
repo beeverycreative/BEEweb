@@ -65,6 +65,11 @@ class BeePrinter(Printer):
         eventManager().subscribe(Events.FIRMWARE_UPDATE_STARTED, self.on_flash_firmware_started)
         eventManager().subscribe(Events.FIRMWARE_UPDATE_FINISHED, self.on_flash_firmware_finished)
 
+        # subscribes print event handlers
+        eventManager().subscribe(Events.PRINT_CANCELLED, self.on_print_cancelled)
+        eventManager().subscribe(Events.PRINT_CANCELLED_DELETE_FILE, self.on_print_cancelled_delete_file)
+        eventManager().subscribe(Events.PRINT_DONE, self.on_print_finished)
+
         super(BeePrinter, self).__init__(fileManager, analysisQueue, printerProfileManager)
 
 
@@ -108,17 +113,19 @@ class BeePrinter(Printer):
             if bee_commands is not None and bee_commands.isPrinting() is False:
                 bee_commands.home()
 
-            # selects the printer profile based on the connected printer name
-            printer_name = self.get_printer_name()
+            # Updates the printer connection state
+            self._comm.confirmConnection()
 
+            self._isConnecting = False
+
+            printer_name = self.get_printer_name()
             # converts the name to the id
             printer_id = None
             if printer_name is not None:
                 printer_id = printer_name.lower().replace(' ', '')
-            self._printerProfileManager.select(printer_id)
 
-            # Updates the printer connection state
-            self._comm.confirmConnection()
+            # selects the printer profile based on the connected printer name
+            self._printerProfileManager.select(printer_id)
 
             # if the printer is printing or in shutdown mode selects the last selected file for print
             # and starts the progress monitor
@@ -141,17 +148,10 @@ class BeePrinter(Printer):
             # gets current Filament profile data
             self._currentFilamentProfile = self.getSelectedFilamentProfile()
 
-            # subscribes event handlers
-            eventManager().subscribe(Events.PRINT_CANCELLED, self.on_print_cancelled)
-            eventManager().subscribe(Events.PRINT_CANCELLED_DELETE_FILE, self.on_print_cancelled_delete_file)
-            eventManager().subscribe(Events.PRINT_DONE, self.on_print_finished)
-
             # Starts the printer status monitor thread
             if self._bvc_status_thread is None:
                 self._bvc_status_thread = StatusDetectionMonitorThread(self._comm)
                 self._bvc_status_thread.start()
-
-            self._isConnecting = False
 
             # make sure the connection monitor thread is null so we are able to instantiate a new thread later on
             if self._bvc_conn_thread is not None:
@@ -159,6 +159,7 @@ class BeePrinter(Printer):
                 self._bvc_conn_thread = None
 
             if self._comm is not None and self._comm.isOperational():
+                self._logger.info("Connected to %s!" % printer_name)
                 return True
         except Exception as ex:
             self._handleConnectionException(ex)
@@ -1216,10 +1217,13 @@ class BeePrinter(Printer):
 
     def _handleConnectionException(self, ex):
 
-        self._logger.exception("Error connecting to BVC printer: %s" % str(ex))
+        eventManager().fire(Events.DISCONNECTED)
+        self._logger.error("Error connecting to BVC printer: %s" % str(ex))
 
         self._isConnecting = False
-        self._comm = None
+        if self._comm is not None:
+            self._comm.close()
+            self._comm = None
 
         # Starts the connection monitor thread only if there are any connected clients and the thread was stopped
         if len(self._connectedClients) > 0 and self._bvc_conn_thread is None:
@@ -1228,6 +1232,7 @@ class BeePrinter(Printer):
         # stops the status thread if it was started previously
         if self._bvc_status_thread is not None:
             self._bvc_status_thread.stop()
+            self._bvc_status_thread = None
 
 
     def _sendUsageStatistics(self, operation):
