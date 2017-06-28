@@ -580,7 +580,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 				# we are only interested in profiles and no hidden files
 				continue
 
-			if printer_id.lower() != entry.lower()[:-len(".json")]:
+			if printer_id.lower().replace(" ", "") != entry.lower().replace(" ", "")[:-len(".json")] :
 				continue
 
 			with open(slicer_profile_path +'Printers/' + entry) as data_file:

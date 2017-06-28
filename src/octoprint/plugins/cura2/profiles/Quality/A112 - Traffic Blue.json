@@ -9,7 +9,7 @@
     "unload_temperature": 210,
     "PrinterGroups":[
         {
-            "group_printers": ["beethefirst","beethefirstplus","beethefirsta","beeme","beeinschool","beeinschoola"],
+            "group_printers": ["beethefirst","beethefirstplus","beethefirstplusa","beeme","beeinschool","beeinschoola"],
             "quality": {
                 "low": {		
 		    "speed_print":  { "default_value": 60  },
