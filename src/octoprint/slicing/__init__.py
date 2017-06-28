@@ -581,7 +581,7 @@ class SlicingManager(object):
 			if from_current_printer and printer_id not in entry.lower():
 				continue
 
-			# path = os.path.join(slicer_profile_path, entry)
+			#path = os.path.join(slicer_profile_path, entry)
 			profile_name = entry[:-len(".profile")]
 
 			# creates a shallow slicing profile

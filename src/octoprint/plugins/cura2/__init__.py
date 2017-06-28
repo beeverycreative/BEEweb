@@ -554,10 +554,10 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 				# we are only interested in profiles and no hidden files
 				continue
 
-			if printer_id not in entry.lower():
+			if printer_id != entry.lower():
 				continue
 
-			with open('profiles/Definition/' + entry) as data_file:
+			with open('profiles/Printers/' + entry) as data_file:
 				printer_json = json.load(data_file)
 
 		return printer_json['overrides']
@@ -569,7 +569,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 				# we are only interested in profiles and no hidden files
 				continue
 
-			if nozzle_id not in entry.lower():
+			if nozzle_id.lower() not in entry.lower():
 				continue
 
 			# creates a shallow slicing profile
@@ -587,7 +587,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 				# we are only interested in profiles and no hidden files
 				continue
 
-			if filament_id not in entry.lower():
+			if filament_id.lower() not in entry.lower():
 				continue
 
 			# creates a shallow slicing profile
@@ -600,7 +600,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 					# we are only interested in profiles and no hidden files
 					continue
 
-				if filament_id not in entry.lower():
+				if filament_id.lower() not in entry.lower():
 					continue
 
 				# creates a shallow slicing profile

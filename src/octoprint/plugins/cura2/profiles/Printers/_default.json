@@ -1,6 +1,6 @@
 {
-    "id": "BEEVERYCREATIVE-beethefirst",
-    "name": "BEETHEFIRST",
+    "id": "BEEVERYCREATIVE-generic",
+    "name": "Generic Printer",
     "version": 2,
     "inherits": "fdmprinter",
     "nozzles_supported": [0.4],
