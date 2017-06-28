@@ -585,7 +585,7 @@ class SlicingManager(object):
 			profile_name = entry[:-len(".profile")]
 
 			# creates a shallow slicing profile
-			profiles[profile_name] = self._create_shallow_profile(profile_name, slicer, "profile", require_configured)
+			profiles[profile_name] = self._create_shallow_profile(profile_name, slicer, ".profile", require_configured)
 		return profiles
 
 	def all_profiles_list_json(self, slicer, require_configured=False, from_current_printer=True, nozzle_size=None):
