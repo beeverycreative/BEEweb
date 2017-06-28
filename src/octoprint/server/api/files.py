@@ -354,6 +354,18 @@ def gcodeFileCommand(filename, target):
 		else:
 			profile = None
 
+		if "resolution" in data.keys() and data["resolution"]:
+			resolution = data["resolution"]
+			del data["resolution"]
+		else:
+			resolution = None
+
+		if "nozzle" in data.keys() and data["nozzle"]:
+			nozzle = data["nozzle"]
+			del data["nozzle"]
+		else:
+			nozzle = None
+
 		if "printerProfile" in data.keys() and data["printerProfile"]:
 			printerProfile = data["printerProfile"]
 			del data["printerProfile"]
@@ -408,6 +420,8 @@ def gcodeFileCommand(filename, target):
 			                  printer_profile_id=printerProfile,
 			                  position=position,
 			                  overrides=overrides,
+							  resolution=resolution,
+							  nozzle_size=nozzle,
 			                  callback=slicing_done,
 			                  callback_args=(target, destination, select_after_slicing, print_after_slicing, model_to_remove_after_slicing))
 		except octoprint.slicing.UnknownProfile:
