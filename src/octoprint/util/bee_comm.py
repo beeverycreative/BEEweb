@@ -162,28 +162,31 @@ class BeeCom(MachineCom):
         # The following lines would prevent sending custom commands to the printer during a print job
         #if self.isPrinting() and not self.isSdFileSelected():
         #    self._commandQueue.put((cmd, cmd_type))
+        try:
+            if self.isOperational():
 
-        if self.isOperational():
+                wait = None
+                if "g" in cmd.lower():
+                    wait = "3"
 
-            wait = None
-            if "g" in cmd.lower():
-                wait = "3"
+                resp = self._beeCommands.sendCmd(cmd, wait)
 
-            resp = self._beeCommands.sendCmd(cmd, wait)
+                if resp:
+                    # puts the response in the monitor queue
+                    self._responseQueue.put(resp)
 
-            if resp:
-                # puts the response in the monitor queue
-                self._responseQueue.put(resp)
+                    # logs the command reply with errors
+                    splits = resp.rstrip().split("\n")
+                    for r in splits:
+                        if "Error" in r:
+                            self._logger.warning(r)
 
-                # logs the command reply with errors
-                splits = resp.rstrip().split("\n")
-                for r in splits:
-                    if "Error" in r:
-                        self._logger.warning(r)
+                    return True
+                else:
+                    return False
+        except Exception as ex:
+            self._logger.error(ex)
 
-                return True
-            else:
-                return False
 
     def close(self, is_error=False, wait=True, timeout=10.0, *args, **kwargs):
         """
@@ -457,6 +460,64 @@ class BeeCom(MachineCom):
         self.setShutdownState()
 
         eventManager().fire(Events.POWER_OFF, payload)
+
+    def startHeating(self, targetTemperature=210):
+        """
+        Starts the heating procedure
+        :param targetTemperature:
+        :return:
+        """
+        try:
+            self._changeState(self.STATE_HEATING)
+            return self._beeCommands.startHeating(targetTemperature)
+        except Exception as ex:
+            self._logger.error(ex)
+
+
+    def cancelHeating(self):
+        """
+        Cancels the heating procedure
+        :return:
+        """
+        try:
+            self._changeState(self.STATE_OPERATIONAL)
+            return self._beeCommands.cancelHeating()
+        except Exception as ex:
+            self._logger.error(ex)
+
+
+    def heatingDone(self):
+        """
+        Runs the necessary commands after the heating operation is finished
+        :return:
+        """
+        try:
+            self._changeState(self.STATE_OPERATIONAL)
+            return self._beeCommands.goToLoadUnloadPos()
+        except Exception as ex:
+            self._logger.error(ex)
+
+
+    def unload(self):
+        """
+        Unloads the filament from the printer
+        :return:
+        """
+        try:
+            return self._beeCommands.unload()
+        except Exception as ex:
+            self._logger.error(ex)
+
+
+    def load(self):
+        """
+        Loads the filament to the printer
+        :return:
+        """
+        try:
+            return self._beeCommands.load()
+        except Exception as ex:
+            self._logger.error(ex)
 
     def initSdCard(self):
         """

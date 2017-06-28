@@ -367,7 +367,7 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().startHeating(targetTemperature)
+            return self._comm.startHeating(targetTemperature)
         except Exception as ex:
             self._logger.error(ex)
 
@@ -378,7 +378,7 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().cancelHeating()
+            return self._comm.cancelHeating()
         except Exception as ex:
             self._logger.error(ex)
 
@@ -389,7 +389,7 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().goToLoadUnloadPos()
+            return self._comm.heatingDone()
         except Exception as ex:
             self._logger.error(ex)
 
@@ -400,7 +400,7 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().unload()
+            return self._comm.unload()
         except Exception as ex:
             self._logger.error(ex)
 
@@ -411,7 +411,7 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().load()
+            return self._comm.load()
         except Exception as ex:
             self._logger.error(ex)
 
