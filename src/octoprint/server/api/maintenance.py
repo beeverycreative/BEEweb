@@ -19,14 +19,17 @@ def startHeating():
 	if not printer.is_operational():
 		return make_response("Printer is not operational", 409)
 
-	profile_name = printer.getSelectedFilamentProfile().display_name
-	if "petg" in profile_name.lower() or "nylon" in profile_name.lower():
-		printer.startHeating(230)
-	elif "tpu" in profile_name.lower() :
-		printer.startHeating(225)
-	else:
-		printer.startHeating()  # In the future we might pass the extruder identifier here in case of more than 1 extruder
-
+	try:
+		profile_name = printer.getSelectedFilamentProfile().display_name
+		if "petg" in profile_name.lower() or "nylon" in profile_name.lower():
+			printer.startHeating(230)
+		elif "tpu" in profile_name.lower() :
+			printer.startHeating(225)
+		else:
+			printer.startHeating()  # In the future we might pass the extruder identifier here in case of more than 1 extruder
+	except:
+		# if no filament in printer
+		printer.startHeating()
 	return NO_CONTENT
 
 @api.route("/maintenance/cancel_heating", methods=["POST"])
@@ -205,7 +208,7 @@ def saveFilament():
 			printer.set_nozzle_temperature(temperature_new_filament)
 
 	except Exception as e:
-		print("No temperature define for filament selected %r" % e)
+		print("No temperature defined for filament selected %r" % e)
 
 	resp = printer.setFilamentString(filamentStr)
 

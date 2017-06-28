@@ -352,6 +352,12 @@ def gcodeFileCommand(filename, target):
 		if currentFilename == destination and currentOrigin == target and (printer.is_printing() or printer.is_paused()):
 			make_response("Trying to slice into file that is currently being printed: %s" % destination, 409)
 
+		if "profile" in data.keys() and data["profile"]:
+			profile = data["profile"]
+			del data["profile"]
+		else:
+			profile = None
+
 		if "resolution" in data.keys() and data["resolution"]:
 			resolution = data["resolution"]
 			del data["resolution"]
@@ -363,12 +369,6 @@ def gcodeFileCommand(filename, target):
 			del data["nozzle"]
 		else:
 			nozzle = None
-
-		if "profile" in data.keys() and data["profile"]:
-			profile = data["profile"]
-			del data["profile"]
-		else:
-			profile = None
 
 		if "printerProfile" in data.keys() and data["printerProfile"]:
 			printerProfile = data["printerProfile"]
@@ -425,7 +425,7 @@ def gcodeFileCommand(filename, target):
 			                  position=position,
 			                  overrides=overrides,
 							  resolution=resolution,
-							  nozzle_size = nozzle,
+							  nozzle_size=nozzle,
 			                  callback=slicing_done,
 			                  callback_args=(target, destination, select_after_slicing, print_after_slicing, model_to_remove_after_slicing))
 		except octoprint.slicing.UnknownProfile:

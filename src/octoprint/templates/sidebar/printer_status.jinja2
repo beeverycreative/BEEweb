@@ -78,6 +78,10 @@
         <span class="m-icon printwicon" ></span>
         {{ _('Print...') }}
     </button>
+    <button class="btn-toggle-print-memory" id="print_memory" data-toggle="tooltip" title="{{ _('Printer options') }}"
+        data-bind="click: togglePrintFromMemory, enable: enablePreparePrint">
+        <span class="s-icon dropdownwicon" ></span>
+    </button>
 </div>
 
 <div id="printFromMemoryDiv" class="hidden">

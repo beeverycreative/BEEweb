@@ -71,7 +71,7 @@ $(function() {
              return self.loginState.isUser() && self.filename() != undefined;
         });
         self.showShutdownAndChangeFilament = ko.pureComputed(function() {
-            return !self.isShutdown() && self.loginState.isUser() && self.isPaused() && self.printerName()!="BEETHEFIRST";
+            return !self.isShutdown() && self.loginState.isUser() && self.isPaused();
         });
         self.showFilename = ko.pureComputed(function() {
             return self.isSelectedFile() && !self.connection.isErrorOrClosed();

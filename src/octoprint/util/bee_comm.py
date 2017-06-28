@@ -199,8 +199,12 @@ class BeeCom(MachineCom):
             self._beeCommands.stopStatusMonitor()
 
         if self._beeConn is not None:
-            self._beeConn.close()
-            self._changeState(self.STATE_CLOSED)
+            try:
+                self._beeConn.close()
+            except Exception as ex:
+                self._logger.error(ex)
+
+        self._changeState(self.STATE_CLOSED)
 
     def _changeState(self, newState):
         if self._state == newState:
