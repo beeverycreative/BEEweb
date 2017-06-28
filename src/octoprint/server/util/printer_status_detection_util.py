@@ -37,9 +37,14 @@ class StatusDetectionMonitorThread(threading.Thread):
 			# At the moment we only want to detect possible abrupt changes to shutdown
 			# We must also verify if the print is not resuming, because during the resume from shutdown
 			# the state is still in Shutdown (in the printer)
-			if self.bee_comm.getCommandsInterface().isShutdown() and not self.bee_comm.getCommandsInterface().isResuming():
-				self._logger.info("BVC Printer Shutdown detected.")
-				self.bee_comm.setShutdownState()
+			try:
+				if self.bee_comm.getCommandsInterface().isShutdown() and not self.bee_comm.getCommandsInterface().isResuming():
+					self._logger.info("BVC Printer Shutdown detected.")
+					self.bee_comm.setShutdownState()
+
+			except Exception as ex:
+				self._logger.error('Status detection monitor error: ' + str(ex))
+
 
 	def stop_status_monitor(self):
 		self._controlFlag = False

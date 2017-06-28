@@ -82,6 +82,11 @@ class BeePrinter(Printer):
                 self._isConnecting = False
                 return False
 
+            # makes sure the status monitor thread is stopped
+            if self._bvc_status_thread is not None:
+                self._bvc_status_thread.stop_status_monitor()
+                self._bvc_status_thread = None
+
             if self._comm is not None:
                 if not self._comm.isBusy():
                     self._comm.close()
@@ -300,13 +305,15 @@ class BeePrinter(Printer):
         if self._lastJogTime is not None:
             while (time.time() - self._lastJogTime) < 0.5:
                 time.sleep(0.25)
-
-        if axis == 'x':
-            bee_commands.move(amount, 0, 0, None, movement_speed)
-        elif axis == 'y':
-            bee_commands.move(0, amount, 0, None, movement_speed)
-        elif axis == 'z':
-            bee_commands.move(0, 0, amount, None, movement_speed)
+        try:
+            if axis == 'x':
+                bee_commands.move(amount, 0, 0, None, movement_speed)
+            elif axis == 'y':
+                bee_commands.move(0, amount, 0, None, movement_speed)
+            elif axis == 'z':
+                bee_commands.move(0, 0, amount, None, movement_speed)
+        except Exception as ex:
+            self._logger.exception(ex)
 
         self._lastJogTime = time.time()
 
@@ -328,11 +335,13 @@ class BeePrinter(Printer):
 
         bee_commands = self._comm.getCommandsInterface()
 
-        if 'z' in axes:
-            bee_commands.homeZ()
-        elif 'x' in axes and 'y' in axes:
-            bee_commands.homeXY()
-
+        try:
+            if 'z' in axes:
+                bee_commands.homeZ()
+            elif 'x' in axes and 'y' in axes:
+                bee_commands.homeXY()
+        except Exception as ex:
+            self._logger.exception(ex)
 
     def extrude(self, amount):
         """
@@ -833,16 +842,18 @@ class BeePrinter(Printer):
         Gets the current printer firmware version
         :return: string
         """
-        if self._comm is not None and self._comm.getCommandsInterface() is not None:
-            firmware_v = self._comm.getCommandsInterface().getFirmwareVersion()
+        try:
+            if self._comm is not None and self._comm.getCommandsInterface() is not None:
+                firmware_v = self._comm.getCommandsInterface().getFirmwareVersion()
 
-            if firmware_v is not None:
-                return firmware_v
+                if firmware_v is not None:
+                    return firmware_v
+                else:
+                    return 'Not available'
             else:
                 return 'Not available'
-        else:
-            return 'Not available'
-
+        except Exception as ex:
+            self._logger.exception(ex)
 
     def get_printer_serial(self):
         """
@@ -908,17 +919,20 @@ class BeePrinter(Printer):
                                   self._comm.getPrintTime(), self._comm.getCleanedPrintTime())
 
             # If the status from the printer is no longer printing runs the post-print trigger
-            if progress >= 1 \
-                    and self._comm.getCommandsInterface().isPreparingOrPrinting() is False:
+            try:
+                if progress >= 1 and self._comm.getCommandsInterface().isPreparingOrPrinting() is False:
 
-                self._comm.getCommandsInterface().stopStatusMonitor()
-                self._runningCalibrationTest = False
+                    self._comm.getCommandsInterface().stopStatusMonitor()
+                    self._runningCalibrationTest = False
 
-                # Runs the print finish communications callback
-                self._comm.triggerPrintFinished()
+                    # Runs the print finish communications callback
+                    self._comm.triggerPrintFinished()
 
-                self._setProgressData()
-                self._resetPrintProgress()
+                    self._setProgressData()
+                    self._resetPrintProgress()
+
+            except Exception as ex:
+                self._logger.error(ex)
 
 
     def on_comm_file_selected(self, filename, filesize, sd):
@@ -1116,52 +1130,60 @@ class BeePrinter(Printer):
         :param printTimeLeft:
         :return:
         """
-        estimatedTotalPrintTime = self._estimateTotalPrintTime(completion, printTimeLeft)
-        totalPrintTime = estimatedTotalPrintTime
+        try:
+            estimatedTotalPrintTime = self._estimateTotalPrintTime(completion, printTimeLeft)
+            totalPrintTime = estimatedTotalPrintTime
 
-        if self._selectedFile and "estimatedPrintTime" in self._selectedFile \
-                and self._selectedFile["estimatedPrintTime"]:
+            if self._selectedFile and "estimatedPrintTime" in self._selectedFile \
+                    and self._selectedFile["estimatedPrintTime"]:
 
-            statisticalTotalPrintTime = self._selectedFile["estimatedPrintTime"]
-            if completion and printTimeLeft:
-                if estimatedTotalPrintTime is None:
-                    totalPrintTime = statisticalTotalPrintTime
-                else:
-                    if completion < 0.5:
-                        sub_progress = completion * 2
+                statisticalTotalPrintTime = self._selectedFile["estimatedPrintTime"]
+                if completion and printTimeLeft:
+                    if estimatedTotalPrintTime is None:
+                        totalPrintTime = statisticalTotalPrintTime
                     else:
-                        sub_progress = 1.0
-                    totalPrintTime = (1 - sub_progress) * statisticalTotalPrintTime + sub_progress * estimatedTotalPrintTime
+                        if completion < 0.5:
+                            sub_progress = completion * 2
+                        else:
+                            sub_progress = 1.0
+                        totalPrintTime = (1 - sub_progress) * statisticalTotalPrintTime + sub_progress * estimatedTotalPrintTime
 
-        self._progress = completion
-        self._printTime = printTime
-        self._printTimeLeft = totalPrintTime - printTimeLeft if (totalPrintTime is not None and printTimeLeft is not None) else None
-        if printTime is None:
-            self._elapsedTime = 0
+            self._progress = completion
+            self._printTime = printTime
+            self._printTimeLeft = totalPrintTime - printTimeLeft if (totalPrintTime is not None and printTimeLeft is not None) else None
+            if printTime is None:
+                self._elapsedTime = 0
+
+        except Exception as ex:
+            self._logger.error(ex)
 
         try:
             fileSize=int(self._selectedFile['filesize'])
         except Exception:
             fileSize=None
 
-        temperatureTarget = self._comm.getCommandsInterface().getTargetTemperature()
-        if temperatureTarget == 0 :
-            temperatureTarget = None
+        try:
+            temperatureTarget = self._comm.getCommandsInterface().getTargetTemperature()
+            if temperatureTarget == 0 :
+                temperatureTarget = None
 
-        self._stateMonitor.set_progress({
-            "completion": self._progress * 100 if self._progress is not None else None,
-            "filepos": filepos,
-            "printTime": int(self._elapsedTime * 60) if self._elapsedTime is not None else None,
-            "printTimeLeft": int(self._printTimeLeft) if self._printTimeLeft is not None else None,
-            "fileSizeBytes": fileSize,
-            "temperatureTarget": temperatureTarget
-        })
+            self._stateMonitor.set_progress({
+                "completion": self._progress * 100 if self._progress is not None else None,
+                "filepos": filepos,
+                "printTime": int(self._elapsedTime * 60) if self._elapsedTime is not None else None,
+                "printTimeLeft": int(self._printTimeLeft) if self._printTimeLeft is not None else None,
+                "fileSizeBytes": fileSize,
+                "temperatureTarget": temperatureTarget
+            })
 
-        if completion:
-            progress_int = int(completion * 100)
-            if self._lastProgressReport != progress_int:
-                self._lastProgressReport = progress_int
-                self._reportPrintProgressToPlugins(progress_int)
+            if completion:
+                progress_int = int(completion * 100)
+                if self._lastProgressReport != progress_int:
+                    self._lastProgressReport = progress_int
+                    self._reportPrintProgressToPlugins(progress_int)
+
+        except Exception as ex:
+            self._logger.error(ex)
 
 
     def _resetPrintProgress(self):
