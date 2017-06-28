@@ -204,11 +204,14 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 		self._save_profile(path, new_profile, allow_overwrite=allow_overwrite)
 
-	def do_slice(self, model_path, printer_profile, machinecode_path=None, profile_path=None, position=None, overrides=None, printer_name=None, resolution=None, nozzle_size=None, on_progress=None, on_progress_args=None, on_progress_kwargs=None):
+	def do_slice(self, model_path, printer_profile, model_path1=None, machinecode_path=None, profile_path=None, position=None, overrides=None, resolution=None, nozzle_size=None, on_progress=None, on_progress_args=None, on_progress_kwargs=None):
 		try:
 			with self._job_mutex:
 				if not profile_path:
 					profile_path = self._settings.get(["default_profile"])
+				else :
+					profile_path = self._desanitize(profile_path)
+
 				if not machinecode_path:
 					path, _ = os.path.splitext(model_path)
 					machinecode_path = path + ".gco"
@@ -228,17 +231,28 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 				self._cura_logger.info(u"### Slicing %s to %s using profile stored at %s" % (model_path, machinecode_path, profile_path))
 
-				engine_settings = self._convert_to_engine(profile_path, printer_profile, posX, posY)
+				engine_settings, extruder_settings = self.getSettingsToSlice(printer_profile["name"], nozzle_size, profile_path, resolution, overrides)
 
 				executable = self._settings.get(["cura_engine2"])
 				if not executable:
 					return False, "Path to CuraEngine is not configured "
 
 				working_dir, _ = os.path.split(executable)
-				args = [executable, '-v', '-p']
+				args = [executable, 'slice', '-v', '-p', '-j', 'profiles/Definition/fdmprinter.def.json']
 				for k, v in engine_settings.items():
-					args += ["-s", "%s=%s" % (k, str(v))]
-				args += ["-o", machinecode_path, model_path]
+					args += ["-s", "%s=%s" % (k, str(v['default_value']))]
+				if extruder_settings is not None:
+					args += ["-g"]
+					for extruder in extruder_settings:
+						args += ["-e" + str(extruder)]
+
+						for k, v in extruder_settings[extruder].items():
+							args += ["-s", "%s=%s" % (k, str(v['default_value']))]
+
+					args += ["-o", self.machinecode_path, "-e0", "-l", self.model_path, "-e1", "-l", self.model_path1, "-s", "extruder_nr=1"]
+
+				else:
+					args += ["-o", self.machinecode_path, "-l", self.model_path]
 
 				self._logger.info(u"Running %r in %s" % (" ".join(args), working_dir))
 
@@ -398,7 +412,9 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 
 
-	def pathToPrinter(self, slicer_profile_path, filament_id):
+	def pathToPrinter(self, filament_id):
+		from octoprint.server import slicingManager
+		slicer_profile_path = slicingManager.get_slicer_profile_path("cura2")
 		custom = True
 		for entry in os.listdir(slicer_profile_path + "/Quality/"):
 			if not entry.endswith(".json"):
@@ -422,8 +438,10 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 				return slicer_profile_path + "/Variants/" + entry
 		return None
 
-	def isPrinterAndNozzleCompatible(self, slicer_profile_path, filament_id, printer_id, nozzle_id):
+	def isPrinterAndNozzleCompatible(self, filament_id, printer_id, nozzle_id):
 		# check if printer is can use this filament profile
+		from octoprint.server import slicingManager
+		slicer_profile_path= slicingManager.get_slicer_profile_path("cura2")
 		try:
 			#check nozzle
 			for entry in os.listdir(slicer_profile_path + "/Printers/"):
@@ -490,6 +508,139 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		for dictionary in dict_args:
 			result.update(dictionary)
 		return result
+
+	def _desanitize(self, name):
+		if name is None:
+			return None
+
+		if "/" in name or "\\" in name:
+			raise ValueError("name must not contain / or \\")
+		try:
+			import string
+			valid_chars = "-_.() {ascii}{digits}".format(ascii=string.ascii_letters, digits=string.digits)
+			sanitized_name = ''.join(c for c in name if c in valid_chars)
+			sanitized_name = sanitized_name.replace("_", " ")
+			pos= sanitized_name.index(' bee')
+			sanitized_name =sanitized_name[:pos]
+			return str(sanitized_name)
+		except:
+			pass
+
+		return name
+
+
+	def getSettingsToSlice(self, printer, nozzle, filament, quality, overrides):
+		extruder_settings = None
+		from octoprint.server import slicingManager
+		slicer_profile_path = slicingManager.get_slicer_profile_path("cura2")+'/'
+		engine_settings = self.getPrinterOverrides(printer, slicer_profile_path);
+
+		if len(filament) > 1 and len(nozzle) > 1:
+			extruder_settings = {}
+			for count in range(0, len(filament)):
+				extruder_settings[count] = self.getFilamentOverrides(filament[count], printer, nozzle[count], slicer_profile_path, quality)
+				extruder_settings[count] = self.merge_dicts(extruder_settings[count], self.getNozzleOverrides(nozzle[count], slicer_profile_path))
+		else:
+			filament_Overrides = self.getFilamentOverrides(filament[0], printer, nozzle[0], slicer_profile_path, quality);
+			nozzle_Overrides = self.getNozzleOverrides(nozzle[0], slicer_profile_path);
+			engine_settings = self.merge_dicts(engine_settings, filament_Overrides, nozzle_Overrides)
+
+		return engine_settings, extruder_settings
+
+
+	def getPrinterOverrides(self, printer_id, slicer_profile_path):
+		for entry in os.listdir(slicer_profile_path + "Printers/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			if printer_id not in entry.lower():
+				continue
+
+			with open('profiles/Definition/' + entry) as data_file:
+				printer_json = json.load(data_file)
+
+		return printer_json['overrides']
+
+
+	def getNozzleOverrides(self, nozzle_id, slicer_profile_path):
+		for entry in os.listdir(slicer_profile_path + "Nozzles/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			if nozzle_id not in entry.lower():
+				continue
+
+			# creates a shallow slicing profile
+			with open('profiles/Nozzles/' + entry) as data_file:
+				nozzle_json = json.load(data_file)
+
+		return nozzle_json['overrides']
+
+
+	def getFilamentOverrides(self, filament_id, printer_id, nozzle_id, slicer_profile_path, quality=None):
+		overrides_Values = {}
+		custom = True
+		for entry in os.listdir(slicer_profile_path + "Quality/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			if filament_id not in entry.lower():
+				continue
+
+			# creates a shallow slicing profile
+			with open('profiles/Quality/' + entry) as data_file:
+				filament_json = json.load(data_file)
+				custom = False
+		if custom:
+			for entry in os.listdir(slicer_profile_path + "Variants/"):
+				if not entry.endswith(".json"):
+					# we are only interested in profiles and no hidden files
+					continue
+
+				if filament_id not in entry.lower():
+					continue
+
+				# creates a shallow slicing profile
+				with open('profiles/Variants/' + entry) as data_file:
+					filament_json = json.load(data_file)
+
+		if 'PrinterGroups' in filament_json:
+			for list in filament_json['PrinterGroups']:
+				if printer_id in list['group_printers']:
+					if quality in list['quality']:
+						overrides_Values = list['quality'][quality]
+
+		if 'overrides' in filament_json:
+			overrides_Values = self.merge_dicts(filament_json['overrides'], overrides_Values)
+
+		if 'nozzles_supported' in filament_json:
+			if nozzle_id not in str(filament_json['nozzles_supported']):
+				print "Nozzle not supported"
+
+		if 'inherits' in filament_json:
+			overrides_Values = self.merge_dicts(self.getParentOverrides(filament_json['inherits'], nozzle_id),
+												overrides_Values)
+
+		return overrides_Values
+
+
+	def getParentOverrides(self, filament_id, nozzle_id):
+		overrides_Values = {}
+		with open('profiles/Materials/' + filament_id + ".json") as data_file:
+			filament_json = json.load(data_file)
+
+		if 'overrides' in filament_json:
+			overrides_Values = self.merge_dicts(filament_json['overrides'], overrides_Values)
+		if 'inherits' in filament_json:
+			overrides_Values = self.merge_dicts(self.getParentOverrides(filament_json['inherits'], nozzle_id),
+												overrides_Values)
+		return overrides_Values
+
+
+
 
 __plugin_name__ = "CuraEngine (<= 2.6)"
 __plugin_author__ = "Bruno Andrade"

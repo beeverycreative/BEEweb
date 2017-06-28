@@ -10,7 +10,6 @@ In this module the slicing support of OctoPrint is encapsulated.
 
 .. autoclass:: SlicingManager
    :members:
-
 """
 
 from __future__ import absolute_import
@@ -18,6 +17,7 @@ from __future__ import absolute_import
 __author__ = "Gina Häußge <osd@foosel.net>"
 __license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 __copyright__ = "Copyright (C) 2014 The OctoPrint Project - Released under terms of the AGPLv3 License"
+
 
 import os
 import octoprint.plugin
@@ -293,7 +293,6 @@ class SlicingManager(object):
 						machinecode_path=machinecode_path,
 						profile_path=profile_name,
 						overrides=overrides,
-						printer_name=printer_profile,
 						resolution=resolution,
 						nozzle_size=nozzle_size,
 						position=position,
@@ -634,10 +633,10 @@ class SlicingManager(object):
 
 					if from_current_printer:
 						slicer_object = self.get_slicer(slicer)
-						if not slicer_object.isPrinterAndNozzleCompatible(slicer_profile_path, entry, printer_id, nozzle_size):
+						if not slicer_object.isPrinterAndNozzleCompatible(entry, printer_id, nozzle_size):
 							continue
 
-					# path = os.path.join(slicer_profile_path, entry)
+					#path = os.path.join(slicer_profile_path, entry)
 					profile_name = entry[:-len(".json")]
 
 					# creates a shallow slicing profile
@@ -694,7 +693,7 @@ class SlicingManager(object):
 
 		if settings().get(["slicing", "cura2"]) and slicer == "cura2":
 			slicer_object = self.get_slicer(slicer)
-			path=slicer_object.pathToPrinter(self.get_slicer_profile_path(slicer),self._desanitize(name))
+			path=slicer_object.pathToPrinter(self._desanitize(name))
 		else:
 			name = self._sanitize(name)
 			path = os.path.join(self.get_slicer_profile_path(slicer), "{name}.profile".format(name=name))
