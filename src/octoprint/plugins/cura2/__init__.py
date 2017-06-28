@@ -10,6 +10,7 @@ import logging.handlers
 import os
 import flask
 import math
+import json
 
 import octoprint.plugin
 import octoprint.util
@@ -399,7 +400,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 	def pathToPrinter(self, slicer_profile_path, filament_id):
 		custom = True
-		for entry in os.listdir(self.slicer_profile_path + "/Quality/"):
+		for entry in os.listdir(slicer_profile_path + "/Quality/"):
 			if not entry.endswith(".json"):
 				# we are only interested in profiles and no hidden files
 				continue
@@ -407,9 +408,9 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 			if filament_id.lower() not in entry.lower():
 				continue
 
-			return self.slicer_profile_path + "/Quality/" + entry
+			return slicer_profile_path + "/Quality/" + entry
 		if custom:
-			for entry in os.listdir(self.slicer_profile_path + "/Variants/"):
+			for entry in os.listdir(slicer_profile_path + "/Variants/"):
 				if not entry.endswith(".json"):
 					# we are only interested in profiles and no hidden files
 					continue
@@ -418,14 +419,14 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 					continue
 
 				# creates a shallow slicing profile
-				return self.slicer_profile_path + "/Variants/" + entry
+				return slicer_profile_path + "/Variants/" + entry
 		return None
 
 	def isPrinterAndNozzleCompatible(self, slicer_profile_path, filament_id, printer_id, nozzle_id):
 		# check if printer is can use this filament profile
 		try:
 			#check nozzle
-			for entry in os.listdir(self.slicer_profile_path + "/Printers/"):
+			for entry in os.listdir(slicer_profile_path + "/Printers/"):
 				if not entry.endswith(".json"):
 					# we are only interested in profiles and no hidden files
 					continue
@@ -442,7 +443,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 			#Check filament with nozzle
 			custom = True
-			for entry in os.listdir(self.slicer_profile_path + "/Quality/"):
+			for entry in os.listdir(slicer_profile_path + "/Quality/"):
 				if not entry.endswith(".json"):
 					# we are only interested in profiles and no hidden files
 					continue
@@ -451,11 +452,11 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 					continue
 
 				# creates a shallow slicing profile
-				with open(self.slicer_profile_path + "/Quality/"+ entry) as data_file:
+				with open(slicer_profile_path + "/Quality/"+ entry) as data_file:
 					filament_json = json.load(data_file)
 					custom = False
 			if custom:
-				for entry in os.listdir(self.slicer_profile_path + "/Variants/"):
+				for entry in os.listdir(slicer_profile_path + "/Variants/"):
 					if not entry.endswith(".json"):
 						# we are only interested in profiles and no hidden files
 						continue
@@ -464,7 +465,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 						continue
 
 					# creates a shallow slicing profile
-					with open(self.slicer_profile_path + "/Variants/" + entry) as data_file:
+					with open(slicer_profile_path + "/Variants/" + entry) as data_file:
 						filament_json = json.load(data_file)
 
 			if 'nozzles_supported' in filament_json:

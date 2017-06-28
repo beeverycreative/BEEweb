@@ -633,7 +633,8 @@ class SlicingManager(object):
 						continue
 
 					if from_current_printer:
-						if not slicer.isPrinterAndNozzleCompatible(slicer_profile_path, entry, printer_id, nozzle_size):
+						slicer_object = self.get_slicer(slicer)
+						if not slicer_object.isPrinterAndNozzleCompatible(slicer_profile_path, entry, printer_id, nozzle_size):
 							continue
 
 					# path = os.path.join(slicer_profile_path, entry)
@@ -692,7 +693,8 @@ class SlicingManager(object):
 			raise ValueError("name must be set")
 
 		if settings().get(["slicing", "cura2"]) and slicer == "cura2":
-			path=slicer.pathToPrinter(self.get_slicer_profile_path(slicer),self._desanitize(name))
+			slicer_object = self.get_slicer(slicer)
+			path=slicer_object.pathToPrinter(self.get_slicer_profile_path(slicer),self._desanitize(name))
 		else:
 			name = self._sanitize(name)
 			path = os.path.join(self.get_slicer_profile_path(slicer), "{name}.profile".format(name=name))
