@@ -17,7 +17,7 @@ import octoprint.util
 import octoprint.slicing
 from octoprint.settings import settings
 
-from .profile import Profile
+#from .profile import Profile
 
 class CuraPlugin(octoprint.plugin.SlicerPlugin,
                  octoprint.plugin.SettingsPlugin,
