@@ -231,14 +231,14 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 				self._cura_logger.info(u"### Slicing %s to %s using profile stored at %s" % (model_path, machinecode_path, profile_path))
 
-				engine_settings, extruder_settings = self.getSettingsToSlice(printer_profile["name"], nozzle_size, profile_path, resolution, overrides)
+				engine_settings, extruder_settings = self.getSettingsToSlice(printer_profile["name"], str(nozzle_size), profile_path, resolution, overrides)
 
 				executable = self._settings.get(["cura_engine2"])
 				if not executable:
 					return False, "Path to CuraEngine is not configured "
 
 				working_dir, _ = os.path.split(executable)
-				args = [executable, 'slice', '-v', '-p', '-j', 'profiles/Definition/fdmprinter.def.json']
+				args = [executable, 'slice', '-v', '-p', '-j', 'profiles/Printers/fdmprinter.def.json']
 				for k, v in engine_settings.items():
 					args += ["-s", "%s=%s" % (k, str(v['default_value']))]
 				if extruder_settings is not None:
@@ -249,10 +249,10 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 						for k, v in extruder_settings[extruder].items():
 							args += ["-s", "%s=%s" % (k, str(v['default_value']))]
 
-					args += ["-o", self.machinecode_path, "-e0", "-l", self.model_path, "-e1", "-l", self.model_path1, "-s", "extruder_nr=1"]
+					args += ["-o", machinecode_path, "-e0", "-l", model_path, "-e1", "-l", model_path1, "-s", "extruder_nr=1"]
 
 				else:
-					args += ["-o", self.machinecode_path, "-l", self.model_path]
+					args += ["-o", machinecode_path, "-l", model_path]
 
 				self._logger.info(u"Running %r in %s" % (" ".join(args), working_dir))
 
@@ -535,18 +535,32 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		slicer_profile_path = slicingManager.get_slicer_profile_path("cura2")+'/'
 		engine_settings = self.getPrinterOverrides(printer, slicer_profile_path);
 
-		if len(filament) > 1 and len(nozzle) > 1:
+		if isinstance(nozzle, list) and isinstance(filament, list):
 			extruder_settings = {}
 			for count in range(0, len(filament)):
 				extruder_settings[count] = self.getFilamentOverrides(filament[count], printer, nozzle[count], slicer_profile_path, quality)
 				extruder_settings[count] = self.merge_dicts(extruder_settings[count], self.getNozzleOverrides(nozzle[count], slicer_profile_path))
 		else:
-			filament_Overrides = self.getFilamentOverrides(filament[0], printer, nozzle[0], slicer_profile_path, quality);
-			nozzle_Overrides = self.getNozzleOverrides(nozzle[0], slicer_profile_path);
+			filament_Overrides = self.getFilamentOverrides(filament, printer, nozzle, slicer_profile_path, quality);
+			nozzle_Overrides = self.getNozzleOverrides(nozzle, slicer_profile_path);
 			engine_settings = self.merge_dicts(engine_settings, filament_Overrides, nozzle_Overrides)
+
+			engine_settings = self.overrideCustomValues(engine_settings,overrides)
 
 		return engine_settings, extruder_settings
 
+	def overrideCustomValues(self, engine_settings, overrides):
+
+		for field in overrides:
+			if field == "fill_density":
+				engine_settings["infill_sparse_density"]["default_value"] =overrides[field]
+			if field == "platform_adhesion":
+				if overrides[field] in ["none","brim","raft","skirt"]:
+					engine_settings["platform_adhesion"]["default_value"]  = overrides[field]
+			if field == "support":
+				if overrides[field] in ["none","everywhere","buildplate"]:
+					engine_settings["platform_adhesion"]["default_value"] = overrides[field]
+		return engine_settings
 
 	def getPrinterOverrides(self, printer_id, slicer_profile_path):
 		for entry in os.listdir(slicer_profile_path + "Printers/"):
@@ -554,10 +568,10 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 				# we are only interested in profiles and no hidden files
 				continue
 
-			if printer_id != entry.lower():
+			if printer_id.lower() != entry.lower()[:-len(".json")]:
 				continue
 
-			with open('profiles/Printers/' + entry) as data_file:
+			with open(slicer_profile_path +'Printers/' + entry) as data_file:
 				printer_json = json.load(data_file)
 
 		return printer_json['overrides']
@@ -573,7 +587,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 				continue
 
 			# creates a shallow slicing profile
-			with open('profiles/Nozzles/' + entry) as data_file:
+			with open(slicer_profile_path +'Nozzles/' + entry) as data_file:
 				nozzle_json = json.load(data_file)
 
 		return nozzle_json['overrides']
@@ -591,7 +605,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 				continue
 
 			# creates a shallow slicing profile
-			with open('profiles/Quality/' + entry) as data_file:
+			with open(slicer_profile_path +'Quality/' + entry) as data_file:
 				filament_json = json.load(data_file)
 				custom = False
 		if custom:
@@ -604,7 +618,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 					continue
 
 				# creates a shallow slicing profile
-				with open('profiles/Variants/' + entry) as data_file:
+				with open(slicer_profile_path +'Variants/' + entry) as data_file:
 					filament_json = json.load(data_file)
 
 		if 'PrinterGroups' in filament_json:
@@ -621,22 +635,19 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 				print "Nozzle not supported"
 
 		if 'inherits' in filament_json:
-			overrides_Values = self.merge_dicts(self.getParentOverrides(filament_json['inherits'], nozzle_id),
-												overrides_Values)
-
+			overrides_Values = self.merge_dicts(self.getParentOverrides(filament_json['inherits'], nozzle_id, slicer_profile_path), overrides_Values)
 		return overrides_Values
 
 
-	def getParentOverrides(self, filament_id, nozzle_id):
+	def getParentOverrides(self, filament_id, nozzle_id,slicer_profile_path):
 		overrides_Values = {}
-		with open('profiles/Materials/' + filament_id + ".json") as data_file:
+		with open(slicer_profile_path +'Materials/' + filament_id + ".json") as data_file:
 			filament_json = json.load(data_file)
 
 		if 'overrides' in filament_json:
 			overrides_Values = self.merge_dicts(filament_json['overrides'], overrides_Values)
 		if 'inherits' in filament_json:
-			overrides_Values = self.merge_dicts(self.getParentOverrides(filament_json['inherits'], nozzle_id),
-												overrides_Values)
+			overrides_Values = self.merge_dicts(self.getParentOverrides(filament_json['inherits'], nozzle_id, slicer_profile_path), overrides_Values)
 		return overrides_Values
 
 

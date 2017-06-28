@@ -26,6 +26,7 @@ class PlatformAdhesionTypes(object):
 	NONE = "none"
 	BRIM = "brim"
 	RAFT = "raft"
+	SKIRT = "skirt"
 
 class MachineShapeTypes(object):
 	SQUARE = "square"
