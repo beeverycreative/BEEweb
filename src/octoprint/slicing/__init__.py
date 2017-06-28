@@ -558,7 +558,7 @@ class SlicingManager(object):
 			profile_name = entry[:-len(".profile")]
 
 			# creates a shallow slicing profile
-			profiles[profile_name] = self._create_shallow_profile(profile_name, slicer, require_configured)
+			profiles[profile_name] = self._create_shallow_profile(profile_name, slicer, ".profile", require_configured)
 		return profiles
 
 
@@ -649,7 +649,7 @@ class SlicingManager(object):
 
 		return self.get_slicer(slicer).get_slicer_default_profile()
 
-	def _create_shallow_profile(self, profile_name, slicer, require_configured):
+	def _create_shallow_profile(self, profile_name, slicer, extensionFile, require_configured):
 
 		# reverses the name sanitization
 		formatted_name = profile_name.replace('_', ' ').title()
