@@ -11,8 +11,6 @@ In this module the slicing support of OctoPrint is encapsulated.
 .. autoclass:: SlicingManager
    :members:
 
-.. autoclass:: JsonProfileReader
-   :members: 
 """
 
 from __future__ import absolute_import
@@ -22,7 +20,6 @@ __license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agp
 __copyright__ = "Copyright (C) 2014 The OctoPrint Project - Released under terms of the AGPLv3 License"
 
 import os
-import json
 import octoprint.plugin
 import octoprint.events
 import octoprint.util
@@ -287,29 +284,57 @@ class SlicingManager(object):
 		if printer_profile is None:
 			printer_profile = self._printer_profile_manager.get_current_or_default()
 
-		def slicer_worker(slicer, model_path, machinecode_path, profile_name, overrides, printer_profile, position, callback, callback_args, callback_kwargs):
-			try:
-				slicer_name = slicer.get_slicer_properties()["type"]
-				with self._temporary_profile(slicer_name, name=profile_name, overrides=overrides) as profile_path:
+		if slicer_name == "cura2" and settings().get(["slicing", "cura2"]):
+			def slicer_worker(slicer, model_path, machinecode_path, profile_name, overrides, printer_profile, position, callback, callback_args, callback_kwargs):
+				try:
 					ok, result = slicer.do_slice(
 						model_path,
 						printer_profile,
 						machinecode_path=machinecode_path,
-						profile_path=profile_path,
+						profile_path=profile_name,
+						overrides=overrides,
+						printer_name=printer_profile,
+						resolution=resolution,
+						nozzle_size=nozzle_size,
 						position=position,
 						on_progress=on_progress,
 						on_progress_args=on_progress_args,
 						on_progress_kwargs=on_progress_kwargs
 					)
 
-				if not ok:
-					callback_kwargs.update(dict(_error=result))
-				elif result is not None and isinstance(result, dict) and "analysis" in result:
-					callback_kwargs.update(dict(_analysis=result["analysis"]))
-			except SlicingCancelled:
-				callback_kwargs.update(dict(_cancelled=True))
-			finally:
-				callback(*callback_args, **callback_kwargs)
+					if not ok:
+						callback_kwargs.update(dict(_error=result))
+					elif result is not None and isinstance(result, dict) and "analysis" in result:
+						callback_kwargs.update(dict(_analysis=result["analysis"]))
+				except SlicingCancelled:
+					callback_kwargs.update(dict(_cancelled=True))
+				finally:
+					callback(*callback_args, **callback_kwargs)
+
+		else:
+			def slicer_worker(slicer, model_path, machinecode_path, profile_name, overrides, printer_profile, position, callback, callback_args, callback_kwargs):
+				try:
+					slicer_name = slicer.get_slicer_properties()["type"]
+					with self._temporary_profile(slicer_name, name=profile_name, overrides=overrides) as profile_path:
+						ok, result = slicer.do_slice(
+							model_path,
+							printer_profile,
+							machinecode_path=machinecode_path,
+							profile_path=profile_path,
+							position=position,
+							on_progress=on_progress,
+							on_progress_args=on_progress_args,
+							on_progress_kwargs=on_progress_kwargs
+						)
+
+					if not ok:
+						callback_kwargs.update(dict(_error=result))
+					elif result is not None and isinstance(result, dict) and "analysis" in result:
+						callback_kwargs.update(dict(_analysis=result["analysis"]))
+				except SlicingCancelled:
+					callback_kwargs.update(dict(_cancelled=True))
+				finally:
+					callback(*callback_args, **callback_kwargs)
 
 		import threading
 		slicer_worker_thread = threading.Thread(target=slicer_worker,
@@ -600,7 +625,6 @@ class SlicingManager(object):
 
 			printer_id = printer_id.upper()
 
-		json_profile_reader = JsonProfileReader(slicer_profile_path)
 		for folder in os.listdir(slicer_profile_path):
 			if folder == "Quality" or folder == "Variants":
 				for entry in os.listdir(slicer_profile_path +"/" +folder):
@@ -609,7 +633,7 @@ class SlicingManager(object):
 						continue
 
 					if from_current_printer:
-						if not json_profile_reader.isPrinterAndNozzleCompatible(entry, printer_id, nozzle_size):
+						if not slicer.isPrinterAndNozzleCompatible(slicer_profile_path, entry, printer_id, nozzle_size):
 							continue
 
 					# path = os.path.join(slicer_profile_path, entry)
@@ -668,8 +692,7 @@ class SlicingManager(object):
 			raise ValueError("name must be set")
 
 		if settings().get(["slicing", "cura2"]) and slicer == "cura2":
-			json_profile_reader = JsonProfileReader(self.get_slicer_profile_path(slicer))
-			path=json_profile_reader.pathToPrinter(self._desanitize(name))
+			path=slicer.pathToPrinter(self.get_slicer_profile_path(slicer),self._desanitize(name))
 		else:
 			name = self._sanitize(name)
 			path = os.path.join(self.get_slicer_profile_path(slicer), "{name}.profile".format(name=name))
@@ -764,119 +787,3 @@ class SlicingManager(object):
 		return octoprint.slicing.SlicingProfile(properties["type"],
 												"unknown", profile_dict, display_name=formatted_name,
 												description=description)
-
-
-class JsonProfileReader:
-	slicer_profile_path = None
-
-	def __init__(self, slicer_profile_path):
-		self._logger = logging.getLogger(__name__)
-		self.slicer_profile_path = slicer_profile_path
-
-	def getHeader(self, filament_id, nameField):
-		return ""
-
-	def getValue(self, filament_id, key, printer_id=None, resolution=None, nozzle_id=None):
-		return ""
-
-	def isPrinterCompatible(self, filament_id, printer_id):
-		return False
-
-	def pathToPrinter(self,filament_id):
-		custom = True
-		for entry in os.listdir(self.slicer_profile_path + "/Quality/"):
-			if not entry.endswith(".json"):
-				# we are only interested in profiles and no hidden files
-				continue
-
-			if filament_id.lower() not in entry.lower():
-				continue
-
-			return self.slicer_profile_path + "/Quality/" + entry
-		if custom:
-			for entry in os.listdir(self.slicer_profile_path + "/Variants/"):
-				if not entry.endswith(".json"):
-					# we are only interested in profiles and no hidden files
-					continue
-
-				if filament_id.lower() not in entry.lower():
-					continue
-
-				# creates a shallow slicing profile
-				return self.slicer_profile_path + "/Variants/" + entry
-		return None
-
-	def isPrinterAndNozzleCompatible(self, filament_id, printer_id, nozzle_id):
-		# check if printer is can use this filament profile
-		try:
-			#check nozzle
-			for entry in os.listdir(self.slicer_profile_path + "/Printers/"):
-				if not entry.endswith(".json"):
-					# we are only interested in profiles and no hidden files
-					continue
-
-				if printer_id not in entry.lower():
-					continue
-
-				with open('profiles/Definition/' + entry) as data_file:
-					printer_json = json.load(data_file)
-
-					if 'nozzles_supported' in printer_json:
-						if nozzle_id not in str(printer_json['nozzles_supported']):
-							return False
-
-			#Check filament with nozzle
-			custom = True
-			for entry in os.listdir(self.slicer_profile_path + "/Quality/"):
-				if not entry.endswith(".json"):
-					# we are only interested in profiles and no hidden files
-					continue
-
-				if filament_id.lower() not in entry.lower():
-					continue
-
-				# creates a shallow slicing profile
-				with open(self.slicer_profile_path + "/Quality/"+ entry) as data_file:
-					filament_json = json.load(data_file)
-					custom = False
-			if custom:
-				for entry in os.listdir(self.slicer_profile_path + "/Variants/"):
-					if not entry.endswith(".json"):
-						# we are only interested in profiles and no hidden files
-						continue
-
-					if filament_id.lower() not in entry.lower():
-						continue
-
-					# creates a shallow slicing profile
-					with open(self.slicer_profile_path + "/Variants/" + entry) as data_file:
-						filament_json = json.load(data_file)
-
-			if 'nozzles_supported' in filament_json:
-				if str(float(nozzle_id)/1000) not in str(filament_json['nozzles_supported']):
-					return False
-
-			if 'PrinterGroups' in filament_json:
-				for list in filament_json['PrinterGroups']:
-					if printer_id.lower() in list['group_printers']:
-						return True
-		except:
-			self._logger.exception("Error while getting Values from profile ")
-
-		return False
-
-	def castValues(self, dicionary):
-		for item in dicionary:
-			dicionary[item] = self.castValue(dicionary[item])
-		return dicionary
-
-	def castValue(self, value):
-		if value in ['true', 'True']:
-			return True
-		if value in ['false', 'False']:
-			return False
-		if value.isdigit():
-			return int(value)
-		if '.' in value:
-			return float(value)
-		return value.lower()

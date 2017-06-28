@@ -203,7 +203,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 		self._save_profile(path, new_profile, allow_overwrite=allow_overwrite)
 
-	def do_slice(self, model_path, printer_profile, machinecode_path=None, profile_path=None, position=None, on_progress=None, on_progress_args=None, on_progress_kwargs=None):
+	def do_slice(self, model_path, printer_profile, machinecode_path=None, profile_path=None, position=None, overrides=None, printer_name=None, resolution=None, nozzle_size=None, on_progress=None, on_progress_args=None, on_progress_kwargs=None):
 		try:
 			with self._job_mutex:
 				if not profile_path:
@@ -395,6 +395,100 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		with octoprint.util.atomic_write(path, "wb", max_permissions=0o666) as f:
 			json.dump(profile, f, indent="  ")
 
+
+
+	def pathToPrinter(self, slicer_profile_path, filament_id):
+		custom = True
+		for entry in os.listdir(self.slicer_profile_path + "/Quality/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			if filament_id.lower() not in entry.lower():
+				continue
+
+			return self.slicer_profile_path + "/Quality/" + entry
+		if custom:
+			for entry in os.listdir(self.slicer_profile_path + "/Variants/"):
+				if not entry.endswith(".json"):
+					# we are only interested in profiles and no hidden files
+					continue
+
+				if filament_id.lower() not in entry.lower():
+					continue
+
+				# creates a shallow slicing profile
+				return self.slicer_profile_path + "/Variants/" + entry
+		return None
+
+	def isPrinterAndNozzleCompatible(self, slicer_profile_path, filament_id, printer_id, nozzle_id):
+		# check if printer is can use this filament profile
+		try:
+			#check nozzle
+			for entry in os.listdir(self.slicer_profile_path + "/Printers/"):
+				if not entry.endswith(".json"):
+					# we are only interested in profiles and no hidden files
+					continue
+
+				if printer_id not in entry.lower():
+					continue
+
+				with open('profiles/Definition/' + entry) as data_file:
+					printer_json = json.load(data_file)
+
+					if 'nozzles_supported' in printer_json:
+						if nozzle_id not in str(printer_json['nozzles_supported']):
+							return False
+
+			#Check filament with nozzle
+			custom = True
+			for entry in os.listdir(self.slicer_profile_path + "/Quality/"):
+				if not entry.endswith(".json"):
+					# we are only interested in profiles and no hidden files
+					continue
+
+				if filament_id.lower() not in entry.lower():
+					continue
+
+				# creates a shallow slicing profile
+				with open(self.slicer_profile_path + "/Quality/"+ entry) as data_file:
+					filament_json = json.load(data_file)
+					custom = False
+			if custom:
+				for entry in os.listdir(self.slicer_profile_path + "/Variants/"):
+					if not entry.endswith(".json"):
+						# we are only interested in profiles and no hidden files
+						continue
+
+					if filament_id.lower() not in entry.lower():
+						continue
+
+					# creates a shallow slicing profile
+					with open(self.slicer_profile_path + "/Variants/" + entry) as data_file:
+						filament_json = json.load(data_file)
+
+			if 'nozzles_supported' in filament_json:
+				if str(float(nozzle_id)/1000) not in str(filament_json['nozzles_supported']):
+					return False
+
+			if 'PrinterGroups' in filament_json:
+				for list in filament_json['PrinterGroups']:
+					if printer_id.lower() in list['group_printers']:
+						return True
+		except:
+			self._logger.exception("Error while getting Values from profile ")
+
+		return False
+
+	def merge_dicts(self, *dict_args):
+		"""
+		Given any number of dicts, shallow copy and merge into a new dict,
+		precedence goes to key value pairs in latter dicts.
+		"""
+		result = {}
+		for dictionary in dict_args:
+			result.update(dictionary)
+		return result
 
 __plugin_name__ = "CuraEngine (<= 2.6)"
 __plugin_author__ = "Bruno Andrade"
