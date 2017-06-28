@@ -694,6 +694,8 @@ class SlicingManager(object):
 		if settings().get(["slicing", "cura2"]) and slicer == "cura2":
 			slicer_object = self.get_slicer(slicer)
 			path=slicer_object.pathToPrinter(self._desanitize(name))
+			if path is None:
+				path = os.path.join(self.get_slicer_profile_path(slicer)+"/Variants", "{name}.json".format(name=name))
 		else:
 			name = self._sanitize(name)
 			path = os.path.join(self.get_slicer_profile_path(slicer), "{name}.profile".format(name=name))
@@ -723,14 +725,16 @@ class SlicingManager(object):
 
 		if "/" in name or "\\" in name:
 			raise ValueError("name must not contain / or \\")
-
-		import string
-		valid_chars = "-_.() {ascii}{digits}".format(ascii=string.ascii_letters, digits=string.digits)
-		sanitized_name = ''.join(c for c in name if c in valid_chars)
-		sanitized_name = sanitized_name.replace("_", " ")
-		pos= sanitized_name.index(' bee')
-		sanitized_name =sanitized_name[:pos]
-		return str(sanitized_name)
+		try:
+			import string
+			valid_chars = "-_.() {ascii}{digits}".format(ascii=string.ascii_letters, digits=string.digits)
+			sanitized_name = ''.join(c for c in name if c in valid_chars)
+			sanitized_name = sanitized_name.replace("_", " ")
+			pos= sanitized_name.index(' bee')
+			sanitized_name =sanitized_name[:pos]
+			return str(sanitized_name)
+		except:
+			return name
 
 	def _load_profile_from_path(self, slicer, path, require_configured=False):
 		return self.get_slicer(slicer, require_configured=require_configured).get_slicer_profile(path)

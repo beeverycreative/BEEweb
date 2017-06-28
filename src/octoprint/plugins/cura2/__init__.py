@@ -72,7 +72,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		if input_upload_name in flask.request.values and input_upload_path in flask.request.values:
 			filename = flask.request.values[input_upload_name]
 			try:
-				profile_dict = Profile.from_cura_ini(flask.request.values[input_upload_path])
+				profile_dict = self._load_profile(flask.request.values[input_upload_path])
 			except Exception as e:
 				self._logger.exception("Error while converting the imported profile")
 				return flask.make_response("Something went wrong while converting imported profile: {message}".format(message=str(e)), 500)
@@ -105,7 +105,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 			profile_allow_overwrite = flask.request.values["allowOverwrite"] in valid_boolean_trues
 
 		try:
-			slicingManager.save_profile("cura",
+			slicingManager.save_profile("cura2",
 			                            profile_name,
 			                            profile_dict,
 			                            allow_overwrite=profile_allow_overwrite,
@@ -195,12 +195,12 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		return octoprint.slicing.SlicingProfile(properties["type"], "unknown", profile_dict, display_name=display_name, description=description)
 
 	def save_slicer_profile(self, path, profile, allow_overwrite=True, overrides=None):
-		new_profile = Profile.merge_profile(profile.data, overrides=overrides)
+		new_profile = profile.data
 
 		if profile.display_name is not None:
-			new_profile["_display_name"] = profile.display_name
+			new_profile["name"] = profile.display_name
 		if profile.description is not None:
-			new_profile["_description"] = profile.description
+			new_profile["description"] = profile.description
 
 		self._save_profile(path, new_profile, allow_overwrite=allow_overwrite)
 
@@ -409,7 +409,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 	def _save_profile(self, path, profile, allow_overwrite=True):
 		import json
 		with octoprint.util.atomic_write(path, "wb", max_permissions=0o666) as f:
-			json.dump(profile, f, indent="  ")
+			json.dump(profile, f)
 
 
 

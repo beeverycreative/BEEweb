@@ -17,8 +17,8 @@ $(function() {
         self.profileDescription = ko.observable();
         self.profileAllowOverwrite = ko.observable(true);
 
-        self.uploadElement = $("#settings-cura-import");
-        self.uploadButton = $("#settings-cura-import-start");
+        self.uploadElement = $("#settings-cura2-import");
+        self.uploadButton = $("#settings-cura2-import-start");
 
         self.profiles = new ItemListHelper(
             "plugin_cura_profiles",
