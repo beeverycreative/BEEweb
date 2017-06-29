@@ -19,6 +19,8 @@ $(function() {
 
         self.uploadElement = $("#settings-cura2-import");
         self.uploadButton = $("#settings-cura2-import-start");
+        self.editButton = $("#settings-cura2-edit-start");
+        self.newElement = $("#settings-cura2-new-start");
 
         self.profiles = new ItemListHelper(
             "plugin_cura_profiles",
@@ -156,6 +158,28 @@ $(function() {
         self.showImportProfileDialog = function() {
             $("#settings_plugin_cura2_import").modal("show");
         };
+
+        self.newProfile = function() {
+            $("#settings_plugin_cura2_new").modal("show");
+        };
+
+        /******************************************* Code where **************************************************/
+        self.duplicateProfileDefault = function(data) {
+            if (!data.resource) {
+                return;
+            }
+
+        };
+
+        self.editProfile = function(data) {
+            if (!data.resource) {
+                return;
+            }
+            $("#settings_plugin_cura2_edit").modal("show");
+        };
+
+
+        /*********************************************************************************************************/
 
         self.requestData = function() {
             $.ajax({

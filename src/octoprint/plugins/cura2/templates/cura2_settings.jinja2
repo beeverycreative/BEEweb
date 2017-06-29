@@ -48,7 +48,10 @@
             <td class="settings_plugin_cura2_profiles_key"><span class="icon-star" data-bind="invisible: !isdefault()"></span> <span data-bind="text: key"></span></td>
             <td class="settings_plugin_cura2_profiles_name" data-bind="text: name"></td>
             <td class="settings_plugin_cura2_profiles_actions">
-                <a href="#" class="icon-star" title="{{ _('Make default') }}" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.makeProfileDefault($data); } }"></a>&nbsp;|&nbsp;<a href="#" class="icon-trash" title="{{ _('Delete Profile') }}" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.removeProfile($data); } }"></a>
+                <a href="#" class="icon-star"   title="{{ _('Make default') }}"     data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.makeProfileDefault($data); } }"></a>&nbsp;|&nbsp;
+                <a href="#" class="icon-plus"   title="{{ _('Duplicate') }}"        data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.duplicateProfileDefault($data); } }"></a>&nbsp;|&nbsp;
+                <a href="#" class="icon-minus"  title="{{ _('Delete Profile') }}"   data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.removeProfile($data); } }"></a>|
+                <a href="#" class="icon-cog"    title="{{ _('Edit') }}"             data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }"></a>
             </td>
         </tr>
     </tbody>
@@ -64,12 +67,15 @@
         <li data-bind="css: {disabled: profiles.currentPage() === profiles.lastPage()}"><a href="#" data-bind="click: profiles.nextPage">»</a></li>
     </ul>
 </div>
-
-<button class="btn pull-right yellow" data-bind="click: function() { $root.showImportProfileDialog() }">{{ _('Import Profile...') }}</button>
-
+<div>
+    <button class="btn pull-right yellow" data-bind="click: function() { $root.showImportProfileDialog() }">{{ _('Import Profile...') }}</button>
+    <button class="btn pull-right yellow" data-bind="click: function() { $root.newProfile() }">{{ _('New Profile...') }}</button>
+</div>
 <div style="clear: both">
     <small>{% trans %}For more information on configuration and usage please <a href="{{ plugin_cura2_homepage }}" target="_blank">see the Plugin's homepage</a>.{% endtrans %}</small>
 </div>
+
+
 
 <div id="settings_plugin_cura2_import" class="modal hide fade">
     <div class="modal-header">
@@ -127,6 +133,45 @@
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>
         <button class="btn btn-primary green" id="settings-cura2-import-start">{{ _('Confirm') }}</button>
+    </div>
+</div>
+
+<div id="settings_plugin_cura2_new" class="modal hide fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+        <h3>{{ _('New Profile') }}</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+
+
+
+
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>
+        <button class="btn btn-primary green" id="settings-cura2-new-start">{{ _('Confirm') }}</button>
+    </div>
+</div>
+
+
+<div id="settings_plugin_cura2_edit" class="modal hide fade">
+    <div class="modal-header">
+        <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+        <h3>{{ _('New Profile') }}</h3>
+    </div>
+    <div class="modal-body">
+        <form class="form-horizontal">
+
+
+
+
+        </form>
+    </div>
+    <div class="modal-footer">
+        <button class="btn" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>
+        <button class="btn btn-primary green" id="settings-cura2-new-edit">{{ _('Confirm') }}</button>
     </div>
 </div>
 
