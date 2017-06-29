@@ -281,7 +281,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 					line = octoprint.util.to_unicode(line, errors="replace")
 					self._cura_logger.debug(line.strip())
-
+					self._logger.info(line.strip())
 					if on_progress is not None:
 						# The Cura slicing process has three individual steps, each consisting of <layer_count> substeps:
 						#
