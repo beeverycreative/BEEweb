@@ -414,6 +414,8 @@ $(function() {
             var data = {
                 slicer: self.slicer(),
                 profile: self.profile(),
+                resolution: self.selResolution(),
+                nozzle: self.selNozzle(),
                 printerProfile: self.printerProfile(),
                 destination: destinationFilename
             };

@@ -365,7 +365,7 @@ BEEwb.main = {
     },
 
     /**
-     * Toogles the out of bounds state for a model in the scene
+     * Toggles the out of bounds state for a model in the scene
      */
     toggleObjectOutOfBounds: function ( model, toogle ) {
         //sets the out of bounds color in the object

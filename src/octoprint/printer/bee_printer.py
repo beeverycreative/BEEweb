@@ -65,6 +65,11 @@ class BeePrinter(Printer):
         eventManager().subscribe(Events.FIRMWARE_UPDATE_STARTED, self.on_flash_firmware_started)
         eventManager().subscribe(Events.FIRMWARE_UPDATE_FINISHED, self.on_flash_firmware_finished)
 
+        # subscribes print event handlers
+        eventManager().subscribe(Events.PRINT_CANCELLED, self.on_print_cancelled)
+        eventManager().subscribe(Events.PRINT_CANCELLED_DELETE_FILE, self.on_print_cancelled_delete_file)
+        eventManager().subscribe(Events.PRINT_DONE, self.on_print_finished)
+
         super(BeePrinter, self).__init__(fileManager, analysisQueue, printerProfileManager)
 
 
@@ -81,6 +86,11 @@ class BeePrinter(Printer):
             if len(self._connectedClients) == 0:
                 self._isConnecting = False
                 return False
+
+            # makes sure the status monitor thread is stopped
+            if self._bvc_status_thread is not None:
+                self._bvc_status_thread.stop_status_monitor()
+                self._bvc_status_thread = None
 
             if self._comm is not None:
                 if not self._comm.isBusy():
@@ -103,17 +113,19 @@ class BeePrinter(Printer):
             if bee_commands is not None and bee_commands.isPrinting() is False:
                 bee_commands.home()
 
-            # selects the printer profile based on the connected printer name
-            printer_name = self.get_printer_name()
+            # Updates the printer connection state
+            self._comm.confirmConnection()
 
+            self._isConnecting = False
+
+            printer_name = self.get_printer_name()
             # converts the name to the id
             printer_id = None
             if printer_name is not None:
                 printer_id = printer_name.lower().replace(' ', '')
-            self._printerProfileManager.select(printer_id)
 
-            # Updates the printer connection state
-            self._comm.confirmConnection()
+            # selects the printer profile based on the connected printer name
+            self._printerProfileManager.select(printer_id)
 
             # if the printer is printing or in shutdown mode selects the last selected file for print
             # and starts the progress monitor
@@ -136,17 +148,10 @@ class BeePrinter(Printer):
             # gets current Filament profile data
             self._currentFilamentProfile = self.getSelectedFilamentProfile()
 
-            # subscribes event handlers
-            eventManager().subscribe(Events.PRINT_CANCELLED, self.on_print_cancelled)
-            eventManager().subscribe(Events.PRINT_CANCELLED_DELETE_FILE, self.on_print_cancelled_delete_file)
-            eventManager().subscribe(Events.PRINT_DONE, self.on_print_finished)
-
             # Starts the printer status monitor thread
             if self._bvc_status_thread is None:
                 self._bvc_status_thread = StatusDetectionMonitorThread(self._comm)
                 self._bvc_status_thread.start()
-
-            self._isConnecting = False
 
             # make sure the connection monitor thread is null so we are able to instantiate a new thread later on
             if self._bvc_conn_thread is not None:
@@ -154,6 +159,7 @@ class BeePrinter(Printer):
                 self._bvc_conn_thread = None
 
             if self._comm is not None and self._comm.isOperational():
+                self._logger.info("Connected to %s!" % printer_name)
                 return True
         except Exception as ex:
             self._handleConnectionException(ex)
@@ -300,13 +306,15 @@ class BeePrinter(Printer):
         if self._lastJogTime is not None:
             while (time.time() - self._lastJogTime) < 0.5:
                 time.sleep(0.25)
-
-        if axis == 'x':
-            bee_commands.move(amount, 0, 0, None, movement_speed)
-        elif axis == 'y':
-            bee_commands.move(0, amount, 0, None, movement_speed)
-        elif axis == 'z':
-            bee_commands.move(0, 0, amount, None, movement_speed)
+        try:
+            if axis == 'x':
+                bee_commands.move(amount, 0, 0, None, movement_speed)
+            elif axis == 'y':
+                bee_commands.move(0, amount, 0, None, movement_speed)
+            elif axis == 'z':
+                bee_commands.move(0, 0, amount, None, movement_speed)
+        except Exception as ex:
+            self._logger.exception(ex)
 
         self._lastJogTime = time.time()
 
@@ -328,11 +336,13 @@ class BeePrinter(Printer):
 
         bee_commands = self._comm.getCommandsInterface()
 
-        if 'z' in axes:
-            bee_commands.homeZ()
-        elif 'x' in axes and 'y' in axes:
-            bee_commands.homeXY()
-
+        try:
+            if 'z' in axes:
+                bee_commands.homeZ()
+            elif 'x' in axes and 'y' in axes:
+                bee_commands.homeXY()
+        except Exception as ex:
+            self._logger.exception(ex)
 
     def extrude(self, amount):
         """
@@ -357,7 +367,7 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().startHeating(targetTemperature)
+            return self._comm.startHeating(targetTemperature)
         except Exception as ex:
             self._logger.error(ex)
 
@@ -368,7 +378,7 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().cancelHeating()
+            return self._comm.cancelHeating()
         except Exception as ex:
             self._logger.error(ex)
 
@@ -379,7 +389,7 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().goToLoadUnloadPos()
+            return self._comm.heatingDone()
         except Exception as ex:
             self._logger.error(ex)
 
@@ -390,7 +400,7 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().unload()
+            return self._comm.unload()
         except Exception as ex:
             self._logger.error(ex)
 
@@ -401,7 +411,7 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().load()
+            return self._comm.load()
         except Exception as ex:
             self._logger.error(ex)
 
@@ -833,16 +843,18 @@ class BeePrinter(Printer):
         Gets the current printer firmware version
         :return: string
         """
-        if self._comm is not None and self._comm.getCommandsInterface() is not None:
-            firmware_v = self._comm.getCommandsInterface().getFirmwareVersion()
+        try:
+            if self._comm is not None and self._comm.getCommandsInterface() is not None:
+                firmware_v = self._comm.getCommandsInterface().getFirmwareVersion()
 
-            if firmware_v is not None:
-                return firmware_v
+                if firmware_v is not None:
+                    return firmware_v
+                else:
+                    return 'Not available'
             else:
                 return 'Not available'
-        else:
-            return 'Not available'
-
+        except Exception as ex:
+            self._logger.exception(ex)
 
     def get_printer_serial(self):
         """
@@ -908,17 +920,20 @@ class BeePrinter(Printer):
                                   self._comm.getPrintTime(), self._comm.getCleanedPrintTime())
 
             # If the status from the printer is no longer printing runs the post-print trigger
-            if progress >= 1 \
-                    and self._comm.getCommandsInterface().isPreparingOrPrinting() is False:
+            try:
+                if progress >= 1 and self._comm.getCommandsInterface().isPreparingOrPrinting() is False:
 
-                self._comm.getCommandsInterface().stopStatusMonitor()
-                self._runningCalibrationTest = False
+                    self._comm.getCommandsInterface().stopStatusMonitor()
+                    self._runningCalibrationTest = False
 
-                # Runs the print finish communications callback
-                self._comm.triggerPrintFinished()
+                    # Runs the print finish communications callback
+                    self._comm.triggerPrintFinished()
 
-                self._setProgressData()
-                self._resetPrintProgress()
+                    self._setProgressData()
+                    self._resetPrintProgress()
+
+            except Exception as ex:
+                self._logger.error(ex)
 
 
     def on_comm_file_selected(self, filename, filesize, sd):
@@ -1116,52 +1131,60 @@ class BeePrinter(Printer):
         :param printTimeLeft:
         :return:
         """
-        estimatedTotalPrintTime = self._estimateTotalPrintTime(completion, printTimeLeft)
-        totalPrintTime = estimatedTotalPrintTime
+        try:
+            estimatedTotalPrintTime = self._estimateTotalPrintTime(completion, printTimeLeft)
+            totalPrintTime = estimatedTotalPrintTime
 
-        if self._selectedFile and "estimatedPrintTime" in self._selectedFile \
-                and self._selectedFile["estimatedPrintTime"]:
+            if self._selectedFile and "estimatedPrintTime" in self._selectedFile \
+                    and self._selectedFile["estimatedPrintTime"]:
 
-            statisticalTotalPrintTime = self._selectedFile["estimatedPrintTime"]
-            if completion and printTimeLeft:
-                if estimatedTotalPrintTime is None:
-                    totalPrintTime = statisticalTotalPrintTime
-                else:
-                    if completion < 0.5:
-                        sub_progress = completion * 2
+                statisticalTotalPrintTime = self._selectedFile["estimatedPrintTime"]
+                if completion and printTimeLeft:
+                    if estimatedTotalPrintTime is None:
+                        totalPrintTime = statisticalTotalPrintTime
                     else:
-                        sub_progress = 1.0
-                    totalPrintTime = (1 - sub_progress) * statisticalTotalPrintTime + sub_progress * estimatedTotalPrintTime
+                        if completion < 0.5:
+                            sub_progress = completion * 2
+                        else:
+                            sub_progress = 1.0
+                        totalPrintTime = (1 - sub_progress) * statisticalTotalPrintTime + sub_progress * estimatedTotalPrintTime
 
-        self._progress = completion
-        self._printTime = printTime
-        self._printTimeLeft = totalPrintTime - printTimeLeft if (totalPrintTime is not None and printTimeLeft is not None) else None
-        if printTime is None:
-            self._elapsedTime = 0
+            self._progress = completion
+            self._printTime = printTime
+            self._printTimeLeft = totalPrintTime - printTimeLeft if (totalPrintTime is not None and printTimeLeft is not None) else None
+            if printTime is None:
+                self._elapsedTime = 0
+
+        except Exception as ex:
+            self._logger.error(ex)
 
         try:
             fileSize=int(self._selectedFile['filesize'])
         except Exception:
             fileSize=None
 
-        temperatureTarget = self._comm.getCommandsInterface().getTargetTemperature()
-        if temperatureTarget == 0 :
-            temperatureTarget = None
+        try:
+            temperatureTarget = self._comm.getCommandsInterface().getTargetTemperature()
+            if temperatureTarget == 0 :
+                temperatureTarget = None
 
-        self._stateMonitor.set_progress({
-            "completion": self._progress * 100 if self._progress is not None else None,
-            "filepos": filepos,
-            "printTime": int(self._elapsedTime * 60) if self._elapsedTime is not None else None,
-            "printTimeLeft": int(self._printTimeLeft) if self._printTimeLeft is not None else None,
-            "fileSizeBytes": fileSize,
-            "temperatureTarget": temperatureTarget
-        })
+            self._stateMonitor.set_progress({
+                "completion": self._progress * 100 if self._progress is not None else None,
+                "filepos": filepos,
+                "printTime": int(self._elapsedTime * 60) if self._elapsedTime is not None else None,
+                "printTimeLeft": int(self._printTimeLeft) if self._printTimeLeft is not None else None,
+                "fileSizeBytes": fileSize,
+                "temperatureTarget": temperatureTarget
+            })
 
-        if completion:
-            progress_int = int(completion * 100)
-            if self._lastProgressReport != progress_int:
-                self._lastProgressReport = progress_int
-                self._reportPrintProgressToPlugins(progress_int)
+            if completion:
+                progress_int = int(completion * 100)
+                if self._lastProgressReport != progress_int:
+                    self._lastProgressReport = progress_int
+                    self._reportPrintProgressToPlugins(progress_int)
+
+        except Exception as ex:
+            self._logger.error(ex)
 
 
     def _resetPrintProgress(self):
@@ -1194,10 +1217,13 @@ class BeePrinter(Printer):
 
     def _handleConnectionException(self, ex):
 
-        self._logger.exception("Error connecting to BVC printer: %s" % str(ex))
+        eventManager().fire(Events.DISCONNECTED)
+        self._logger.error("Error connecting to BVC printer: %s" % str(ex))
 
         self._isConnecting = False
-        self._comm = None
+        if self._comm is not None:
+            self._comm.close()
+            self._comm = None
 
         # Starts the connection monitor thread only if there are any connected clients and the thread was stopped
         if len(self._connectedClients) > 0 and self._bvc_conn_thread is None:
@@ -1206,6 +1232,7 @@ class BeePrinter(Printer):
         # stops the status thread if it was started previously
         if self._bvc_status_thread is not None:
             self._bvc_status_thread.stop()
+            self._bvc_status_thread = None
 
 
     def _sendUsageStatistics(self, operation):

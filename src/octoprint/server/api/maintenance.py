@@ -208,7 +208,7 @@ def saveFilament():
 			printer.set_nozzle_temperature(temperature_new_filament)
 
 	except Exception as e:
-		print("No temperature define for filament selected %r" % e)
+		print("No temperature defined for filament selected %r" % e)
 
 	resp = printer.setFilamentString(filamentStr)
 
