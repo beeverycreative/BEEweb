@@ -262,6 +262,8 @@ def index():
 	plugin_vars = dict()
 	plugin_names = set()
 	for implementation in template_plugins:
+		if implementation._identifier == "cura2" and not enable_devMode:
+			continue
 		name = implementation._identifier
 		plugin_names.add(name)
 
