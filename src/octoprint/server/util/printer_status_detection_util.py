@@ -41,9 +41,8 @@ class StatusDetectionMonitorThread(threading.Thread):
 				if self.bee_comm.getCommandsInterface().isShutdown() and not self.bee_comm.getCommandsInterface().isResuming():
 					self._logger.info("BVC Printer Shutdown detected.")
 					self.bee_comm.setShutdownState()
-
 			except Exception as ex:
-				self._logger.error('Status detection monitor error: ' + str(ex))
+				self._logger.error("Status detection error. Error getting printer status: %s" % str(ex))
 
 
 	def stop_status_monitor(self):

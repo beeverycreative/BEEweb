@@ -77,6 +77,7 @@ class BeeCom(MachineCom):
 
             return True
         else:
+            self._changeState(self.STATE_CLOSED)
             return False
 
     def current_firmware(self):
@@ -144,9 +145,10 @@ class BeeCom(MachineCom):
 
             _logger.info("No firmware updates found")
 
-    def sendCommand(self, cmd, cmd_type=None, processed=False, force=False):
+    def sendCommand(self, cmd, cmd_type=None, processed=False, force=False, on_sent=None):
         """
         Sends a custom command through the open connection
+        :param on_sent:
         :param cmd:
         :param cmd_type:
         :param processed:
@@ -185,7 +187,8 @@ class BeeCom(MachineCom):
                 else:
                     return False
         except Exception as ex:
-            self._logger.error(ex)
+            self._logger.error("Error sending command to printer in: %s", str(ex))
+            return False
 
 
     def close(self, is_error=False, wait=True, timeout=10.0, *args, **kwargs):
@@ -404,31 +407,33 @@ class BeeCom(MachineCom):
             "origin": self._currentFile.getFileLocation()
         }
 
-        if (not pause and self.isPaused()) or (not pause and self.isShutdown()):
-            if self._pauseWaitStartTime:
-                self._pauseWaitTimeLost = self._pauseWaitTimeLost + (time.time() - self._pauseWaitStartTime)
-                self._pauseWaitStartTime = None
+        try:
+            if (not pause and self.isPaused()) or (not pause and self.isShutdown()):
+                if self._pauseWaitStartTime:
+                    self._pauseWaitTimeLost = self._pauseWaitTimeLost + (time.time() - self._pauseWaitStartTime)
+                    self._pauseWaitStartTime = None
 
-            # resumes printing
-            self._preparing_print = True
-            self._beeCommands.resumePrint()
+                # resumes printing
+                self._preparing_print = True
+                self._beeCommands.resumePrint()
 
-            self._heating = True
-            self._resume_print_thread = threading.Thread(target=self._resumePrintThread, name="comm._resumePrint")
-            self._resume_print_thread.daemon = True
-            self._resume_print_thread.start()
+                self._heating = True
+                self._resume_print_thread = threading.Thread(target=self._resumePrintThread, name="comm._resumePrint")
+                self._resume_print_thread.daemon = True
+                self._resume_print_thread.start()
 
-        elif pause and self.isPrinting():
-            if not self._pauseWaitStartTime:
-                self._pauseWaitStartTime = time.time()
+            elif pause and self.isPrinting():
+                if not self._pauseWaitStartTime:
+                    self._pauseWaitStartTime = time.time()
 
-            # pause print
-            self._beeCommands.pausePrint()
+                # pause print
+                self._beeCommands.pausePrint()
 
-            self._changeState(self.STATE_PAUSED)
+                self._changeState(self.STATE_PAUSED)
 
-            eventManager().fire(Events.PRINT_PAUSED, payload)
-
+                eventManager().fire(Events.PRINT_PAUSED, payload)
+        except Exception as ex:
+            self._logger.error("Error setting printer in pause mode: %s", str(ex))
 
     def setShutdownState(self):
         """
@@ -456,10 +461,13 @@ class BeeCom(MachineCom):
         }
 
         # enter shutdown mode
-        self._beeCommands.enterShutdown()
-        self.setShutdownState()
+        try:
+            self._beeCommands.enterShutdown()
+            self.setShutdownState()
+            eventManager().fire(Events.POWER_OFF, payload)
+        except Exception as ex:
+            self._logger.error("Error setting printer in shutdown mode: %s", str(ex))
 
-        eventManager().fire(Events.POWER_OFF, payload)
 
     def startHeating(self, targetTemperature=210):
         """
@@ -527,12 +535,15 @@ class BeeCom(MachineCom):
         if not self.isOperational():
             return
 
-        self._beeCommands.initSD()
+        try:
+            self._beeCommands.initSD()
 
-        if settings().getBoolean(["feature", "sdAlwaysAvailable"]):
-            self._sdAvailable = True
-            self.refreshSdFiles()
-            self._callback.on_comm_sd_state_change(self._sdAvailable)
+            if settings().getBoolean(["feature", "sdAlwaysAvailable"]):
+                self._sdAvailable = True
+                self.refreshSdFiles()
+                self._callback.on_comm_sd_state_change(self._sdAvailable)
+        except Exception as ex:
+            self._logger.error("Error initializing printer SD Card: %s", str(ex))
 
     def refreshSdFiles(self):
         """
@@ -542,22 +553,25 @@ class BeeCom(MachineCom):
         if not self.isOperational() or self.isBusy():
             return
 
-        fList = self._beeCommands.getFileList()
+        try:
+            fList = self._beeCommands.getFileList()
 
-        ##~~ SD file list
-        if len(fList) > 0 and 'FileNames' in fList:
+            ##~~ SD file list
+            if len(fList) > 0 and 'FileNames' in fList:
 
-            for sdFile in fList['FileNames']:
+                for sdFile in fList['FileNames']:
 
-                if comm.valid_file_type(sdFile, "machinecode"):
-                    if comm.filter_non_ascii(sdFile):
-                        self._logger.warn("Got a file from printer's SD that has a non-ascii filename (%s), that shouldn't happen according to the protocol" % filename)
-                    else:
-                        if not filename.startswith("/"):
-                            # file from the root of the sd -- we'll prepend a /
-                            filename = "/" + filename
-                        self._sdFiles.append((sdFile, 0))
-                    continue
+                    if comm.valid_file_type(sdFile, "machinecode"):
+                        if comm.filter_non_ascii(sdFile):
+                            self._logger.warn("Got a file from printer's SD that has a non-ascii filename (%s), that shouldn't happen according to the protocol" % filename)
+                        else:
+                            if not filename.startswith("/"):
+                                # file from the root of the sd -- we'll prepend a /
+                                filename = "/" + filename
+                            self._sdFiles.append((sdFile, 0))
+                        continue
+        except Exception as ex:
+            self._logger.error("Error file list from SD: %s", str(ex))
 
     def startFileTransfer(self, filename, localFilename, remoteFilename):
         """
@@ -567,31 +581,35 @@ class BeeCom(MachineCom):
             self._log("Printer is not operation or busy")
             return
 
-        self._currentFile = comm.StreamingGcodeFileInformation(filename, localFilename, remoteFilename)
-        self._currentFile.start()
+        try:
+            self._currentFile = comm.StreamingGcodeFileInformation(filename, localFilename, remoteFilename)
+            self._currentFile.start()
 
-        # starts the transfer
-        self._beeCommands.transferSDFile(filename, localFilename)
+            # starts the transfer
+            self._beeCommands.transferSDFile(filename, localFilename)
 
-        eventManager().fire(Events.TRANSFER_STARTED, {"local": localFilename, "remote": remoteFilename})
-        self._callback.on_comm_file_transfer_started(remoteFilename, self._currentFile.getFilesize())
+            eventManager().fire(Events.TRANSFER_STARTED, {"local": localFilename, "remote": remoteFilename})
+            self._callback.on_comm_file_transfer_started(remoteFilename, self._currentFile.getFilesize())
 
-        # waits for transfer to end
-        while self._beeCommands.getTransferCompletionState() > 0:
-            time.sleep(2)
+            # waits for transfer to end
+            while self._beeCommands.getTransferCompletionState() > 0:
+                time.sleep(2)
 
-        remote = self._currentFile.getRemoteFilename()
-        payload = {
-            "local": self._currentFile.getLocalFilename(),
-            "remote": remote,
-            "time": self.getPrintTime()
-        }
+            remote = self._currentFile.getRemoteFilename()
+            payload = {
+                "local": self._currentFile.getLocalFilename(),
+                "remote": remote,
+                "time": self.getPrintTime()
+            }
 
-        self._currentFile = None
-        self._changeState(self.STATE_OPERATIONAL)
-        self._callback.on_comm_file_transfer_done(remote)
-        eventManager().fire(Events.TRANSFER_DONE, payload)
-        self.refreshSdFiles()
+            self._currentFile = None
+            self._changeState(self.STATE_OPERATIONAL)
+            self._callback.on_comm_file_transfer_done(remote)
+            eventManager().fire(Events.TRANSFER_DONE, payload)
+            self.refreshSdFiles()
+
+        except Exception as ex:
+            self._logger.error("Error setting printer in shutdown mode: %s", str(ex))
 
     def startPrintStatusProgressMonitor(self):
         """
@@ -943,36 +961,45 @@ class BeeCom(MachineCom):
         Thread code that runs while the print job is being prepared
         :return:
         """
-        # waits for heating/file transfer
-        while self._beeCommands.isTransferring():
-            time.sleep(1)
-            self._transferProgress = self._beeCommands.getTransferState()
-            # makes use of the same method that is used for the print job progress, to update
-            # the transfer progress since we are going to use the same progress bar
-            self._callback._setProgressData(self._transferProgress, 0, 0, 0)
-            if not self._preparing_print:  # the print (transfer) was cancelled
-                return
-        self._callback._resetPrintProgress()
+        try:
+            # waits for heating/file transfer
+            while self._beeCommands.isTransferring():
+                time.sleep(1)
+                self._transferProgress = self._beeCommands.getTransferState()
+                # makes use of the same method that is used for the print job progress, to update
+                # the transfer progress since we are going to use the same progress bar
+                self._callback._setProgressData(self._transferProgress, 0, 0, 0)
+                if not self._preparing_print:  # the print (transfer) was cancelled
+                    return
+            self._callback._resetPrintProgress()
+            self._changeState(self.STATE_HEATING)
+        except Exception as ex:
+            self._logger.error("Error while preparing print. Transfer error: %s", str(ex))
+            self._changeState(self.STATE_OPERATIONAL)
+            return
 
-        self._changeState(self.STATE_HEATING)
+        try:
+            while self._beeCommands.isHeating():
+                time.sleep(1)
+                temperatureValue = self._beeCommands.getHeatingState()
+                if temperatureValue is None:
+                    self._heatingProgress = 0.0
+                elif temperatureValue > self._heatingProgress:
+                    # small verification to prevent temperature update errors coming from the printer due to sensor noise
+                    # the temperature is only updated to a new value if it's greater than the previous when the printer is
+                    # heating
+                    self._heatingProgress = round(temperatureValue, 2)
 
-        while self._beeCommands.isHeating():
-            time.sleep(1)
-            temperatureValue = self._beeCommands.getHeatingState()
-            if temperatureValue is None:
-                self._heatingProgress = 0.0
-            elif temperatureValue > self._heatingProgress:
-                # small verification to prevent temperature update errors coming from the printer due to sensor noise
-                # the temperature is only updated to a new value if it's greater than the previous when the printer is
-                # heating
-                self._heatingProgress = round(temperatureValue, 2)
-
-            # makes use of the same method that is used for the print job progress, to update
-            # the heating progress since we are going to use the same progress bar
-            self._callback._setProgressData(self._heatingProgress, 0, 0, 0)
-            if not self._preparing_print:  # the print (heating) was cancelled
-                return
-        self._callback._resetPrintProgress()
+                # makes use of the same method that is used for the print job progress, to update
+                # the heating progress since we are going to use the same progress bar
+                self._callback._setProgressData(self._heatingProgress, 0, 0, 0)
+                if not self._preparing_print:  # the print (heating) was cancelled
+                    return
+            self._callback._resetPrintProgress()
+        except Exception as ex:
+            self._logger.error("Error while preparing print. Heating error: %s", str(ex))
+            self._changeState(self.STATE_OPERATIONAL)
+            return
 
         if self._currentFile is not None:
             # Starts the real printing operation
@@ -995,7 +1022,7 @@ class BeeCom(MachineCom):
                 self._heating = False
             self._preparing_print = False
         else:
-            self._changeState(self.STATE_READY)
+            self._changeState(self.STATE_OPERATIONAL)
             self._logger.error('Error starting Print operation. No selected file found.')
 
 
