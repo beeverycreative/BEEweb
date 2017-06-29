@@ -234,7 +234,8 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 						on_progress_kwargs = dict()
 
 				self._cura_logger.info(u"### Slicing %s to %s using profile stored at %s" % (model_path, machinecode_path, profile_path))
-
+				from octoprint.server import slicingManager
+				profile_default_printer_path = slicingManager.get_slicer_profile_path("cura2") + '/Printers/fdmprinter.def.json'
 				engine_settings, extruder_settings = self.getSettingsToSlice(printer_profile["name"], str(nozzle_size), profile_path, resolution, overrides)
 
 				executable = self._settings.get(["cura_engine2"])
@@ -242,7 +243,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 					return False, "Path to CuraEngine is not configured "
 
 				working_dir, _ = os.path.split(executable)
-				args = [executable, 'slice', '-v', '-p', '-j', 'profiles/Printers/fdmprinter.def.json']
+				args = [executable, 'slice', '-v', '-p', '-j', profile_default_printer_path]
 				for k, v in engine_settings.items():
 					args += ["-s", "%s=%s" % (k, str(v['default_value']))]
 				if extruder_settings is not None:
@@ -281,7 +282,6 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 					line = octoprint.util.to_unicode(line, errors="replace")
 					self._cura_logger.debug(line.strip())
-					self._logger.info(line.strip())
 					if on_progress is not None:
 						# The Cura slicing process has three individual steps, each consisting of <layer_count> substeps:
 						#
