@@ -553,9 +553,8 @@ $(function() {
         };
 
         self.onlyPause = function() {
-            self.pause("pause");
-
             self.expandStatusPanel();
+            self.pause("pause");
         };
 
         self.onlyResume = function() {
