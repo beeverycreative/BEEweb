@@ -19,8 +19,7 @@ $(function() {
 
         self.uploadElement = $("#settings-cura2-import");
         self.uploadButton = $("#settings-cura2-import-start");
-        self.editButton = $("#settings-cura2-edit-start");
-        self.newElement = $("#settings-cura2-new-start");
+        self.editButton = $("#settings-cura2-edit-start")
 
         self.profiles = new ItemListHelper(
             "plugin_cura_profiles",
@@ -159,9 +158,6 @@ $(function() {
             $("#settings_plugin_cura2_import").modal("show");
         };
 
-        self.newProfile = function() {
-            $("#settings_plugin_cura2_new").modal("show");
-        };
 
         /******************************************* Code where **************************************************/
         self.duplicateProfileDefault = function(data) {
@@ -172,9 +168,11 @@ $(function() {
         };
 
         self.editProfile = function(data) {
-            if (!data.resource) {
-                return;
+            if (!data) {
+                //New profile
+                $("#settings_plugin_cura2_edit").modal("show");
             }
+            //get Profile information before open window
             $("#settings_plugin_cura2_edit").modal("show");
         };
 
