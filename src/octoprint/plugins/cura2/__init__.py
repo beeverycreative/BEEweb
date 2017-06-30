@@ -440,6 +440,8 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 	def getFilamentHeader(self, brand_id, filament_id, slicer_profile_path):
 		return ProfileReader.getFilamentHeader(brand_id, filament_id, slicer_profile_path )
 
+	def pathToFilament(self, filament_id):
+		return ProfileReader.pathToFilament(filament_id)
 
 __plugin_name__ = "CuraEngine (<= 2.6)"
 __plugin_author__ = "Bruno Andrade"

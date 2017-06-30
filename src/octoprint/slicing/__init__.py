@@ -625,7 +625,7 @@ class SlicingManager(object):
 
 			printer_id = printer_id.upper()
 
-		slicer_object = self.get_slicer(slicer)
+		slicer_object_cura2 = self.get_slicer(slicer)
 		for folder in os.listdir(slicer_profile_path):
 			if folder == "Quality" or folder == "Variants":
 				for entry in os.listdir(slicer_profile_path +"/" +folder):
@@ -634,12 +634,12 @@ class SlicingManager(object):
 						continue
 
 					if from_current_printer:
-						if not slicer_object.isPrinterAndNozzleCompatible(entry, printer_id, nozzle_size):
+						if not slicer_object_cura2.isPrinterAndNozzleCompatible(entry, printer_id, nozzle_size):
 							continue
 
 					#path = os.path.join(slicer_profile_path, entry)
 					profile_name = entry[:-len(".json")]
-					brand= slicer_object.getFilamentHeader("brand", entry, slicer_profile_path + "/")
+					brand= slicer_object_cura2.getFilamentHeader("brand", entry, slicer_profile_path + "/")
 					# creates a shallow slicing profile
 					temp_profile = self._create_shallow_profile(profile_name, slicer, "json", require_configured, brand)
 					profiles[profile_name] = temp_profile
@@ -694,8 +694,8 @@ class SlicingManager(object):
 			raise ValueError("name must be set")
 
 		if settings().get(["slicing", "cura2"]) and slicer == "cura2":
-			slicer_object = self.get_slicer(slicer)
-			path=slicer_object.pathToPrinter(self._desanitize(name))
+			slicer_object_cura2 = self.get_slicer(slicer)
+			path=slicer_object_cura2.pathToFilament(self._desanitize(name))
 			if path is None:
 				path = os.path.join(self.get_slicer_profile_path(slicer)+"/Variants", "{name}.json".format(name=name))
 		else:
