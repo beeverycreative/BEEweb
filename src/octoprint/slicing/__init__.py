@@ -42,12 +42,13 @@ class SlicingProfile(object):
 	    description (str): Description of this slicing profile.
 	"""
 
-	def __init__(self, slicer, name, data, display_name=None, description=None):
+	def __init__(self, slicer, name, data, display_name=None, description=None, brand=None):
 		self.slicer = slicer
 		self.name = name
 		self.data = data
 		self.display_name = display_name
 		self.description = description
+		self.brand = brand
 
 
 class TemporaryProfile(object):
@@ -624,6 +625,7 @@ class SlicingManager(object):
 
 			printer_id = printer_id.upper()
 
+		slicer_object = self.get_slicer(slicer)
 		for folder in os.listdir(slicer_profile_path):
 			if folder == "Quality" or folder == "Variants":
 				for entry in os.listdir(slicer_profile_path +"/" +folder):
@@ -632,15 +634,15 @@ class SlicingManager(object):
 						continue
 
 					if from_current_printer:
-						slicer_object = self.get_slicer(slicer)
 						if not slicer_object.isPrinterAndNozzleCompatible(entry, printer_id, nozzle_size):
 							continue
 
 					#path = os.path.join(slicer_profile_path, entry)
 					profile_name = entry[:-len(".json")]
-
+					brand= slicer_object.getFilamentHeader("brand", entry, slicer_profile_path + "/")
 					# creates a shallow slicing profile
-					profiles[profile_name] = self._create_shallow_profile(profile_name, slicer, "json", require_configured)
+					temp_profile = self._create_shallow_profile(profile_name, slicer, "json", require_configured, brand)
+					profiles[profile_name] = temp_profile
 		return profiles
 
 	def get_slicer_profile_path(self, slicer):
@@ -753,7 +755,7 @@ class SlicingManager(object):
 
 		return self.get_slicer(slicer).get_slicer_default_profile()
 
-	def _create_shallow_profile(self, profile_name, slicer, extensionFile, require_configured):
+	def _create_shallow_profile(self, profile_name, slicer, extensionFile, require_configured, brand=None):
 
 		# reverses the name sanitization
 		formatted_name = profile_name.replace('_', ' ').title()
@@ -791,4 +793,4 @@ class SlicingManager(object):
 
 		return octoprint.slicing.SlicingProfile(properties["type"],
 												"unknown", profile_dict, display_name=formatted_name,
-												description=description)
+												description=description, brand=brand)

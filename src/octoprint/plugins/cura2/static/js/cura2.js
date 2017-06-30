@@ -43,7 +43,23 @@ $(function() {
                     if (aName.toLocaleLowerCase() < bName.toLocaleLowerCase()) return -1;
                     if (aName.toLocaleLowerCase() > bName.toLocaleLowerCase()) return 1;
                     return 0;
-                }
+                },
+                "brand": function(a, b) {
+                    // sorts ascending
+                    var aBrand = a.brand();
+                    if (aBrand === undefined) {
+                        aBrand = "";
+                    }
+                    var bBrand = b.brand();
+                    if (bBrand === undefined) {
+                        bBrand = "";
+                    }
+
+                    if (aName.toLocaleLowerCase() < bBrand.toLocaleLowerCase()) return -1;
+                    if (aName.toLocaleLowerCase() > bBrand.toLocaleLowerCase()) return 1;
+                    return 0;
+                },
+
             },
             {},
             "id",
@@ -196,7 +212,8 @@ $(function() {
                     name: ko.observable(data[key].displayName),
                     description: ko.observable(data[key].description),
                     isdefault: ko.observable(data[key].default),
-                    resource: ko.observable(data[key].resource)
+                    resource: ko.observable(data[key].resource),
+                    brand: ko.observable(data[key].brand)
                 });
             });
             self.profiles.updateItems(profiles);

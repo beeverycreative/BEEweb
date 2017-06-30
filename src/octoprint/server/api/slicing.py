@@ -190,7 +190,7 @@ def _getSlicingProfilesData(slicer, require_configured=False):
 			result[name] = _getSlicingProfileData(slicer, name, profile)
 	return result
 
-def _getSlicingProfileData(slicer, name, profile):
+def _getSlicingProfileData(slicer, name, profile, brand=None):
 	defaultProfiles = s().get(["slicing", "defaultProfiles"])
 	result = dict(
 		key=name,
@@ -201,4 +201,6 @@ def _getSlicingProfileData(slicer, name, profile):
 		result["displayName"] = profile.display_name
 	if profile.description is not None:
 		result["description"] = profile.description
+	if profile.brand is not None:
+		result["brand"] = profile.brand
 	return result

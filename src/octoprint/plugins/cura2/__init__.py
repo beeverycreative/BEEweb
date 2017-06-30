@@ -669,6 +669,60 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 			profile[key] = {'default_value': value}
 		return profile
 
+	def getFilamentHeader(self, header_id, filament_id, slicer_profile_path):
+		header_value = None
+		custom = True
+		for entry in os.listdir(slicer_profile_path + "Quality/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			if filament_id.lower() not in entry.lower():
+				continue
+
+			# creates a shallow slicing profile
+			with open(slicer_profile_path +'Quality/' + entry) as data_file:
+				filament_json = json.load(data_file)
+				custom = False
+		if custom:
+			for entry in os.listdir(slicer_profile_path + "Variants/"):
+				if not entry.endswith(".json"):
+					# we are only interested in profiles and no hidden files
+					continue
+
+				if filament_id.lower() not in entry.lower():
+					continue
+
+				# creates a shallow slicing profile
+				with open(slicer_profile_path +'Variants/' + entry) as data_file:
+					filament_json = json.load(data_file)
+
+		if header_id in filament_json:
+			header_value = filament_json[header_id]
+
+		if header_value is None and 'inherits' in filament_json:
+			header_value = self.getParentHeader(header_id, filament_json['inherits'], slicer_profile_path)
+		return header_value
+
+
+	def getParentHeader(self, header_id, filament_id, slicer_profile_path):
+		header_value = None
+		with open(slicer_profile_path +'Materials/' + filament_id + ".json") as data_file:
+			filament_json = json.load(data_file)
+
+		if header_id in filament_json:
+			header_value = filament_json[header_id]
+		if header_value is None and 'inherits' in filament_json:
+			header_value = self.getParentHeader(header_id, filament_json['inherits'], slicer_profile_path)
+		return header_value
+
+	def merge_profile_key(self, profile, key, value):
+		if key in profile:
+			profile[key]["default_value"] = value
+		else :
+			profile[key] = {'default_value': value}
+		return profile
+
 
 __plugin_name__ = "CuraEngine (<= 2.6)"
 __plugin_author__ = "Bruno Andrade"
