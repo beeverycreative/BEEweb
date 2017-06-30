@@ -435,10 +435,10 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		return name
 
 	def isPrinterAndNozzleCompatible(self, filament_id, printer_id, nozzle_size):
-		ProfileReader.isPrinterAndNozzleCompatible(filament_id, printer_id, nozzle_size)
+		return ProfileReader.isPrinterAndNozzleCompatible(filament_id, printer_id, nozzle_size)
 
 	def getFilamentHeader(self, brand_id, filament_id, slicer_profile_path):
-		ProfileReader.getFilamentHeader(brand_id, filament_id, slicer_profile_path )
+		return ProfileReader.getFilamentHeader(brand_id, filament_id, slicer_profile_path )
 
 
 __plugin_name__ = "CuraEngine (<= 2.6)"
