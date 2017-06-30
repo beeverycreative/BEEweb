@@ -65,7 +65,7 @@ $(function() {
             "id",
             [],
             [],
-            5
+            1000
         );
 
         self._sanitize = function(name) {
