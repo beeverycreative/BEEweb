@@ -263,6 +263,10 @@ def index():
 	plugin_names = set()
 	for implementation in template_plugins:
 		name = implementation._identifier
+		# Skips the cura plugin rendering in non developer mode
+		if name == "cura" and enable_devMode is False:
+			continue
+
 		plugin_names.add(name)
 
 		try:
