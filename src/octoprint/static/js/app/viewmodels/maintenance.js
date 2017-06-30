@@ -317,10 +317,11 @@ $(function() {
                 type: "POST",
                 dataType: "json",
                 contentType: "application/json; charset=UTF-8",
-                success: function() {
+                success: function(result) {
                     $('#start-heating-btn').addClass('hidden');
                     $('#progress-bar-div').removeClass('hidden');
 
+                    TARGET_TEMPERATURE = result['target_temperature'];
                     self._updateTempProgress();
 
                     self.commandLock(false);
@@ -461,6 +462,7 @@ $(function() {
                 data: JSON.stringify(data),
                 success: function(data) {
                     var response = data['response'];
+                    TARGET_TEMPERATURE = data['target_temperature'];
 
                     if (response.indexOf('ok') > -1) {
                         self.filamentSelected(true);
@@ -912,9 +914,10 @@ $(function() {
                 type: "POST",
                 dataType: "json",
                 contentType: "application/json; charset=UTF-8",
-                success: function() {
+                success: function(result) {
                     $('#progress-bar-ext-mtn').removeClass('hidden');
 
+                    TARGET_TEMPERATURE = result['target_temperature'];
                     self._updateTempProgressExtMaint();
 
                     self.commandLock(false);
@@ -1126,10 +1129,11 @@ $(function() {
                 type: "POST",
                 dataType: "json",
                 contentType: "application/json; charset=UTF-8",
-                success: function() {
+                success: function(result) {
                     $('#progress-bar-replace-nozzle').removeClass('hidden');
                     $('#replace-nozzle-heating-done').addClass('hidden');
 
+                    TARGET_TEMPERATURE = result['target_temperature'];
                     self._updateTempProgressReplaceNozzle();
 
                     self.commandLock(false);
@@ -1255,6 +1259,7 @@ $(function() {
                 data: JSON.stringify(data),
                 success: function(data) {
                     var response = data['response'];
+                    TARGET_TEMPERATURE = data['target_temperature'];
 
                     if (response.indexOf('ok') > -1) {
                         self.filamentSelected(true);

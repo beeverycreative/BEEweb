@@ -367,7 +367,19 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().startHeating(targetTemperature)
+            # defines the target temperature based on the selected filament
+            profile_name = self.getSelectedFilamentProfile().display_name
+            if "petg" in profile_name.lower() or "nylon" in profile_name.lower():
+                targetTemperature = 230
+            elif "tpu" in profile_name.lower():
+                targetTemperature = 225
+
+            # resets the current temperature
+            self._current_temperature = self._comm.getCommandsInterface().getNozzleTemperature()
+
+            self._comm.startHeating(targetTemperature)
+
+            return targetTemperature
         except Exception as ex:
             self._logger.error(ex)
 
@@ -378,7 +390,7 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().cancelHeating()
+            return self._comm.cancelHeating()
         except Exception as ex:
             self._logger.error(ex)
 
@@ -389,7 +401,7 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().goToLoadUnloadPos()
+            return self._comm.heatingDone()
         except Exception as ex:
             self._logger.error(ex)
 
@@ -400,7 +412,7 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().unload()
+            return self._comm.unload()
         except Exception as ex:
             self._logger.error(ex)
 
@@ -411,7 +423,7 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().load()
+            return self._comm.load()
         except Exception as ex:
             self._logger.error(ex)
 
@@ -423,7 +435,34 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().setFilamentString(filamentStr)
+            # Get temperature of filament in printer
+            temperature_profile_printer = 210
+
+            try:
+                profile_name_printer = self.getSelectedFilamentProfile().display_name
+
+                if "petg" in profile_name_printer.lower() or "nylon" in profile_name_printer.lower():
+                    temperature_profile_printer = 230
+                elif "tpu" in profile_name_printer.lower():
+                    temperature_profile_printer = 225
+            except Exception as ex:
+                pass
+
+            # Get temperature of filament being loaded
+            temperature_new_filament = 210
+            if "petg" in filamentStr.lower() or "nylon" in filamentStr.lower():
+                temperature_new_filament = 230
+            elif "tpu" in filamentStr.lower():
+                temperature_new_filament = 225
+
+            # compare temperatures
+            if temperature_new_filament > temperature_profile_printer:
+                temperature_profile_printer = temperature_new_filament
+
+            self.set_nozzle_temperature(temperature_profile_printer)
+            resp = self._comm.getCommandsInterface().setFilamentString(filamentStr)
+
+            return resp, temperature_profile_printer
         except Exception as ex:
             self._logger.error(ex)
 

@@ -265,6 +265,10 @@ def index():
 		if implementation._identifier == "cura2" and not enable_devMode:
 			continue
 		name = implementation._identifier
+		# Skips the cura plugin rendering in non developer mode
+		if name == "cura" and enable_devMode is False:
+			continue
+
 		plugin_names.add(name)
 
 		try:
