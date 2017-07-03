@@ -163,6 +163,18 @@ def slicingDelSlicerProfile(slicer, name):
 
 	return NO_CONTENT
 
+@api.route("/slicing/<string:slicer>/profiles/<string:name>", methods=["POST"])
+@restricted_access
+def slicingDuplicateSlicerProfile(slicer, name):
+	try:
+		result = slicingManager.duplicate_profile(slicer, name)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except CouldNotDeleteProfile as e:
+		return make_response("Could not delete profile {profile} for slicer {slicer}: {cause}".format(profile=name, slicer=slicer, cause=str(e.cause)), 500)
+
+	return NO_CONTENT
+
 def _getSlicingProfilesData(slicer, require_configured=False):
 	result = dict()
 	if slicer == "cura2":

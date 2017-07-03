@@ -181,6 +181,15 @@ $(function() {
                 return;
             }
 
+             $.ajax({
+                url: data.resource(),
+                type: "POST",
+                success: function() {
+                    self.requestData();
+                    self.slicingViewModel.requestData();
+                }
+            });
+
         };
 
         self.editProfile = function(data) {

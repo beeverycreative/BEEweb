@@ -497,6 +497,41 @@ class SlicingManager(object):
 		else:
 			octoprint.events.eventManager().fire(octoprint.events.Events.SLICING_PROFILE_DELETED, dict(slicer=slicer, profile=name))
 
+	def duplicate_profile(self, slicer, name):
+		if not slicer in self.registered_slicers:
+			raise UnknownSlicer(slicer)
+
+		if not name:
+			raise ValueError("name must be set")
+
+
+		profile = self.load_profile(slicer, name)
+
+		profile.slicer = slicer
+		profile.name = name
+		slicerPath = self.get_slicer_profile_path(slicer)
+		destinationPath = None
+		tempPath = self.get_slicer_profile_path(slicer) + "/Variants/" + "{name}.json".format(name=name)
+		count=0;
+
+		while True:
+			count = count + 1
+			is_overwrite = os.path.exists(tempPath)
+
+			if is_overwrite:
+				tempPath = slicerPath + "/Variants/" + "{name} (copy {number} ).json".format(name=name, number=count)
+			else:
+				break
+
+		destinationPath = tempPath
+		self._save_profile_to_path(slicer, destinationPath, profile)
+
+		payload = dict(slicer=slicer, profile=name)
+		event =  octoprint.events.Events.SLICING_PROFILE_ADDED
+		octoprint.events.eventManager().fire(event, payload)
+
+		return profile
+
 	def all_profiles(self, slicer, require_configured=False):
 		"""
 		Retrieves all profiles for slicer ``slicer``.

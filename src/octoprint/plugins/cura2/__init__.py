@@ -188,12 +188,15 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 		display_name = None
 		description = None
-		if "_display_name" in profile_dict:
+		if "name" in profile_dict:
 			display_name = profile_dict["name"]
 			del profile_dict["name"]
-		if "_description" in profile_dict:
-			description = profile_dict["_description"]
-			del profile_dict["_description"]
+		if "description" in profile_dict:
+			description = profile_dict["description"]
+			del profile_dict["description"]
+		if "id" in profile_dict:
+			id = profile_dict["id"]
+			del profile_dict["id"]
 
 		properties = self.get_slicer_properties()
 		return octoprint.slicing.SlicingProfile(properties["type"], "unknown", profile_dict, display_name=display_name, description=description)
@@ -201,8 +204,11 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 	def save_slicer_profile(self, path, profile, allow_overwrite=True, overrides=None):
 		new_profile = profile.data
 
-		if profile.display_name is not None:
-			new_profile["name"] = profile.display_name
+		tmp=path.split("/")
+		name= tmp[len(tmp)-1]
+		new_profile["name"] = name[:-len(".json")]
+		new_profile["id"] = self._sanitize (name[:-len(".json")])
+
 		if profile.description is not None:
 			new_profile["description"] = profile.description
 
@@ -433,6 +439,19 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 			pass
 
 		return name
+
+	def _sanitize(self, name):
+		if name is None:
+			return None
+
+		if "/" in name or "\\" in name:
+			raise ValueError("name must not contain / or \\")
+
+		import string
+		valid_chars = "-_.() {ascii}{digits}".format(ascii=string.ascii_letters, digits=string.digits)
+		sanitized_name = ''.join(c for c in name if c in valid_chars)
+		sanitized_name = sanitized_name.replace(" ", "_")
+		return sanitized_name
 
 	def isPrinterAndNozzleCompatible(self, filament_id, printer_id, nozzle_size):
 		return ProfileReader.isPrinterAndNozzleCompatible(filament_id, printer_id, nozzle_size)
