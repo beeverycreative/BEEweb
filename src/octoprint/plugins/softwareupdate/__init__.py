@@ -223,7 +223,7 @@ class SoftwareUpdatePlugin(octoprint.plugin.BlueprintPlugin,
 			}
 
 			# If running as non desktop app i.e: RPI version adds the remaining updatable software
-			if not octoprint.server.DESKTOP_APP:
+			if octoprint.server.DESKTOP_APP is False:
 				default_settings['checks'].update({
 					"BEEsoft configurations": {
 						"type": "github_commit",
