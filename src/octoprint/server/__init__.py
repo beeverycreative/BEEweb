@@ -364,16 +364,6 @@ class Server(object):
 
 		## Tornado initialization starts here
 
-		if self._host is None:
-			self._host = self._settings.get(["server", "host"])
-		if self._port is None:
-			self._port = self._settings.getInt(["server", "port"])
-
-		# This is not a very pretty hack, but it's the most practical way to signal if the application is running in desktop
-		# mode, and thus
-		if self._port == 5007:
-			octoprint.server.DESKTOP_APP = True
-
 		ioloop = IOLoop()
 		ioloop.install()
 
