@@ -11,6 +11,7 @@ import logging
 
 class ProfileReader(object):
 
+	# Profile in "Variants" override default profiles with the same name (in folder "Quality") "
 	r"""
 	ProfileReader Class
 	
@@ -27,7 +28,31 @@ class ProfileReader(object):
 	
 	getFilamentOverrides 				get Filament and parents Overrides
 	
-	getParentOverrides					Get parent overrides. Because all parents are in materials folder
+	getParentOverrides							custom = True
+			for entry in os.listdir(slicer_profile_path + "/Quality/"):
+				if not entry.endswith(".json"):
+					# we are only interested in profiles and no hidden files
+					continue
+
+				if filament_id.lower() not in entry.lower():
+					continue
+
+				# creates a shallow slicing profile
+				with open(slicer_profile_path + "/Quality/"+ entry) as data_file:
+					filament_json = json.load(data_file)
+					custom = False
+			if custom:
+				for entry in os.listdir(slicer_profile_path + "/Variants/"):
+					if not entry.endswith(".json"):
+						# we are only interested in profiles and no hidden files
+						continue
+
+					if filament_id.lower() not in entry.lower():
+						continue
+
+					# creates a shallow slicing profile
+					with open(slicer_profile_path + "/Variants/" + entry) as data_file:
+						filament_json = json.load(data_file)	Get parent overrides. Because all parents are in materials folder
 	
 	getPrinterHeader					get values in header(id, name, metadata, electric_consumption, machine_cost, nozzles_supported, inherits)
 	
@@ -144,8 +169,9 @@ class ProfileReader(object):
 	@classmethod
 	def getFilamentOverrides(cls, filament_id, printer_id, nozzle_id, slicer_profile_path, quality=None):
 		overrides_Values = {}
-		custom = True
-		for entry in os.listdir(slicer_profile_path + "Quality/"):
+		custom = False
+
+		for entry in os.listdir(slicer_profile_path + "Variants/"):
 			if not entry.endswith(".json"):
 				# we are only interested in profiles and no hidden files
 				continue
@@ -154,11 +180,12 @@ class ProfileReader(object):
 				continue
 
 			# creates a shallow slicing profile
-			with open(slicer_profile_path +'Quality/' + entry) as data_file:
+			with open(slicer_profile_path + 'Variants/' + entry) as data_file:
 				filament_json = json.load(data_file)
-				custom = False
-		if custom:
-			for entry in os.listdir(slicer_profile_path + "Variants/"):
+				custom = True
+
+		if not custom:
+			for entry in os.listdir(slicer_profile_path + "Quality/"):
 				if not entry.endswith(".json"):
 					# we are only interested in profiles and no hidden files
 					continue
@@ -167,7 +194,7 @@ class ProfileReader(object):
 					continue
 
 				# creates a shallow slicing profile
-				with open(slicer_profile_path +'Variants/' + entry) as data_file:
+				with open(slicer_profile_path + 'Quality/' + entry) as data_file:
 					filament_json = json.load(data_file)
 
 		# check if printer is compatible
@@ -236,8 +263,9 @@ class ProfileReader(object):
 	@classmethod
 	def getFilamentHeader(cls, header_id, filament_id, slicer_profile_path):
 		header_value = None
-		custom = True
-		for entry in os.listdir(slicer_profile_path + "Quality/"):
+		custom = False
+
+		for entry in os.listdir(slicer_profile_path + "Variants/"):
 			if not entry.endswith(".json"):
 				# we are only interested in profiles and no hidden files
 				continue
@@ -246,11 +274,12 @@ class ProfileReader(object):
 				continue
 
 			# creates a shallow slicing profile
-			with open(slicer_profile_path +'Quality/' + entry) as data_file:
+			with open(slicer_profile_path + 'Variants/' + entry) as data_file:
 				filament_json = json.load(data_file)
-				custom = False
-		if custom:
-			for entry in os.listdir(slicer_profile_path + "Variants/"):
+				custom = True
+
+		if not custom:
+			for entry in os.listdir(slicer_profile_path + "Quality/"):
 				if not entry.endswith(".json"):
 					# we are only interested in profiles and no hidden files
 					continue
@@ -259,7 +288,7 @@ class ProfileReader(object):
 					continue
 
 				# creates a shallow slicing profile
-				with open(slicer_profile_path +'Variants/' + entry) as data_file:
+				with open(slicer_profile_path + 'Quality/' + entry) as data_file:
 					filament_json = json.load(data_file)
 
 		if header_id in filament_json:
@@ -286,7 +315,18 @@ class ProfileReader(object):
 	def pathToFilament(cls, filament_id):
 		from octoprint.server import slicingManager
 		slicer_profile_path = slicingManager.get_slicer_profile_path("cura2")
-		custom = True
+
+		for entry in os.listdir(slicer_profile_path + "/Variants/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			if filament_id.lower() not in entry.lower():
+				continue
+
+			# creates a shallow slicing profile
+			return slicer_profile_path + "/Variants/" + entry
+
 		for entry in os.listdir(slicer_profile_path + "/Quality/"):
 			if not entry.endswith(".json"):
 				# we are only interested in profiles and no hidden files
@@ -296,17 +336,6 @@ class ProfileReader(object):
 				continue
 
 			return slicer_profile_path + "/Quality/" + entry
-		if custom:
-			for entry in os.listdir(slicer_profile_path + "/Variants/"):
-				if not entry.endswith(".json"):
-					# we are only interested in profiles and no hidden files
-					continue
-
-				if filament_id.lower() not in entry.lower():
-					continue
-
-				# creates a shallow slicing profile
-				return slicer_profile_path + "/Variants/" + entry
 		return None
 
 	#check if printer(printer_id) with a nozzle size (nozzle_id) on extruder can use a especific filament(filament_id)
@@ -335,8 +364,9 @@ class ProfileReader(object):
 							return False
 
 			#Check filament with nozzle
-			custom = True
-			for entry in os.listdir(slicer_profile_path + "/Quality/"):
+			custom = False
+
+			for entry in os.listdir(slicer_profile_path + "Variants/"):
 				if not entry.endswith(".json"):
 					# we are only interested in profiles and no hidden files
 					continue
@@ -345,11 +375,12 @@ class ProfileReader(object):
 					continue
 
 				# creates a shallow slicing profile
-				with open(slicer_profile_path + "/Quality/"+ entry) as data_file:
+				with open(slicer_profile_path + 'Variants/' + entry) as data_file:
 					filament_json = json.load(data_file)
-					custom = False
-			if custom:
-				for entry in os.listdir(slicer_profile_path + "/Variants/"):
+					custom = True
+
+			if not custom:
+				for entry in os.listdir(slicer_profile_path + "Quality/"):
 					if not entry.endswith(".json"):
 						# we are only interested in profiles and no hidden files
 						continue
@@ -358,7 +389,7 @@ class ProfileReader(object):
 						continue
 
 					# creates a shallow slicing profile
-					with open(slicer_profile_path + "/Variants/" + entry) as data_file:
+					with open(slicer_profile_path + 'Quality/' + entry) as data_file:
 						filament_json = json.load(data_file)
 
 			#Check if nozzle is supported
