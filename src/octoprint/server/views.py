@@ -624,6 +624,10 @@ def _process_templates():
 	seen_wizards = settings().get(["server", "seenWizards"]) if not first_run else dict()
 	for implementation in template_plugins:
 		name = implementation._identifier
+		# Skips the cura plugin rendering in non developer mode
+		if name == "cura" and enable_devMode is False:
+			continue
+
 		plugin_names.add(name)
 		wizard_required = False
 		wizard_ignored = False

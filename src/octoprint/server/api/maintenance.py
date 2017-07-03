@@ -19,18 +19,11 @@ def startHeating():
 	if not printer.is_operational():
 		return make_response("Printer is not operational", 409)
 
-	try:
-		profile_name = printer.getSelectedFilamentProfile().display_name
-		if "petg" in profile_name.lower() or "nylon" in profile_name.lower():
-			printer.startHeating(230)
-		elif "tpu" in profile_name.lower() :
-			printer.startHeating(225)
-		else:
-			printer.startHeating()  # In the future we might pass the extruder identifier here in case of more than 1 extruder
-	except:
-		# if no filament in printer
-		printer.startHeating()
-	return NO_CONTENT
+	target_temp = printer.startHeating()  # In the future we might pass the extruder identifier here in case of more than 1 extruder
+
+	return jsonify({
+		"target_temperature": target_temp
+	})
 
 @api.route("/maintenance/cancel_heating", methods=["POST"])
 @restricted_access
@@ -187,33 +180,11 @@ def saveFilament():
 
 	filamentStr = data['filamentStr']
 
-	try:
-		#Get temperature of filament in printer
-		profile_name_printer = printer.getSelectedFilamentProfile().display_name
-		temperature_profile_printer = 210
-		if "petg" in profile_name_printer.lower() or "nylon" in profile_name_printer.lower():
-			temperature_profile_printer=230
-		elif "tpu" in profile_name_printer.lower() :
-			temperature_profile_printer=225
-
-		# Get temperature of filament being loaded
-		temperature_new_filament =210
-		if "petg" in filamentStr.lower() or "nylon" in filamentStr.lower():
-			temperature_new_filament = 230
-		elif "tpu" in filamentStr.lower():
-			temperature_new_filament = 225
-
-		#compare temperatures
-		if (temperature_new_filament > temperature_profile_printer):
-			printer.set_nozzle_temperature(temperature_new_filament)
-
-	except Exception as e:
-		print("No temperature defined for filament selected %r" % e)
-
-	resp = printer.setFilamentString(filamentStr)
+	resp, target_temp = printer.setFilamentString(filamentStr)
 
 	return jsonify({
-		"response": resp
+		"response": resp,
+		"target_temperature": target_temp
 	})
 
 @api.route("/maintenance/get_filament", methods=["GET"])

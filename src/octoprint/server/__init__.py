@@ -189,6 +189,16 @@ class Server(object):
 			# enable debug logging to serial.log
 			logging.getLogger("SERIAL").setLevel(logging.DEBUG)
 
+		if self._host is None:
+			self._host = s.get(["server", "host"])
+		if self._port is None:
+			self._port = s.getInt(["server", "port"])
+
+		# This is not a very pretty hack, but it's the most practical way to signal if the application is running in desktop
+		# mode, and thus
+		if self._port == 5007:
+			octoprint.server.DESKTOP_APP = True
+
 		# start the intermediary server
 		self._start_intermediary_server()
 

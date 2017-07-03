@@ -1,6 +1,6 @@
 <div id="maintenance_dialog" class="modal hide fade maintenance" tabindex="-1" role="dialog" aria-labelledby="maintenance_dialog_label" aria-hidden="true">
     <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" data-bind="visible: printerState.isBusy()">&times;</button>
+        <button type="button" class="close" data-dismiss="modal" data-bind="visible: !printerState.isOperational()">&times;</button>
         <h3 id="maintenance_dialog_label"> <span class="m-icon maintenancegicon"></span>{{ _('Maintenance') }}
             <i class="icon-spinner icon-spin" data-bind="visible: receiving"></i>
         </h3>
