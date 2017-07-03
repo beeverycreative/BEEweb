@@ -282,7 +282,9 @@ msgid ""
 "        Access control is <strong class=\"text-"
 "success\">enabled</strong>.\n"
 "    "
-msgstr "Zugriffsbeschränkung <strong class=\"text-success\">aktiviert</strong>."
+msgstr
+"\n"
+"Zugriffsbeschränkung <strong class=\"text-success\">aktiviert</strong>."
 
 #: src/octoprint/plugins/corewizard/templates/corewizard_acl_wizard.jinja2:56
 msgid ""
@@ -291,6 +293,7 @@ msgid ""
 "danger\">disabled</strong>.\n"
 "    "
 msgstr ""
+"\n"
 "Zugriffsbeschränkung <strong class=\"text-danger\">deaktiviert</strong>."
 "    "
 
@@ -494,7 +497,9 @@ msgid ""
 "able to use\n"
 "        CuraEngine for slicing it needs to be specified.\n"
 "    "
-msgstr "Der Pfad zu CuraEngine wurde noch nicht konfiguriert. "
+msgstr
+"\n"
+"Der Pfad zu CuraEngine wurde noch nicht konfiguriert. "
 
 #: src/octoprint/plugins/cura/templates/cura_wizard.jinja2:16
 msgid "Set up a slicing profile"
@@ -526,6 +531,7 @@ msgid ""
 "            via the \"Import Profile\" button.\n"
 "        "
 msgstr ""
+"\n"
 "<strong>Du weißt nicht, wo du so ein Profil her bekommst?</strong> Um ein"
 " Slicingprofil aus dem Cura Desktopinterface bis zu Version 15.04.06 zu "
 "exportieren (nicht Versionen 2.1 oder neuer, diese sind neuer als 15.04),"
@@ -595,6 +601,7 @@ msgid ""
 "e.g. Repetier create.\n"
 "        "
 msgstr ""
+"\n"
 "Du kannst hier deine vorhandenen <code>.ini</code> Profildateien von "
 "<strong>Cura 15.04.x oder älter</strong>Andere Profilformate als diese "
 "sind <strong>nicht unterstützt</strong>. Das beinhaltet insbesondere, "
@@ -875,11 +882,11 @@ msgstr "Plugin installiert"
 #: src/octoprint/plugins/pluginmanager/static/js/pluginmanager.js:1070
 msgid ""
 "A plugin was installed successfully, however it was impossible to detect "
-"which one. Please Restart OctoPrint to make sure everything will be "
+"which one. Please Restart BEESOFT to make sure everything will be "
 "registered properly"
 msgstr ""
 "Ein Plugin wurde erfolgreich installiert, es war aber unmöglich zu "
-"detektieren, welches. Bitte starte OctoPrint neu um sicherzustellen, dass"
+"detektieren, welches. Bitte starte BEESOFT neu um sicherzustellen, dass"
 " alles ordnungsgemäß registriert wird."
 
 #: src/octoprint/plugins/pluginmanager/static/js/pluginmanager.js:1074
@@ -893,11 +900,11 @@ msgstr "Das Plugin wurde erfolgreich reinstalliert"
 
 #: src/octoprint/plugins/pluginmanager/static/js/pluginmanager.js:1076
 msgid ""
-"The plugin was reinstalled successfully, however a restart of OctoPrint "
+"The plugin was reinstalled successfully, however a restart of BEESOFT "
 "is needed for that to take effect."
 msgstr ""
 "Das Plugin wurde erfolgreich reinstalliert, es ist aber ein Neustart von "
-"OctoPrint notwendig bevor es genutzt werden kann."
+"BEESOFT notwendig bevor es genutzt werden kann."
 
 #: src/octoprint/plugins/pluginmanager/static/js/pluginmanager.js:1077
 msgid ""
@@ -1112,9 +1119,10 @@ msgid ""
 "and cannot be\n"
 "    enabled. Installation of plugin packages is disabled.\n"
 msgstr ""
+"\n"
 "Der Safe Mode ist aktuell aktiviert. Alle Third-Party-Plugins sind "
 "deaktiviert und könnennicht aktiviert werden. Installation von Plugins "
-"ist deaktiviert."
+"ist deaktiviert.\n"
 
 #: src/octoprint/plugins/pluginmanager/templates/pluginmanager_settings.jinja2:28
 #: src/octoprint/plugins/pluginmanager/templates/pluginmanager_settings.jinja2:234
@@ -1540,10 +1548,10 @@ msgstr ""
 "manuell tun müssen. Bitte konsultiere das Logfile."
 
 #: src/octoprint/plugins/softwareupdate/static/js/softwareupdate.js:691
-msgid "The update finished successfully, please restart OctoPrint now."
+msgid "The update finished successfully, please restart BEESOFT now."
 msgstr ""
 "Die Aktualisierung wurde erfolgreich abgeschlossen, bitte starte "
-"OctoPrint jetzt neu."
+"BEESOFT jetzt neu."
 
 #: src/octoprint/plugins/softwareupdate/static/js/softwareupdate.js:693
 msgid "The update finished successfully, please reboot the server now."
@@ -1910,21 +1918,21 @@ msgstr "Du bist im Begriff das System neu zu starten."
 
 #: src/octoprint/server/api/system.py:154
 #: src/octoprint/templates/snippets/settings/server/serverCommandServerRestart.jinja2:2
-msgid "Restart OctoPrint"
-msgstr "OctoPrint neustarten"
+msgid "Restart BEESOFT"
+msgstr "BEESOFT neustarten"
 
 #: src/octoprint/server/api/system.py:155
-msgid "You are about to restart the OctoPrint server."
-msgstr "Du bist im Begriff den OctoPrint Server neu zu starten."
+msgid "You are about to restart the BEESOFT server."
+msgstr "Du bist im Begriff den BEESOFT Server neu zu starten."
 
 #: src/octoprint/server/api/system.py:158
-msgid "Restart OctoPrint in safe mode"
-msgstr "OctoPrint im Sicherheitsmodus neustarten"
+msgid "Restart BEESOFT in safe mode"
+msgstr "BEESOFT im Sicherheitsmodus neustarten"
 
 #: src/octoprint/server/api/system.py:159
-msgid "You are about to restart the OctoPrint server in safe mode."
+msgid "You are about to restart the BEESOFT server in safe mode."
 msgstr ""
-"Du bist im Begriff den OctoPrint Server im Sicherheitsmodus neu zu "
+"Du bist im Begriff den BEESOFT Server im Sicherheitsmodus neu zu "
 "starten."
 
 #: src/octoprint/static/js/app/dataupdater.js:79
@@ -3015,7 +3023,9 @@ msgid ""
 "                                            <strong>Mandatory "
 "Step!</strong> You need to fill this out now.\n"
 "                                        "
-msgstr "<strong>Obligatorischer Schritt!</strong> Du musst das jetzt ausfüllen."
+msgstr
+"\n"
+"<strong>Obligatorischer Schritt!</strong> Du musst das jetzt ausfüllen."
 
 #: src/octoprint/templates/dialogs/wizard.jinja2:56
 msgid "Next"
@@ -3313,6 +3323,7 @@ msgid ""
 "for you to adjust.\n"
 "                "
 msgstr ""
+"\n"
 "Falls diese Option eingeschaltet ist, versucht OctoPrint die Firmware des"
 " Druckers automatisch zu erkennen und darauf basierend diverse "
 "Kommunikationsparameter zu konfigurieren. Falls das für dich nicht "
@@ -3872,8 +3883,9 @@ msgid ""
 "    Your OctoPrint installation is now all set up and ready to go. Happy\n"
 "    printing!\n"
 msgstr ""
+"\n"
 "Deine OctoPrint Installation ist jetzt eingerichtet und es kann losgehen."
-" Happy printing!"
+" Happy printing!\n"
 
 #: src/octoprint/templates/dialogs/wizard/firstrun_end.jinja2:8
 #, python-format
@@ -3885,11 +3897,12 @@ msgid ""
 "also find this link in the \"About\" dialog. <strong>Thank you!</strong>"
 "\n"
 msgstr ""
+"\n"
 "Falls Dir OctoPrint gefällt, bitte denke darüber nach, <a "
 "href=\"%(url)s\" target=\"_blank\">seine fortlaufende Entwicklung zu "
 "unterstützen</a>, welche vollständig durch User wie Dich finanziert wird!"
 " Du kannst diesen Link auch im \"Über\" Dialog finden. <strong>Vielen "
-"Dank!</strong>"
+"Dank!</strong>\n"
 
 #: src/octoprint/templates/dialogs/wizard/firstrun_start.jinja2:1
 msgid "Hello!"
@@ -3904,9 +3917,10 @@ msgid ""
 " We'll\n"
 "    get you printing in no time!\n"
 msgstr ""
+"\n"
 "Danke, dass du OctoPrint installiert hast! Dieser Wizard wird dich nun "
 "durch die letzten Schritte begleiten, um deine OctoPrint Instanz fertig "
-"einzurichten."
+"einzurichten.\n"
 
 #: src/octoprint/templates/navbar/login.jinja2:12
 msgid "Remember me"
@@ -3961,6 +3975,7 @@ msgid ""
 "                    web interface now by clicking the button below.\n"
 "                "
 msgstr ""
+"\n"
 "Die Serverversion hat sich geändert, ein Neuladen des Webinterfaces ist "
 "notwendig. Das wird evtl. laufenden Printjobs nicht unterbrechen. Bitte "
 "lade das Webinterface jetzt neu, indem du auf den Button unten klickst."
@@ -4253,6 +4268,7 @@ msgid ""
 "below.\n"
 "        "
 msgstr ""
+"\n"
 "Wenn der Druckkopf des Druckers sich außerhalb des Druckvolumens bewegen "
 "darf (z.B. für Nozzlereinigungsroutinen) kannst du hier eine als "
 "gefahrlos geltende Bounding Box für seine Bewegung definieren."
@@ -4881,81 +4897,4 @@ msgstr "Ungerenderte Zeitrafferaufnahme löschen"
 msgid "Render timelapse"
 msgstr "Zeitrafferaufnahme rendern"
 
-#~ msgid "Path to CuraEngine"
-#~ msgstr "Pfad zu CuraEngine"
-
-#~ msgid "Log the output of CuraEngine to <code>plugin_cura_engine.log</code>"
-#~ msgstr ""
-
-#~ msgid "Make default"
-#~ msgstr "Als Standard speichern"
-
-#~ msgid "Import Existing Cura Profile"
-#~ msgstr "Vorhandenes Curaprofil importieren"
-
-#~ msgid "Profile ini file"
-#~ msgstr "Profil-INI-Datei"
-
-#~ msgid "Description"
-#~ msgstr "Beschreibung"
-
-#~ msgid "Overwrite existing file"
-#~ msgstr "Vorhandene Datei überschreiben"
-
-#~ msgid ""
-#~ msgstr ""
-
-#~ msgid "Bundled"
-#~ msgstr "Gebundled"
-
-#~ msgid "pip command"
-#~ msgstr "pip Command"
-
-#~ msgid "Autodetect"
-#~ msgstr "Automatisch erkennen"
-
-#~ msgid "OctoPrint checkout folder"
-#~ msgstr "Checkoutverzeichnis von OctoPrint "
-
-#~ msgid "OctoPrint version tracking"
-#~ msgstr "Versionstracking für OctoPrint"
-
-#~ msgid "OctoPrint Release Channel"
-#~ msgstr "OctoPrint Release Channel"
-
-#~ msgid "Rendering failed"
-#~ msgstr "Rendering fehlgeschlagen"
-
-#~ msgid "Configure Access Control"
-#~ msgstr "Zugangsbeschränkung konfigurieren"
-
-#~ msgid "Volume"
-#~ msgstr "Volumen"
-
-#~ msgid "Axis"
-#~ msgstr "Achse"
-
-#~ msgid "Only show STL files"
-#~ msgstr "Nur STL Dateien anzeigen"
-
-#~ msgid "Shutdown"
-#~ msgstr "System herunterfahren"
-
-#~ msgid "Reboot"
-#~ msgstr "Neustart"
-
-#~ msgid "Installing the plugin from URL \"%(url)s\" failed: %(reason)s"
-#~ msgstr "Installation des Plugins von URL \"%(url)s\" fehlgeschlagen: %(reason)s"
-
-#~ msgid "Saving failed"
-#~ msgstr "Speichern fehlgeschlagen"
-
-#~ msgid "Hide folders without files"
-#~ msgstr "Verzeichnisse ohne Dateien verbergen"
-
-#~ msgid "Interval"
-#~ msgstr "Intervall"
-
-#~ msgid "Creation date"
-#~ msgstr "Erstellungsdatum"
 

@@ -409,7 +409,7 @@ class PluginManagerPlugin(octoprint.plugin.SimpleApiPlugin,
 		new_plugin = self._find_installed_plugin(installed, plugins=all_plugins_after)
 		if new_plugin is None:
 			self._logger.warn("The plugin was installed successfully, but couldn't be found afterwards to "
-			                  "initialize properly during runtime. Please restart OctoPrint.")
+			                  "initialize properly during runtime. Please restart BEESOFT.")
 			result = dict(result=True,
 			              source=source,
 			              source_type=source_type,

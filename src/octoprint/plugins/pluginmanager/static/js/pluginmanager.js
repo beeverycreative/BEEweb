@@ -1067,7 +1067,7 @@ $(function() {
 
                     if (unknown) {
                         titleSuccess = _.sprintf(gettext("Plugin installed"));
-                        textSuccess = gettext("A plugin was installed successfully, however it was impossible to detect which one. Please Restart OctoPrint to make sure everything will be registered properly");
+                        textSuccess = gettext("A plugin was installed successfully, however it was impossible to detect which one. Please Restart BEESOFT to make sure everything will be registered properly");
                         textRestart = textSuccess;
                         textReload = textSuccess;
                     } else if (data.was_reinstalled) {

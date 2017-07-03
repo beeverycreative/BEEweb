@@ -77,7 +77,7 @@
     <script type="text/html" id="files_template_folder">
         <div class="btn-group action-buttons">
             <div class="btn btn-mini hugebtn " data-bind="click: $root.changeFolder, style: { 'font-weight': $root.listHelper.isSelected($data) ? 'bold' : 'normal' }"></i> <span data-bind="text: name"></span></div>
-            <div class="btn btn-mini smabtn" data-bind="click: function(data, event) { if ($root.enableRemove($data)) { $root.removeFolder($data, event); } else { return; } }, css: {disabled: !$root.enableRemove($data)}" title="{{ _('Remove') }}"><i class="icon-trash"></i></div>
+            <div class="btn btn-mini smabtn" data-bind="click: function(data, event) { if ($root.enableRemove($data)) { $root.removeFolder($data, event); } else { return; } }, css: {disabled: !$root.enableRemove($data)}" title="{{ _('Remove') }}"><i class="m-icon deletewicon"></i></div>
             <!--<div class="size">{{ _('Size') }}: <span data-bind="text: formatSize(size)"></span></div>-->
         </div>
     </script>
