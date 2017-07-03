@@ -314,9 +314,9 @@ class ProfileReader(object):
 	@classmethod
 	def pathToFilament(cls, filament_id):
 		from octoprint.server import slicingManager
-		slicer_profile_path = slicingManager.get_slicer_profile_path("cura2")
+		slicer_profile_path = slicingManager.get_slicer_profile_path("cura2")+'/'
 
-		for entry in os.listdir(slicer_profile_path + "/Variants/"):
+		for entry in os.listdir(slicer_profile_path + "Variants/"):
 			if not entry.endswith(".json"):
 				# we are only interested in profiles and no hidden files
 				continue
@@ -325,9 +325,9 @@ class ProfileReader(object):
 				continue
 
 			# creates a shallow slicing profile
-			return slicer_profile_path + "/Variants/" + entry
+			return slicer_profile_path + "Variants/" + entry
 
-		for entry in os.listdir(slicer_profile_path + "/Quality/"):
+		for entry in os.listdir(slicer_profile_path + "Quality/"):
 			if not entry.endswith(".json"):
 				# we are only interested in profiles and no hidden files
 				continue
@@ -335,7 +335,7 @@ class ProfileReader(object):
 			if filament_id.lower() not in entry.lower():
 				continue
 
-			return slicer_profile_path + "/Quality/" + entry
+			return slicer_profile_path + "Quality/" + entry
 		return None
 
 	#check if printer(printer_id) with a nozzle size (nozzle_id) on extruder can use a especific filament(filament_id)
@@ -344,11 +344,11 @@ class ProfileReader(object):
 		# check if printer is can use this filament profile
 		from octoprint.server import slicingManager
 		logger = logging.getLogger("octoprint.plugin.cura2.profileReader")
-		slicer_profile_path= slicingManager.get_slicer_profile_path("cura2")
+		slicer_profile_path= slicingManager.get_slicer_profile_path("cura2")+'/'
 		printer_json = None
 		try:
 			#check nozzle
-			for entry in os.listdir(slicer_profile_path + "/Printers/"):
+			for entry in os.listdir(slicer_profile_path + "Printers/"):
 				if not entry.endswith(".json"):
 					# we are only interested in profiles and no hidden files
 					continue
@@ -356,7 +356,7 @@ class ProfileReader(object):
 				if printer_id.lower().replace(" ", "") != entry.lower().replace(" ", "")[:-len(".json")]:
 					continue
 
-				with open(slicer_profile_path + "/Printers/" + entry) as data_file:
+				with open(slicer_profile_path + "Printers/" + entry) as data_file:
 					printer_json = json.load(data_file)
 
 					if 'nozzles_supported' in printer_json and printer_json is not None:
