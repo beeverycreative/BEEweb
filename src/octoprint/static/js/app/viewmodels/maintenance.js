@@ -104,15 +104,6 @@ $(function() {
                 'margin-left': function() { return -($(this).width() /2); }
             });
 
-            // Gets the available filament list
-            self._getFilamentProfiles();
-
-            // Gets the available nozzle size list
-            self._getNozzleSizes();
-
-            // Gets the amount of filament left in spool
-            self._getFilamentInSpool();
-
             return false;
         };
 
@@ -246,6 +237,13 @@ $(function() {
             $('#maintenanceNextButton').removeClass('hidden');
             $('#maintenanceCloseButton').addClass('hidden');
             self.changeFilament(true);
+
+            // Gets the available filament list
+            self._getFilamentProfiles();
+
+            // Gets the amount of filament left in spool
+            self._getFilamentInSpool();
+
             // Starts heating automatically
             self.startHeating();
         };
@@ -976,6 +974,9 @@ $(function() {
         self.showReplaceNozzle = function() {
             self.switchNozzle(true);
 
+            // Gets the available nozzle size list
+            self._getNozzleSizes();
+
             $('#maintenanceNextButton').removeClass('hidden');
             $('#maintenanceList').addClass('hidden');
             $('#cancelMaintenance').removeClass('hidden');
@@ -983,7 +984,6 @@ $(function() {
             $('#maintenance_replaceNozzle').removeClass('hidden');
 
             $('#maintenanceCloseButton').addClass('hidden');
-
         };
 
         self.replaceNozzleStep0 = function() {

@@ -110,20 +110,28 @@ $(function() {
             }
         };
 
+        self._showPrintFromMemory = function () {
+            $('#printFromMemoryDiv').removeClass('hidden');
+            $('#preparePrint').addClass('hidden');
+            $('#state_wrapper .accordion-heading').addClass('selected');
+
+            self.expandStatusPanel();
+        };
+
+        self._hidePrintFromMemory = function () {
+            $('#printFromMemoryDiv').addClass('hidden');
+            $('#preparePrint').removeClass('hidden');
+            $('#state_wrapper .accordion-heading').removeClass('selected');
+
+            self.retractStatusPanel();
+        };
+
         self.togglePrintFromMemory = function() {
             if (self.enablePrintFromMemory()) {
                 if ($('#printFromMemoryDiv').hasClass('hidden')) {
-                    $('#printFromMemoryDiv').removeClass('hidden');
-                    $('#preparePrint').addClass('hidden');
-                    $('#state_wrapper .accordion-heading').addClass('selected');
-
-                    self.expandStatusPanel();
+                    self._showPrintFromMemory();
                 } else {
-                    $('#printFromMemoryDiv').addClass('hidden');
-                    $('#preparePrint').removeClass('hidden');
-                    $('#state_wrapper .accordion-heading').removeClass('selected');
-
-                    self.retractStatusPanel();
+                    self._hidePrintFromMemory();
                 }
             }
         };
@@ -426,6 +434,12 @@ $(function() {
             if (prevClosed === true && self.isErrorOrClosed() === false && self.isReady() === true) {
                 self.printerProfiles.requestData();
             }
+
+            // detects if the state changed from ready to closed
+            if (prevClosed === false && self.isErrorOrClosed() === true && self.isOperational() === false) {
+                self._hidePrintFromMemory();
+            }
+
         };
 
         self._processJobData = function(data) {
