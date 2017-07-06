@@ -1014,8 +1014,9 @@ class BeePrinter(Printer):
 
             self._fileManager.remove_file(payload['origin'], payload['file'])
         except RuntimeError:
-            self._logger.exception('Error deleting temporary GCode file.')
-
+            self._logger.error('Error deleting temporary GCode file.')
+        except Exception as e:
+            self._logger.exception(e)
 
     def on_comm_state_change(self, state):
         """
@@ -1043,7 +1044,12 @@ class BeePrinter(Printer):
         :return:
         """
         if BeePrinter.TMP_FILE_MARKER in payload["file"]:
-            self._fileManager.remove_file(payload['origin'], payload['file'])
+            try:
+                self._fileManager.remove_file(payload['origin'], payload['file'])
+            except RuntimeError:
+                self._logger.error('Error deleting temporary GCode file.')
+            except Exception as e:
+                self._logger.exception(e)
 
         # unselects the current file
         self.unselect_file()
