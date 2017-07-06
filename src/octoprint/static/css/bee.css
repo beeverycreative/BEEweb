@@ -47,7 +47,7 @@ table {
     border-radius: 0px;
 }
 .alert p {
-    color: #fff !important;
+    color: #000 !important;
 }
 
 .radio input[type="radio"],
@@ -1268,6 +1268,7 @@ input + span.add-on{
     width: 800px;
     margin-left: -487px;
 }
+#wizard_dialog .modal-body .full-sized-box { padding: 0px !important; }
 
 /*---------------------SPECIFIC MODAL STRUCTURES ---------------------*/
 #settings_dialog .modal-body .full-sized-box,
@@ -1565,6 +1566,7 @@ td.settings_users_actions .m-icon {
 #slice_button,
 #settings_dialog .modal-footer .btn-primary,
 #settings_printerProfiles_editDialog .modal-footer .btn-primary,
+#wizard_dialog .modal-footer .btn-primary,
 #usersettings_dialog .modal-footer .btn-primary,
 #settings-usersDialogAddUser .modal-footer .btn-primary,
 #settings-usersDialogEditUser .modal-footer .btn-primary,
@@ -1591,7 +1593,12 @@ td.settings_users_actions .m-icon {
     color: #fff;
     background: #518359;
 }
-#maintenanceCloseButton, #maintenance_dialog .modal-footer .btn, #login_dialog .modal-footer .btn, #cancelMaintenance, #aboutbee_dialog .modal-footer .btn{
+#maintenanceCloseButton,
+#maintenance_dialog .modal-footer .btn,
+#wizard_dialog .modal-footer .button-previous,
+#login_dialog .modal-footer .btn,
+#cancelMaintenance,
+#aboutbee_dialog .modal-footer .btn{
     padding: 20px;
     background: transparent;
     color: #898989;
@@ -1601,7 +1608,8 @@ td.settings_users_actions .m-icon {
     text-shadow: none;
 }
 
-#maintenanceNextButton {
+#maintenanceNextButton,
+#wizard_dialog .modal-footer .button-next {
     padding: 20px;
     background: #ffcc00;
     color: #000;

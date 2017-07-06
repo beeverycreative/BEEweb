@@ -338,18 +338,18 @@ msgstr "Hotend & Extruder"
 #: src/octoprint/plugins/corewizard/templates/corewizard_servercommands_wizard.jinja2:3
 msgid ""
 "<p>\n"
-"    OctoPrint supports calling external commands in order to restart "
+"    BEESOFT supports calling external commands in order to restart "
 "itself or restarting and/or shutting\n"
 "    down the system it is running on. You may configure those here.\n"
 "</p>"
 msgstr ""
-"<p>OctoPrint kann externe Befehle aufrufen, um sich selbst neu zu starten"
+"<p>BEESOFT kann externe Befehle aufrufen, um sich selbst neu zu starten"
 " oder das System, auf dem es läuft, neu zu starten und/oder "
 "herunterzufahren. Du kannst diese Befehle hier konfigurieren.</p>"
 
 #: src/octoprint/plugins/corewizard/templates/corewizard_servercommands_wizard.jinja2:8
-msgid "OctoPrint related commands"
-msgstr "Befehler für OctoPrint"
+msgid "BEESOFT related commands"
+msgstr "Befehler für BEESOFT"
 
 #: src/octoprint/plugins/corewizard/templates/corewizard_servercommands_wizard.jinja2:14
 msgid "System related commands"
@@ -374,7 +374,7 @@ msgstr "Webcam"
 #: src/octoprint/plugins/corewizard/templates/corewizard_webcam_wizard.jinja2:9
 msgid ""
 "<p>\n"
-"    The <strong>Stream URL</strong> is the URL OctoPrint uses to embed "
+"    The <strong>Stream URL</strong> is the URL BEESOFT uses to embed "
 "the\n"
 "    actual webcam stream (which should be an MJPG stream) into the web\n"
 "    interface. This needs to be reachable <strong>from your "
@@ -386,33 +386,33 @@ msgid ""
 "(<code>http://host:port/path</code>),</li>\n"
 "        <li>a URL defaulting to the protocol used for accessing the web\n"
 "            interface (e.g. <code>//host:port/path</code>),</li>\n"
-"        <li>an absolute path on the same host as OctoPrint (e.g. "
+"        <li>an absolute path on the same host as BEESOFT (e.g. "
 "<code>/absolute/path</code>) or</li>\n"
-"        <li>a relative path on the same host as OctoPrint (e.g. "
+"        <li>a relative path on the same host as BEESOFT (e.g. "
 "<code>relative/path</code>)</li>\n"
 "    </ul>\n"
 "</p><p>\n"
-"    The <strong>Snapshot URL</strong> is the URL OctoPrint uses to fetch "
+"    The <strong>Snapshot URL</strong> is the URL BEESOFT uses to fetch "
 "single\n"
 "    images from the webcam for creating timelapse recordings. This needs "
 "to be\n"
-"    a fully qualified URL reachable <strong>from the OctoPrint "
+"    a fully qualified URL reachable <strong>from the BEESOFT "
 "server</strong>.\n"
 "</p>"
 msgstr ""
-"<p>Die <strong>Stream-URL</strong> ist eine URL, die OctoPrint verwendet "
+"<p>Die <strong>Stream-URL</strong> ist eine URL, die BEESOFT verwendet "
 "um den eigentlichen Webcamstream (der ein MJPG Stream sein sollte) in das"
 " Webinterface einzubetten. Diese URL muss <strong>aus deinem "
 "Browser</strong> erreichbar sein.</p><p>Mögliche Formen sind:<ul><li>eine"
 " voll definierte URL (<code>http://host:port/path</code>)</li><li>eine "
 "URL relative zum Protokoll, über das auf das Webinterface zugegriffen "
 "wird (z.B. <code>//host:port/path</code>),</li><li>ein absoluter Pfad auf"
-" dem selben Host wie OctoPrint (z.B. <code>/absolute/path</code>) "
-"oder<li><li>ein relativer Pfad auf dem selben Host wie OctoPrint (z.B. "
+" dem selben Host wie BEESOFT (z.B. <code>/absolute/path</code>) "
+"oder<li><li>ein relativer Pfad auf dem selben Host wie BEESOFT (z.B. "
 "<code>relative/path</code>)</li></ul></p><p>Die <strong>Snapshot-"
-"URL</strong> ist eine URL, die OctoPrint verwendet um einzelne Bilder von"
+"URL</strong> ist eine URL, die BEESOFT verwendet um einzelne Bilder von"
 " der Webcam für die Erstellung von Zeitrafferaufnahmen zu beziehen. Das "
-"muss eine voll definierte URL sein, <strong>die vom OctoPrint "
+"muss eine voll definierte URL sein, <strong>die vom BEESOFT "
 "Server</strong> erreichbar ist.</p>"
 
 #: src/octoprint/plugins/corewizard/templates/corewizard_webcam_wizard.jinja2:33
@@ -3880,11 +3880,11 @@ msgstr "Alles erledigt!"
 #: src/octoprint/templates/dialogs/wizard/firstrun_end.jinja2:3
 msgid ""
 "\n"
-"    Your OctoPrint installation is now all set up and ready to go. Happy\n"
+"    Your BEESOFT installation is now all set up and ready to go. Happy\n"
 "    printing!\n"
 msgstr ""
 "\n"
-"Deine OctoPrint Installation ist jetzt eingerichtet und es kann losgehen."
+"Deine BEESOFT Installation ist jetzt eingerichtet und es kann losgehen."
 " Happy printing!\n"
 
 #: src/octoprint/templates/dialogs/wizard/firstrun_end.jinja2:8
@@ -3911,15 +3911,15 @@ msgstr "Hallo!"
 #: src/octoprint/templates/dialogs/wizard/firstrun_start.jinja2:3
 msgid ""
 "\n"
-"    Thank you for installing OctoPrint! This wizard will lead you through"
+"    Thank you for installing BEESOFT! This wizard will lead you through"
 " the\n"
-"    final steps to get your OctoPrint instance all setup and ready to go."
+"    final steps to get your BEESOFT instance all setup and ready to go."
 " We'll\n"
 "    get you printing in no time!\n"
 msgstr ""
 "\n"
-"Danke, dass du OctoPrint installiert hast! Dieser Wizard wird dich nun "
-"durch die letzten Schritte begleiten, um deine OctoPrint Instanz fertig "
+"Danke, dass du BEESOFT installiert hast! Dieser Wizard wird dich nun "
+"durch die letzten Schritte begleiten, um deine BEESOFT Instanz fertig "
 "einzurichten.\n"
 
 #: src/octoprint/templates/navbar/login.jinja2:12
@@ -4364,20 +4364,20 @@ msgid "Edit Profile"
 msgstr "Profil bearbeiten"
 
 #: src/octoprint/templates/snippets/settings/server/serverCommandServerRestart.jinja2:1
-msgid "Command to restart the OctoPrint server"
-msgstr "Befehl zum Neustart des OctoPrint-Servers"
+msgid "Command to restart the BEESOFT server"
+msgstr "Befehl zum Neustart des BEESOFT-Servers"
 
 #: src/octoprint/templates/snippets/settings/server/serverCommandSystemRestart.jinja2:1
-msgid "Command to restart the system OctoPrint is running on"
-msgstr "Befehl zum Neustart des Systems, auf dem OctoPrint läuft"
+msgid "Command to restart the system BEESOFT is running on"
+msgstr "Befehl zum Neustart des Systems, auf dem BEESOFT läuft"
 
 #: src/octoprint/templates/snippets/settings/server/serverCommandSystemRestart.jinja2:2
 msgid "Restart system"
 msgstr "System neustarten"
 
 #: src/octoprint/templates/snippets/settings/server/serverCommandSystemShutdown.jinja2:1
-msgid "Command to shut down the system OctoPrint is running on"
-msgstr "Befehl zum Herunterfahren des Systems, auf dem OctoPrint läuft"
+msgid "Command to shut down the system BEESOFT is running on"
+msgstr "Befehl zum Herunterfahren des Systems, auf dem BEESOFT läuft"
 
 #: src/octoprint/templates/snippets/settings/webcam/ffmpegBitrate.jinja2:1
 msgid "Bitrate to use for encoding the timelapse video"
@@ -4430,8 +4430,8 @@ msgid "Snapshot URL"
 msgstr "Snapshot-URL"
 
 #: src/octoprint/templates/snippets/settings/webcam/webcamSnapshotUrl.jinja2:8
-msgid "Fully qualified URL, needs to be reachable by OctoPrint's server"
-msgstr "Voll definierte URL, muss von OctoPrints Server erreichbar sein"
+msgid "Fully qualified URL, needs to be reachable by BEESOFT's server"
+msgstr "Voll definierte URL, muss von BEESOFT Server erreichbar sein"
 
 #: src/octoprint/templates/snippets/settings/webcam/webcamStreamRatio.jinja2:1
 msgid "Aspect ratio of the webcam stream, either 16:9 or 4:3"
@@ -4461,10 +4461,10 @@ msgstr "Stream-URL"
 
 #: src/octoprint/templates/snippets/settings/webcam/webcamStreamUrl.jinja2:8
 msgid ""
-"Needs to be reachable from the browser displaying the OctoPrint UI, used "
+"Needs to be reachable from the browser displaying the BEESOFT UI, used "
 "to embed the webcam stream into the page."
 msgstr ""
-"Muss vom Browser erreichbar sein, in dem die OctoPrint UI angezeigt wird,"
+"Muss vom Browser erreichbar sein, in dem die BEESOFT UI angezeigt wird,"
 " wird genutzt, um den Webcam Stream in die Seite einzubetten."
 
 #: src/octoprint/templates/tabs/control.jinja2:5
