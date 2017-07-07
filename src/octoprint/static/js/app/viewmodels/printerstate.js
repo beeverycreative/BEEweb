@@ -583,14 +583,16 @@ $(function() {
         };
 
         self.cancel = function() {
-            $('#job_cancel').prop('disabled', true);
-            $('#job_pause').prop('disabled', true);
 
             self._restoreShutdown();
             self.insufficientFilament(false);
             self.ignoredInsufficientFilament(false);
 
             if (!self.settings.feature_printCancelConfirmation()) {
+
+                $('#job_cancel').prop('disabled', true);
+                $('#job_pause').prop('disabled', true);
+
                 OctoPrint.job.cancel(function() {
                     $('#job_cancel').prop('disabled', false);
                     $('#job_pause').prop('disabled', false);
@@ -602,6 +604,9 @@ $(function() {
                     cancel: gettext("No"),
                     proceed: gettext("Yes"),
                     onproceed: function() {
+                        $('#job_cancel').prop('disabled', true);
+                        $('#job_pause').prop('disabled', true);
+
                         OctoPrint.job.cancel(function() {
                             $('#job_cancel').prop('disabled', false);
                             $('#job_pause').prop('disabled', false);

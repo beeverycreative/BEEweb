@@ -687,10 +687,10 @@ function showConfirmationDialog(msg, onacknowledge, options) {
     var modalHeader = $('<a href="javascript:void(0)" class="close" data-dismiss="modal" aria-hidden="true">&times;</a><h3>' + title + '</h3>');
     var modalBody = $('<p>' + message + '</p><p>' + question + '</p>');
 
-    var cancelButton = $('<a href="javascript:void(0)" class="btn">' + cancel + '</a>')
+    var cancelButton = $('<a href="javascript:void(0)" class="btn modal-footer-btn">' + cancel + '</a>')
         .attr("data-dismiss", "modal")
         .attr("aria-hidden", "true");
-    var proceedButton = $('<a href="javascript:void(0)" class="btn">' + proceed + '</a>')
+    var proceedButton = $('<a href="javascript:void(0)" class="btn modal-footer-btn">' + proceed + '</a>')
         .addClass("btn-" + proceedClass);
 
     var modal = $('<div></div>')
