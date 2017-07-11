@@ -790,7 +790,6 @@ $(function() {
 
 
         self._sendJogCommand = function (axis, direction, distance) {
-            self._showMovingMessage();
             self.commandLock(true);
             var data = {
                 "command": "jog"
@@ -805,11 +804,9 @@ $(function() {
                 data: JSON.stringify(data),
                 success: function() {
                     self.commandLock(false);
-                    self._hideMovingMessage();
                 },
                 error: function() {
                     self.commandLock(false);
-                    self._hideMovingMessage();
                 }
             });
         };
@@ -1283,7 +1280,6 @@ $(function() {
         self.nextOperations = function() {
             self.processStage(self.processStage()+1);
             if (self.calibrating()) {
-                console.log("calibrating next");
                 if(self.processStage() == 1)
                 {
                     self.nextStepCalibration1();
