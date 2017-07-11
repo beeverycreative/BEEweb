@@ -233,7 +233,7 @@ default_settings = {
 		"generated": None,
 		"data": None,
 		"firmware": None,
-		"bi": None,
+		"statistics": None,
 	},
 	"temperature": {
 		"profiles": [

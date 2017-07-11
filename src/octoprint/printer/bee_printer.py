@@ -16,6 +16,7 @@ from octoprint.events import eventManager, Events
 from octoprint.slicing import SlicingManager
 from octoprint.filemanager import FileDestinations
 from octoprint.util.comm import PrintingFileInformation
+from octoprint.printer.statistics import BaseStatistics
 
 __author__ = "BEEVC - Electronic Systems "
 __license__ = "GNU Affero General Public License http://www.gnu.org/licenses/agpl.html"
@@ -158,9 +159,13 @@ class BeePrinter(Printer):
                 self._bvc_conn_thread.stop_connection_monitor()
                 self._bvc_conn_thread = None
 
+            self._stats = BaseStatistics()
+
+
             if self._comm is not None and self._comm.isOperational():
                 self._logger.info("Connected to %s!" % printer_name)
                 return True
+
         except Exception as ex:
             self._handleConnectionException(ex)
 
