@@ -5,6 +5,9 @@ from __future__ import absolute_import
 import math
 import time
 import logging
+
+import datetime
+from octoprint.util import deprecated
 from octoprint.util.bee_comm import BeeCom
 import os
 from octoprint.printer.standard import Printer
@@ -16,7 +19,7 @@ from octoprint.events import eventManager, Events
 from octoprint.slicing import SlicingManager
 from octoprint.filemanager import FileDestinations
 from octoprint.util.comm import PrintingFileInformation
-from octoprint.printer.statistics import BaseStatistics
+from octoprint.printer.statistics import BaseStatistics, PrintStatistics
 
 __author__ = "BEEVC - Electronic Systems "
 __license__ = "GNU Affero General Public License http://www.gnu.org/licenses/agpl.html"
@@ -43,6 +46,9 @@ class BeePrinter(Printer):
         self._bvc_status_thread = None
         self._current_temperature = 0.0
         self._lastJogTime = None
+
+        self._stats = BaseStatistics()
+        self._currentPrintStatistics = None
 
         # Initializes the slicing manager for filament profile information
         self._slicingManager = SlicingManager(settings().getBaseFolder("slicingProfiles"), printerProfileManager)
@@ -159,9 +165,6 @@ class BeePrinter(Printer):
                 self._bvc_conn_thread.stop_connection_monitor()
                 self._bvc_conn_thread = None
 
-            self._stats = BaseStatistics()
-
-
             if self._comm is not None and self._comm.isOperational():
                 self._logger.info("Connected to %s!" % printer_name)
                 return True
@@ -239,9 +242,14 @@ class BeePrinter(Printer):
         # saves the current PrintFileInformation object so we can later recover it if the printer is disconnected
         self._currentPrintJobFile = self._comm.getCurrentFile()
 
-        # sends usage statistics
-        self._sendUsageStatistics('start')
-
+        # sets initial print statistics
+        if not self.isRunningCalibrationTest():
+            self._currentPrintStatistics = PrintStatistics()
+            self._currentPrintStatistics.set_printer_serial_number(self.get_printer_serial())
+            filament = self.getSelectedFilamentProfile()
+            if filament is not None:
+                self._currentPrintStatistics.set_filament_used(filament.display_name)
+            self._currentPrintStatistics.set_start_time(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
 
     def cancel_print(self):
         """
@@ -494,10 +502,10 @@ class BeePrinter(Printer):
                         filamentProfile = self._slicingManager.load_profile(self._slicingManager.default_slicer, key, require_configured=False)
                         return filamentProfile
 
-            return None
         except Exception as ex:
             self._logger.error(ex)
 
+        return None
 
     def getFilamentString(self):
         """
@@ -675,10 +683,10 @@ class BeePrinter(Printer):
                 calibtest_file.write(line + '\n')
             calibtest_file.close()
 
+            self._runningCalibrationTest = True
             self.select_file(file_path, False)
             self.start_print()
 
-            self._runningCalibrationTest = True
         except Exception as ex:
             self._logger.error('Error printing calibration test : %s' % str(ex))
 
@@ -1075,8 +1083,11 @@ class BeePrinter(Printer):
         # unselects the current file
         self.unselect_file()
 
-        # sends usage statistics
-        self._sendUsageStatistics('stop')
+        # log print statistics
+        if not self.isRunningCalibrationTest():
+            self._currentPrintStatistics.set_user_feedback(True, 7, "Print ok")
+            self._currentPrintStatistics.set_total_print_time(self._comm.getCleanedPrintTime())
+            self._savePrintStatistics()
 
     def on_client_connected(self, event, payload):
         """
@@ -1092,7 +1103,6 @@ class BeePrinter(Printer):
 
             # Starts the connection monitor thread
             if self._bvc_conn_thread is None and (self._comm is None or (self._comm is not None and not self._comm.isOperational())):
-                import threading
                 self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
                 self._bvc_conn_thread.start()
 
@@ -1300,7 +1310,14 @@ class BeePrinter(Printer):
             self._bvc_status_thread.stop()
             self._bvc_status_thread = None
 
+    def _savePrintStatistics(self):
+        """
+        Logs the print statistics after a print has finished
+        :return:
+        """
+        self._stats.register_print(self._currentPrintStatistics)
 
+    @deprecated
     def _sendUsageStatistics(self, operation):
         """
         Calls and external executable to send usage statistics to a remote cloud server
