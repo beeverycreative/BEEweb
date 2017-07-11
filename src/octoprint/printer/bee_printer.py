@@ -245,34 +245,36 @@ class BeePrinter(Printer):
         if self._comm is None:
             return
 
-        self._comm.cancelPrint()
+        try:
+            self._comm.cancelPrint()
 
-        # reset progress, height, print time
-        self._setCurrentZ(None)
-        self._setProgressData()
-        self._resetPrintProgress()
-        self._currentPrintJobFile = None
+            # reset progress, height, print time
+            self._setCurrentZ(None)
+            self._setProgressData()
+            self._resetPrintProgress()
+            self._currentPrintJobFile = None
 
-        # mark print as failure
-        if self._selectedFile is not None:
-            self._fileManager.log_print(FileDestinations.SDCARD if self._selectedFile["sd"] else FileDestinations.LOCAL,
-                                        self._selectedFile["filename"], time.time(), self._comm.getPrintTime(), False,
-                                        self._printerProfileManager.get_current_or_default()["id"])
-            payload = {
-                "file": self._selectedFile["filename"],
-                "origin": FileDestinations.LOCAL
-            }
-            if self._selectedFile["sd"]:
-                payload["origin"] = FileDestinations.SDCARD
+            # mark print as failure
+            if self._selectedFile is not None:
+                self._fileManager.log_print(FileDestinations.SDCARD if self._selectedFile["sd"] else FileDestinations.LOCAL,
+                                            self._selectedFile["filename"], time.time(), self._comm.getPrintTime(), False,
+                                            self._printerProfileManager.get_current_or_default()["id"])
+                payload = {
+                    "file": self._selectedFile["filename"],
+                    "origin": FileDestinations.LOCAL
+                }
+                if self._selectedFile["sd"]:
+                    payload["origin"] = FileDestinations.SDCARD
 
-            # deletes the file if it was created with the temporary file name marker
-            if BeePrinter.TMP_FILE_MARKER in self._selectedFile["filename"]:
-                eventManager().fire(Events.PRINT_CANCELLED_DELETE_FILE, payload)
-            else:
-                eventManager().fire(Events.PRINT_CANCELLED, payload)
+                # deletes the file if it was created with the temporary file name marker
+                if BeePrinter.TMP_FILE_MARKER in self._selectedFile["filename"]:
+                    eventManager().fire(Events.PRINT_CANCELLED_DELETE_FILE, payload)
+                else:
+                    eventManager().fire(Events.PRINT_CANCELLED, payload)
 
-            eventManager().fire(Events.PRINT_FAILED, payload)
-
+                eventManager().fire(Events.PRINT_FAILED, payload)
+        except Exception as ex:
+            self._logger.error("Error canceling print job: %s" % str(ex))
 
     def jog(self, axis, amount):
         """
@@ -652,28 +654,28 @@ class BeePrinter(Printer):
         Starts the printer calibration test
         :return:
         """
+        try:
+            """
+            TODO: For now we will hard-code a fixed string to fetch the calibration GCODE, since it is the same for all
+            the "first version" printers. In the future this function call must use the printer name for dynamic fetch
+            of the correct GCODE, using self._printerProfileManager.get_current_or_default()['name'] to get the current
+            printer name
+            """
+            test_gcode = CalibrationGCoder.get_calibration_gcode('BVC_BEETHEFIRST_V1')
+            lines = test_gcode.split(',')
 
-        """
-        TODO: For now we will hard-code a fixed string to fetch the calibration GCODE, since it is the same for all
-        the "first version" printers. In the future this function call must use the printer name for dynamic fetch
-        of the correct GCODE, using self._printerProfileManager.get_current_or_default()['name'] to get the current
-        printer name
-        """
-        test_gcode = CalibrationGCoder.get_calibration_gcode('BVC_BEETHEFIRST_V1')
-        lines = test_gcode.split(',')
+            file_path = os.path.join(settings().getBaseFolder("uploads"), 'BEETHEFIRST_calib_test.gcode')
+            calibtest_file = open(file_path, 'w')
+            for line in lines:
+                calibtest_file.write(line + '\n')
+            calibtest_file.close()
 
-        file_path = os.path.join(settings().getBaseFolder("uploads"), 'BEETHEFIRST_calib_test.gcode')
-        calibtest_file = open(file_path, 'w')
+            self.select_file(file_path, False)
+            self.start_print()
 
-        for line in lines:
-            calibtest_file.write(line + '\n')
-
-        calibtest_file.close()
-
-        self.select_file(file_path, False)
-        self.start_print()
-
-        self._runningCalibrationTest = True
+            self._runningCalibrationTest = True
+        except Exception as ex:
+            self._logger.error('Error printing calibration test : %s' % str(ex))
 
         return None
 
@@ -684,9 +686,21 @@ class BeePrinter(Printer):
         :return:
         """
         self.cancel_print()
-        self._runningCalibrationTest = False
+        self.endCalibrationTest()
 
         return None
+
+    def endCalibrationTest(self):
+        """
+        Runs the necessary cleanups after the calibration test
+        :return:
+        """
+        try:
+            self._runningCalibrationTest = False
+            file_path = os.path.join(settings().getBaseFolder("uploads"), 'BEETHEFIRST_calib_test.gcode')
+            self._fileManager.remove_file(FileDestinations.LOCAL, file_path)
+        except Exception as ex:
+            self._logger.error('Error finishing calibration test : %s' % str(ex))
 
 
     def toggle_pause_print(self):
@@ -963,10 +977,12 @@ class BeePrinter(Printer):
                 if progress >= 1 and self._comm.getCommandsInterface().isPreparingOrPrinting() is False:
 
                     self._comm.getCommandsInterface().stopStatusMonitor()
-                    self._runningCalibrationTest = False
 
                     # Runs the print finish communications callback
                     self._comm.triggerPrintFinished()
+
+                    if self._runningCalibrationTest:
+                        self.endCalibrationTest()
 
                     self._setProgressData()
                     self._resetPrintProgress()

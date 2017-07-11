@@ -68,11 +68,11 @@
         </div>
     </div>
     <div class="row-fluid">
-        <div class="span2"></div>
-        <div class="span8">
+        <div class="span3"></div>
+        <div class="span6">
             <img src="{{ url_for('static', filename='img/maintenance/cabeca_impressao1.png') }}" />
         </div>
-        <div class="span2"></div>
+        <div class="span3"></div>
     </div>
     <br />
     <div class="row-fluid">
@@ -91,11 +91,11 @@
         </div>
     </div>
     <div class="row-fluid">
-        <div class="span2"></div>
-        <div class="span8">
+        <div class="span3"></div>
+        <div class="span6">
             <img src="{{ url_for('static', filename='img/maintenance/cabeca_impressao2.png') }}" />
         </div>
-        <div class="span2"></div>
+        <div class="span3"></div>
     </div>
     <br />
     <div class="row-fluid">
@@ -113,11 +113,11 @@
         </div>
     </div>
     <div class="row-fluid">
-        <div class="span2"></div>
-        <div class="span8 text-center">
+        <div class="span3"></div>
+        <div class="span6 text-center">
             <img src="{{ url_for('static', filename='img/maintenance/etapa_final.png') }}" />
         </div>
-        <div class="span2"></div>
+        <div class="span3"></div>
     </div>
     <br />
     <div class="row-fluid">
@@ -176,15 +176,15 @@
     </div>
     <br />
     <div class="row-fluid">
-        <div class="span5"></div>
-        <div class="span2">
-            <button id="cancel-calib-test" title="Cancel Calibration Test" class="btn btn-default"
+        <div class="span4"></div>
+        <div class="span4 text-center">
+            <button id="cancel-calib-test" title="Cancel Calibration Test" class="btn btn-danger"
                data-bind="click: cancelCalibrationTest, enable: printerState.isOperational() && !commandLock()
                && printerState.isReady() && loginState.isUser()">
                 <i class="icon-stop"></i> {{ _('Cancel Test')}}
             </button>
         </div>
-        <div class="span5"></div>
+        <div class="span4"></div>
     </div>
 </div>
 
