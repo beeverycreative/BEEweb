@@ -383,7 +383,7 @@ class BeePrinter(Printer):
 
             return targetTemperature
         except Exception as ex:
-            self._logger.error(ex)
+            self._logger.error('Error when starting the heating operation: %s' % str(ex))
 
 
     def cancelHeating(self):
@@ -466,7 +466,7 @@ class BeePrinter(Printer):
 
             return resp, temperature_profile_printer
         except Exception as ex:
-            self._logger.error(ex)
+            self._logger.error('Error saving filament string in printer: %s' % str(ex))
 
 
     def getSelectedFilamentProfile(self):
@@ -491,7 +491,7 @@ class BeePrinter(Printer):
 
             return None
         except Exception as ex:
-            self._logger.error(ex)
+            self._logger.error('Error when starting the heating operation: %s' % str(ex))
 
 
     def getFilamentString(self):
@@ -502,7 +502,7 @@ class BeePrinter(Printer):
         try:
             return self._comm.getCommandsInterface().getFilamentString()
         except Exception as ex:
-            self._logger.error(ex)
+            self._logger.error('Error getting filament string from printer: %s' % str(ex))
 
 
     def getFilamentInSpool(self):
@@ -519,7 +519,7 @@ class BeePrinter(Printer):
 
             return filament
         except Exception as ex:
-            self._logger.error(ex)
+            self._logger.error('Error getting amount of filament in spool: %s' % str(ex))
 
 
     def getFilamentWeightInSpool(self):
@@ -545,7 +545,7 @@ class BeePrinter(Printer):
                 # positives of not enough filament available
                 return 350.0
         except Exception as ex:
-            self._logger.error(ex)
+            self._logger.error('Error getting filament weight in spool: %s' % str(ex))
 
 
     def setFilamentInSpool(self, filamentInSpool):
@@ -573,7 +573,7 @@ class BeePrinter(Printer):
 
             return comm_return
         except Exception as ex:
-            self._logger.error(ex)
+            self._logger.error('Error setting amount of filament in spool: %s' % str(ex))
 
 
     def setNozzleSize(self, nozzleSize):
@@ -1029,10 +1029,10 @@ class BeePrinter(Printer):
             self.on_print_cancelled(event, payload)
 
             self._fileManager.remove_file(payload['origin'], payload['file'])
-        except RuntimeError:
-            self._logger.error('Error deleting temporary GCode file.')
+        except RuntimeError as re:
+            self._logger.exception(re)
         except Exception as e:
-            self._logger.exception(e)
+            self._logger.exception('Error deleting temporary GCode file: %s' % str(e))
 
     def on_comm_state_change(self, state):
         """
@@ -1059,16 +1059,16 @@ class BeePrinter(Printer):
         Event listener to when a print job finishes
         :return:
         """
+        # unselects the current file
+        self.unselect_file()
+
         if BeePrinter.TMP_FILE_MARKER in payload["file"]:
             try:
                 self._fileManager.remove_file(payload['origin'], payload['file'])
-            except RuntimeError:
-                self._logger.error('Error deleting temporary GCode file.')
+            except RuntimeError as re:
+                self._logger.exception(re)
             except Exception as e:
-                self._logger.exception(e)
-
-        # unselects the current file
-        self.unselect_file()
+                self._logger.exception('Error deleting temporary GCode file: %s' % str(e))
 
         # sends usage statistics
         self._sendUsageStatistics('stop')
@@ -1180,7 +1180,7 @@ class BeePrinter(Printer):
                         filament_extruder['insufficient'] = False
                         self._insufficientFilamentForCurrent = False
             except Exception as ex:
-                self._logger.error(ex)
+                self._logger.error('Error checking for sufficient filament for print: %s' % str(ex))
 
 
     def _setProgressData(self, completion=None, filepos=None, printTime=None, printTimeLeft=None):
@@ -1217,7 +1217,7 @@ class BeePrinter(Printer):
                 self._elapsedTime = 0
 
         except Exception as ex:
-            self._logger.error(ex)
+            self._logger.error('Error setting print progress data: %s' % str(ex))
 
         try:
             fileSize=int(self._selectedFile['filesize'])
