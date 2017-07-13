@@ -10,6 +10,7 @@ import logging
 import os
 import pylru
 import shutil
+import sys
 
 try:
 	from os import scandir, walk
@@ -839,7 +840,12 @@ class LocalFileStorage(StorageInterface):
 			path = "/"
 
 		name = self.sanitize_name(name)
-		path = self.sanitize_path(path)
+		if sys.platform == "win32":
+			# hack to workaround the problem with file paths with different
+			# base folders due to the custom desktop app installation
+			path = self.basefolder
+		else:
+			path = self.sanitize_path(path)
 		return path, name
 
 	def sanitize_name(self, name):

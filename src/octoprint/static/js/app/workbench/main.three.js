@@ -69,7 +69,7 @@ BEEwb.main = {
         this.containerHeightOffset = bondingOffset.top;
 
         // renderer
-        this.renderer = new THREE.WebGLRenderer({ alpha: true , antialias: true });
+        this.renderer = Detector.webgl? new THREE.WebGLRenderer({ alpha: true , antialias: true }): new THREE.SoftwareRenderer({ alpha: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight / 1.5);
         this.container.appendChild( this.renderer.domElement );
 

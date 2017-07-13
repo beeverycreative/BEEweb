@@ -1118,6 +1118,9 @@ class Server(object):
 
 		threejs_libs = [
 			"js/lib/threejs/three.min.js",
+			"js/lib/threejs/CanvasRenderer.js",
+			"js/lib/threejs/SoftwareRenderer.js",
+			"js/lib/threejs/Projector.js",
 			"js/lib/threejs/STLLoader.js",
 			"js/lib/threejs/STLExporter.js",
 			"js/lib/threejs/STLBinaryExporter.js",
