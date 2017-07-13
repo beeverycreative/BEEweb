@@ -1061,6 +1061,7 @@ class BeePrinter(Printer):
         """
         # unselects the current file
         self.unselect_file()
+        self._currentPrintJobFile = None
 
         if BeePrinter.TMP_FILE_MARKER in payload["file"]:
             try:
