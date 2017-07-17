@@ -46,6 +46,11 @@ $(function() {
                 && !self.connection.isErrorOrClosed() && !self.filename()
                 && !self.isPrinting() && !self.isPaused() && !self.isShutdown() && !self.isHeating() && !self.isResuming();
         });
+        self.enableEstimatePrint = ko.pureComputed(function() {
+            return self.loginState.isUser() && !self.connection.isConnecting()
+                && self.connection.isErrorOrClosed() && !self.filename()
+                && !self.isPrinting() && !self.isPaused() && !self.isShutdown() && !self.isHeating() && !self.isResuming();
+        });
         self.showInsufficientFilament = ko.pureComputed(function() {
             return self.loginState.isUser && self.insufficientFilament()
             && self.isReady() && !(self.isHeating() || self.isPrinting() || self.isPaused() || self.isShutdown())
@@ -658,6 +663,13 @@ $(function() {
          * Shows the slicing dialog window for the workbench
          */
         self.preparePrint = function () {
+            self.slicing.show('local', BEEwb.helpers.generateSceneName(), false, true);
+		};
+
+        /**
+         * Shows the slicing/estimation dialog window for the workbench
+         */
+        self.estimatePrint = function () {
             self.slicing.show('local', BEEwb.helpers.generateSceneName(), true, true);
 		};
 

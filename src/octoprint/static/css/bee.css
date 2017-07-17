@@ -428,6 +428,7 @@ a.brand{
 /* black */
 .refreshicon { background: url('../img/icons/refresh.svg'); }
 .scalemaxicon { background: url('../img/icons/scalemax.svg'); }
+.estimateicon { background: url('../img/icons/medres.svg'); }
 /*grey*/
 .filamentgicon { background: url('../img/icons/filament_grey.svg'); }
 .calibrategicon  { background: url('../img/icons/calibrate_grey.svg'); }
@@ -449,6 +450,7 @@ a.brand{
 .refreshwicon { background: url('../img/icons/refresh_white.svg'); }
 .cubewicon { background: url('../img/icons/cube_white.svg'); }
 .dropdownwicon { background: url('../img/icons/dropdown_white.svg'); }
+.estimatewicon { background: url('../img/icons/medium_white.svg'); }
 /* green */
 .checkgreenicon  { background: url('../img/icons/ok_green.svg'); }
 /* dynamic icons - change with media queries */
@@ -885,6 +887,18 @@ input + span.add-on{
     border: none !important;
     color: #fff;
     background: #518359;
+    padding: 15px;
+    margin-right: -2px;
+}
+.btn-estimate-print{
+    width: 100% !important;
+    bottom: 25px !important;
+    font: 200 16px "din-light", sans-serif;
+    text-transform: uppercase;
+    box-shadow: none !important;
+    border: none !important;
+    color: #fff;
+    background: #999688;
     padding: 15px;
     margin-right: -2px;
 }
@@ -1342,7 +1356,7 @@ td.settings_users_actions .m-icon {
     font: 200 11px "din-light", sans-serif;
 }
 .modal-footer-btn {
-    padding: 22px 15px !important;
+    padding: 20px 10px !important;
 }
 #usersettings_dialog .input-append input {
     width: 375px;
@@ -1536,6 +1550,15 @@ td.settings_users_actions .m-icon {
     text-transform: uppercase;
     color: #fff;
     background: #518359;
+    display: inline-block;
+}
+#estimate_button {
+    padding: 20px 0;
+    width: 135px;
+    margin-right: -10px !important;
+    text-transform: uppercase;
+    color: #000;
+    background: #fc0;
     display: inline-block;
 }
 #maintenance_dialog .modal-footer .btn-primary {

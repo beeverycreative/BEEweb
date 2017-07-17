@@ -501,7 +501,6 @@ class BeeCom(MachineCom):
         """
         try:
             self.updatePrinterState()
-
             return self._beeCommands.goToLoadUnloadPos()
         except Exception as ex:
             self._logger.error(ex)

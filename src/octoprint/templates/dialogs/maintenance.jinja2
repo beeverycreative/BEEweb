@@ -109,7 +109,8 @@
             </div>
             <div class="span8"></div>
             <div class="span2">
-                <button id="maintenanceCloseButton" class="btn btn-block" data-dismiss="modal" aria-hidden="true">
+                <button id="maintenanceCloseButton" class="btn btn-block" data-dismiss="modal" aria-hidden="true"
+                    data-bind="click: cancelOperations, visible: !printerState.isBusy()">
                     <i class="icon-remove"></i> {{ _('Close') }}
                 </button>
                 <button id="maintenanceOkButton" class="btn btn-block btn-primary hidden" data-dismiss="modal"

@@ -22,7 +22,7 @@
                         <select data-bind="options: profiles, optionsText: 'name', optionsValue: 'key', optionsCaption: '{{ _('Select a slicing profile...') }}', value: profile, valueAllowUnset: true"></select>
                     </div>
                 </div> -->
-                <label class="control-label">{{ _('Resolution') }}</label>
+                <label class="control-label slice-option">{{ _('Resolution') }}</label>
                 <div class="control-group">
                     <div class="controls">
                         <input type="radio" id="resolution1" name="resolution" data-bind="checked: selResolution" value="Low"/>
@@ -51,7 +51,7 @@
                             </label>
                     </div>
                 </div>
-                <label class="control-label">{{ _('Density') }}  <span>({{ _('Infill') }})</span></label>
+                <label class="control-label slice-option">{{ _('Density') }}  <span>({{ _('Infill') }})</span></label>
                     <div class="control-group">
                         <div class="controls">
                             <input type="radio" id="density1" name="density" data-bind="checked: selDensity" value="Low" checked/>
@@ -85,7 +85,7 @@
                                 </label>
                         </div>
                     </div>
-                <label class="control-label">{{ _('Platform Adhesion') }}</label>
+                <label class="control-label slice-option">{{ _('Platform Adhesion') }}</label>
                     <div class="control-group">
                         <div class="controls">
                             <input type="radio" name="platform" id="plat1" data-bind="checked: platformAdhesion" value="None" checked/>
@@ -111,7 +111,7 @@
                                 </label>
                         </div>
                     </div>
-                <label class="control-label"> {{ _('Support') }}</label>
+                <label class="control-label slice-option"> {{ _('Support') }}</label>
                     <div class="control-group">
                         <div class="controls">
                             <input type="radio" name="support" id="supp1" data-bind="checked: support" value="None" checked/>
@@ -179,7 +179,13 @@
         </div>
     </div>
     <div class="modal-footer">
-        <a href="#" class="btn modal-footer-btn" data-dismiss="modal" aria-hidden="true">{{ _('Cancel') }}</a>
+        <a href="#" class="btn modal-footer-btn" data-dismiss="modal" aria-hidden="true" data-bind="click: closeSlicing">{{ _('Cancel') }}</a>
+        <a id="estimate_button" href="#" class="btn btn-default modal-footer-btn"
+            data-bind="click: sliceAndEstimate">
+            <span class="m-icon estimateicon"></span>
+            <span >{{ _('Estimate') }} </span>
+            <i id="estimate_button_loader" class="icon-spinner icon-spin" data-bind="visible: !estimateButtonControl()" ></i>
+        </a>
         <a id="slice_button" href="#" class="btn btn-primary modal-footer-btn"
             data-bind="click: function() { if ($root.enableSliceButton()) {  $root.prepareAndSlice(); } }, enable: enableSliceButton, css: {disabled: !$root.enableSliceButton()}">
             <span class="m-icon printwicon"></span>

@@ -34,7 +34,10 @@ $(function() {
         self.filamentInSpool = ko.observable();
         self.workbenchFile = false; // Signals if the slice dialog was called upon a workbench scene
 
-        self.sliceButtonControl = ko.observable(true);
+        self.sliceButtonControl = ko.observable(true); // Controls the button enabled state
+        self.estimateButtonControl = ko.observable(true); // Controls the button enabled state
+
+        self.estimationDialog = ko.observable(false); // Signals if the dialog was called with the force option for estimation
 
         self.slicersForFile = function(file) {
             if (file === undefined) {
@@ -122,10 +125,17 @@ $(function() {
         self.afterSlicing = ko.observable("none");
 
         self.show = function(target, file, force, workbench) {
-            if (!self.enableSlicingDialog() && !force) {
-                return;
+            self.estimationDialog(false);
+            if (force == true) {
+                self.estimationDialog(true);
             }
             self.requestData(function() {
+                if (!self.enableSlicingDialog() && !self.estimationDialog()) {
+                    html = _.sprintf(gettext("Could not estimate the print operation. Please make sure the slicer is configured, or contact the support for help."));
+                    new PNotify({title: gettext("No slicer configured"), text: html, type: "error", hide: false});
+                    return;
+                }
+
                 self._nozzleFilamentUpdate();
                 self.target = target;
                 self.file(file);
@@ -161,7 +171,8 @@ $(function() {
             return self.destinationFilename() != undefined
                 && self.destinationFilename().trim() != ""
                 && self.slicer() != undefined
-                && self.sliceButtonControl();
+                && self.sliceButtonControl()
+                && !self.estimationDialog();
                 //&& self.profile() != undefined;
         });
 
@@ -315,6 +326,16 @@ $(function() {
             }
 
             self.defaultProfile = selectedProfile;
+        };
+
+        self.sliceAndEstimate = function() {
+            $(".slice-option").click();
+        };
+
+        // Function that is run during the cancel/close of the dialog
+        self.closeSlicing = function() {
+            //Makes sure the options panels are all expanded after the dialog is closed
+            $(".slice-option.closed").click();
         };
 
         self.prepareAndSlice = function() {
