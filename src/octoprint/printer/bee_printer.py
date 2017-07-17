@@ -114,7 +114,7 @@ class BeePrinter(Printer):
                 bee_commands.home()
 
             # Updates the printer connection state
-            self._comm.confirmConnection()
+            self._comm.updatePrinterState()
 
             self._isConnecting = False
 

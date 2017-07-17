@@ -422,7 +422,7 @@ $(function() {
                 self.ignoredInsufficientFilament(false);
             }
 
-            if (self.isShutdown()) {
+            if (self.isShutdown() || self.isPaused()) {
                 self.expandStatusPanel();
             }
 
