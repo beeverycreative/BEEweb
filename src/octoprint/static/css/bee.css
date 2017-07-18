@@ -1554,8 +1554,8 @@ td.settings_users_actions .m-icon {
 }
 #estimate_button {
     padding: 20px 0;
-    width: 135px;
-    margin-right: -10px !important;
+    width: 160px;
+    margin-right: -8px !important;
     text-transform: uppercase;
     color: #000;
     background: #fc0;

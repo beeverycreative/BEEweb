@@ -35,9 +35,12 @@ $(function() {
         self.workbenchFile = false; // Signals if the slice dialog was called upon a workbench scene
 
         self.sliceButtonControl = ko.observable(true); // Controls the button enabled state
-        self.estimateButtonControl = ko.observable(true); // Controls the button enabled state
 
+        self.estimateButtonControl = ko.observable(true); // Controls the button enabled state
         self.estimationDialog = ko.observable(false); // Signals if the dialog was called with the force option for estimation
+
+        self.slicingDoneEstimationCallback = undefined; // Callback function to be called after the slicing event has finished
+        self.estimationOutput = ko.observable();
 
         self.slicersForFile = function(file) {
             if (file === undefined) {
@@ -126,6 +129,9 @@ $(function() {
 
         self.show = function(target, file, force, workbench) {
             self.estimationDialog(false);
+            self.slicingDoneEstimationCallback = undefined;
+            self.estimationOutput(null);
+
             if (force == true) {
                 self.estimationDialog(true);
             }
@@ -168,12 +174,16 @@ $(function() {
         };
 
         self.enableSliceButton = ko.pureComputed(function() {
-            return self.destinationFilename() != undefined
-                && self.destinationFilename().trim() != ""
+            return self.destinationFilename() !== undefined
+                && self.destinationFilename().trim() !== ""
                 && self.slicer() != undefined
                 && self.sliceButtonControl()
                 && !self.estimationDialog();
                 //&& self.profile() != undefined;
+        });
+
+        self.enableEstimateButton = ko.pureComputed(function() {
+            return self.estimateButtonControl();
         });
 
         self.requestData = function(callback) {
@@ -328,16 +338,66 @@ $(function() {
             self.defaultProfile = selectedProfile;
         };
 
+        /**
+         * Calls the slicing API and presents the time/cost estimations to the user
+         */
         self.sliceAndEstimate = function() {
             $(".slice-option").click();
+            self.estimateButtonControl(false);
+            self.estimationOutput(null);
+
+            self.afterSlicing("none");
+            self.prepareAndSlice();
+
+            self.slicingDoneEstimationCallback = function () {
+                $.ajax({
+                    url: API_BASEURL + "files/" + self.target + "/" + self.destinationFilename() + ".gco",
+                    type: "GET",
+                    dataType: "json",
+                    contentType: "application/json; charset=UTF-8",
+                    success: function ( data ) {
+
+                        var output = "";
+                        if (data["gcodeAnalysis"]) {
+                            if (data["gcodeAnalysis"]["filament"] && typeof(data["gcodeAnalysis"]["filament"]) == "object") {
+                                var filament = data["gcodeAnalysis"]["filament"];
+                                if (_.keys(filament).length == 1) {
+                                    output += gettext("Filament") + ": " + formatFilament(data["gcodeAnalysis"]["filament"]["tool" + 0]) + "<br><br>";
+                                } else if (_.keys(filament).length > 1) {
+                                    for (var toolKey in filament) {
+                                        if (!_.startsWith(toolKey, "tool") || !filament[toolKey] || !filament[toolKey].hasOwnProperty("length") || filament[toolKey]["length"] <= 0) continue;
+
+                                        output += gettext("Filament") +  ": " + formatFilament(filament[toolKey]) + "<br><br>";
+                                    }
+                                }
+                            }
+                            output += gettext("Estimated print time") + ": " + formatFuzzyPrintTime(data["gcodeAnalysis"]["estimatedPrintTime"]) + "<br><br>";
+                        }
+                        if (data["prints"] && data["prints"]["last"]) {
+                            output += gettext("Last printed") + ": " + formatTimeAgo(data["prints"]["last"]["date"]) + "<br><br>";
+                            if (data["prints"]["last"]["lastPrintTime"]) {
+                                output += gettext("Last print time") + ": " + formatDuration(data["prints"]["last"]["lastPrintTime"]);
+                            }
+                        }
+                        self.estimationOutput(output);
+
+                        self.estimateButtonControl(true);
+                        self.destinationFilename(undefined);
+                    },
+                    error: function ( response ) {
+                        html = _.sprintf(gettext("Unable to get time estimation for file."));
+                        new PNotify({title: gettext("Estimation failed"), text: html, type: "error", hide: false});
+                        self.estimateButtonControl(true);
+                        self.destinationFilename(undefined);
+                    }
+                })
+            };
         };
 
-        // Function that is run during the cancel/close of the dialog
-        self.closeSlicing = function() {
-            //Makes sure the options panels are all expanded after the dialog is closed
-            $(".slice-option.closed").click();
-        };
-
+        /**
+         * Saves the current workbench scene and calls the slicing operation on the resulting STL file
+         * @param successCallback
+         */
         self.prepareAndSlice = function() {
             self.sliceButtonControl(false);
 
@@ -355,8 +415,17 @@ $(function() {
                 }, 10);
 
             } else {
-                self.slice();
+                self.slice(undefined);
             }
+        };
+
+
+        /**
+         * Function that is run during the cancel/close of the dialog
+         */
+        self.closeSlicing = function() {
+            //Makes sure the options panels are all expanded after the dialog is closed
+            $(".slice-option.closed").click();
         };
 
         self.slice = function(modelToRemoveAfterSlice) {
@@ -401,13 +470,13 @@ $(function() {
                 destination: destinationFilename
             };
 
-            if (self.afterSlicing() == "print") {
+            if (self.afterSlicing() === "print") {
                 data["print"] = true;
-            } else if (self.afterSlicing() == "select") {
+            } else if (self.afterSlicing() === "select") {
                 data["select"] = true;
             }
 
-            if (modelToRemoveAfterSlice) {
+            if (modelToRemoveAfterSlice !== undefined) {
                 data["delete_model"] = modelToRemoveAfterSlice;
             }
 
@@ -454,8 +523,8 @@ $(function() {
                 contentType: "application/json; charset=UTF-8",
                 data: JSON.stringify(data),
                 success: function ( response ) {
-
                     self.sliceButtonControl(true);
+
                 },
                 error: function ( response ) {
                     html = _.sprintf(gettext("Could not slice the selected file. Please make sure your printer is connected."));
@@ -465,9 +534,12 @@ $(function() {
                 }
             });
 
-            $("#slicing_configuration_dialog").modal("hide");
+            // Only hides the slicing dialog if it's not an estimate operation
+            if (self.afterSlicing() !== "none") {
+                $("#slicing_configuration_dialog").modal("hide");
+                self.destinationFilename(undefined);
+            }
 
-            self.destinationFilename(undefined);
             self.slicer(self.defaultSlicer);
             self.profile(self.defaultProfile);
         };

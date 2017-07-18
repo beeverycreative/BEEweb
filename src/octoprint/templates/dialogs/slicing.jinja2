@@ -150,17 +150,24 @@
                         <div class="controls">
                             <div class="filament-div">
                                 <span class="small-label">{{ _('FILAMENT') }}:</span>
-                                <span class="filament" data-bind="text: selColor, visible: forPrint()"></span>
-                                <select data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: !forPrint()" ></select>
-                                <span class="remaining-filament">
+                                <span class="filament" data-bind="text: selColor, visible: !estimationDialog()"></span>
+                                <select data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
+                                <span class="remaining-filament" data-bind="visible: !estimationDialog()">
                                     <div>{{ _('Remaining filament') }}:  <span data-bind="text: filamentInSpool" ></span> (g)</div>
                                 </span>
                             </div>
                             <div class="nozzle-div">
                                 <span class="small-label">{{ _('NOZZLE') }}: </span>
-                                <span class="nozzle" data-bind="text: selNozzle, visible: forPrint()"></span>
-                                <select data-bind="options: nozzleTypes, value: selNozzle, valueAllowUnset: false, visible: !forPrint()" ></select>
+                                <span class="nozzle" data-bind="text: selNozzle, visible: !estimationDialog()"></span>
+                                <select data-bind="options: nozzleTypes, value: selNozzle, valueAllowUnset: false, visible: estimationDialog()" ></select>
                             </div>
+                        </div>
+                    </div>
+                    <div class="control-group" id="estimation-output" data-bind="visible: estimationOutput">
+                        <div class="controls">
+                            <span class="small-label">{{ _('PRINT ESTIMATION') }}:</span>
+                            <br /><br />
+                            <strong data-bind="html: estimationOutput"></strong>
                         </div>
                     </div>
                 <!--<div class="control-group">
@@ -180,18 +187,17 @@
     </div>
     <div class="modal-footer">
         <a href="#" class="btn modal-footer-btn" data-dismiss="modal" aria-hidden="true" data-bind="click: closeSlicing">{{ _('Cancel') }}</a>
-        <a id="estimate_button" href="#" class="btn btn-default modal-footer-btn"
-            data-bind="click: sliceAndEstimate">
-            <span class="m-icon estimateicon"></span>
+        <button id="estimate_button" href="#" class="btn btn-default modal-footer-btn" data-bind="click: sliceAndEstimate, enable: enableEstimateButton">
+            <span class="m-icon estimateicon" data-bind="visible: estimateButtonControl"></span>
             <span >{{ _('Estimate') }} </span>
             <i id="estimate_button_loader" class="icon-spinner icon-spin" data-bind="visible: !estimateButtonControl()" ></i>
-        </a>
-        <a id="slice_button" href="#" class="btn btn-primary modal-footer-btn"
+        </button>
+        <button id="slice_button" href="#" class="btn btn-primary modal-footer-btn"
             data-bind="click: function() { if ($root.enableSliceButton()) {  $root.prepareAndSlice(); } }, enable: enableSliceButton, css: {disabled: !$root.enableSliceButton()}">
             <span class="m-icon printwicon"></span>
             <span data-bind="text: (forPrint() ? '{{ _('Print') }}' : '{{ _('Slice') }}')">{{ _('Slice') }} </span>
             <i id="slice_button_loader" class="icon-spinner icon-spin" data-bind="visible: !sliceButtonControl()" ></i>
-        </a>
+        </button>
     </div>
 </div>
 <script>

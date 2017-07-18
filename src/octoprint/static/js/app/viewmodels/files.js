@@ -510,6 +510,11 @@ $(function() {
             });
 
             self.requestData();
+
+            // Calls the estimation callback in case it is defined
+            if (self.slicing.slicingDoneEstimationCallback !== undefined) {
+                self.slicing.slicingDoneEstimationCallback();
+            }
         };
 
         self.onEventSlicingFailed = function(payload) {
