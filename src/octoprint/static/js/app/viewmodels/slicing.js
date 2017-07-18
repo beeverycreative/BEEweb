@@ -338,16 +338,35 @@ $(function() {
             self.defaultProfile = selectedProfile;
         };
 
+        self._removeTempGcode = function(callback) {
+            // Removes any previous file with the same name
+            $.ajax({
+                url: API_BASEURL + "files/" + self.target + "/" + self.destinationFilename() + ".gco",
+                type: "DELETE",
+                success: function() {
+                    callback();
+                },
+                error: function () {
+                    callback();
+                }
+            });
+        };
+
         /**
          * Calls the slicing API and presents the time/cost estimations to the user
          */
         self.sliceAndEstimate = function() {
-            $(".slice-option").click();
+            $(".slice-option:not(.closed)").click();
+
             self.estimateButtonControl(false);
             self.estimationOutput(null);
-
             self.afterSlicing("none");
-            self.prepareAndSlice();
+
+            if (self.destinationFilename()) {
+                self._removeTempGcode(self.prepareAndSlice)
+            } else {
+                self.prepareAndSlice();
+            }
 
             self.slicingDoneEstimationCallback = function () {
                 $.ajax({
@@ -382,13 +401,11 @@ $(function() {
                         self.estimationOutput(output);
 
                         self.estimateButtonControl(true);
-                        self.destinationFilename(undefined);
                     },
                     error: function ( response ) {
                         html = _.sprintf(gettext("Unable to get time estimation for file."));
                         new PNotify({title: gettext("Estimation failed"), text: html, type: "error", hide: false});
                         self.estimateButtonControl(true);
-                        self.destinationFilename(undefined);
                     }
                 })
             };
