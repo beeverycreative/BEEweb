@@ -22,6 +22,15 @@
                         <select data-bind="options: profiles, optionsText: 'name', optionsValue: 'key', optionsCaption: '{{ _('Select a slicing profile...') }}', value: profile, valueAllowUnset: true"></select>
                     </div>
                 </div> -->
+
+                <label class="control-label" data-bind="visible: estimationOutput">{{ _('Print Estimation') }}</label>
+                <div class="control-group" id="estimation-output" data-bind="visible: estimationOutput">
+                    <div class="text-center">
+                        <br />
+                        <strong data-bind="html: estimationOutput"></strong>
+                    </div>
+                </div>
+
                 <label class="control-label slice-option">{{ _('Resolution') }}</label>
                 <div class="control-group">
                     <div class="controls">
@@ -145,7 +154,7 @@
                         <!--</div>-->
                     <!--</div>-->
                 <!--</div>-->
-                <label class="control-label">{{ _('Details') }}</label>
+                <label class="control-label slice-option">{{ _('Details') }}</label>
                     <div class="control-group">
                         <div class="controls">
                             <div class="filament-div">
@@ -163,13 +172,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="control-group" id="estimation-output" data-bind="visible: estimationOutput">
-                        <div class="controls">
-                            <span class="small-label">{{ _('PRINT ESTIMATION') }}:</span>
-                            <br /><br />
-                            <strong data-bind="html: estimationOutput"></strong>
-                        </div>
-                    </div>
+
                 <!--<div class="control-group">
                     <label class="control-label">{{ _('Printer Profile') }}</label>
                     <div class="controls">
@@ -193,9 +196,9 @@
             <i id="estimate_button_loader" class="icon-spinner icon-spin" data-bind="visible: !estimateButtonControl()" ></i>
         </button>
         <button id="slice_button" href="#" class="btn btn-primary modal-footer-btn"
-            data-bind="click: function() { if ($root.enableSliceButton()) {  $root.prepareAndSlice(); } }, enable: enableSliceButton, css: {disabled: !$root.enableSliceButton()}">
+            data-bind="click: $root.printOrSlice(), enable: enableSliceButton, css: {disabled: !$root.enableSliceButton()}">
             <span class="m-icon printwicon"></span>
-            <span data-bind="text: (forPrint() ? '{{ _('Print') }}' : '{{ _('Slice') }}')">{{ _('Slice') }} </span>
+            <span>{{ _('Print') }} </span>
             <i id="slice_button_loader" class="icon-spinner icon-spin" data-bind="visible: !sliceButtonControl()" ></i>
         </button>
     </div>

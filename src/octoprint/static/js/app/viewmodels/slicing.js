@@ -13,7 +13,7 @@ $(function() {
         self.defaultProfile = undefined;
 
         self.destinationFilename = ko.observable();
-        self.gcodeFilename = self.destinationFilename; // TODO: for backwards compatiblity, mark deprecated ASAP
+        self.gcodeFilename = self.destinationFilename; // TODO: for backwards compatibility, mark deprecated ASAP
 
         self.title = ko.observable();
         self.slicer = ko.observable();
@@ -38,7 +38,7 @@ $(function() {
 
         self.estimateButtonControl = ko.observable(true); // Controls the button enabled state
         self.estimationDialog = ko.observable(false); // Signals if the dialog was called with the force option for estimation
-
+        self.estimationDone = ko.observable(false);
         self.slicingDoneEstimationCallback = undefined; // Callback function to be called after the slicing event has finished
         self.estimationOutput = ko.observable();
 
@@ -257,6 +257,7 @@ $(function() {
         self.enableHighPlusResolution = ko.pureComputed(function() {
             return self.selNozzle() != "0.6";
         });
+
         self.forPrint = function() {
             if (self.afterSlicing() != "none")
                 return true;
@@ -359,6 +360,8 @@ $(function() {
             $(".slice-option:not(.closed)").click();
 
             self.estimateButtonControl(false);
+            self.sliceButtonControl(false);
+            self.estimationDone(false);
             self.estimationOutput(null);
             self.afterSlicing("none");
 
@@ -378,6 +381,8 @@ $(function() {
 
                         var output = "";
                         if (data["gcodeAnalysis"]) {
+                            output += gettext("Estimated print time") + ": " + formatFuzzyPrintTime(data["gcodeAnalysis"]["estimatedPrintTime"]) + "<br><br>";
+
                             if (data["gcodeAnalysis"]["filament"] && typeof(data["gcodeAnalysis"]["filament"]) == "object") {
                                 var filament = data["gcodeAnalysis"]["filament"];
                                 if (_.keys(filament).length == 1) {
@@ -390,7 +395,6 @@ $(function() {
                                     }
                                 }
                             }
-                            output += gettext("Estimated print time") + ": " + formatFuzzyPrintTime(data["gcodeAnalysis"]["estimatedPrintTime"]) + "<br><br>";
                         }
                         if (data["prints"] && data["prints"]["last"]) {
                             output += gettext("Last printed") + ": " + formatTimeAgo(data["prints"]["last"]["date"]) + "<br><br>";
@@ -399,13 +403,15 @@ $(function() {
                             }
                         }
                         self.estimationOutput(output);
-
+                        self.estimationDone(true);
                         self.estimateButtonControl(true);
+                        self.sliceButtonControl(true);
                     },
                     error: function ( response ) {
                         html = _.sprintf(gettext("Unable to get time estimation for file."));
                         new PNotify({title: gettext("Estimation failed"), text: html, type: "error", hide: false});
                         self.estimateButtonControl(true);
+                        self.sliceButtonControl(true);
                     }
                 })
             };
@@ -413,7 +419,6 @@ $(function() {
 
         /**
          * Saves the current workbench scene and calls the slicing operation on the resulting STL file
-         * @param successCallback
          */
         self.prepareAndSlice = function() {
             self.sliceButtonControl(false);
@@ -448,7 +453,7 @@ $(function() {
         self.slice = function(modelToRemoveAfterSlice) {
 
             // Selects the slicing profile based on the color and resolution
-            if (self.selColor() != null && self.selResolution() != null) {
+            if (self.selColor() !== null && self.selResolution() !== null) {
                 var nozzleSizeNorm = self.selNozzle() * 1000;
                 var nozzleSizeStr = 'NZ' + nozzleSizeNorm;
 
@@ -541,7 +546,6 @@ $(function() {
                 data: JSON.stringify(data),
                 success: function ( response ) {
                     self.sliceButtonControl(true);
-
                 },
                 error: function ( response ) {
                     html = _.sprintf(gettext("Could not slice the selected file. Please make sure your printer is connected."));
@@ -559,6 +563,47 @@ $(function() {
 
             self.slicer(self.defaultSlicer);
             self.profile(self.defaultProfile);
+        };
+
+        /**
+         * Prints the gcode file if the estimation was already run
+         */
+        self.print = function() {
+            if (self.destinationFilename() === undefined) return;
+            self.sliceButtonControl(false);
+            $.ajax({
+                url: API_BASEURL + "files/" + self.target + "/" + self.destinationFilename() + ".gco",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                data: JSON.stringify({command: "select", print: true}),
+                success: function ( response ) {
+                    $("#slicing_configuration_dialog").modal("hide");
+
+                    self.sliceButtonControl(true);
+                },
+                error: function ( response ) {
+                    html = _.sprintf(gettext("Could not find the prepared file for print. Please consult the logs for details."));
+                    new PNotify({title: gettext("Print start failed"), text: html, type: "error", hide: false});
+
+                    $("#slicing_configuration_dialog").modal("hide");
+                    self.sliceButtonControl(true);
+                }
+            });
+        };
+
+        /**
+         * Decision function on whether to slice and print the file or just print if the estimation and respective
+         * slice was already made
+         */
+        self.printOrSlice = function () {
+            if (self.enableSliceButton()) {
+                if (self.estimationDone()) {
+                    self.print();
+                } else {
+                    self.prepareAndSlice();
+                }
+            }
         };
 
         self._sanitize = function(name) {

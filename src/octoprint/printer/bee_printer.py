@@ -725,6 +725,25 @@ class BeePrinter(Printer):
 
         self._comm.setPause(False)
 
+    def unselect_file(self):
+        """
+        Unselects the current file ready for print and removes it if it's a temporary one
+        :return:
+        """
+        if self._selectedFile is not None:
+            payload = {
+                "file": self._selectedFile["filename"],
+                "origin": FileDestinations.LOCAL
+            }
+            if self._selectedFile["sd"]:
+                payload["origin"] = FileDestinations.SDCARD
+
+            # deletes the file if it was created with the temporary file name marker
+            if BeePrinter.TMP_FILE_MARKER in self._selectedFile["filename"]:
+                eventManager().fire(Events.PRINT_CANCELLED_DELETE_FILE, payload)
+            else:
+                eventManager().fire(Events.PRINT_CANCELLED, payload)
+
 
     # # # # # # # # # # # # # # # # # # # # # # #
     ########  GETTER/SETTER FUNCTIONS  ##########
@@ -1015,7 +1034,7 @@ class BeePrinter(Printer):
         """
         Print cancelled callback for the EventManager.
         """
-        self.unselect_file()
+        super(BeePrinter, self).unselect_file()
 
         # sends usage statistics to remote server
         self._sendUsageStatistics('cancel')
@@ -1060,7 +1079,7 @@ class BeePrinter(Printer):
         :return:
         """
         # unselects the current file
-        self.unselect_file()
+        super(BeePrinter, self).unselect_file()
         self._currentPrintJobFile = None
 
         if BeePrinter.TMP_FILE_MARKER in payload["file"]:

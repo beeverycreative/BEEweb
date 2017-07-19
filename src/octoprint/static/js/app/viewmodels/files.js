@@ -230,7 +230,6 @@ $(function() {
                 contentType: "application/json; charset=UTF-8",
                 data: JSON.stringify({command: "select", print: printAfterLoad})
             });
-
         };
 
         self.removeFile = function(file) {
