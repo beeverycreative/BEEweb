@@ -38,10 +38,13 @@ $(function() {
 
         self.estimateButtonControl = ko.observable(true); // Controls the button enabled state
         self.estimationDialog = ko.observable(false); // Signals if the dialog was called with the force option for estimation
-        self.estimationDone = ko.observable(false);
+        self.estimationReady = ko.observable(false);
+        self.estimating = ko.observable(false);
         self.slicingDoneEstimationCallback = undefined; // Callback function to be called after the slicing event has finished
         self.estimatedPrintTime = ko.observable();
         self.estimatedFilament = ko.observable();
+
+        self.gcodeDownloadLink = ko.observable();
 
         self.slicersForFile = function(file) {
             if (file === undefined) {
@@ -365,9 +368,12 @@ $(function() {
         self.sliceAndEstimate = function() {
             $(".slice-option:not(.closed)").click();
 
+            self.estimating(true);
             self.estimateButtonControl(false);
             self.sliceButtonControl(false);
-            self.estimationDone(false);
+
+            self.estimationReady(false);
+            self.gcodeDownloadLink(null);
             self.afterSlicing("none");
 
             if (self.destinationFilename()) {
@@ -383,7 +389,6 @@ $(function() {
                     dataType: "json",
                     contentType: "application/json; charset=UTF-8",
                     success: function ( data ) {
-
                         if (data["gcodeAnalysis"]) {
                             self.estimatedPrintTime(gettext("Estimated print time")
                             + ": " + formatDurationHoursMinutes(data["gcodeAnalysis"]["estimatedPrintTime"]));
@@ -402,7 +407,12 @@ $(function() {
                             }
                         }
 
-                        self.estimationDone(true);
+                        if (data["refs"] && data["refs"]["download"]) {
+                            self.gcodeDownloadLink(data["refs"]["download"]);
+                        }
+
+                        self.estimating(false);
+                        self.estimationReady(true);
                         self.estimateButtonControl(true);
                         self.sliceButtonControl(true);
                     },
@@ -411,6 +421,7 @@ $(function() {
                         new PNotify({title: gettext("Estimation failed"), text: html, type: "error", hide: false});
                         self.estimateButtonControl(true);
                         self.sliceButtonControl(true);
+                        self.estimating(false);
                     }
                 })
             };
@@ -421,7 +432,6 @@ $(function() {
          */
         self.prepareAndSlice = function() {
             self.sliceButtonControl(false);
-            self.estimateButtonControl(false);
 
             // Checks if the slicing was called on a workbench scene and finally saves it
             if (self.workbenchFile) {
@@ -449,11 +459,11 @@ $(function() {
             //Makes sure the options panels are all expanded after the dialog is closed
             $(".slice-option.closed").click();
 
-            if (self.estimationDone() && self.destinationFilename()) {
+            if (self.estimationReady() && self.destinationFilename()) {
                 self._removeTempGcode()
             }
 
-            self.estimationDone(false);
+            self.estimationReady(false);
         };
 
         self.slice = function(modelToRemoveAfterSlice) {
@@ -604,7 +614,10 @@ $(function() {
                 }
             });
 
-            $("#slicing_configuration_dialog").modal("hide");
+            self.estimationReady(false);
+            //Makes sure the options panels are all expanded after the dialog is closed
+            $(".slice-option.closed").click();
+             $("#slicing_configuration_dialog").modal("hide");
         };
 
         /**
@@ -613,7 +626,7 @@ $(function() {
          */
         self.printOrSlice = function () {
             if (self.enableSliceButton()) {
-                if (self.estimationDone()) {
+                if (self.estimationReady()) {
                     self.print();
                 } else {
                     self.prepareAndSlice();

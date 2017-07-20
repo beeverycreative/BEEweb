@@ -398,6 +398,7 @@ a.brand{
 .addicon { background: url('../img/icons/add.svg'); }
 .printicon { background: url('../img/icons/print.svg'); }
 .estimateicon { background: url('../img/icons/about.svg'); }
+.downloadicon { background: url('../img/icons/download.svg'); }
 /* Resolution*/
 .res1icon  { background: url('../img/icons/lowres.svg'); }
 .res2icon  { background: url('../img/icons/medres.svg'); }
@@ -452,6 +453,7 @@ a.brand{
 .cubewicon { background: url('../img/icons/cube_white.svg'); }
 .dropdownwicon { background: url('../img/icons/dropdown_white.svg'); }
 .estimatewicon { background: url('../img/icons/medium_white.svg'); }
+.downloadwicon { background: url('../img/icons/download_white.svg'); }
 /* green */
 .checkgreenicon  { background: url('../img/icons/ok_green.svg'); }
 /* dynamic icons - change with media queries */
@@ -1509,6 +1511,7 @@ td.settings_users_actions .m-icon {
 }
 #slicing_configuration_dialog .form-horizontal .controls label.estimation {
     width: 50% !important;
+    cursor: default;
 }
 #slicing_configuration_dialog .form-horizontal .controls label > div {  margin: 10px 0 0; }
 #slicing_configuration_dialog .form-horizontal .controls label > p   {  margin: 0; }
