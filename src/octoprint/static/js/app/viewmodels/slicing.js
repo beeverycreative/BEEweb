@@ -40,7 +40,8 @@ $(function() {
         self.estimationDialog = ko.observable(false); // Signals if the dialog was called with the force option for estimation
         self.estimationDone = ko.observable(false);
         self.slicingDoneEstimationCallback = undefined; // Callback function to be called after the slicing event has finished
-        self.estimationOutput = ko.observable();
+        self.estimatedPrintTime = ko.observable();
+        self.estimatedFilament = ko.observable();
 
         self.slicersForFile = function(file) {
             if (file === undefined) {
@@ -130,7 +131,8 @@ $(function() {
         self.show = function(target, file, force, workbench) {
             self.estimationDialog(false);
             self.slicingDoneEstimationCallback = undefined;
-            self.estimationOutput(null);
+            self.estimatedPrintTime(null);
+            self.estimatedFilament(null);
 
             if (force == true) {
                 self.estimationDialog(true);
@@ -345,10 +347,14 @@ $(function() {
                 url: API_BASEURL + "files/" + self.target + "/" + self.destinationFilename() + ".gco",
                 type: "DELETE",
                 success: function() {
-                    callback();
+                    if (callback !== undefined) {
+                        callback();
+                    }
                 },
                 error: function () {
-                    callback();
+                    if (callback !== undefined) {
+                        callback();
+                    }
                 }
             });
         };
@@ -362,7 +368,6 @@ $(function() {
             self.estimateButtonControl(false);
             self.sliceButtonControl(false);
             self.estimationDone(false);
-            self.estimationOutput(null);
             self.afterSlicing("none");
 
             if (self.destinationFilename()) {
@@ -379,30 +384,24 @@ $(function() {
                     contentType: "application/json; charset=UTF-8",
                     success: function ( data ) {
 
-                        var output = "";
                         if (data["gcodeAnalysis"]) {
-                            output += gettext("Estimated print time") + ": " + formatFuzzyPrintTime(data["gcodeAnalysis"]["estimatedPrintTime"]) + "<br><br>";
+                            self.estimatedPrintTime(gettext("Estimated print time")
+                            + ": " + formatDurationHoursMinutes(data["gcodeAnalysis"]["estimatedPrintTime"]));
 
                             if (data["gcodeAnalysis"]["filament"] && typeof(data["gcodeAnalysis"]["filament"]) == "object") {
                                 var filament = data["gcodeAnalysis"]["filament"];
                                 if (_.keys(filament).length == 1) {
-                                    output += gettext("Filament") + ": " + formatFilament(data["gcodeAnalysis"]["filament"]["tool" + 0]) + "<br><br>";
+                                    self.estimatedFilament(gettext("Filament") + ": " + formatFilament(data["gcodeAnalysis"]["filament"]["tool" + 0]));
                                 } else if (_.keys(filament).length > 1) {
                                     for (var toolKey in filament) {
                                         if (!_.startsWith(toolKey, "tool") || !filament[toolKey] || !filament[toolKey].hasOwnProperty("length") || filament[toolKey]["length"] <= 0) continue;
 
-                                        output += gettext("Filament") +  ": " + formatFilament(filament[toolKey]) + "<br><br>";
+                                        self.estimatedFilament(gettext("Filament") +  ": " + formatFilament(filament[toolKey]));
                                     }
                                 }
                             }
                         }
-                        if (data["prints"] && data["prints"]["last"]) {
-                            output += gettext("Last printed") + ": " + formatTimeAgo(data["prints"]["last"]["date"]) + "<br><br>";
-                            if (data["prints"]["last"]["lastPrintTime"]) {
-                                output += gettext("Last print time") + ": " + formatDuration(data["prints"]["last"]["lastPrintTime"]);
-                            }
-                        }
-                        self.estimationOutput(output);
+
                         self.estimationDone(true);
                         self.estimateButtonControl(true);
                         self.sliceButtonControl(true);
@@ -422,6 +421,7 @@ $(function() {
          */
         self.prepareAndSlice = function() {
             self.sliceButtonControl(false);
+            self.estimateButtonControl(false);
 
             // Checks if the slicing was called on a workbench scene and finally saves it
             if (self.workbenchFile) {
@@ -448,6 +448,12 @@ $(function() {
         self.closeSlicing = function() {
             //Makes sure the options panels are all expanded after the dialog is closed
             $(".slice-option.closed").click();
+
+            if (self.estimationDone() && self.destinationFilename()) {
+                self._removeTempGcode()
+            }
+
+            self.estimationDone(false);
         };
 
         self.slice = function(modelToRemoveAfterSlice) {
@@ -546,12 +552,21 @@ $(function() {
                 data: JSON.stringify(data),
                 success: function ( response ) {
                     self.sliceButtonControl(true);
+
+                    // Only enables the estimation button dialog if it's not an estimate operation
+                    if (self.afterSlicing() !== "none") {
+                        self.estimateButtonControl(true);
+                    }
                 },
                 error: function ( response ) {
                     html = _.sprintf(gettext("Could not slice the selected file. Please make sure your printer is connected."));
                     new PNotify({title: gettext("Slicing failed"), text: html, type: "error", hide: false});
 
                     self.sliceButtonControl(true);
+                    // Only enables the estimation button dialog if it's not an estimate operation
+                    if (self.afterSlicing() !== "none") {
+                        self.estimateButtonControl(true);
+                    }
                 }
             });
 
@@ -578,7 +593,6 @@ $(function() {
                 contentType: "application/json; charset=UTF-8",
                 data: JSON.stringify({command: "select", print: true}),
                 success: function ( response ) {
-                    $("#slicing_configuration_dialog").modal("hide");
 
                     self.sliceButtonControl(true);
                 },
@@ -586,10 +600,11 @@ $(function() {
                     html = _.sprintf(gettext("Could not find the prepared file for print. Please consult the logs for details."));
                     new PNotify({title: gettext("Print start failed"), text: html, type: "error", hide: false});
 
-                    $("#slicing_configuration_dialog").modal("hide");
                     self.sliceButtonControl(true);
                 }
             });
+
+            $("#slicing_configuration_dialog").modal("hide");
         };
 
         /**

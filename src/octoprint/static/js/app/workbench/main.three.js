@@ -256,9 +256,10 @@ BEEwb.main = {
     saveScene: function ( filename ) {
         var scope = this;
         var stlData = BEEwb.helpers.generateSTLFromScene( this.objects );
-
+        var showMessage = false;
         if (filename === undefined) {
             filename = BEEwb.helpers.generateSceneName();
+            showMessage = true;
         }
 
         var data = new FormData();
@@ -273,10 +274,11 @@ BEEwb.main = {
             contentType: false,
             processData: false,
             success: function(data) {
-
-                var html = _.sprintf(gettext("The scene was saved to the local filesystem."));
-                new PNotify({title: gettext("Save success"), text: html, type: "success", hide: true});
-
+                // only shows the success message if the filename was not specified, which means it was called from the workbench controls
+                if (showMessage) {
+                    var html = _.sprintf(gettext("The scene was saved to the local filesystem."));
+                    new PNotify({title: gettext("Save success"), text: html, type: "success", hide: true});
+                }
             },
             error: function() {
                 var html = _.sprintf(gettext("Could not save the scene in the server filesystem. Make sure you have the right permissions and disk space."));

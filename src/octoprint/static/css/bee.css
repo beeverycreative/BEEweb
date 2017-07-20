@@ -396,6 +396,8 @@ a.brand{
 .logouticon  { background: url('../img/icons/logoutgrey.svg'); }
 .shutdownicon { background: url('../img/icons/shutdown.svg'); }
 .addicon { background: url('../img/icons/add.svg'); }
+.printicon { background: url('../img/icons/print.svg'); }
+.estimateicon { background: url('../img/icons/about.svg'); }
 /* Resolution*/
 .res1icon  { background: url('../img/icons/lowres.svg'); }
 .res2icon  { background: url('../img/icons/medres.svg'); }
@@ -428,7 +430,6 @@ a.brand{
 /* black */
 .refreshicon { background: url('../img/icons/refresh.svg'); }
 .scalemaxicon { background: url('../img/icons/scalemax.svg'); }
-.estimateicon { background: url('../img/icons/medres.svg'); }
 /*grey*/
 .filamentgicon { background: url('../img/icons/filament_grey.svg'); }
 .calibrategicon  { background: url('../img/icons/calibrate_grey.svg'); }
@@ -1505,6 +1506,9 @@ td.settings_users_actions .m-icon {
     padding: 10px 0 5px;
     margin: 0;
     transition: all 0.2s ease;
+}
+#slicing_configuration_dialog .form-horizontal .controls label.estimation {
+    width: 50% !important;
 }
 #slicing_configuration_dialog .form-horizontal .controls label > div {  margin: 10px 0 0; }
 #slicing_configuration_dialog .form-horizontal .controls label > p   {  margin: 0; }
