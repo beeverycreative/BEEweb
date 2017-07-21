@@ -330,13 +330,13 @@ $(function() {
             self.highlightCurrentFilename();
         };
 
-        self.navigateUp = function() {
-            var path = self.currentPath().split("/");
-            path.pop();
-            self.changeFolderByPath(path.join("/"));
-        };
+            self.navigateUp = function(){
+                var path = self.currentPath().split("/");
+                path.pop();
+                self.changeFolderByPath(path.join("/"));
+                };
 
-        self.changeFolderByPath = function(path) {
+            self.changeFolderByPath = function(path){
             var element = self.elementByPath(path);
             if (element) {
                 self.currentPath(path);
@@ -933,6 +933,11 @@ $(function() {
             });
 
             self.requestData();
+
+            // Calls the estimation callback in case it is defined
+            if (self.slicing.slicingDoneEstimationCallback !== undefined) {
+                self.slicing.slicingDoneEstimationCallback();
+            }
         };
 
         self.onEventSlicingFailed = function(payload) {

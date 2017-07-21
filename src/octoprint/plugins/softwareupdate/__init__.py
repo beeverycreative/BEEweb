@@ -176,13 +176,13 @@ class SoftwareUpdatePlugin(octoprint.plugin.BlueprintPlugin,
 				if "__version" in data:
 					data_version = data["__version"]
 				else:
-					self._logger.info("Can't determine version of BEEsoft version cache was created for, not using it")
+					self._logger.info("Can't determine version of BEESOFT version cache was created for, not using it")
 					return
 
 				from octoprint._version import get_versions
 				octoprint_version = get_versions()["version"]
 				if data_version != octoprint_version:
-					self._logger.info("Version cache was created for another version of BEEsoft, not using it")
+					self._logger.info("Version cache was created for another version of BEESOFT, not using it")
 					return
 
 				self._version_cache = data

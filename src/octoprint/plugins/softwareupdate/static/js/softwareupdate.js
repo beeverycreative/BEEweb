@@ -690,7 +690,7 @@ $(function() {
                     console.log(JSON.stringify(messageData));
 
                     restartType = messageData.restart_type;
-                    text = gettext("The update finished successfully, please restart BEEsoft now.");
+                    text = gettext("The update finished successfully, please restart BEESOFT now.");
                     if (restartType == "environment") {
                         text = gettext("The update finished successfully, please reboot the server now.");
                     }
@@ -711,7 +711,7 @@ $(function() {
                 }
                 case "restart_failed": {
                     restartType = messageData.restart_type;
-                    text = gettext("Restarting BEEsoft failed, please restart it manually. You might also want to consult the log file on what went wrong here.");
+                    text = gettext("Restarting BEESOFT failed, please restart it manually. You might also want to consult the log file on what went wrong here.");
                     if (restartType == "environment") {
                         text = gettext("Rebooting the server failed, please reboot it manually. You might also want to consult the log file on what went wrong here.");
                     }

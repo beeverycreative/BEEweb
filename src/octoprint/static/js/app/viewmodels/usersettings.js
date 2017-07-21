@@ -7,7 +7,7 @@ $(function() {
 
         self.userSettingsDialog = undefined;
 
-        var auto_locale = {language: "_default", display: gettext("Site default"), english: undefined};
+        var auto_locale = {language: "_default", display: gettext("App default"), english: undefined};
         self.locales = ko.observableArray([auto_locale].concat(_.sortBy(_.values(AVAILABLE_LOCALES), function(n) {
             return n.display;
         })));

@@ -164,7 +164,7 @@ def parse_arguments():
 	                    dest="force", default=False,
 	                    help="Set this to true to force the update to only the specified version (nothing newer, nothing older)")
 	parser.add_argument("folder", type=str,
-	                    help="Specify the base folder of the BEEsoft configurations installation to update")
+	                    help="Specify the base folder of the BEESOFT configurations installation to update")
 	parser.add_argument("target", type=str,
 	                    help="Specify the commit or tag to which to update")
 	parser.add_argument("branch", type=str,

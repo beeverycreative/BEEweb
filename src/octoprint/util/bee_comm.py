@@ -221,7 +221,7 @@ class BeeCom(MachineCom):
         self._log('Changing monitoring state from \'%s\' to \'%s\'' % (oldState, self.getStateString()))
         self._callback.on_comm_state_change(newState)
 
-    def confirmConnection(self):
+    def updatePrinterState(self):
         """
         Confirms the connection changing the internal state of the printer
         :return:
@@ -500,7 +500,7 @@ class BeeCom(MachineCom):
         :return:
         """
         try:
-            self._changeState(self.STATE_OPERATIONAL)
+            self.updatePrinterState()
             return self._beeCommands.goToLoadUnloadPos()
         except Exception as ex:
             self._logger.error(ex)
