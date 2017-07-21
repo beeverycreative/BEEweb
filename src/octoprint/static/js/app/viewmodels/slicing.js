@@ -606,19 +606,16 @@ $(function() {
                     if (self.afterSlicing() !== "none") {
                         self.estimateButtonControl(true);
                     }
-                }),
-                error: function ( response ) {
+                }).error( function (  ) {
                     html = _.sprintf(gettext("Could not slice the selected file. Please make sure your printer is connected."));
                     new PNotify({title: gettext("Slicing failed"), text: html, type: "error", hide: false});
-
 
                     self.sliceButtonControl(true);
                     // Only enables the estimation button dialog if it's not an estimate operation
                     if (self.afterSlicing() !== "none") {
                         self.estimateButtonControl(true);
                     }
-                }
-            });
+                });
 
             // Only hides the slicing dialog if it's not an estimate operation
             if (self.afterSlicing() !== "none") {
