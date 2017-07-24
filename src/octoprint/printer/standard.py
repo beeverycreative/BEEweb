@@ -1097,7 +1097,6 @@ class Printer(PrinterInterface, comm.MachineComPrintCallback):
 			                         printTimeLeft=0)
 			self._stateMonitor.set_state({"text": self.get_state_string(), "flags": self._getStateFlags()})
 
-			eventManager().fire(Events.PRINT_DONE, payload)
 			self.script("afterPrintDone",
 			            context=dict(event=payload),
 			            must_be_set=False)
@@ -1108,6 +1107,8 @@ class Printer(PrinterInterface, comm.MachineComPrintCallback):
 			                            payload["time"],
 			                            True,
 			                            self._printerProfileManager.get_current_or_default()["id"])
+
+			eventManager().fire(Events.PRINT_DONE, payload)
 		else:
 			self._updateProgressData()
 			self._stateMonitor.set_state({"text": self.get_state_string(), "flags": self._getStateFlags()})
