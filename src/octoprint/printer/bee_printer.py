@@ -19,7 +19,7 @@ from octoprint.events import eventManager, Events
 from octoprint.slicing import SlicingManager
 from octoprint.filemanager import FileDestinations
 from octoprint.util.comm import PrintingFileInformation
-from octoprint.printer.statistics import BaseStatistics, PrintStatistics
+from octoprint.printer.statistics import BaseStatistics, PrintEventStatistics, PrinterStatistics
 
 __author__ = "BEEVC - Electronic Systems "
 __license__ = "GNU Affero General Public License http://www.gnu.org/licenses/agpl.html"
@@ -48,6 +48,7 @@ class BeePrinter(Printer):
         self._lastJogTime = None
 
         self._stats = BaseStatistics()
+        self._printerStats = None
         self._currentPrintStatistics = None
 
         # Initializes the slicing manager for filament profile information
@@ -165,6 +166,10 @@ class BeePrinter(Printer):
                 self._bvc_conn_thread.stop_connection_monitor()
                 self._bvc_conn_thread = None
 
+            # instantiates the printer statistics object
+            if self._printerStats is None:
+                self._printerStats = PrinterStatistics(self.get_printer_serial())
+
             if self._comm is not None and self._comm.isOperational():
                 self._logger.info("Connected to %s!" % printer_name)
                 return True
@@ -242,14 +247,18 @@ class BeePrinter(Printer):
         # saves the current PrintFileInformation object so we can later recover it if the printer is disconnected
         self._currentPrintJobFile = self._comm.getCurrentFile()
 
-        # sets initial print statistics
+        # logs a new print statistics
         if not self.isRunningCalibrationTest():
-            self._currentPrintStatistics = PrintStatistics()
-            self._currentPrintStatistics.set_printer_serial_number(self.get_printer_serial())
+            self._stats.register_print() # logs software statistics
+            self._printerStats.register_print() # logs printer specific statistics
+
+            self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(), self._stats.get_software_id())
             filament = self.getSelectedFilamentProfile()
             if filament is not None:
                 self._currentPrintStatistics.set_filament_used(filament.display_name)
-            self._currentPrintStatistics.set_start_time(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+            self._currentPrintStatistics.set_print_start(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+
+            self._save_usage_statistics()
 
     def cancel_print(self):
         """
@@ -1049,8 +1058,9 @@ class BeePrinter(Printer):
         """
         super(BeePrinter, self).unselect_file()
 
-        # sends usage statistics to remote server
-        self._sendUsageStatistics('cancel')
+        if self._currentPrintStatistics is not None:
+            self._currentPrintStatistics.set_print_cancelled(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+            self._save_usage_statistics()
 
 
     def on_print_cancelled_delete_file(self, event, payload):
@@ -1104,10 +1114,11 @@ class BeePrinter(Printer):
                 self._logger.exception('Error deleting temporary GCode file: %s' % str(e))
 
         # log print statistics
-        if not self.isRunningCalibrationTest():
+        if not self.isRunningCalibrationTest() and self._currentPrintStatistics is not None:
             self._currentPrintStatistics.set_user_feedback(True, 7, "Print ok")
             self._currentPrintStatistics.set_total_print_time(self._comm.getCleanedPrintTime())
-            self._savePrintStatistics()
+            self._currentPrintStatistics.set_print_finished(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+            self._save_usage_statistics()
 
     def on_client_connected(self, event, payload):
         """
@@ -1330,19 +1341,25 @@ class BeePrinter(Printer):
             self._bvc_status_thread.stop()
             self._bvc_status_thread = None
 
-    def _savePrintStatistics(self):
+    def _save_usage_statistics(self):
         """
         Logs the print statistics after a print has finished
         :return:
         """
-        self._stats.register_print(self._currentPrintStatistics)
+        # saves the base software statistics
+        self._stats.save()
 
-    @deprecated
-    def _sendUsageStatistics(self, operation):
+        # saves the printer specific statistics
+        self._printerStats.save()
+
+        # saves the print statistics details
+        self._currentPrintStatistics.save()
+
+    def _sendAzureUsageStatistics(self, operation):
         """
         Calls and external executable to send usage statistics to a remote cloud server
         :param operation: Supports 'start' (Start Print), 'cancel' (Cancel Print), 'stop' (Print finished) operations
-        :return: true in case the operation was successfull or false if not
+        :return: true in case the operation was successful or false if not
         """
         import sys
         if not sys.platform == "darwin" and not sys.platform == "win32":
