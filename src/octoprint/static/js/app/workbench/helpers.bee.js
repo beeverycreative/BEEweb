@@ -42,20 +42,20 @@ BEEwb.helpers.generateSceneName = function( ) {
 };
 
 /**
- * Calculates Geometry object size
+ * Calculates the size of an object
  *
- * param geometry: THREEJS.Geometry object
+ * param geometry: THREEJS.Object3D object
  *
  * Returns dictionary with size { 'x': ..., 'y': ..., 'z': ...}
  */
-BEEwb.helpers.objectSize = function( geometry ) {
+BEEwb.helpers.objectSize = function( object ) {
 
-    if ( geometry == null) {
+    if ( object == null) {
         return { 'x': 0, 'y': 0, 'z': 0};
     }
 
-    geometry.computeBoundingBox();
-    var bbox = geometry.boundingBox;
+    var bbox = new THREE.Box3().setFromObject( object );
+
     var xSize = 0;
     var ySize = 0;
     var zSize = 0;

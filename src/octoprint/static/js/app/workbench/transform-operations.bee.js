@@ -152,28 +152,34 @@ BEEwb.transformOps._rotateStep = function( degrees ) {
 BEEwb.transformOps.scaleToMax = function() {
 
     if (BEEwb.main.selectedObject !== null) {
-        BEEwb.main.selectedObject.position.set( 0, 0, 0 );
 
         var hLimit = BEEwb.main.bedHeight;// z
         var wLimit = BEEwb.main.bedWidth; // x
         var dLimit = BEEwb.main.bedDepth; // y
 
-        var xScale = wLimit / this.initialSize['x'];
-        var yScale = dLimit / this.initialSize['y'];
-        var zScale = hLimit / this.initialSize['z'];
+        var currentSize = BEEwb.helpers.objectSize(BEEwb.main.selectedObject);
+
+        var xScale = wLimit / currentSize['x'];
+        var yScale = dLimit / currentSize['y'];
+        var zScale = hLimit / currentSize['z'];
 
         var scale = Math.min(xScale, Math.min (yScale, zScale));
         // Small adjustment to avoid false positive out of bounds message due to precision errors
         scale -= 0.01;
+        if (scale > 1) {
+            BEEwb.main.selectedObject.scale.set(scale, scale ,scale);
+            BEEwb.main.transformControls.update();
 
-        BEEwb.main.selectedObject.scale.set(scale, scale ,scale);
-        BEEwb.main.transformControls.update();
-
-        if ($('#scaleby-per').is(':checked')) {
-            BEEwb.transformOps.updateScaleSizeInputsByPercentage();
-        } else {
-            BEEwb.transformOps.updateScaleSizeInputs();
+            if ($('#scaleby-per').is(':checked')) {
+                BEEwb.transformOps.updateScaleSizeInputsByPercentage();
+            } else {
+                BEEwb.transformOps.updateScaleSizeInputs();
+            }
         }
+
+        BEEwb.main.selectedObject.position.set( 0, 0, 0 );
+
+        this.placeOnBed();
     }
 };
 
@@ -244,6 +250,8 @@ BEEwb.transformOps.resetSelectedModel = function() {
         }
 
         this.updateRotationInputs();
+
+        this.placeOnBed();
     }
 };
 
@@ -421,7 +429,7 @@ BEEwb.transformOps.updateScaleSizeInputs = function() {
 
     if (BEEwb.main.selectedObject != null) {
         if (this.initialSize == null) {
-            this.initialSize = BEEwb.helpers.objectSize(BEEwb.main.selectedObject.geometry);
+            this.initialSize = BEEwb.helpers.objectSize(BEEwb.main.selectedObject);
         }
 
         var newX = this.initialSize['x'] * BEEwb.main.selectedObject.scale.x;
@@ -588,6 +596,6 @@ BEEwb.transformOps._rotateByDegrees = function(x, y, z) {
 BEEwb.transformOps.setInitialSize = function() {
 
     if (BEEwb.main.selectedObject != null) {
-        this.initialSize = BEEwb.helpers.objectSize(BEEwb.main.selectedObject.geometry);
+        this.initialSize = BEEwb.helpers.objectSize(BEEwb.main.selectedObject);
     }
 };
