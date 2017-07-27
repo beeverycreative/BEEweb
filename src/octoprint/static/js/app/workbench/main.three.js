@@ -105,21 +105,21 @@ BEEwb.main = {
         // Loads the model
         var lastModel = document.cookie.replace(/(?:(?:^|.*;\s*)lastModel\s*\=\s*([^;]*).*$)|^.*$/, "$1");
 
-        if (!lastModel) {
-            lastModel = 'BEE.stl';
-            this.loadModel(lastModel, true, true);
-        } else {
+        if (lastModel) {
             var that = this;
             $.ajax({
                 url:'./downloads/files/local/' + lastModel,
                 type:'HEAD',
                 error: function() {
-                    console.log('Last printed model does not exist.')
+                    console.log('Model not found.')
                 },
                 success: function() {
                     that.loadModel(lastModel, false, true);
                 }
             });
+        } else {
+            //lastModel = 'BEE.stl';
+            //this.loadModel(lastModel, true, true);
         }
 
         // Uncomment this if you want Trackball controls instead of Orbit controls
