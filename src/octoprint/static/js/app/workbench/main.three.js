@@ -222,6 +222,8 @@ BEEwb.main = {
         loader.load(folder + modelName, function ( geometry ) {
             var material = new THREE.MeshPhongMaterial( { color: 0x8C8C8C, specular: 0x111111, shininess: 100 } );
 
+            geometry.computeFaceNormals();
+            geometry.computeVertexNormals();
             // Centers the object if it's not centered
             BEEwb.helpers.centerModelBasedOnBoundingBox(geometry);
 
