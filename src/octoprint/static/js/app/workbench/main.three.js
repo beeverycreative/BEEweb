@@ -131,7 +131,7 @@ BEEwb.main = {
         this.sceneControls.enableZoom = true;
         this.sceneControls.zoomSpeed = 0.9;
         this.sceneControls.rotateSpeed = 0.1;
-        this.sceneControls.enablePan = false;
+        this.sceneControls.enablePan = true;
         this.sceneControls.enableDamping = true;
         this.sceneControls.dampingFactor = 0.25;
 
