@@ -103,7 +103,7 @@ BEEwb.main = {
         this.scene.add(this.objects);
 
         // Loads the model
-        var lastModel = document.cookie.replace(/(?:(?:^|.*;\s*)lastModel\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        var lastModel = readCookie('lastModel');
 
         if (lastModel) {
             var that = this;
@@ -245,7 +245,7 @@ BEEwb.main = {
             BEEwb.transformOps.placeOnBed();
 
             $('#loadingDialog').modal('hide');
-            document.cookie="lastModel=" + modelName;
+            saveCookie('lastModel', modelName, 90);
         });
     },
 
