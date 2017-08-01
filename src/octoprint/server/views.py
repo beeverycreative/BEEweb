@@ -536,7 +536,7 @@ def _process_templates():
 	# tabs
 
 	templates["tab"]["entries"] = dict(
-		workbench=(gettext("Workbench"), dict(template="tabs/workbench.jinja2", _div="workbench")),
+		workbench=(gettext("Work Area"), dict(template="tabs/workbench.jinja2", _div="workbench")),
 	)
 
 	# Tabs for developer mode

@@ -103,23 +103,23 @@ BEEwb.main = {
         this.scene.add(this.objects);
 
         // Loads the model
-        var lastModel = document.cookie.replace(/(?:(?:^|.*;\s*)lastModel\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        var lastModel = readCookie('lastModel');
 
-        if (!lastModel) {
-            lastModel = 'BEE.stl';
-            this.loadModel(lastModel, true, true);
-        } else {
+        if (lastModel) {
             var that = this;
             $.ajax({
                 url:'./downloads/files/local/' + lastModel,
                 type:'HEAD',
                 error: function() {
-                    console.log('Last printed model does not exist.')
+                    console.log('Model not found.')
                 },
                 success: function() {
                     that.loadModel(lastModel, false, true);
                 }
             });
+        } else {
+            //lastModel = 'BEE.stl';
+            //this.loadModel(lastModel, true, true);
         }
 
         // Uncomment this if you want Trackball controls instead of Orbit controls
@@ -131,7 +131,7 @@ BEEwb.main = {
         this.sceneControls.enableZoom = true;
         this.sceneControls.zoomSpeed = 0.9;
         this.sceneControls.rotateSpeed = 0.1;
-        this.sceneControls.enablePan = false;
+        this.sceneControls.enablePan = true;
         this.sceneControls.enableDamping = true;
         this.sceneControls.dampingFactor = 0.25;
 
@@ -222,6 +222,8 @@ BEEwb.main = {
         loader.load(folder + modelName, function ( geometry ) {
             var material = new THREE.MeshPhongMaterial( { color: 0x8C8C8C, specular: 0x111111, shininess: 100 } );
 
+            geometry.computeFaceNormals();
+            geometry.computeVertexNormals();
             // Centers the object if it's not centered
             BEEwb.helpers.centerModelBasedOnBoundingBox(geometry);
 
@@ -243,7 +245,7 @@ BEEwb.main = {
             BEEwb.transformOps.placeOnBed();
 
             $('#loadingDialog').modal('hide');
-            document.cookie="lastModel=" + modelName;
+            saveCookie('lastModel', modelName, 90);
         });
     },
 
