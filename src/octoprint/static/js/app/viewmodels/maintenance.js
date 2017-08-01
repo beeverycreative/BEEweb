@@ -379,7 +379,7 @@ $(function() {
                         tempProgressBar.css('width', progressStr);
                         tempProgressBar.text(progressStr);
 
-                        if (progress >= 100) {
+                        if (progress >= 95) {
                             self.heatingAchiveTargetTemperature(true);
                             $('#change-filament-heating-done').removeClass('hidden');
                             $('#maintenanceNextButton').removeClass('hidden');
@@ -941,7 +941,7 @@ $(function() {
                         tempProgressBar.css('width', progressStr);
                         tempProgressBar.text(progressStr);
 
-                        if (progress >= 100) {
+                        if (progress >= 95) {
                             self.heatingAchiveTargetTemperature(true);
                             $('#ext-mtn-4').removeClass('hidden');
                             $('#maintenanceNextButton').removeClass('hidden');
@@ -1159,7 +1159,7 @@ $(function() {
                         tempProgressBar.css('width', progressStr);
                         tempProgressBar.text(progressStr);
 
-                        if (progress >= 100) {
+                        if (progress >= 95) {
                             self.heatingAchiveTargetTemperature(true);
                             $('#replace-nozzle-heating-done').removeClass('hidden');
                             $('#progress-bar-replace-nozzle').addClass('hidden');
