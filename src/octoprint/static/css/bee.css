@@ -1551,7 +1551,8 @@ td.settings_users_actions .m-icon {
 #settings-usersDialogAddUser .modal-footer .btn-primary,
 #settings-usersDialogEditUser .modal-footer .btn-primary,
 #settings-usersDialogChangePassword .modal-footer .btn-primary,
-#settings_plugin_softwareupdate_configurationdialog .modal-footer .btn-primary{
+#settings_plugin_softwareupdate_configurationdialog .modal-footer .btn-primary,
+#save_scene_dialog .modal-footer .btn-primary{
     padding: 20px 0;
     width: 175px;
     text-transform: uppercase;
@@ -1574,7 +1575,10 @@ td.settings_users_actions .m-icon {
     color: #fff;
     background: #518359;
 }
-#maintenanceCloseButton, #login_dialog .modal-footer .btn, #cancelMaintenance, #aboutbee_dialog .modal-footer .btn{
+#maintenanceCloseButton,
+#login_dialog .modal-footer .btn,
+#cancelMaintenance,
+#aboutbee_dialog .modal-footer .btn {
     padding: 20px;
     background: transparent;
     color: #898989;
