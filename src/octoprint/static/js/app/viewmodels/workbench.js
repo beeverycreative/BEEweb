@@ -8,10 +8,24 @@ $(function () {
         self.slicing = parameters[3];
         self.state = parameters[4];
 
+        self.sceneName = ko.observable();
+        self.savingScene = ko.observable(false);
+
+        self.saveSceneDialog = $("#save_scene_dialog");
+        self.saveSceneDialog.on("shown", function() {
+            $("input", self.saveSceneDialog).focus();
+        });
+        $("form", self.saveSceneDialog).on("submit", function(e) {
+            e.preventDefault();
+            if (self.enableSaveScene()) {
+                self.saveScene();
+            }
+        });
+
 		//append file list with newly updated stl file.
 		self.onEventUpload = function (file) {
 
-			if (file.file.substr(file.file.length - 3).toLowerCase() == "stl") {
+			if (file.file.substr(file.file.length - 3).toLowerCase() === "stl") {
 
 				BEEwb.main.loadModel(file.file, false, false);
 			}
@@ -20,6 +34,41 @@ $(function () {
 		self.updateFileList = function () {
 			self.files.updateItems(_.filter(self.files.allItems, self.files.supportedFilters["model"]));
 		};
+
+		self.enableSaveScene = function () {
+            if (self.sceneName()) {
+                return true;
+            }
+
+            return false;
+        };
+
+		self.saveScene = function() {
+		    self.savingScene(true);
+
+		    // Adds the extension .stl to the filename if it does not contain
+		    if (!self.sceneName().endsWith('.stl')) {
+		        self.sceneName(self.sceneName() + '.stl');
+		    }
+
+            // NOTE: setTimeout is a workaround to allow the saveScene function to run
+            // separately and release this "thread" so the button is disabled
+            setTimeout(function() {
+                var saveCall = BEEwb.main.saveScene(self.sceneName());
+                // waits for the save operation
+                saveCall.done( function () {
+                    self.saveSceneDialog.modal("hide");
+
+                    self.savingScene(false);
+                });
+            }, 10);
+
+		};
+
+		self.showSaveScene = function () {
+		    self.sceneName(BEEwb.helpers.generateSceneName());
+		    self.saveSceneDialog.modal("show");
+        };
 
 	}
 
