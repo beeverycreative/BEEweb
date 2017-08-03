@@ -74,6 +74,9 @@ class BeePrinter(Printer):
         eventManager().subscribe(Events.FIRMWARE_UPDATE_FINISHED, self.on_flash_firmware_finished)
 
         # subscribes print event handlers
+        eventManager().subscribe(Events.PRINT_STARTED, self.on_print_started)
+        eventManager().subscribe(Events.PRINT_PAUSED, self.on_print_paused)
+        eventManager().subscribe(Events.PRINT_RESUMED, self.on_print_resumed)
         eventManager().subscribe(Events.PRINT_CANCELLED, self.on_print_cancelled)
         eventManager().subscribe(Events.PRINT_CANCELLED_DELETE_FILE, self.on_print_cancelled_delete_file)
         eventManager().subscribe(Events.PRINT_DONE, self.on_print_finished)
@@ -247,18 +250,6 @@ class BeePrinter(Printer):
         # saves the current PrintFileInformation object so we can later recover it if the printer is disconnected
         self._currentPrintJobFile = self._comm.getCurrentFile()
 
-        # logs a new print statistics
-        if not self.isRunningCalibrationTest():
-            self._stats.register_print() # logs software statistics
-            self._printerStats.register_print() # logs printer specific statistics
-
-            self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(), self._stats.get_software_id())
-            filament = self.getSelectedFilamentProfile()
-            if filament is not None:
-                self._currentPrintStatistics.set_filament_used(filament.display_name)
-            self._currentPrintStatistics.set_print_start(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
-
-            self._save_usage_statistics()
 
     def cancel_print(self):
         """
@@ -1051,6 +1042,38 @@ class BeePrinter(Printer):
             self._printAfterSelect = False
             self.start_print(pos=self._posAfterSelect)
 
+    def on_print_started(self, event, payload):
+        """
+        Print paused callback for the EventManager.
+        """
+        # logs a new print statistics
+        if not self.isRunningCalibrationTest():
+            self._stats.register_print() # logs software statistics
+            self._printerStats.register_print() # logs printer specific statistics
+
+            self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(), self._stats.get_software_id())
+            filament = self.getSelectedFilamentProfile()
+            if filament is not None:
+                self._currentPrintStatistics.set_filament_used(filament.display_name)
+            self._currentPrintStatistics.set_print_start(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+
+            self._save_usage_statistics()
+
+    def on_print_paused(self, event, payload):
+        """
+        Print paused callback for the EventManager.
+        """
+        if self._currentPrintStatistics is not None:
+            self._currentPrintStatistics.set_print_paused(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+            self._save_usage_statistics()
+
+    def on_print_resumed(self, event, payload):
+        """
+        Print resume callback for the EventManager.
+        """
+        if self._currentPrintStatistics is not None:
+            self._currentPrintStatistics.set_print_resumed(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+            self._save_usage_statistics()
 
     def on_print_cancelled(self, event, payload):
         """
