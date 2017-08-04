@@ -4,7 +4,7 @@ var BEEwb = BEEwb || {};
 BEEwb.helpers = {};
 
 /**
- * Auxiliar function to generate the STL file and Scene name from the current canvas scene.
+ * Auxiliary function to generate the STL file and Scene name from the current canvas scene.
  *
  * param objects: Array of objects from a Threejs scene
  *
