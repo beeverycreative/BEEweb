@@ -224,24 +224,28 @@ BEEwb.main = {
 
             geometry.computeFaceNormals();
             geometry.computeVertexNormals();
-            // Centers the object if it's not centered
-            BEEwb.helpers.centerModelBasedOnBoundingBox(geometry);
+
+            var mesh = new THREE.Mesh( geometry, material );
+            //mesh.castShadow = true;
 
             // Calculates any possible translation in the X axis due to the previously loaded model
             var xShift = BEEwb.helpers.calculateObjectShift( geometry );
+            if (xShift !== 0) {
+                mesh.position.set( xShift, 0, 0 );
+            }
 
-            var mesh = new THREE.Mesh( geometry, material );
-            mesh.position.set( xShift, 0, 0 );
+            // Centers the object only if it is not centered with the 3d scene
+            //if (BEEwb.helpers.objectOutOfBounds(mesh, [BEEwb.main.bedWidth, BEEwb.main.bedDepth, BEEwb.main.bedHeight])) {
+            BEEwb.helpers.centerModelBasedOnBoundingBox(mesh.geometry);
+            mesh.updateMatrix();
+            //}
 
-            //mesh.rotation.set( - Math.PI , Math.PI , 0 );
-            //mesh.scale.set( 1.5, 1.5, 1.5 );
-            mesh.castShadow = true;
-
-            that.scene.add( mesh );
+            that.scene.add(mesh);
             that.objects.add(mesh);
 
             // Runs the placeOnBed algorithm
             that.selectModel(mesh);
+
             BEEwb.transformOps.placeOnBed();
 
             $('#loadingDialog').modal('hide');

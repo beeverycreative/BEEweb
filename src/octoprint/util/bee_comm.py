@@ -975,27 +975,34 @@ class BeeCom(MachineCom):
         try:
             while self._beeCommands.isHeating():
                 time.sleep(1)
-                temperatureValue = self._beeCommands.getHeatingState()
-                if temperatureValue is None:
+                currentHeatingProgress = self._beeCommands.getHeatingState()
+                if currentHeatingProgress is None:
                     self._heatingProgress = 0.0
-                elif temperatureValue > self._heatingProgress:
+                elif currentHeatingProgress > self._heatingProgress:
                     # small verification to prevent temperature update errors coming from the printer due to sensor noise
                     # the temperature is only updated to a new value if it's greater than the previous when the printer is
                     # heating
-                    self._heatingProgress = round(temperatureValue, 2)
+                    self._heatingProgress = round(currentHeatingProgress, 2)
 
                 # makes use of the same method that is used for the print job progress, to update
                 # the heating progress since we are going to use the same progress bar
                 self._callback._setProgressData(self._heatingProgress, 0, 0, 0)
                 if not self._preparing_print:  # the print (heating) was cancelled
+                    self._heatingProgress = 0.0
                     return
-            self._callback._resetPrintProgress()
+
+            # Forces the heating progress to 100% to display the progress bar full, because the actual progress will
+            # stop just before 100%, to avoid heat sensor errors near final target temperature
+            self._heatingProgress = 1.0
+            self._callback._setProgressData(self._heatingProgress, 0, 0, 0)
         except Exception as ex:
             self._logger.error("Error while preparing print. Heating error: %s", str(ex))
             self._changeState(self.STATE_OPERATIONAL)
+            self._heatingProgress = 0.0
             return
 
         if self._currentFile is not None:
+            self._heatingProgress = 0.0
             # Starts the real printing operation
             self._changeState(self.STATE_PRINTING)
             self._currentFile.start()
@@ -1016,6 +1023,7 @@ class BeeCom(MachineCom):
                 self._heating = False
             self._preparing_print = False
         else:
+            self._heatingProgress = 0.0
             self._changeState(self.STATE_OPERATIONAL)
             self._logger.error('Error starting Print operation. No selected file found.')
 
