@@ -328,3 +328,14 @@ def setFilamentWeight():
 	return jsonify({
 		"response": resp
 	})
+
+
+@api.route("/maintenance/finish_extruder_maintenance", methods=["POST"])
+@restricted_access
+def finishExtruderMaintenance():
+	if not printer.is_operational():
+		return make_response("Printer is not operational", 409)
+
+	printer.finishExtruderMaintenance()
+
+	return NO_CONTENT

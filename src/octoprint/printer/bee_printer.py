@@ -477,6 +477,11 @@ class BeePrinter(Printer):
             self.set_nozzle_temperature(temperature_profile_printer)
             resp = self._comm.getCommandsInterface().setFilamentString(filamentStr)
 
+            # registers the filament change statistics
+            self._stats.register_filament_change()
+            self._printerStats.register_filament_change()
+            self._save_usage_statistics()
+
             return resp, temperature_profile_printer
         except Exception as ex:
             self._logger.error('Error saving filament string in printer: %s' % str(ex))
@@ -589,6 +594,17 @@ class BeePrinter(Printer):
             self._logger.error('Error setting amount of filament in spool: %s' % str(ex))
 
 
+    def finishExtruderMaintenance(self):
+        """
+        This function is only used at the moment for statistics logging because the extruder maintenance operation
+        has no need for a final operation
+        :return:
+        """
+        self._stats.register_extruder_maintenance()
+        self._printerStats.register_extruder_maintenance()
+        self._save_usage_statistics()
+
+
     def setNozzleSize(self, nozzleSize):
         """
         Saves the selected nozzle size
@@ -596,7 +612,14 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().setNozzleSize(nozzleSize)
+            res = self._comm.getCommandsInterface().setNozzleSize(nozzleSize)
+
+            # registers the nozzle change statistics
+            self._stats.register_nozzle_change()
+            self._printerStats.register_nozzle_change()
+            self._save_usage_statistics()
+
+            return res
         except Exception as ex:
             self._logger.error(ex)
 
@@ -657,7 +680,14 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().goToNextCalibrationPoint()
+            res = self._comm.getCommandsInterface().goToNextCalibrationPoint()
+
+            # registers the calibration statistics
+            self._stats.register_calibration()
+            self._printerStats.register_calibration()
+            self._save_usage_statistics()
+
+            return res
         except Exception as ex:
             self._logger.error(ex)
 
@@ -686,6 +716,11 @@ class BeePrinter(Printer):
             self._runningCalibrationTest = True
             self.select_file(file_path, False)
             self.start_print()
+
+            # registers the calibration statistics
+            self._stats.register_calibration_test()
+            self._printerStats.register_calibration_test()
+            self._save_usage_statistics()
 
         except Exception as ex:
             self._logger.error('Error printing calibration test : %s' % str(ex))
@@ -1376,7 +1411,8 @@ class BeePrinter(Printer):
         self._printerStats.save()
 
         # saves the print statistics details
-        self._currentPrintStatistics.save()
+        if self._currentPrintStatistics is not None:
+            self._currentPrintStatistics.save()
 
     def _sendAzureUsageStatistics(self, operation):
         """

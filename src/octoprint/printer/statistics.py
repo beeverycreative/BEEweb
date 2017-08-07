@@ -100,6 +100,86 @@ class BaseStatistics:
 
 		return True
 
+	def register_filament_change(self):
+		"""
+		Logs a filament change operation.
+		:return boolean True if the stats were successfully saved
+		"""
+		try:
+			self._stats["total_filament_changes"] = self._stats["total_filament_changes"] + 1
+			self._dirty = True
+
+		except Exception as ex:
+			self._logger.error("Unable to register filament change statistics. Error: %s" % str(ex))
+			return False
+
+		return True
+
+	def register_calibration(self):
+		"""
+		Logs a calibration operation.
+		:return boolean True if the stats were successfully saved
+		"""
+		try:
+			self._stats["total_calibrations"] = self._stats["total_calibrations"] + 1
+			if self._stats["total_calibrations"] > 0:
+				self._stats["avg_prints_per_calibration"] = \
+					round(float(self._stats["total_prints"]) / float(self._stats["total_calibrations"]), 2)
+			self._stats["total_prints_since_last_calibration"] = 0
+			self._dirty = True
+
+		except Exception as ex:
+			self._logger.error("Unable to register calibration statistics. Error: %s" % str(ex))
+			return False
+
+		return True
+
+
+	def register_calibration_test(self):
+		"""
+		Logs a calibration test.
+		:return boolean True if the stats were successfully saved
+		"""
+		try:
+			self._stats["total_calibration_tests"] = self._stats["total_calibration_tests"] + 1
+			self._dirty = True
+
+		except Exception as ex:
+			self._logger.error("Unable to register calibration test statistics. Error: %s" % str(ex))
+			return False
+
+		return True
+
+	def register_extruder_maintenance(self):
+		"""
+		Logs an extruder maintenance operation.
+		:return boolean True if the stats were successfully saved
+		"""
+		try:
+			self._stats["total_extruder_maintenance"] = self._stats["total_extruder_maintenance"] + 1
+			self._dirty = True
+
+		except Exception as ex:
+			self._logger.error("Unable to register extruder maintenance statistics. Error: %s" % str(ex))
+			return False
+
+		return True
+
+	def register_nozzle_change(self):
+		"""
+		Logs a nozzle change operation.
+		:return boolean True if the stats were successfully saved
+		"""
+		try:
+			self._stats["total_nozzle_changes"] = self._stats["total_nozzle_changes"] + 1
+			self._dirty = True
+
+		except Exception as ex:
+			self._logger.error("Unable to register nozzle change statistics. Error: %s" % str(ex))
+			return False
+
+		return True
+
 class PrinterStatistics(BaseStatistics):
 	_base_stats = {
 		"printer_serial_number": "00000",
