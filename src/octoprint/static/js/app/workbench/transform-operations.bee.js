@@ -207,20 +207,22 @@ BEEwb.transformOps.placeOnBed = function() {
 
         // Computes the box after any transformations
         var bbox = new THREE.Box3().setFromObject( BEEwb.main.selectedObject );
-
-        if (bbox.min.z != 0) {
+        debugger;
+        if (bbox.min.z !== 0) {
 
             var zShift = BEEwb.main.selectedObject.position.z - bbox.min.z;
+            // Adds a small increment to the shift to prevent out of bounds false positives due to rounding errors
+            zShift += 0.0001;
 
             BEEwb.main.selectedObject.position.setZ( zShift );
         }
 
         // Recomputes the bounding box to check for rounding errors
-        bbox = new THREE.Box3().setFromObject( BEEwb.main.selectedObject );
-        if (bbox.min.z < 0) {
-            zShift += (-bbox.min.z + 0.0001); // Increment the shift by a small amount in case of the model being below the platform
-            BEEwb.main.selectedObject.position.setZ( zShift );
-        }
+        // bbox = new THREE.Box3().setFromObject( BEEwb.main.selectedObject );
+        // if (bbox.min.z < 0) {
+        //     zShift += (-bbox.min.z + 0.0001); // Increment the shift by a small amount in case of the model being below the platform
+        //     BEEwb.main.selectedObject.position.setZ( zShift );
+        // }
 
         BEEwb.main.transformControls.update();
         this.updatePositionInputs();
@@ -267,6 +269,8 @@ BEEwb.transformOps.removeModel = function(modelObj) {
         BEEwb.main.scene.remove(BEEwb.main.transformControls);
 
         BEEwb.main.toggleObjectOutOfBounds(BEEwb.main.selectedObject, false);
+
+        BEEwb.main.disableDragControls();
     }
 };
 
@@ -344,6 +348,8 @@ BEEwb.transformOps.activateRotate = function() {
         this.selectedMode = 'rotate';
         BEEwb.main.transformControls.setMode("rotate");
 
+        BEEwb.main.disableDragControls();
+
         $('#btn-move').removeClass('btn-primary');
         $('#btn-scale').removeClass('btn-primary');
         $('#btn-rotate').removeClass('btn-default');
@@ -365,6 +371,8 @@ BEEwb.transformOps.activateScale = function() {
 
         this.selectedMode = 'scale';
         BEEwb.main.transformControls.setMode("scale");
+
+        BEEwb.main.disableDragControls();
 
         $('#btn-move').removeClass('btn-primary');
         $('#btn-rotate').removeClass('btn-primary');
@@ -393,6 +401,10 @@ BEEwb.transformOps.activateMove = function() {
 
         BEEwb.main.transformControls.setMode("translate");
         this.selectedMode = 'translate';
+
+        // Resets the drag controls for the object
+        BEEwb.main.disableDragControls();
+        BEEwb.main.enableDragControls();
 
         $('#btn-scale').removeClass('btn-primary');
         $('#btn-rotate').removeClass('btn-primary');

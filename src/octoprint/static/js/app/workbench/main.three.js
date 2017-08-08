@@ -141,6 +141,7 @@ BEEwb.main = {
 
         this.selectedObject = null;
         this.transformControls = null;
+        this.dragControls = null;
 
         // Adds the printer bed auxiliary object
         this._addBed();
@@ -154,9 +155,7 @@ BEEwb.main = {
 
     render: function () {
 
-        if (this.transformControls != null) {
-            this.transformControls.update();
-        }
+        this.updateTransformControls();
         this.renderer.render( this.scene, this.camera );
     },
 
@@ -164,6 +163,49 @@ BEEwb.main = {
         requestAnimationFrame( this.animate.bind(this) );
         this.sceneControls.update();
         this.renderer.render( this.scene, this.camera );
+    },
+
+    updateTransformControls: function () {
+
+        if (this.transformControls !== null) {
+            this.transformControls.update();
+        }
+    },
+
+    disableSceneControls: function () {
+        if (this.sceneControls !== null) {
+            this.sceneControls.enabled = false;
+        }
+    },
+
+    enableSceneControls: function () {
+        if (this.sceneControls !== null) {
+            this.sceneControls.enabled = true;
+        }
+    },
+
+    disableDragControls: function () {
+        if (this.dragControls !== null) {
+            this.dragControls.dispose();
+            this.dragControls = null;
+        }
+    },
+
+    enableDragControls: function () {
+
+        if (this.selectedObject !== null) {
+            this.dragControls = new THREE.DragControls( [this.selectedObject], this.camera, this.renderer.domElement );
+
+            // Drag controls event callbacks
+            this.dragControls.addEventListener( 'dragstart', function ( event ) {
+                BEEwb.main.disableSceneControls();
+            });
+            this.dragControls.addEventListener( 'dragend', function ( event ) {
+                BEEwb.transformOps.placeOnBed();
+                BEEwb.main.updateTransformControls();
+                BEEwb.main.enableSceneControls();
+            });
+        }
     },
 
     /**
@@ -330,7 +372,7 @@ BEEwb.main = {
         model.material.color = new THREE.Color(SELECT_COLOR);
 
         // Attaches the transform controls to the newly selected object
-        if (this.selectedObject == null || this.selectedObject !== model) {
+        if (this.selectedObject === null || this.selectedObject !== model) {
             this.scene.remove(this.transformControls);
             this.transformControls = new THREE.TransformControls( this.camera, this.renderer.domElement );
             this.transformControls.addEventListener( 'change', this.render.bind(this) );
@@ -398,11 +440,13 @@ BEEwb.main = {
             obj.material.color = new THREE.Color(DEFAULT_COLOR);
         });
 
-        if (this.transformControls != null) {
+        if (this.transformControls !== null) {
 
             this.transformControls.detach();
             //transformControls.dispose();
         }
+
+        BEEwb.main.disableDragControls();
 
         this.selectedObject = null;
 
