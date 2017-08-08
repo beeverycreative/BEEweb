@@ -289,22 +289,42 @@ class BeePrinter(Printer):
         except Exception as ex:
             self._logger.error("Error canceling print job: %s" % str(ex))
 
-    def jog(self, axis, amount):
+    def jog(self, axes, relative=True, speed=None, *args, **kwargs):
         """
-        Jogs the tool a selected amount in the axis chosen
-
-        :param axis:
-        :param amount:
+        Jogs the tool a selected amount in the choosen axis
+        :param axes:
+        :param relative:
+        :param speed:
+        :param args:
+        :param kwargs:
         :return:
         """
-        if not isinstance(axis, (str, unicode)):
-            raise ValueError("axis must be a string: {axis}".format(axis=axis))
+        if isinstance(axes, basestring):
+            # legacy parameter format, there should be an amount as first anonymous positional arguments too
+            axis = axes
+
+            if not len(args) >= 1:
+                raise ValueError("amount not set")
+            amount = args[0]
+            if not isinstance(amount, (int, long, float)):
+                raise ValueError("amount must be a valid number: {amount}".format(amount=amount))
+
+            axes = dict()
+            axes[axis] = amount
+
+        if not axes:
+            raise ValueError("At least one axis to jog must be provided")
+
+        for axis in axes:
+            if not axis in PrinterInterface.valid_axes:
+                raise ValueError(
+                    "Invalid axis {}, valid axes are {}".format(axis, ", ".join(PrinterInterface.valid_axes)))
 
         axis = axis.lower()
         if not axis in PrinterInterface.valid_axes:
             raise ValueError("axis must be any of {axes}: {axis}".format(axes=", ".join(PrinterInterface.valid_axes), axis=axis))
-        if not isinstance(amount, (int, long, float)):
-            raise ValueError("amount must be a valid number: {amount}".format(amount=amount))
+        if not isinstance(axes[axis], (int, long, float)):
+            raise ValueError("amount must be a valid number: {amount}".format(amount=axes[axis]))
 
         printer_profile = self._printerProfileManager.get_current_or_default()
 
@@ -323,11 +343,11 @@ class BeePrinter(Printer):
                 time.sleep(0.25)
         try:
             if axis == 'x':
-                bee_commands.move(amount, 0, 0, None, movement_speed)
+                bee_commands.move(axes[axis], 0, 0, None, movement_speed)
             elif axis == 'y':
-                bee_commands.move(0, amount, 0, None, movement_speed)
+                bee_commands.move(0, axes[axis], 0, None, movement_speed)
             elif axis == 'z':
-                bee_commands.move(0, 0, amount, None, movement_speed)
+                bee_commands.move(0, 0, axes[axis], None, movement_speed)
         except Exception as ex:
             self._logger.exception(ex)
 
