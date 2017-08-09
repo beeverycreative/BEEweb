@@ -1593,7 +1593,8 @@ td.settings_users_actions .m-icon {
 #settings-usersDialogEditUser .modal-footer .btn-primary,
 #settings-usersDialogChangePassword .modal-footer .btn-primary,
 #settings_plugin_softwareupdate_configurationdialog .modal-footer .btn-primary,
-#save_scene_dialog .modal-footer .btn-primary{
+#save_scene_dialog .modal-footer .btn-primary,
+#user_feedback_dialog .modal-footer .btn-primary {
     padding: 20px 0;
     width: 175px;
     text-transform: uppercase;

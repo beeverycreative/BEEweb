@@ -8,6 +8,7 @@ $(function () {
         self.slicing = parameters[3];
         self.state = parameters[4];
 
+        // Save scene dialog attributes
         self.sceneName = ko.observable();
         self.savingScene = ko.observable(false);
 
@@ -20,6 +21,21 @@ $(function () {
             if (self.enableSaveScene()) {
                 self.saveScene();
             }
+        });
+
+        // User feedback dialog attributes
+        self.printSuccess = ko.observable(false);
+        self.sendingFeedback = ko.observable(false);
+        self.printObservations = ko.observable();
+        self.printClassification = ko.observable(5);
+
+        self.userFeedback = $("#user_feedback_dialog");
+        self.userFeedback.on("shown", function() {
+            $("input", self.userFeedback).focus();
+        });
+        $("form", self.userFeedback).on("submit", function(e) {
+            e.preventDefault();
+            self.sendUserFeedback();
         });
 
 		//append file list with newly updated stl file.
@@ -68,6 +84,15 @@ $(function () {
 		self.showSaveScene = function () {
 		    self.sceneName(BEEwb.helpers.generateSceneName());
 		    self.saveSceneDialog.modal("show");
+        };
+
+        // User feedback dialog methods
+		self.showUserFeedbackDialog = function () {
+		    self.userFeedback.modal("show");
+        };
+
+        self.sendUserFeedback = function () {
+
         };
 
 	}

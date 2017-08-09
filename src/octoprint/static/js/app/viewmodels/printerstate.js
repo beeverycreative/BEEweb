@@ -414,7 +414,7 @@ $(function() {
                 self.isConnecting(false);
             }
 
-            if (self.isPaused() != prevPaused) {
+            if (self.isPaused() !== prevPaused) {
                 if (self.isPaused()) {
                     self.titlePrintButton(self.TITLE_PRINT_BUTTON_PAUSED);
                     self.titlePauseButton(self.TITLE_PAUSE_BUTTON_PAUSED);
@@ -425,8 +425,11 @@ $(function() {
             }
 
             // detects if a print has finished to change the ignoredInsufficientFilament flag
-            if (prevPrinting == true && self.isPrinting() != prevPrinting && !self.isPaused() && !self.isShutdown()) {
+            if (prevPrinting === true && self.isPrinting() !== prevPrinting && !self.isPaused() && !self.isShutdown()) {
                 self.ignoredInsufficientFilament(false);
+
+                // Shows user feedback dialog
+                $("#user_feedback_dialog").modal('show');
             }
 
             if (self.isShutdown() || self.isPaused()) {
