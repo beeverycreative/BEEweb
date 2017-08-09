@@ -525,10 +525,13 @@ class BeePrinter(Printer):
                 for key,value in profiles.items():
                     if filamentNormalizedName in key:
                         filamentProfile = self._slicingManager.load_profile(self._slicingManager.default_slicer, key, require_configured=False)
+                        # because the name attribute is being returned empty, we set the filament code as name for later convenience
+                        filamentProfile.name = filamentStr
+
                         return filamentProfile
 
         except Exception as ex:
-            self._logger.error('Error when starting the heating operation: %s' % str(ex))
+            self._logger.error('Error getting the current selected filament profile: %s' % str(ex))
 
         return None
 
@@ -1107,10 +1110,12 @@ class BeePrinter(Printer):
             self._printerStats.register_print() # logs printer specific statistics
 
             self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(), self._stats.get_software_id())
+            self._currentPrintStatistics.set_print_start(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+
             filament = self.getSelectedFilamentProfile()
             if filament is not None:
-                self._currentPrintStatistics.set_filament_used(filament.display_name)
-            self._currentPrintStatistics.set_print_start(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+                filament_amount = self._printJobFilamentLength() # amount in mm
+                self._currentPrintStatistics.set_filament_used(filament.display_name, 'PLA', filament.name, "Beeverycreative", filament_amount)
 
             self._save_usage_statistics()
 
@@ -1179,6 +1184,14 @@ class BeePrinter(Printer):
         Event listener to when a print job finishes
         :return:
         """
+        # log print statistics
+        if not self.isRunningCalibrationTest() and self._currentPrintStatistics is not None:
+            self._currentPrintStatistics.set_user_feedback(True, 7, "Print ok")
+            # total print time in seconds
+            self._currentPrintStatistics.set_total_print_time(round(self._comm.getCleanedPrintTime(), 1))
+            self._currentPrintStatistics.set_print_finished(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+            self._save_usage_statistics()
+
         # unselects the current file
         super(BeePrinter, self).unselect_file()
         self._currentPrintJobFile = None
@@ -1191,12 +1204,6 @@ class BeePrinter(Printer):
             except Exception as e:
                 self._logger.exception('Error deleting temporary GCode file: %s' % str(e))
 
-        # log print statistics
-        if not self.isRunningCalibrationTest() and self._currentPrintStatistics is not None:
-            self._currentPrintStatistics.set_user_feedback(True, 7, "Print ok")
-            self._currentPrintStatistics.set_total_print_time(self._comm.getCleanedPrintTime())
-            self._currentPrintStatistics.set_print_finished(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
-            self._save_usage_statistics()
 
     def on_client_connected(self, event, payload):
         """
@@ -1279,6 +1286,20 @@ class BeePrinter(Printer):
 
         return filament_diameter, filament_density
 
+    def _printJobFilamentLength(self):
+        """
+        Returns the amount of filament (mm) that will be used for the current print job. If no data is found return None
+        """
+        # Gets the current print job data
+        state_data = self._stateMonitor.get_current_data()
+
+        if state_data['job']['filament'] is not None:
+            # gets the filament information for the filament weight to be used in the print job
+            filament_extruder = state_data['job']['filament']["tool0"]
+
+            return filament_extruder['length']
+
+        return None
 
     def _checkSufficientFilamentForPrint(self):
         """
@@ -1286,18 +1307,20 @@ class BeePrinter(Printer):
         job setting, it will automatically update the interface through the web socket
         :return:
         """
-        # Gets the current print job data
-        state_data = self._stateMonitor.get_current_data()
-
         if not self.is_printing():
-            # gets the current amount of filament left in printer
-            current_filament_length = self.getFilamentInSpool()
-
             try:
-                if state_data['job']['filament'] is not None:
-                    # gets the filament information for the filament weight to be used in the print job
+                # Gets the current print job data
+                state_data = self._stateMonitor.get_current_data()
+
+                # gets the current amount of filament left in printer
+                current_filament_length = self.getFilamentInSpool()
+                print_job_filament = self._printJobFilamentLength()
+
+                if print_job_filament is not None:
+                    # gets the filament information for the current print job
                     filament_extruder = state_data['job']['filament']["tool0"]
-                    if filament_extruder['length'] > current_filament_length:
+
+                    if print_job_filament > current_filament_length:
                         filament_extruder['insufficient'] = True
                         self._insufficientFilamentForCurrent = True
                     else:

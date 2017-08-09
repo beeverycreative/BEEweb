@@ -322,7 +322,7 @@ class PrintEventStatistics:
 			self._dirty = True
 
 	def set_user_feedback(self, success=True, user_satisfaction=5, obs=None):
-		if self._stats is not None and "user_feedback" in self._stats:
+		if self._stats is not None:
 			self._stats["user_feedback"] = {
 				"print_finished_successfully": success,
 				"result_satisfaction": user_satisfaction,
