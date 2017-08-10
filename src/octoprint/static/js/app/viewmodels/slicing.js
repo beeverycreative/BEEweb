@@ -625,6 +625,9 @@ $(function() {
 
             self.slicer(self.defaultSlicer);
             self.profile(self.defaultProfile);
+
+            // Statistics logging
+            self._send3DModelsInformations();
         };
 
         /**
@@ -652,9 +655,13 @@ $(function() {
             });
 
             self.estimationReady(false);
+
             //Makes sure the options panels are all expanded after the dialog is closed
             $(".slice-option.closed").click();
-             $("#slicing_configuration_dialog").modal("hide");
+            $("#slicing_configuration_dialog").modal("hide");
+
+            // Statistics logging
+            self._send3DModelsInformations();
         };
 
         /**
@@ -681,6 +688,28 @@ $(function() {
 
         self.onAllBound = function(allViewModels) {
             self.allViewModels = allViewModels;
+        };
+
+        /**
+         * Collects and sends for statistics logging the current 3D models in the scene ready to be printed
+         * @private
+         */
+        self._send3DModelsInformations = function () {
+
+            // Sends the current 3D model information to the server for statistics
+            var models_info = BEEwb.main.getSceneModelsInformation();
+            var data = {
+                models_info: models_info
+            };
+            $.ajax({
+                url: BEE_API_BASEURL + "save_model_information",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                data: JSON.stringify(data),
+                success: function(response) {
+                }
+            });
         };
     }
 

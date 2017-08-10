@@ -131,7 +131,6 @@ $(function () {
                 type: "POST",
                 dataType: "json",
                 contentType: "application/json; charset=UTF-8",
-                data: JSON.stringify(data),
                 success: function(response) {
                 }
             });

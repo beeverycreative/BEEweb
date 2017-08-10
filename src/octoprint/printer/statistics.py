@@ -310,6 +310,11 @@ class PrintEventStatistics:
 			del self._stats["filament_used"]
 			self._dirty = True
 
+	def remove_model_information(self):
+		if self._stats is not None:
+			del self._stats["model_information"]
+			self._dirty = True
+
 	def set_model_information(self, number_of_pieces=0, models=None):
 		if self._stats is not None:
 			self._stats["model_information"] = {

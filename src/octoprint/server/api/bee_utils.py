@@ -215,3 +215,18 @@ def noUserFeedback():
 		"success": res,
 		"message": msg
 	})
+
+@api.route("/save_model_information", methods=["POST"])
+@restricted_access
+def saveModelInformation():
+	if not "application/json" in request.headers["Content-Type"]:
+		return make_response("Expected content-type JSON", 400)
+
+	data = request.json
+	models_info = data['models_info']
+
+	res = printer.saveModelsInformation(models_info)
+
+	return jsonify({
+		"success": res
+	})

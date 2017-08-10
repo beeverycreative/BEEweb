@@ -1048,6 +1048,27 @@ class BeePrinter(Printer):
 
             return False, str(ex)
 
+    def saveModelsInformation(self, models_info):
+        """
+        Saves the information about the 3D models currently being printed
+        :param models_info:
+        :return:
+        """
+        try:
+            if self._currentPrintStatistics is not None:
+                self._currentPrintStatistics.set_model_information(len(models_info), models_info)
+                self._save_usage_statistics()
+            else:
+                self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(),
+                                                                    self._stats.get_software_id())
+
+                self._currentPrintStatistics.set_model_information(len(models_info), models_info)
+
+            return True
+        except Exception as ex:
+            self._logger.error('Error saving 3D model information statistics: %s' % str(ex))
+
+            return False
 
     # # # # # # # # # # # # # # # # # # # # # # #
     ##########  CALLBACK FUNCTIONS  #############
@@ -1128,7 +1149,8 @@ class BeePrinter(Printer):
             self._stats.register_print() # logs software statistics
             self._printerStats.register_print() # logs printer specific statistics
 
-            self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(), self._stats.get_software_id())
+            if self._currentPrintStatistics is None:
+                self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(), self._stats.get_software_id())
             self._currentPrintStatistics.set_print_start(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
 
             self._register_filament_statistics()
@@ -1208,9 +1230,11 @@ class BeePrinter(Printer):
             # total print time in seconds
             self._currentPrintStatistics.set_total_print_time(round(self._comm.getCleanedPrintTime(), 1))
             self._currentPrintStatistics.set_print_finished(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+            # removes redundant information
             self._currentPrintStatistics.remove_filament_used()
+            self._currentPrintStatistics.remove_model_information()
 
-        # unselects the current file
+        # un-selects the current file
         super(BeePrinter, self).unselect_file()
         self._currentPrintJobFile = None
 
