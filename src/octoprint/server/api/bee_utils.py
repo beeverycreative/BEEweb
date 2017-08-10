@@ -186,3 +186,32 @@ def printMemoryFile():
 	printer.printFromMemory()
 
 	return NO_CONTENT
+
+@api.route("/save_user_feedback", methods=["POST"])
+@restricted_access
+def saveUserFeedback():
+	if not "application/json" in request.headers["Content-Type"]:
+		return make_response("Expected content-type JSON", 400)
+
+	data = request.json
+	print_success = data['print_success']
+	print_rating = data['print_rating']
+	observations = data['observations']
+
+	res, msg = printer.saveUserFeedback(print_success, print_rating, observations)
+
+	return jsonify({
+		"success": res,
+		"message": msg
+	})
+
+@api.route("/no_user_feedback", methods=["POST"])
+@restricted_access
+def noUserFeedback():
+
+	res, msg = printer.saveUserFeedback()
+
+	return jsonify({
+		"success": res,
+		"message": msg
+	})

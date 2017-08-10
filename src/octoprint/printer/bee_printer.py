@@ -1029,6 +1029,25 @@ class BeePrinter(Printer):
         except Exception as ex:
             self._logger.error(ex)
 
+    def saveUserFeedback(self, print_success=True, print_rating=0, observations=None):
+        """
+        Saves the user feedback sent from the API through the user interface
+        :param print_success:
+        :param print_rating:
+        :param observations:
+        :return:
+        """
+        try:
+            if self._currentPrintStatistics is not None:
+                self._currentPrintStatistics.set_user_feedback(print_success, print_rating, observations)
+                self._save_usage_statistics()
+
+            return True, "feedback saved"
+        except Exception as ex:
+            self._logger.error('Error saving user feedback after print finished: %s' % str(ex))
+
+            return False, str(ex)
+
 
     # # # # # # # # # # # # # # # # # # # # # # #
     ##########  CALLBACK FUNCTIONS  #############
@@ -1186,11 +1205,9 @@ class BeePrinter(Printer):
         """
         # log print statistics
         if not self.isRunningCalibrationTest() and self._currentPrintStatistics is not None:
-            self._currentPrintStatistics.set_user_feedback(True, 7, "Print ok")
             # total print time in seconds
             self._currentPrintStatistics.set_total_print_time(round(self._comm.getCleanedPrintTime(), 1))
             self._currentPrintStatistics.set_print_finished(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
-            self._save_usage_statistics()
 
         # unselects the current file
         super(BeePrinter, self).unselect_file()

@@ -227,7 +227,7 @@ class PrintEventStatistics:
 		"filament_used": {"name": None, "type": None, "color": None, "brand": None, "quantity": 0.0},
 		"print_options": {"layer_height": 0, "heat_temperature": 210, "infill": None},
 		"model_file_origin": "stl",
-		"user_feedback": {"print_finished_successfully": False, "result_satisfaction": 0, "obs": None}
+		"user_feedback": {"print_success": False, "print_rating": 0, "obs": None}
 	}
 	"""
 	_print_base_stats = {
@@ -321,11 +321,11 @@ class PrintEventStatistics:
 
 			self._dirty = True
 
-	def set_user_feedback(self, success=True, user_satisfaction=5, obs=None):
+	def set_user_feedback(self, print_success=True, print_rating=5, obs=None):
 		if self._stats is not None:
 			self._stats["user_feedback"] = {
-				"print_finished_successfully": success,
-				"result_satisfaction": user_satisfaction,
+				"print_success": print_success,
+				"print_rating": print_rating,
 				"obs": obs
 			}
 			self._dirty = True

@@ -235,8 +235,7 @@
                 <div class="control-group">
                     <label class="control-label">{{ _('How do you rate the print quality?') }}</label>
                     <div class="controls">
-                        <input id="printClassification" type="number" min="0" max="10"
-                        data-bind="value: printClassification" style="width: 10%;"/><br />
+                        <input id="printClassification" type="number" min="1" max="10" data-bind="value: printClassification" style="width: 10%;"/><br />
                         <small>{{ _('From 1 to 10, being 10 the best quality.') }}</small>
                     </div>
 
@@ -250,7 +249,7 @@
             </form>
         </div>
         <div class="modal-footer">
-            <a href="#" class="btn" data-dismiss="modal">{{ _('Cancel') }}</a>
+            <a href="#" class="btn" data-bind="click: closeUserFeedbackDialog">{{ _('Cancel') }}</a>
             <a href="#" class="btn btn-primary" data-bind="click: sendUserFeedback, enabled: $root.enableSaveScene(), css: {disabled: $root.sendingFeedback()}">
                 <i class="icon-spinner icon-spin" data-bind="visible: sendingFeedback"></i> {{ _('Send') }}
             </a>

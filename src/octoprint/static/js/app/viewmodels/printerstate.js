@@ -144,7 +144,7 @@ $(function() {
         self.printFromMemory = function() {
             $('#printFromMemoryDiv').addClass('hidden');
             $.ajax({
-                url: BEE_CUSTOM_API_BASEURL + "print_from_memory",
+                url: BEE_API_BASEURL + "print_from_memory",
                 type: "POST",
                 dataType: "json",
                 contentType: "application/json; charset=UTF-8",

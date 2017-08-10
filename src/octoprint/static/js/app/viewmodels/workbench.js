@@ -92,7 +92,51 @@ $(function () {
         };
 
         self.sendUserFeedback = function () {
+            self.sendingFeedback(true);
 
+            var feedback = {
+                print_success: self.printSuccess(),
+                print_rating: self.printClassification(),
+                observations: self.printObservations()
+            };
+
+            $.ajax({
+                url: BEE_API_BASEURL + "save_user_feedback",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                data: JSON.stringify(feedback),
+                success: function(response) {
+                    if (!response.success) {
+                        var html = _.sprintf(gettext("An error occurred while saving your feedback. Please consult the logs."));
+                        new PNotify({title: gettext("Save feedback failed"), text: html, type: "error", hide: false});
+                    }
+                    self.sendingFeedback(false);
+                    self.userFeedback.modal("hide");
+                }, error: function (response) {
+                    var html = _.sprintf(gettext("An error occurred while saving your feedback. Please consult the logs."));
+                    new PNotify({title: gettext("Save feedback failed"), text: html, type: "error", hide: false});
+
+                    self.sendingFeedback(false);
+                    self.userFeedback.modal("hide");
+                }
+            });
+        };
+
+        self.closeUserFeedbackDialog = function () {
+
+            // Sends an empty user feedback just to signal the end of statistics collection for the finished print
+            $.ajax({
+                url: BEE_API_BASEURL + "no_user_feedback",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                data: JSON.stringify(data),
+                success: function(response) {
+                }
+            });
+
+            self.userFeedback.modal("hide");
         };
 
 	}
