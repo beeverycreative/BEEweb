@@ -1131,10 +1131,7 @@ class BeePrinter(Printer):
             self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(), self._stats.get_software_id())
             self._currentPrintStatistics.set_print_start(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
 
-            filament = self.getSelectedFilamentProfile()
-            if filament is not None:
-                filament_amount = self._printJobFilamentLength() # amount in mm
-                self._currentPrintStatistics.set_filament_used(filament.display_name, 'PLA', filament.name, "Beeverycreative", filament_amount)
+            self._register_filament_statistics()
 
             self._save_usage_statistics()
 
@@ -1152,6 +1149,8 @@ class BeePrinter(Printer):
         """
         if self._currentPrintStatistics is not None:
             self._currentPrintStatistics.set_print_resumed(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+            self._register_filament_statistics()
+
             self._save_usage_statistics()
 
     def on_print_cancelled(self, event, payload):
@@ -1162,6 +1161,7 @@ class BeePrinter(Printer):
 
         if self._currentPrintStatistics is not None:
             self._currentPrintStatistics.set_print_cancelled(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+            self._currentPrintStatistics.remove_filament_used()
             self._save_usage_statistics()
 
 
@@ -1208,6 +1208,7 @@ class BeePrinter(Printer):
             # total print time in seconds
             self._currentPrintStatistics.set_total_print_time(round(self._comm.getCleanedPrintTime(), 1))
             self._currentPrintStatistics.set_print_finished(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+            self._currentPrintStatistics.remove_filament_used()
 
         # unselects the current file
         super(BeePrinter, self).unselect_file()
@@ -1458,6 +1459,14 @@ class BeePrinter(Printer):
         if self._bvc_status_thread is not None:
             self._bvc_status_thread.stop()
             self._bvc_status_thread = None
+
+
+    def _register_filament_statistics(self):
+        filament = self.getSelectedFilamentProfile()
+        if filament is not None:
+            filament_amount = self._printJobFilamentLength()  # amount in mm
+            self._currentPrintStatistics.set_filament_used(filament.display_name, 'PLA', filament.name,
+                                                           "Beeverycreative", filament_amount)
 
     def _save_usage_statistics(self):
         """
