@@ -275,6 +275,8 @@ class PrinterProfileManager(object):
 		try:
 			if self.exists(identifier):
 				return self._load_from_path(self._get_profile_path(identifier))
+			elif identifier == "_default":
+				return self.get_default()
 			else:
 				return None
 		except InvalidProfileError:

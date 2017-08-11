@@ -455,6 +455,7 @@ a.brand{
 .dropdownwicon { background: url('../img/icons/dropdown_white.svg'); }
 .estimatewicon { background: url('../img/icons/medium_white.svg'); }
 .downloadwicon { background: url('../img/icons/download_white.svg'); }
+.addwicon { background: url('../img/icons/add_white.svg'); }
 /* green */
 .checkgreenicon  { background: url('../img/icons/ok_green.svg'); }
 /* dynamic icons - change with media queries */

@@ -33,9 +33,15 @@
     </ul>
 </div>
 
-<div class="refresh-trigger accordion-heading-button btn-group">
+<div class="create-folder accordion-heading-button btn-group">
     <a href="#" data-bind="click: function() { $root.requestData({force: true}); }" title="{{ _('Refresh file list') }}">
         <span class="m-icon refreshwicon"></span>
+    </a>
+</div>
+
+<div class="refresh-trigger accordion-heading-button btn-group">
+    <a href="#" data-bind="click: function() { if ($root.loginState.isUser()) { $root.showAddFolderDialog(); } }, css: {disabled: !$root.loginState.isUser()}">
+        <span class="m-icon addwicon"></span>
     </a>
 </div>
 

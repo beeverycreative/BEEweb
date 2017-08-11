@@ -30,12 +30,12 @@
             data-bind="copyWidth: ':parent :parent :parent :parent form', text: uploadProgressText"></span>
         </div>
     </div>
-    <div class="row-fluid folder-button">
-        <span class="createinput-button span12" data-bind="click: function() { if ($root.loginState.isUser()) { $root.showAddFolderDialog(); } }, css: {disabled: !$root.loginState.isUser()}">
-            <span class="icon-folder-close"></span>
-            <span>{{ _('Create folder...') }}</span>
-        </span>
-    </div>
+    <!--<div class="row-fluid folder-button">-->
+        <!--<span class="createinput-button span12" data-bind="click: function() { if ($root.loginState.isUser()) { $root.showAddFolderDialog(); } }, css: {disabled: !$root.loginState.isUser()}">-->
+            <!--<span class="icon-folder-close"></span>-->
+            <!--<span>{{ _('Create folder...') }}</span>-->
+        <!--</span>-->
+    <!--</div>-->
 </div>
 <div class="gcode_files" >
     <div class="entry back clickable folder" data-bind="visible: currentPath() != '', click: function() { $root.navigateUp(); }" style="display: none">
