@@ -1042,6 +1042,9 @@ class BeePrinter(Printer):
                 self._currentPrintStatistics.set_user_feedback(print_success, print_rating, observations)
                 self._save_usage_statistics()
 
+                # we must "close" the statistics for this print operation since after the user feedback there is no more info to collect
+                self._currentPrintStatistics = None
+
             return True, "feedback saved"
         except Exception as ex:
             self._logger.error('Error saving user feedback after print finished: %s' % str(ex))
@@ -1151,8 +1154,8 @@ class BeePrinter(Printer):
 
             if self._currentPrintStatistics is None:
                 self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(), self._stats.get_software_id())
-            self._currentPrintStatistics.set_print_start(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
 
+            self._currentPrintStatistics.set_print_start(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
             self._register_filament_statistics()
 
             self._save_usage_statistics()
@@ -1163,6 +1166,10 @@ class BeePrinter(Printer):
         """
         if self._currentPrintStatistics is not None:
             self._currentPrintStatistics.set_print_paused(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+            # removes redundant information
+            self._currentPrintStatistics.remove_filament_used()
+            self._currentPrintStatistics.remove_model_information()
+
             self._save_usage_statistics()
 
     def on_print_resumed(self, event, payload):
@@ -1183,8 +1190,13 @@ class BeePrinter(Printer):
 
         if self._currentPrintStatistics is not None:
             self._currentPrintStatistics.set_print_cancelled(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+            # removes redundant information
             self._currentPrintStatistics.remove_filament_used()
+            self._currentPrintStatistics.remove_model_information()
             self._save_usage_statistics()
+
+            # we can close the current print job statistics
+            self._currentPrintStatistics = None
 
 
     def on_print_cancelled_delete_file(self, event, payload):

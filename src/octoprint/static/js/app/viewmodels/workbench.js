@@ -26,7 +26,7 @@ $(function () {
         // User feedback dialog attributes
         self.printSuccess = ko.observable(false);
         self.sendingFeedback = ko.observable(false);
-        self.printObservations = ko.observable();
+        self.printObservations = ko.observable("");
         self.printClassification = ko.observable(5);
 
         self.userFeedback = $("#user_feedback_dialog");
