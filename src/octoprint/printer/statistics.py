@@ -200,6 +200,7 @@ class PrinterStatistics(BaseStatistics):
 		self._stats_file = os.path.join(settings().getBaseFolder('statistics'), stats_filename)
 		self._stats = None
 		self.load()
+		self._stats["printer_serial_number"] = printer_serial_number
 		self._dirty = False
 
 	def get_printer_serial_number(self):
