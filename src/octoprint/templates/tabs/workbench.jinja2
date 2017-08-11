@@ -211,7 +211,6 @@
 
     <div id="user_feedback_dialog" class="modal hide fade">
         <div class="modal-header">
-            <a href="#" class="close" data-dismiss="modal" >&times;</a>
             <h3>{{ _('Print finished') }}</h3>
         </div>
         <div class="modal-body">
@@ -235,7 +234,7 @@
                 <div class="control-group">
                     <label class="control-label">{{ _('How do you rate the print quality?') }}</label>
                     <div class="controls">
-                        <input id="printClassification" type="number" min="1" max="10" data-bind="value: printClassification" style="width: 10%;"/><br />
+                        <input id="printClassification" type="number" min="1" max="10" data-bind="numeric, value: printClassification" style="width: 10%;"/><br />
                         <small>{{ _('From 1 to 10, being 10 the best quality.') }}</small>
                     </div>
 

@@ -2,6 +2,30 @@ $(function () {
 	function WorkbenchViewModel(parameters) {
 		var self = this;
 
+        ko.bindingHandlers.numeric = {
+            init: function (element, valueAccessor) {
+                $(element).on("keydown", function (event) {
+                    // Allow: backspace, delete, tab, escape, and enter
+                    if (event.keyCode == 46 || event.keyCode == 8 || event.keyCode == 9 || event.keyCode == 27 || event.keyCode == 13 ||
+                        // Allow: Ctrl+A
+                        (event.keyCode == 65 && event.ctrlKey === true) ||
+                        // Allow: . ,
+                        (event.keyCode == 188 || event.keyCode == 190 || event.keyCode == 110) ||
+                        // Allow: home, end, left, right
+                        (event.keyCode >= 35 && event.keyCode <= 39)) {
+                        // let it happen, don't do anything
+                        return;
+                    }
+                    else {
+                        // Ensure that it is a number and stop the keypress
+                        if (event.shiftKey || (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)) {
+                            event.preventDefault();
+                        }
+                    }
+                });
+            }
+        };
+
 		self.files = parameters[0].listHelper;
 		self.loginState = parameters[1];
 		self.connection = parameters[2];
@@ -27,7 +51,7 @@ $(function () {
         self.printSuccess = ko.observable(false);
         self.sendingFeedback = ko.observable(false);
         self.printObservations = ko.observable("");
-        self.printClassification = ko.observable(5);
+        self.printClassification = ko.observable(5).extend({min: 1, max: 10});
 
         self.userFeedback = $("#user_feedback_dialog");
         self.userFeedback.on("shown", function() {
@@ -93,6 +117,14 @@ $(function () {
 
         self.sendUserFeedback = function () {
             self.sendingFeedback(true);
+
+            // validates print classification input
+            if (self.printClassification() > 10) {
+                self.printClassification(10);
+            }
+            if (self.printClassification() < 1) {
+                self.printClassification(1);
+            }
 
             var feedback = {
                 print_success: self.printSuccess(),
