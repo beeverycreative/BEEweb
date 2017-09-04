@@ -64,8 +64,13 @@ THREE.DragControls = function ( _objects, _camera, _domElement ) {
 
 			if ( _raycaster.ray.intersectPlane( _plane, _intersection ) ) {
 
-				_selected.position.copy( _intersection.sub( _offset ) );
+				//_selected.position.copy( _intersection.sub( _offset ) );
 
+                // Modification to make the object movement only in the x,y axis
+			    var intp = _intersection.sub( _offset );
+
+				_selected.position.setComponent(0, intp.x );
+				_selected.position.setComponent(1, intp.y );
 			}
 
 			scope.dispatchEvent( { type: 'drag', object: _selected } );
