@@ -1988,6 +1988,9 @@ label:hover:before {
         right: auto !important;
         border-left: solid 1px #000;
     }
+    .octoprint-container .accordion-heading .accordion-heading-button a {
+        padding: 8px 12px !important;
+    }
 
     .scale-x, .scale-y, .scale-z {
         display: block;
