@@ -1333,7 +1333,7 @@ $(function() {
                 }
                 if(self.processStage() == 6)
                 {
-                    self.nextStepReplaceNozzle6();
+                    self.saveNozzle();
                 }
             }
             if (self.changeFilament()) {

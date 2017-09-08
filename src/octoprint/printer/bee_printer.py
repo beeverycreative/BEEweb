@@ -46,7 +46,7 @@ class BeePrinter(Printer):
         self._bvc_status_thread = None
         self._current_temperature = 0.0
         self._lastJogTime = None
-
+        self._calibration_step_counter = 0
         self._stats = BaseStatistics()
         self._printerStats = None
         self._currentPrintStatistics = None
@@ -693,6 +693,7 @@ class BeePrinter(Printer):
         :return:
         """
         try:
+            self._calibration_step_counter = 0
             return self._comm.getCommandsInterface().startCalibration(repeat=repeat)
         except Exception as ex:
             self._logger.error(ex)
@@ -705,11 +706,12 @@ class BeePrinter(Printer):
         """
         try:
             res = self._comm.getCommandsInterface().goToNextCalibrationPoint()
-
+            self._calibration_step_counter += 1
             # registers the calibration statistics
-            self._stats.register_calibration()
-            self._printerStats.register_calibration()
-            self._save_usage_statistics()
+            if self._calibration_step_counter == 2:
+                self._stats.register_calibration()
+                self._printerStats.register_calibration()
+                self._save_usage_statistics()
 
             return res
         except Exception as ex:
