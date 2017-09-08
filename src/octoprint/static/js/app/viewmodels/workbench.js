@@ -48,7 +48,7 @@ $(function () {
         });
 
         // User feedback dialog attributes
-        self.printSuccess = ko.observable(false);
+        self.printSuccess = ko.observable(true);
         self.sendingFeedback = ko.observable(false);
         self.printObservations = ko.observable("");
         self.printClassification = ko.observable(5).extend({min: 1, max: 10});

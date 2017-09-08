@@ -1155,8 +1155,7 @@ class BeePrinter(Printer):
             self._stats.register_print() # logs software statistics
             self._printerStats.register_print() # logs printer specific statistics
 
-            if self._currentPrintStatistics is None:
-                self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(), self._stats.get_software_id())
+            self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(), self._stats.get_software_id())
 
             self._currentPrintStatistics.set_print_start(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
             self._register_filament_statistics()

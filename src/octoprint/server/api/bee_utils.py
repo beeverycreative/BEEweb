@@ -194,7 +194,7 @@ def saveUserFeedback():
 		return make_response("Expected content-type JSON", 400)
 
 	data = request.json
-	print_success = data['print_success']
+	print_success = bool(data['print_success'])
 	print_rating = data['print_rating']
 	observations = data['observations']
 

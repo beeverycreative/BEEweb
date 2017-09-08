@@ -11,7 +11,7 @@ import uuid
 from octoprint.settings import settings
 
 class BaseStatistics:
-	_base_stats = {
+	BASE_STATS = {
 		"software_id": str(uuid.uuid1()),
 		"total_prints": 0,
 		"total_cancelled_prints": 0,
@@ -50,7 +50,7 @@ class BaseStatistics:
 
 		# changed from else to handle cases where the file exists, but is empty / 0 bytes
 		if not self._stats:
-			self._stats = self._base_stats
+			self._stats = self.BASE_STATS.copy()
 
 	def save(self, force=False):
 		if not self._dirty and not force:
@@ -181,7 +181,7 @@ class BaseStatistics:
 		return True
 
 class PrinterStatistics(BaseStatistics):
-	_base_stats = {
+	BASE_STATS = {
 		"printer_serial_number": "00000",
 		"total_prints": 0,
 		"total_cancelled_prints": 0,
@@ -211,7 +211,7 @@ class PrinterStatistics(BaseStatistics):
 
 class PrintEventStatistics:
 	"""
-	_print_base_stats = {
+	PRINT_BASE_STATS = {
 		"printer_serial_number": "00000",
 		"software_id": None,
 		"timestamp": None,
@@ -231,7 +231,7 @@ class PrintEventStatistics:
 		"user_feedback": {"print_success": False, "print_rating": 0, "obs": None}
 	}
 	"""
-	_print_base_stats = {
+	PRINT_BASE_STATS = {
 		"print_id": "0",
 		"printer_serial_number": "00000",
 		"software_id": None,
@@ -247,7 +247,7 @@ class PrintEventStatistics:
 
 	def __init__(self, printer_serial_number, software_id):
 		self._logger = logging.getLogger(__name__)
-		self._stats = self._print_base_stats
+		self._stats = self.PRINT_BASE_STATS.copy()
 		self._dirty = False
 
 		self._stats["print_id"] = str(uuid.uuid4())

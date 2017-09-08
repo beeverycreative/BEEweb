@@ -221,11 +221,11 @@
                     <div class="controls">
                         <div class="row-fluid">
                             <div class="span4">
-                                <input id="printSuccessYes" name="printSuccess" type="radio" data-bind="value: printSuccess" value="1" checked/>
+                                <input id="printSuccessYes" name="printSuccessRadio" type="radio" data-bind="checked: printSuccess" value="true" checked/>
                                 <label for="printSuccessYes">{{ _('Yes') }}</label>
                             </div>
                             <div class="span4">
-                                <input id="printSuccessNo" name="printSuccess" type="radio" data-bind="value: printSuccess" value="0" />
+                                <input id="printSuccessNo" name="printSuccessRadio" type="radio" data-bind="checked: printSuccess" value="false" />
                                 <label for="printSuccessNo">{{ _('No') }}</label>
                             </div>
                         </div>
