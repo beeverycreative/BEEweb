@@ -201,7 +201,7 @@ BEEwb.main = {
                 BEEwb.main.disableSceneControls();
             });
             this.dragControls.addEventListener( 'dragend', function ( event ) {
-                BEEwb.transformOps.placeOnBed();
+                //BEEwb.transformOps.placeOnBed();
                 BEEwb.main.updateTransformControls();
                 BEEwb.main.enableSceneControls();
             });

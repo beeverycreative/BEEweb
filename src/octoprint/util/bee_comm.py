@@ -65,9 +65,15 @@ class BeeCom(MachineCom):
             # change to firmware
             if self._beeCommands.getPrinterMode() == 'Bootloader':
                 # checks for firmware updates
-                self.update_firmware()
+                firmware_available, firmware_version = self.check_firmware_update()
+                if firmware_available:
+                    self.update_firmware()
 
                 self._beeCommands.goToFirmware()
+            else:
+                firmware_available, firmware_version = self.check_firmware_update()
+                if firmware_available:
+                    eventManager().fire(Events.FIRMWARE_UPDATE_AVAILABLE, {"version": firmware_version})
 
             # restart connection
             self._beeConn.reconnect()
@@ -92,10 +98,56 @@ class BeeCom(MachineCom):
         else:
             return 'Not available'
 
+    def check_firmware_update(self):
+        """
+        Checks for an available firmware update for the printer by verifying if the value in the firmware.properties file is different
+        from the current printer firmware
+        :return: if a different version is available than the current, returns a tuple with True and the new version. If no
+        printer is detected or no update is available returns False
+        """
+        _logger = logging.getLogger()
+        # get the latest firmware file for the connected printer
+        conn_printer = self.getConnectedPrinterName()
+        if conn_printer is None:
+            return False
+
+        printer_id = conn_printer.replace(' ', '').lower()
+
+        _logger.info("Checking for firmware updates...")
+        from os.path import isfile, join
+        try:
+            firmware_path = settings().getBaseFolder('firmware')
+            firmware_properties = parsePropertiesFile(join(firmware_path, 'firmware.properties'))
+            firmware_file_name = firmware_properties['firmware.' + printer_id]
+        except KeyError as e:
+            _logger.error(
+                "Problem with printer_id %s. Firmware properties not found for this printer model." % printer_id)
+            return
+
+        if firmware_file_name is not None and isfile(join(firmware_path, firmware_file_name)):
+            fname_parts = firmware_file_name.split('-')
+
+            # gets the current firmware version, ex: BEEVC-BEETHEFIRST-10.5.23.BIN
+            curr_firmware = self.current_firmware()
+            curr_firmware_parts = curr_firmware.split('-')
+
+            if len(curr_firmware_parts) == 3 and curr_firmware is not "Not available":
+                curr_version_parts = curr_firmware_parts[2].split('.')
+                file_version_parts = fname_parts[2].split('.')
+
+                if len(curr_version_parts) >= 3 and len(file_version_parts) >= 3:
+                    for i in range(3):
+                        if int(file_version_parts[i]) != int(curr_version_parts[i]):
+                            return True, curr_firmware
+            elif curr_firmware == '0.0.0':
+                return True, curr_firmware
+
+        _logger.info("No firmware updates found")
+        return False, '0.0.0'
+
     def update_firmware(self):
         """
-        Updates the printer firmware if the value in the firmware.properties file is different
-        from the current printer firmware
+        Updates the printer firmware if a printer is connected
         :return: if no printer is connected just returns void
         """
         _logger = logging.getLogger()
@@ -122,28 +174,10 @@ class BeeCom(MachineCom):
             if firmware_file_name is not None and isfile(join(firmware_path, firmware_file_name)):
 
                 fname_parts = firmware_file_name.split('-')
-
-                # gets the current firmware version, ex: BEEVC-BEETHEFIRST-10.5.23.BIN
-                curr_firmware = self.current_firmware()
-                curr_firmware_parts = curr_firmware.split('-')
-
-                if len(curr_firmware_parts) == 3 and curr_firmware is not "Not available":
-                    curr_version_parts = curr_firmware_parts[2].split('.')
-                    file_version_parts = fname_parts[2].split('.')
-
-                    if len(curr_version_parts) >= 3 and len(file_version_parts) >=3:
-                        for i in xrange(3):
-                            if int(file_version_parts[i]) != int(curr_version_parts[i]):
-                                # version update found
-                                return self._flashFirmware(firmware_file_name, firmware_path, fname_parts[2])
-
-                elif curr_firmware == '0.0.0':
-                    # If curr_firmware is 0.0.0 it means something went wrong with a previous firmware update
-                    return self._flashFirmware(firmware_file_name, firmware_path, fname_parts[2])
+                return self._flashFirmware(firmware_file_name, firmware_path, fname_parts[2])
             else:
                 _logger.error("No firmware file matching the configuration for printer %s found" % conn_printer)
 
-            _logger.info("No firmware updates found")
 
     def sendCommand(self, cmd, cmd_type=None, processed=False, force=False, on_sent=None):
         """

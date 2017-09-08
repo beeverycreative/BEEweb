@@ -118,6 +118,7 @@ class Events(object):
 	# Printer Firmware
 	FIRMWARE_UPDATE_STARTED = "FirmwareUpdateStarted"
 	FIRMWARE_UPDATE_FINISHED = "FirmwareUpdateFinished"
+	FIRMWARE_UPDATE_AVAILABLE = "FirmwareUpdateAvailable"
 
 def eventManager():
 	global _instance

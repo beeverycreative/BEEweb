@@ -270,6 +270,15 @@ function DataUpdater(allViewModels) {
         }
     };
 
+    self._onFirmwareUpdateAvailable = function(event) {
+        new PNotify({
+            title: gettext("Firmware update available"),
+            text: gettext("Please restart your printer in order to update to the latest firmware."),
+            type: "warning",
+            hide: false
+        });
+    };
+
     OctoPrint.socket.onReconnectAttempt = self._onReconnectAttempt;
     OctoPrint.socket.onReconnectFailed = self._onReconnectFailed;
     OctoPrint.socket.onRateTooHigh = self._onDecreaseRate;
@@ -283,5 +292,6 @@ function DataUpdater(allViewModels) {
         .onMessage("timelapse", self._onTimelapse)
         .onMessage("plugin", self._onPluginMessage)
         .onMessage("flashing", self._onFlashing)
-        .onMessage("flashingFinished", self._onFlashingFinished)        ;
+        .onMessage("flashingFinished", self._onFlashingFinished)
+        .onMessage("firmwareUpdate", self._onFirmwareUpdateAvailable);
 }

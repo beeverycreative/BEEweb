@@ -72,6 +72,7 @@ class BeePrinter(Printer):
         # user when either of these operations are triggered
         eventManager().subscribe(Events.FIRMWARE_UPDATE_STARTED, self.on_flash_firmware_started)
         eventManager().subscribe(Events.FIRMWARE_UPDATE_FINISHED, self.on_flash_firmware_finished)
+        eventManager().subscribe(Events.FIRMWARE_UPDATE_AVAILABLE, self.on_firmware_update_available)
 
         # subscribes print event handlers
         eventManager().subscribe(Events.PRINT_STARTED, self.on_print_started)
@@ -1312,6 +1313,13 @@ class BeePrinter(Printer):
                 callback.sendFinishedFlashingFirmware(payload['result'])
             except:
                 self._logger.exception("Exception while notifying client of firmware update operation finished")
+
+    def on_firmware_update_available(self, event, payload):
+        for callback in self._callbacks:
+            try:
+                callback.sendFirmwareUpdateAvailable(payload['version'])
+            except:
+                self._logger.exception("Exception while notifying client of firmware update available")
 
     # # # # # # # # # # # # # # # # # # # # # # #
     ########### AUXILIARY FUNCTIONS #############
