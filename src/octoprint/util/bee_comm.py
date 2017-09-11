@@ -261,14 +261,18 @@ class BeeCom(MachineCom):
         :return:
         """
         if self._beeConn.isConnected():
-            if self._beeCommands.isPrinting():
-                self._changeState(self.STATE_PRINTING)
-            elif self._beeCommands.isShutdown():
-                self._changeState(self.STATE_SHUTDOWN)
-            elif self._beeCommands.isPaused():
-                self._changeState(self.STATE_PAUSED)
-            else:
+            if self._state != self.STATE_OPERATIONAL and self._beeCommands.isReady():
                 self._changeState(self.STATE_OPERATIONAL)
+                return
+            elif self._state != self.STATE_PAUSED and self._beeCommands.isPaused():
+                self._changeState(self.STATE_PAUSED)
+                return
+            elif self._state != self.STATE_PRINTING and self._beeCommands.isPrinting():
+                self._changeState(self.STATE_PRINTING)
+                return
+            elif self._state != self.STATE_SHUTDOWN and self._beeCommands.isShutdown():
+                self._changeState(self.STATE_SHUTDOWN)
+                return
         else:
             self._changeState(self.STATE_CLOSED)
 
@@ -534,8 +538,9 @@ class BeeCom(MachineCom):
         :return:
         """
         try:
+            res = self._beeCommands.goToLoadUnloadPos()
             self.updatePrinterState()
-            return self._beeCommands.goToLoadUnloadPos()
+            return res
         except Exception as ex:
             self._logger.error(ex)
 
