@@ -108,6 +108,18 @@ class BeePrinter(Printer):
                 self._isConnecting = False
                 return False
 
+            # If a critical error occurred while establishing the connection (e.g: libusb problems), stops the connection
+            # monitor thread
+            if self._comm.isError():
+                if self._bvc_conn_thread is not None:
+                    self._bvc_conn_thread.stop_connection_monitor()
+                    self._bvc_conn_thread = None
+                self._isConnecting = False
+                # forces setState to send the message to the UI
+                self._setState(BeeCom.STATE_ERROR)
+                return False
+
+
             bee_commands = self._comm.getCommandsInterface()
 
             # homes all axis
@@ -1108,7 +1120,6 @@ class BeePrinter(Printer):
 
             # Starts the connection monitor thread
             if self._bvc_conn_thread is None and (self._comm is None or (self._comm is not None and not self._comm.isOperational())):
-                import threading
                 self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
                 self._bvc_conn_thread.start()
 

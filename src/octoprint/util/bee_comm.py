@@ -57,7 +57,10 @@ class BeeCom(MachineCom):
         if self._beeConn is None:
             self._beeConn = BeePrinterConn(self._connDisconnectHook)
             self._changeState(self.STATE_CONNECTING)
-            self._beeConn.connectToFirstPrinter()
+            if not self._beeConn.connectToFirstPrinter():
+                self._errorValue = 'Invalid USB driver'
+                self._changeState(self.STATE_ERROR)
+                return False
 
         if self._beeConn.isConnected():
             self._beeCommands = self._beeConn.getCommandIntf()
