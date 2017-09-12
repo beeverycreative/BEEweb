@@ -22,9 +22,9 @@ class BaseStatistics:
 		"total_nozzle_changes": 0,
 		"total_extruder_maintenance": 0,
 		"total_calibration_tests": 0,
-		"workbench_move": 0,
-		"workbench_rotate": 0,
-		"workbench_scale": 0
+		# "workbench_move": 0,
+		# "workbench_rotate": 0,
+		# "workbench_scale": 0
 	}
 
 	def __init__(self):
@@ -213,6 +213,8 @@ class PrintEventStatistics:
 	"""
 	PRINT_BASE_STATS = {
 		"printer_serial_number": "00000",
+		"software_version: "1.2",
+		"firmware_version: "10.2.30",
 		"software_id": None,
 		"timestamp": None,
 		"total_print_time": None,
@@ -340,6 +342,37 @@ class PrintEventStatistics:
 				"obs": obs
 			}
 			self._dirty = True
+
+	def set_software_version(self, version):
+		if self._stats is not None:
+			self._stats["software_version"] = version
+			self._dirty = True
+
+	def set_firmware_version(self, version):
+		if self._stats is not None:
+			self._stats["firmware_version"] = version
+			self._dirty = True
+
+	def remove_software_version(self):
+		if self._stats is not None and "software_version" in self._stats:
+			del self._stats["software_version"]
+			self._dirty = True
+
+	def remove_firmware_version(self):
+		if self._stats is not None and "firmware_version" in self._stats:
+			del self._stats["firmware_version"]
+			self._dirty = True
+
+	def remove_redundant_information(self):
+		"""
+		This method is used to remove unnecessary information that is stored during the 'start' event
+		and would only be redundant in the following events for the print
+		:return:
+		"""
+		self.remove_filament_used()
+		self.remove_model_information()
+		self.remove_software_version()
+		self.remove_firmware_version()
 
 	def save(self, force=False):
 		if not self._dirty and not force:

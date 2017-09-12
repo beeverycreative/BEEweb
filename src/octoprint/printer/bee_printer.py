@@ -1172,6 +1172,10 @@ class BeePrinter(Printer):
             self._currentPrintStatistics.set_print_start(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
             self._register_filament_statistics()
 
+            self._currentPrintStatistics.set_firmware_version(self.getCurrentFirmware())
+            from octoprint import  __display_version__
+            self._currentPrintStatistics.set_software_version(__display_version__)
+
             self._save_usage_statistics()
 
     def on_print_paused(self, event, payload):
@@ -1181,8 +1185,7 @@ class BeePrinter(Printer):
         if self._currentPrintStatistics is not None:
             self._currentPrintStatistics.set_print_paused(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
             # removes redundant information
-            self._currentPrintStatistics.remove_filament_used()
-            self._currentPrintStatistics.remove_model_information()
+            self._currentPrintStatistics.remove_redundant_information()
 
             self._save_usage_statistics()
 
@@ -1205,8 +1208,7 @@ class BeePrinter(Printer):
         if self._currentPrintStatistics is not None:
             self._currentPrintStatistics.set_print_cancelled(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
             # removes redundant information
-            self._currentPrintStatistics.remove_filament_used()
-            self._currentPrintStatistics.remove_model_information()
+            self._currentPrintStatistics.remove_redundant_information()
             self._save_usage_statistics()
 
             # we can close the current print job statistics
@@ -1257,8 +1259,7 @@ class BeePrinter(Printer):
             self._currentPrintStatistics.set_total_print_time(round(self._comm.getCleanedPrintTime(), 1))
             self._currentPrintStatistics.set_print_finished(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
             # removes redundant information
-            self._currentPrintStatistics.remove_filament_used()
-            self._currentPrintStatistics.remove_model_information()
+            self._currentPrintStatistics.remove_redundant_information()
 
         # un-selects the current file
         super(BeePrinter, self).unselect_file()
