@@ -112,6 +112,7 @@ $(function() {
         };
 
         self._heatingDone = function() {
+            self._showMovingMessage();
             $.ajax({
                 url: API_BASEURL + "maintenance/heating_done",
                 type: "POST",
@@ -119,9 +120,11 @@ $(function() {
                 contentType: "application/json; charset=UTF-8",
                 success: function() {
                     self.heatingDone(true);
+                    self._hideMovingMessage();
                 },
                 error: function() {
                     self.heatingDone(false);
+                    self._hideMovingMessage();
                 }
             });
         };
@@ -287,6 +290,7 @@ $(function() {
         self.nextStep3 = function() {
             // Heating is finished, let's move on
             self._heatingDone();
+            self.saveFilament();
 
             $('#step3').removeClass('hidden');
             $('#step4').addClass('hidden');
@@ -379,7 +383,7 @@ $(function() {
                         tempProgressBar.css('width', progressStr);
                         tempProgressBar.text(progressStr);
 
-                        if (progress >= 95) {
+                        if ((TARGET_TEMPERATURE - current_temp) <= 5) { // If the temperature is within 5º of target
                             self.heatingAchiveTargetTemperature(true);
                             $('#change-filament-heating-done').removeClass('hidden');
                             $('#maintenanceNextButton').removeClass('hidden');
@@ -465,11 +469,6 @@ $(function() {
                     if (response.indexOf('ok') > -1) {
                         self.filamentSelected(true);
 
-                        if (self.heatingDone()) {
-                            self.nextStep3();
-                        } else {
-                            self.nextStep2();
-                        }
                     } else {
                         self.filamentResponseError(true);
                     }
@@ -943,7 +942,7 @@ $(function() {
                         tempProgressBar.css('width', progressStr);
                         tempProgressBar.text(progressStr);
 
-                        if (progress >= 95) {
+                        if ((TARGET_TEMPERATURE - current_temp) <= 5) { // If the temperature is within 5º of target
                             self.heatingAchiveTargetTemperature(true);
                             $('#ext-mtn-4').removeClass('hidden');
                             $('#maintenanceNextButton').removeClass('hidden');
@@ -1339,7 +1338,7 @@ $(function() {
             if (self.changeFilament()) {
                 if(self.processStage() == 1)
                 {
-                    self.saveFilament();
+                    self.nextStep2();
                 }
                 if(self.processStage() == 2)
                 {
@@ -1365,7 +1364,8 @@ $(function() {
                 }
             }
         };
-    self.nextButtonEnable = function() {
+
+        self.nextButtonEnable = function() {
             if (self.calibrating()) {
                 if(self.processStage() == 0 || self.processStage() == 1 || self.processStage() == 2 || self.processStage() == 3 )
                 {

@@ -57,7 +57,10 @@ class BeeCom(MachineCom):
         if self._beeConn is None:
             self._beeConn = BeePrinterConn(self._connDisconnectHook)
             self._changeState(self.STATE_CONNECTING)
-            self._beeConn.connectToFirstPrinter()
+            if not self._beeConn.connectToFirstPrinter():
+                self._errorValue = 'Invalid USB driver'
+                self._changeState(self.STATE_ERROR)
+                return False
 
         if self._beeConn.isConnected():
             self._beeCommands = self._beeConn.getCommandIntf()
@@ -261,14 +264,18 @@ class BeeCom(MachineCom):
         :return:
         """
         if self._beeConn.isConnected():
-            if self._beeCommands.isPrinting():
-                self._changeState(self.STATE_PRINTING)
-            elif self._beeCommands.isShutdown():
-                self._changeState(self.STATE_SHUTDOWN)
-            elif self._beeCommands.isPaused():
-                self._changeState(self.STATE_PAUSED)
-            else:
+            if self._state != self.STATE_OPERATIONAL and self._beeCommands.isReady():
                 self._changeState(self.STATE_OPERATIONAL)
+                return
+            elif self._state != self.STATE_PAUSED and self._beeCommands.isPaused():
+                self._changeState(self.STATE_PAUSED)
+                return
+            elif self._state != self.STATE_PRINTING and self._beeCommands.isPrinting():
+                self._changeState(self.STATE_PRINTING)
+                return
+            elif self._state != self.STATE_SHUTDOWN and self._beeCommands.isShutdown():
+                self._changeState(self.STATE_SHUTDOWN)
+                return
         else:
             self._changeState(self.STATE_CLOSED)
 
@@ -534,8 +541,9 @@ class BeeCom(MachineCom):
         :return:
         """
         try:
+            res = self._beeCommands.goToLoadUnloadPos()
             self.updatePrinterState()
-            return self._beeCommands.goToLoadUnloadPos()
+            return res
         except Exception as ex:
             self._logger.error(ex)
 
