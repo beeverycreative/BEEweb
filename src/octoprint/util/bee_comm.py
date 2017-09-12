@@ -55,7 +55,7 @@ class BeeCom(MachineCom):
         :return: True if the connection was successful
         """
         if self._beeConn is None:
-            self._beeConn = BeePrinterConn(self._connDisconnectHook)
+            self._beeConn = BeePrinterConn(self._connDisconnectHook, settings().getBoolean(["usb", "dummyPrinter"]))
             self._changeState(self.STATE_CONNECTING)
             if not self._beeConn.connectToFirstPrinter():
                 self._errorValue = 'Invalid USB driver'

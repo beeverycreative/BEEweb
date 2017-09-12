@@ -80,6 +80,9 @@ default_settings = {
 	"lastPrintJobFile": None,
 	"usb": {
 		"autoconnect": True,
+
+		# Flag that controls the if the driver is connected in virtual/dummy printer mode
+        "dummyPrinter": False
 	},
 	"serial": {
 		"port": None,
