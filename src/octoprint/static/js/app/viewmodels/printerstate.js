@@ -45,17 +45,19 @@ $(function() {
         self.enablePreparePrint = ko.pureComputed(function() {
             return self.loginState.isUser() && !self.connection.isConnecting()
                 && !self.connection.isErrorOrClosed() && !self.filename()
-                && !self.isPrinting() && !self.isPaused() && !self.isShutdown() && !self.isHeating() && !self.isResuming();
+                && !self.isPrinting() && !self.isPaused() && !self.isShutdown() && !self.isHeating()
+                && !self.isResuming() && !self.slicing.slicingInProgress();
         });
         self.enableEstimatePrint = ko.pureComputed(function() {
             return self.loginState.isUser() && !self.connection.isConnecting()
                 && self.connection.isErrorOrClosed() && !self.filename()
-                && !self.isPrinting() && !self.isPaused() && !self.isShutdown() && !self.isHeating() && !self.isResuming();
+                && !self.isPrinting() && !self.isPaused() && !self.isShutdown() && !self.isHeating()
+                && !self.isResuming() && !self.slicing.slicingInProgress();
         });
         self.showInsufficientFilament = ko.pureComputed(function() {
             return self.loginState.isUser && self.insufficientFilament()
             && self.isReady() && !(self.isHeating() || self.isPrinting() || self.isPaused() || self.isShutdown())
-            && !self.ignoredInsufficientFilament() && self.filename() != undefined && !self.isPaused();
+            && !self.ignoredInsufficientFilament() && self.filename() !== undefined && !self.isPaused();
         });
         self.showPrintControlAfterFilamentChange = ko.pureComputed(function() {
             return self.loginState.isUser && !self.insufficientFilament()
@@ -436,6 +438,12 @@ $(function() {
                 $("#user_feedback_dialog").modal('show');
             }
 
+            // detects if a print job as started to re-enable the main Print button through the slicing progress flag
+            if (prevPrinting === false && (self.isHeating() || self.isTransferring() || self.isPrinting())) {
+                self.slicing.slicingInProgress(false);
+            }
+
+            // if the printer is shutdown or paused state, expands the status panel
             if (self.isShutdown() || self.isPaused()) {
                 self.expandStatusPanel();
             }
@@ -599,6 +607,7 @@ $(function() {
             self._restoreShutdown();
             self.insufficientFilament(false);
             self.ignoredInsufficientFilament(false);
+            self.slicing.slicingInProgress(false);
 
             if (!self.settings.feature_printCancelConfirmation()) {
 

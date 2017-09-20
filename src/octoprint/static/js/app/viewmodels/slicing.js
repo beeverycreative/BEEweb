@@ -52,6 +52,8 @@ $(function() {
 
         self.allViewModels = undefined;
 
+        self.slicingInProgress = ko.observable(false); // this flag is used to control the visibility of the main Print... button
+
         self.slicersForFile = function(file) {
             if (file === undefined) {
                 return [];
@@ -156,7 +158,7 @@ $(function() {
             self.estimatedPrintTime(null);
             self.estimatedFilament(null);
 
-            if (force == true) {
+            if (force === true) {
                 self.estimationDialog(true);
             }
 
@@ -472,6 +474,7 @@ $(function() {
          */
         self.prepareAndSlice = function() {
             self.sliceButtonControl(false);
+            self.slicingInProgress(true);
 
             // Checks if the slicing was called on a workbench scene and finally saves it
             if (self.workbenchFile) {
@@ -504,6 +507,7 @@ $(function() {
             }
 
             self.estimationReady(false);
+            self.slicingInProgress(false);
         };
 
         self.slice = function(modelToRemoveAfterSlice) {

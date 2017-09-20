@@ -1,8 +1,9 @@
 # coding=utf-8
 import logging
 import threading
-from beedriver.connection import Conn as BeePrinterConn
 from time import sleep
+from beedriver.connection import Conn as BeePrinterConn
+from octoprint.settings import settings
 
 class ConnectionMonitorThread(threading.Thread):
 
@@ -15,7 +16,7 @@ class ConnectionMonitorThread(threading.Thread):
 		"""
 		super(ConnectionMonitorThread, self).__init__()
 		self.USB_POLL_INTERVAL = 1  # seconds
-		self._printerConnIntf = BeePrinterConn()
+		self._printerConnIntf = BeePrinterConn(dummyPlug=settings().getBoolean(["usb", "dummyPrinter"]))
 
 		self._logger = logging.getLogger()
 		self._printer_detected_msg_logged = False
