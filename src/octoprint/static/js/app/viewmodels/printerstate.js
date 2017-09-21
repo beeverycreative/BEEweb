@@ -30,6 +30,10 @@ $(function() {
 
         self.filamentChangedByUser = ko.observable(false); // Flag to detect if the user called the change filament operation,
                                                           // so we can show the print control buttons after enough filament is available
+        // Auxiliary variables to control state changes
+        var prevPaused = self.isPaused();
+        var prevPrinting = self.isPrinting();
+        var prevClosed = self.isErrorOrClosed();
 
         self.enablePrint = ko.pureComputed(function() {
             return self.insufficientFilament() && self.loginState.isUser() && self.filename() != undefined;
@@ -57,7 +61,7 @@ $(function() {
         self.showInsufficientFilament = ko.pureComputed(function() {
             return self.loginState.isUser && self.insufficientFilament()
             && self.isReady() && !(self.isHeating() || self.isPrinting() || self.isPaused() || self.isShutdown())
-            && !self.ignoredInsufficientFilament() && self.filename() !== undefined && !self.isPaused();
+            && !self.ignoredInsufficientFilament() && self.filename() !== undefined;
         });
         self.showPrintControlAfterFilamentChange = ko.pureComputed(function() {
             return self.loginState.isUser && !self.insufficientFilament()
@@ -381,6 +385,10 @@ $(function() {
         };
 
         self._fromData = function(data) {
+            prevPaused = self.isPaused();
+            prevPrinting = self.isPrinting();
+            prevClosed = self.isErrorOrClosed();
+
             self._processStateData(data.state);
             self._processJobData(data.job);
             self._processProgressData(data.progress);
@@ -391,9 +399,6 @@ $(function() {
         };
 
         self._processStateData = function(data) {
-            var prevPaused = self.isPaused();
-            var prevPrinting = self.isPrinting();
-            var prevClosed = self.isErrorOrClosed();
 
             self.stateString(gettext(data.text));
             self.isErrorOrClosed(data.flags.closedOrError);
@@ -497,15 +502,18 @@ $(function() {
 
                 self.insufficientFilament(false);
 
-                // Signals for insufficient filament only if a print operation is not ongoing
-                if (data.filament['tool0']['insufficient'] == true && !self.isPrinting() && !self.isHeating()) {
+                // detects if a print has finished to retract the panel in case it was expanded
+                if (prevPrinting === true && self.isPrinting() !== prevPrinting && !self.isPaused() && !self.isShutdown()) {
+                    self.retractStatusPanel();
+                } else if (data.filament['tool0']['insufficient'] == true && !self.isPrinting() && !self.isHeating()) {
+                    // Signals for insufficient filament only if a print operation is not ongoing
                     self.insufficientFilament(true);
                     // Expands the panel
                     self.expandStatusPanel();
                 }
 
                 // This means that the user changed the filament so we can change the flag to true (only if a print operation is not ongoing)
-                if (prevInsufficientFilamentFlag == true && self.insufficientFilament() == false && !self.isPrinting() && !self.isHeating()) {
+                if (prevInsufficientFilamentFlag === true && self.insufficientFilament() === false && !self.isPrinting() && !self.isHeating()) {
                     self.filamentChangedByUser(true);
                     self.retractStatusPanel();
                 }

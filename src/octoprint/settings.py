@@ -193,7 +193,9 @@ default_settings = {
 		"maxExtruders": 10,
 		"throttle_normalprio": 0.01,
 		"throttle_highprio": 0.0,
-		"throttle_lines": 100
+		"throttle_lines": 100,
+		"analyser": "BVC" # If this option is set for BVC it uses the custom gcode analyser from previous BEESOFT version
+						  # If it is set to another value, it uses the defaul GCodeAnalyser from octoprint
 	},
 	"feature": {
 		"temperatureGraph": True,

@@ -15,12 +15,14 @@ import os
 import threading
 import collections
 import time
+import math
 
 from octoprint.events import Events, eventManager
 from octoprint.settings import settings
 
 import octoprint.util.gcodeInterpreter as gcodeInterpreter
-
+import octoprint.util.bvc_gcoder as bvcGcoder
+from octoprint.settings import settings
 
 class QueueEntry(collections.namedtuple("QueueEntry", "name, path, type, location, absolute_path, printer_profile")):
 	"""
@@ -67,9 +69,17 @@ class AnalysisQueue(object):
 	def __init__(self):
 		self._logger = logging.getLogger(__name__)
 		self._callbacks = []
-		self._queues = dict(
-			gcode=GcodeAnalysisQueue(self._analysis_finished)
-		)
+
+		analyser = settings().get(['gcodeAnalysis', 'analyser'])
+
+		if analyser is not None and analyser == 'BVC':
+			self._queues = dict(
+				gcode=BVCGcodeAnalysisQueue(self._analysis_finished)
+			)
+		else:
+			self._queues = dict(
+				gcode=GcodeAnalysisQueue(self._analysis_finished)
+			)
 
 	def register_finish_callback(self, callback):
 		self._callbacks.append(callback)
@@ -341,3 +351,57 @@ class GcodeAnalysisQueue(AbstractAnalysisQueue):
 	def _do_abort(self, reenqueue=True):
 		if self._gcode:
 			self._gcode.abort(reenqueue=reenqueue)
+
+
+class BVCGcodeAnalysisQueue(AbstractAnalysisQueue):
+	"""
+	A queue to analyze GCODE files. Analysis results are :class:`dict` instances structured as follows:
+
+	.. list-table::
+	   :widths: 25 70
+
+	   - * **Key**
+	     * **Description**
+	   - * ``estimatedPrintTime``
+	     * Estimated time the file take to print, in minutes
+	   - * ``filament``
+	     * Substructure describing estimated filament usage. Keys are ``tool0`` for the first extruder, ``tool1`` for
+	       the second and so on. For each tool extruded length and volume (based on diameter) are provided.
+	   - * ``filament.toolX.length``
+	     * The extruded length in mm
+	   - * ``filament.toolX.volume``
+	     * The extruded volume in cm³
+	"""
+
+	def _do_analysis(self, high_priority=False):
+		try:
+			gcoder_result = bvcGcoder.analyse(self._current.absolute_path)
+
+			result = dict()
+			result["printingArea"] = None
+			result["dimensions"] = None
+			if 'estimated_duration' in gcoder_result:
+				result["estimatedPrintTime"] = gcoder_result['estimated_duration']
+			if 'filament_used' in gcoder_result:
+				result["filament"] = dict()
+				from octoprint.server import printer
+				for i in range(1):  # For now we only have one extruder...
+					# gets the current filament settings from the printer interface
+					filament_diameter, filament_density = printer.getFilamentSettings()
+
+					if filament_diameter is not None:
+						filament_cm = gcoder_result['filament_used'] / 10.0
+						filament_radius = float(int(filament_diameter) / 10000.0) / 2.0
+						filament_volume = filament_cm * (math.pi * filament_radius * filament_radius)
+
+					result["filament"]["tool%d" % i] = {
+						"length": gcoder_result['filament_used'],
+						"volume": filament_volume
+					}
+			return result
+		except Exception as ex:
+			self._logger.error(ex)
+
+	def _do_abort(self, reenqueue=True):
+		# TODO: We should implement a way to abort the analysis in the bvc_gcoder
+		pass

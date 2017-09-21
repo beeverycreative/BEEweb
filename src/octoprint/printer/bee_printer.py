@@ -587,7 +587,7 @@ class BeePrinter(Printer):
             if filament_mm >= 0:
                 filament_cm = filament_mm / 10.0
 
-                filament_diameter, filament_density = self._getFilamentSettings()
+                filament_diameter, filament_density = self.getFilamentSettings()
 
                 filament_radius = float(int(filament_diameter) / 10000.0) / 2.0
                 filament_volume = filament_cm * (math.pi * filament_radius * filament_radius)
@@ -613,7 +613,7 @@ class BeePrinter(Printer):
                 self._logger.error('Unable to set invalid filament weight: %s' % filamentInSpool)
                 return
 
-            filament_diameter, filament_density = self._getFilamentSettings()
+            filament_diameter, filament_density = self.getFilamentSettings()
 
             filament_volume = filamentInSpool / filament_density
             filament_radius = float(int(filament_diameter) / 10000.0) / 2.0
@@ -1023,6 +1023,22 @@ class BeePrinter(Printer):
         else:
             return self._comm.getConnectedPrinterSN()
 
+    def getFilamentSettings(self):
+        """
+        Gets the necessary filament settings for weight/size conversions
+        Returns tuple with (diameter,density)
+        """
+        # converts the amount of filament in grams to mm
+        if self._currentFilamentProfile:
+            # Fetches the first position filament_diameter from the filament data and converts to microns
+            filament_diameter = self._currentFilamentProfile.data['filament_diameter'][0] * 1000
+            # TODO: The filament density should also be set based on profile data
+            filament_density = 1.275  # default value
+        else:
+            filament_diameter = 1.75 * 1000  # default value in microns
+            filament_density = 1.275  # default value
+
+        return filament_diameter, filament_density
 
     def printFromMemory(self):
         """
@@ -1343,24 +1359,6 @@ class BeePrinter(Printer):
         super(BeePrinter, self)._setJobData(filename, filesize, sd)
 
         self._checkSufficientFilamentForPrint()
-
-
-    def _getFilamentSettings(self):
-        """
-        Gets the necessary filament settings for weight/size conversions
-        Returns tuple with (diameter,density)
-        """
-        # converts the amount of filament in grams to mm
-        if self._currentFilamentProfile:
-            # Fetches the first position filament_diameter from the filament data and converts to microns
-            filament_diameter = self._currentFilamentProfile.data['filament_diameter'][0] * 1000
-            # TODO: The filament density should also be set based on profile data
-            filament_density = 1.275  # default value
-        else:
-            filament_diameter = 1.75 * 1000  # default value in microns
-            filament_density = 1.275  # default value
-
-        return filament_diameter, filament_density
 
     def _printJobFilamentLength(self):
         """
