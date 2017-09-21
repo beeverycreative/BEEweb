@@ -12,6 +12,7 @@ import octoprint.plugin
 import octoprint.util
 
 from octoprint.events import eventManager, Events
+from octoprint.settings import settings
 
 from .destinations import FileDestinations
 from .analysis import QueueEntry, AnalysisQueue
@@ -259,7 +260,17 @@ class FileManager(object):
 					                         io.FileIO(tmp_path, "rb"))
 
 					printer_profile = self._printer_profile_manager.get(printer_profile_id)
+
 					self.add_file(dest_location, dest_path, file_obj, links=links, allow_overwrite=True, printer_profile=printer_profile, analysis=_analysis)
+
+					# If the BVC analyser was defined, overrides the Cura time estimation
+					analyser = settings().get(['gcodeAnalysis', 'analyser'])
+					if analyser is not None and analyser == 'BVC':
+						import octoprint.util.bvc_gcoder as bvcGcoder
+						gcoder_result = bvcGcoder.analyse(self.path_on_disk(dest_location, dest_path))
+						if 'estimated_duration' in gcoder_result:
+							_analysis["estimatedPrintTime"] = gcoder_result['estimated_duration']
+							self._add_analysis_result(dest_location, dest_path, _analysis)
 
 					end_time = time.time()
 					eventManager().fire(Events.SLICING_DONE, {"stl": source_path, "gcode": dest_path, "time": end_time - start_time})

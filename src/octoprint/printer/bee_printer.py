@@ -1193,9 +1193,6 @@ class BeePrinter(Printer):
         self._checkSufficientFilamentForPrint()
 
 
-
-
-
     def _checkSufficientFilamentForPrint(self):
         """
         Checks if the current print job has enough filament to complete. By updating the
