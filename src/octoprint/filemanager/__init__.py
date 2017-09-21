@@ -265,12 +265,15 @@ class FileManager(object):
 
 					# If the BVC analyser was defined, overrides the Cura time estimation
 					analyser = settings().get(['gcodeAnalysis', 'analyser'])
-					if analyser is not None and analyser == 'BVC':
-						import octoprint.util.bvc_gcoder as bvcGcoder
-						gcoder_result = bvcGcoder.analyse(self.path_on_disk(dest_location, dest_path))
-						if 'estimated_duration' in gcoder_result:
-							_analysis["estimatedPrintTime"] = gcoder_result['estimated_duration']
-							self._add_analysis_result(dest_location, dest_path, _analysis)
+					try:
+						if analyser is not None and analyser == 'BVC':
+							import octoprint.util.bvc_gcoder as bvcGcoder
+							gcoder_result = bvcGcoder.analyse(self.path_on_disk(dest_location, dest_path))
+							if 'estimated_duration' in gcoder_result:
+								_analysis["estimatedPrintTime"] = gcoder_result['estimated_duration']
+								self._add_analysis_result(dest_location, dest_path, _analysis)
+					except Exception as ex:
+						self._logger.error(ex)
 
 					end_time = time.time()
 					eventManager().fire(Events.SLICING_DONE, {"stl": source_path, "gcode": dest_path, "time": end_time - start_time})
