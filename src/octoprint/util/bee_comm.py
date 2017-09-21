@@ -744,12 +744,6 @@ class BeeCom(MachineCom):
         self._callback.on_comm_print_job_done()
         self._changeState(self.STATE_OPERATIONAL)
 
-        eventManager().fire(Events.PRINT_DONE, {
-            "file": self._currentFile.getFilename(),
-            "filename": os.path.basename(self._currentFile.getFilename()),
-            "origin": self._currentFile.getFileLocation(),
-            "time": self.getPrintTime()
-        })
         if self._sd_status_timer is not None:
             try:
                 self._sd_status_timer.cancel()

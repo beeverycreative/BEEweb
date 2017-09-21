@@ -1,5 +1,5 @@
 # coding=utf-8
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 __author__ = "Gina Häußge <osd@foosel.net>"
 __license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
@@ -48,10 +48,9 @@ def _git(args, cwd, hide_stderr=False):
 
 
 def get_latest(target, check):
-	if not "checkout_folder" in check:
-		raise ConfigurationInvalid("Update configuration for %s needs checkout_folder" % target)
-
-	checkout_folder = check["checkout_folder"]
+	checkout_folder = check.get("checkout_folder")
+	if checkout_folder is None:
+		raise ConfigurationInvalid("Update configuration for {} of type git_commit needs checkout_folder set and not None".format(target))
 
 	returncode, _ = _git(["fetch"], checkout_folder)
 	if returncode != 0:

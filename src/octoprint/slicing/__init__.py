@@ -12,7 +12,7 @@ In this module the slicing support of OctoPrint is encapsulated.
    :members:
 """
 
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 __author__ = "Gina Häußge <osd@foosel.net>"
 __license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
@@ -20,6 +20,13 @@ __copyright__ = "Copyright (C) 2014 The OctoPrint Project - Released under terms
 
 
 import os
+import time
+
+try:
+	from os import scandir
+except ImportError:
+	from scandir import scandir
+
 import octoprint.plugin
 import octoprint.events
 import octoprint.util
@@ -40,15 +47,17 @@ class SlicingProfile(object):
 	    data (object): Profile data, actual structure depends on individual slicer implementation.
 	    display_name (str): Displayable name for this slicing profile.
 	    description (str): Description of this slicing profile.
+	    default (bool): Whether this is the default slicing profile for the slicer.
 	"""
 
-	def __init__(self, slicer, name, data, display_name=None, description=None, brand=None):
+	def __init__(self, slicer, name, data, display_name=None, description=None, default=False, brand=None):
 		self.slicer = slicer
 		self.name = name
 		self.data = data
 		self.display_name = display_name
 		self.description = description
 		self.brand = brand
+		self.default = default
 
 
 class TemporaryProfile(object):
@@ -497,6 +506,50 @@ class SlicingManager(object):
 		else:
 			octoprint.events.eventManager().fire(octoprint.events.Events.SLICING_PROFILE_DELETED, dict(slicer=slicer, profile=name))
 
+	def set_default_profile(self, slicer, name, require_configured=False,
+	                        require_exists=True):
+		"""
+		Sets the given profile as default profile for the slicer.
+
+		Arguments:
+		    slicer (str): Identifier of the slicer for which to set the default
+		        profile.
+		    name (str): Identifier of the profile to set as default.
+		    require_configured (bool): Whether the slicer needs to be configured
+		        for the action to succeed. Defaults to false. Will raise a
+		        SlicerNotConfigured error if true and the slicer has not been
+		        configured yet.
+		    require_exists (bool): Whether the profile is required to exist in
+		        order to be set as default. Defaults to true. Will raise a
+		        UnknownProfile error if true and the profile is unknown.
+
+		Raises:
+		    ~octoprint.slicing.exceptions.UnknownSlicer: The slicer ``slicer``
+		        is unknown
+		    ~octoprint.slicing.exceptions.SlicerNotConfigured: The slicer ``slicer``
+		        has not yet been configured and ``require_configured`` was true.
+		    ~octoprint.slicing.exceptions.UnknownProfile: The profile ``name``
+		        was unknown for slicer ``slicer`` and ``require_exists`` was
+		        true.
+		"""
+		if not slicer in self.registered_slicers:
+			raise UnknownSlicer(slicer)
+		if require_configured and not slicer in self.configured_slicers:
+			raise SlicerNotConfigured(slicer)
+
+		if not name:
+			raise ValueError("name must be set")
+
+		if require_exists and not name in self.all_profiles_list(slicer, require_configured=require_configured):
+			raise UnknownProfile(slicer, name)
+
+		default_profiles = settings().get(["slicing", "defaultProfiles"])
+		if not default_profiles:
+			default_profiles = dict()
+		default_profiles[slicer] = name
+		settings().set(["slicing", "defaultProfiles"], default_profiles)
+		settings().save(force=True)
+
 	def duplicate_profile(self, slicer, name):
 		if not slicer in self.registered_slicers:
 			raise UnknownSlicer(slicer)
@@ -545,7 +598,7 @@ class SlicingManager(object):
 		        or not (False, default). If False and the slicer is not yet configured, a :class:`~octoprint.slicing.exceptions.SlicerNotConfigured`
 		        exception will be raised.
 		Returns:
-		    list of SlicingProfile: A list of all :class:`SlicingProfile` instances available for the slicer ``slicer``.
+		    dict of SlicingProfile: A dict of all :class:`SlicingProfile` instances available for the slicer ``slicer``, mapped by the identifier.
 
 		Raises:
 		    ~octoprint.slicing.exceptions.UnknownSlicer: The slicer ``slicer`` is unknown.
@@ -559,15 +612,17 @@ class SlicingManager(object):
 
 		profiles = dict()
 		slicer_profile_path = self.get_slicer_profile_path(slicer)
-		for entry in os.listdir(slicer_profile_path):
-			if not entry.endswith(".profile") or octoprint.util.is_hidden_path(entry):
+		self._logger.info("Retriving all profiles....")
+		start_time = time.time()
+		for entry in scandir(slicer_profile_path):
+			if not entry.name.endswith(".profile") or octoprint.util.is_hidden_path(entry.name):
 				# we are only interested in profiles and no hidden files
 				continue
 
-			path = os.path.join(slicer_profile_path, entry)
-			profile_name = entry[:-len(".profile")]
-
-			profiles[profile_name] = self._load_profile_from_path(slicer, path, require_configured=require_configured)
+			profile_name = entry.name[:-len(".profile")]
+			profiles[profile_name] = self._load_profile_from_path(slicer, entry.path, require_configured=require_configured)
+		elapsed_time = time.time() - start_time
+		self._logger.info("Retriving Profiles take "+ str(elapsed_time) +" s")
 		return profiles
 
 	def all_profiles_list(self, slicer, require_configured=False, from_current_printer=True):
@@ -680,6 +735,25 @@ class SlicingManager(object):
 					profiles[profile_name] = temp_profile
 		return profiles
 
+	def profiles_last_modified(self, slicer):
+		"""
+		Retrieves the last modification date of ``slicer``'s profiles.
+
+		Args:
+		    slicer (str): the slicer for which to retrieve the last modification date
+
+		Returns:
+		    (float) the time stamp of the last modification of the slicer's profiles
+		"""
+
+		if not slicer in self.registered_slicers:
+			raise UnknownSlicer(slicer)
+
+		slicer_profile_path = self.get_slicer_profile_path(slicer)
+		lms = [os.stat(slicer_profile_path).st_mtime]
+		lms += [os.stat(entry.path).st_mtime for entry in scandir(slicer_profile_path) if entry.name.endswith(".profile")]
+		return max(lms)
+
 	def get_slicer_profile_path(self, slicer):
 		"""
 		Retrieves the path where the profiles for slicer ``slicer`` are stored.
@@ -774,7 +848,11 @@ class SlicingManager(object):
 			return name
 
 	def _load_profile_from_path(self, slicer, path, require_configured=False):
-		return self.get_slicer(slicer, require_configured=require_configured).get_slicer_profile(path)
+		profile = self.get_slicer(slicer, require_configured=require_configured).get_slicer_profile(path)
+		default_profiles = settings().get(["slicing", "defaultProfiles"])
+		if default_profiles and slicer in default_profiles:
+			profile.default = default_profiles[slicer] == profile.name
+		return profile
 
 	def _save_profile_to_path(self, slicer, path, profile, allow_overwrite=True, overrides=None, require_configured=False):
 		self.get_slicer(slicer, require_configured=require_configured).save_slicer_profile(path, profile, allow_overwrite=allow_overwrite, overrides=overrides)

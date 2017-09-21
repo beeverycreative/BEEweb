@@ -187,7 +187,7 @@
 
     <div id="save_scene_dialog" class="modal hide fade">
         <div class="modal-header">
-            <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+            <a href="#" class="close" data-dismiss="modal">&times;</a>
             <h3>{{ _('Save to STL') }}</h3>
         </div>
         <div class="modal-body">
@@ -205,6 +205,52 @@
             <a href="#" class="btn" data-dismiss="modal">{{ _('Cancel') }}</a>
             <a href="#" class="btn btn-primary" data-bind="click: function() { if ($root.enableSaveScene()) { $root.saveScene() } }, enabled: $root.enableSaveScene(), css: {disabled: $root.savingScene()}">
                 <i class="icon-spinner icon-spin" data-bind="visible: savingScene"></i> {{ _('Save') }}
+            </a>
+        </div>
+    </div>
+
+    <div id="user_feedback_dialog" class="modal hide fade">
+        <div class="modal-header">
+            <h3>{{ _('Print finished') }}</h3>
+        </div>
+        <div class="modal-body">
+            <p>{{ _('Please give us your feedback about the print...') }}</p>
+            <form class="form-horizontal" action="javascript:void(0)">
+                <div class="control-group">
+                    <label class="control-label">{{ _('Was the print successful?') }}</label>
+                    <div class="controls">
+                        <div class="row-fluid">
+                            <div class="span4">
+                                <input id="printSuccessYes" name="printSuccessRadio" type="radio" data-bind="checked: printSuccess" value="true" checked/>
+                                <label for="printSuccessYes">{{ _('Yes') }}</label>
+                            </div>
+                            <div class="span4">
+                                <input id="printSuccessNo" name="printSuccessRadio" type="radio" data-bind="checked: printSuccess" value="false" />
+                                <label for="printSuccessNo">{{ _('No') }}</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{{ _('How do you rate the print quality?') }}</label>
+                    <div class="controls">
+                        <input id="printClassification" type="number" min="1" max="10" data-bind="numeric, value: printClassification" style="width: 10%;"/><br />
+                        <small>{{ _('From 1 to 10, being 10 the best quality.') }}</small>
+                    </div>
+
+                </div>
+                <div class="control-group">
+                    <label class="control-label">{{ _('Observations') }}</label>
+                    <div class="controls">
+                        <textarea id="observations" rows="4" data-bind="value: printObservations" style="width: 100%;"></textarea>
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn" data-bind="click: closeUserFeedbackDialog">{{ _('Cancel') }}</a>
+            <a href="#" class="btn btn-primary" data-bind="click: sendUserFeedback, enabled: $root.enableSaveScene(), css: {disabled: $root.sendingFeedback()}">
+                <i class="icon-spinner icon-spin" data-bind="visible: sendingFeedback"></i> {{ _('Send') }}
             </a>
         </div>
     </div>

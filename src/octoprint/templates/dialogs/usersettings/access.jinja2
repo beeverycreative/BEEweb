@@ -1,6 +1,6 @@
 <form class="form-horizontal">
     <fieldset>
-        <h4>{{ _('Password') }}</h4>
+        <legend>{{ _('Password') }}</legend>
         <p>
             {{ _('If you do not wish to change your password, just leave the following fields empty.') }}
         </p>
@@ -19,19 +19,19 @@
         </div>
     </fieldset>
     <fieldset>
-        <h4>{{ _('API Key') }}</h4>
+        <legend>{{ _('API Key') }}</legend>
         <div class="control-group">
             <label class="control-label" for="userSettings-access_apikey">{{ _('Current API Key') }}</label>
             <div class="controls">
                 <div class="input-append">
-                    <input type="text" class="input-block-level uneditable-input" id="userSettings-access_apikey" data-bind="value: access_apikey, valueUpdate: 'input', attr: {placeholder: '{{ _('N/A') }}'}">
+                    <input type="text" class="input-block-level uneditable-input" disabled="disabled" id="userSettings-access_apikey" data-bind="value: access_apikey, attr: {placeholder: '{{ _('N/A') }}'}">
                     <a class="btn" title="Generate new Apikey" data-bind="click: generateApikey"><span class="m-icon refreshicon"></span></a>
                     <a class="btn btn-danger" title="Delete Apikey" data-bind="click: deleteApikey"><span class="m-icon trashicon"></span></a>
                 </div>
-
+                <span class="help-block">{{ _('Please note that changes to the API key are applied immediately, without having to "Confirm" first.') }}</span>
             </div>
         </div>
-        <div class="control-group">
+        <div class="control-group" data-bind="visible: access_apikey">
             <label class="control-label">{{ _('QR Code') }}</label>
             <div class="controls">
                 <div data-bind="qrcode: {text: access_apikey, size: 150}"></div>

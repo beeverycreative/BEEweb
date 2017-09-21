@@ -1,5 +1,5 @@
 # coding=utf-8
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 __author__ = "Gina Häußge <osd@foosel.net>"
 __license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
@@ -14,10 +14,11 @@ import yaml
 import uuid
 
 import logging
+from builtins import range, bytes
 
 from octoprint.settings import settings
 
-from octoprint.util import atomic_write
+from octoprint.util import atomic_write, to_str
 
 class UserManager(object):
 	valid_roles = ["user", "admin"]
@@ -25,7 +26,7 @@ class UserManager(object):
 	def __init__(self):
 		self._logger = logging.getLogger(__name__)
 		self._session_users_by_session = dict()
-		self._session_users_by_userid = dict()
+		self._sessionids_by_userid = dict()
 		self._enabled = True
 
 	@property
@@ -60,9 +61,10 @@ class UserManager(object):
 		self._session_users_by_session[user.get_session()] = user
 
 		userid = user.get_id()
-		if not userid in self._session_users_by_userid:
-			self._session_users_by_userid[userid] = []
-		self._session_users_by_userid[userid].append(user)
+		if not userid in self._sessionids_by_userid:
+			self._sessionids_by_userid[userid] = set()
+
+		self._sessionids_by_userid[userid].add(user.get_session())
 
 		self._logger.debug("Logged in user: %r" % user)
 
@@ -79,15 +81,16 @@ class UserManager(object):
 			return
 
 		userid = user.get_id()
-		if userid in self._session_users_by_userid:
-			users_by_userid = self._session_users_by_userid[userid]
-			for u in users_by_userid:
-				if u.get_session() == user.get_session():
-					users_by_userid.remove(u)
-					break
+		sessionid = user.get_session()
 
-		if user.get_session() in self._session_users_by_session:
-			del self._session_users_by_session[user.get_session()]
+		if userid in self._sessionids_by_userid:
+			try:
+				self._sessionids_by_userid[userid].remove(sessionid)
+			except KeyError:
+				pass
+
+		if sessionid in self._session_users_by_session:
+			del self._session_users_by_session[sessionid]
 
 		self._logger.debug("Logged out user: %r" % user)
 
@@ -107,11 +110,11 @@ class UserManager(object):
 				import string
 				from random import choice
 				chars = string.ascii_lowercase + string.ascii_uppercase + string.digits
-				salt = "".join(choice(chars) for _ in xrange(32))
+				salt = "".join(choice(chars) for _ in range(32))
 				settings().set(["accessControl", "salt"], salt)
 				settings().save()
 
-		return hashlib.sha512(password + salt).hexdigest()
+		return hashlib.sha512(to_str(password, encoding="utf-8", errors="replace") + to_str(salt)).hexdigest()
 
 	def checkPassword(self, username, password):
 		user = self.findUser(username)
@@ -133,7 +136,7 @@ class UserManager(object):
 				# old hash doesn't match either, wrong password
 				return False
 
-	def addUser(self, username, password, active, roles):
+	def addUser(self, username, password, active, roles, overwrite=False):
 		pass
 
 	def changeUserActivation(self, username, active):
@@ -164,13 +167,12 @@ class UserManager(object):
 		pass
 
 	def removeUser(self, username):
-		if username in self._session_users_by_userid:
-			users = self._session_users_by_userid[username]
-			sessions = [user.get_session() for user in users if isinstance(user, SessionUser)]
+		if username in self._sessionids_by_userid:
+			sessions = self._sessionids_by_userid[username]
 			for session in sessions:
 				if session in self._session_users_by_session:
 					del self._session_users_by_session[session]
-			del self._session_users_by_userid[username]
+			del self._sessionids_by_userid[username]
 
 	def findUser(self, userid=None, session=None):
 		if session is not None and session in self._session_users_by_session:
@@ -224,6 +226,9 @@ class FilebasedUserManager(UserManager):
 							and settings["interface"]["dev_mode"] == True:
 							self._devMode = True
 					self._users[name] = User(name, attributes["password"], attributes["active"], attributes["roles"], apikey=apikey, settings=settings)
+					for sessionid in self._sessionids_by_userid.get(name, set()):
+						if sessionid in self._session_users_by_session:
+							self._session_users_by_session[sessionid].update_user(self._users[name])
 		else:
 			self._customized = False
 			self._devMode = False
@@ -252,11 +257,11 @@ class FilebasedUserManager(UserManager):
 			self._dirty = False
 		self._load()
 
-	def addUser(self, username, password, active=False, roles=None, apikey=None):
+	def addUser(self, username, password, active=False, roles=None, apikey=None, overwrite=False):
 		if not roles:
 			roles = ["user"]
 
-		if username in self._users.keys():
+		if username in self._users.keys() and not overwrite:
 			raise UserAlreadyExists(username)
 
 		self._users[username] = User(username, UserManager.createPasswordHash(password), active, roles, apikey=apikey)
@@ -322,9 +327,8 @@ class FilebasedUserManager(UserManager):
 			raise UnknownUser(username)
 
 		user = self._users[username]
-		current = user.get_setting(key)
-		if not current or current != value:
-			old_value = user.get_setting(key)
+		old_value = user.get_setting(key)
+		if not old_value or old_value != value:
 			user.set_setting(key, value)
 			self._dirty = self._dirty or old_value != value
 			self._save()
@@ -359,7 +363,7 @@ class FilebasedUserManager(UserManager):
 			raise UnknownUser(username)
 
 		user = self._users[username]
-		user._apikey = ''.join('%02X' % ord(z) for z in uuid.uuid4().bytes)
+		user._apikey = ''.join('%02X' % z for z in bytes(uuid.uuid4().bytes))
 		self._dirty = True
 		self._save()
 		return user._apikey
@@ -436,7 +440,7 @@ class User(UserMixin):
 		self._roles = roles
 		self._apikey = apikey
 
-		if not settings:
+		if settings is None:
 			settings = dict()
 		self._settings = settings
 
@@ -479,17 +483,21 @@ class User(UserMixin):
 
 		return self._get_setting(path)
 
+	@property
+	def roles(self):
+		return list(self._roles)
+
 	def set_setting(self, key, value):
 		if not isinstance(key, (tuple, list)):
 			path = [key]
 		else:
 			path = key
-		self._set_setting(path, value)
+		return self._set_setting(path, value)
 
 	def _get_setting(self, path):
 		s = self._settings
 		for p in path:
-			if p in s:
+			if isinstance(s, dict) and p in s:
 				s = s[p]
 			else:
 				return None
@@ -502,7 +510,7 @@ class User(UserMixin):
 				s[p] = dict()
 
 			if not isinstance(s[p], dict):
-				return False
+				s[p] = dict()
 
 			s = s[p]
 
@@ -515,17 +523,32 @@ class User(UserMixin):
 
 class SessionUser(User):
 	def __init__(self, user):
-		User.__init__(self, user._username, user._passwordHash, user._active, user._roles, user._apikey, user._settings)
+		self._user = user
 
 		import string
 		import random
 		import time
 		chars = string.ascii_uppercase + string.ascii_lowercase + string.digits
-		self._session = "".join(random.choice(chars) for _ in xrange(10))
+		self._session = "".join(random.choice(chars) for _ in range(10))
 		self._created = time.time()
+
+	def __getattribute__(self, item):
+		if item in ("get_session", "update_user", "_user", "_session", "_created"):
+			return object.__getattribute__(self, item)
+		else:
+			return getattr(object.__getattribute__(self, "_user"), item)
+
+	def __setattr__(self, item, value):
+		if item in ("_user", "_session", "_created"):
+			return object.__setattr__(self, item, value)
+		else:
+			return setattr(self._user, item, value)
 
 	def get_session(self):
 		return self._session
+
+	def update_user(self, user):
+		self._user = user
 
 	def __repr__(self):
 		return "SessionUser(id=%s,name=%s,active=%r,user=%r,admin=%r,session=%s,created=%s)" % (self.get_id(), self.get_name(), self.is_active(), self.is_user(), self.is_admin(), self._session, self._created)

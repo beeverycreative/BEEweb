@@ -47,7 +47,7 @@ table {
     border-radius: 0px;
 }
 .alert p {
-    color: #fff !important;
+    color: #000 !important;
 }
 
 .radio input[type="radio"],
@@ -451,9 +451,11 @@ a.brand{
 .filterwicon { background: url('../img/icons/filter_white.svg'); }
 .refreshwicon { background: url('../img/icons/refresh_white.svg'); }
 .cubewicon { background: url('../img/icons/cube_white.svg'); }
+.openfoldericon { background: url('../img/icons/open_folder.svg'); }
 .dropdownwicon { background: url('../img/icons/dropdown_white.svg'); }
 .estimatewicon { background: url('../img/icons/medium_white.svg'); }
 .downloadwicon { background: url('../img/icons/download_white.svg'); }
+.addwicon { background: url('../img/icons/add_white.svg'); }
 /* green */
 .checkgreenicon  { background: url('../img/icons/ok_green.svg'); }
 /* dynamic icons - change with media queries */
@@ -469,6 +471,7 @@ a.brand{
 .btn-prepareprint .m-icon,
 .btn-print-from-memory .m-icon,
 .fileinput-button .m-icon { float: left; margin: 0px -10px 0 10px;}
+.createinput-button .m-icon { float: left; margin: 0px -10px 0 10px;}
 .btn-print .m-icon {float: left; }
 .modal-header h3 span.m-icon {
     margin-right: 15px;
@@ -1022,6 +1025,17 @@ input + span.add-on{
     z-index: 8;
 }
 
+#files .gcode_files .entry.folder:before {
+    content: url('../img/icons/open_folder.svg');
+    position: absolute;
+    top: -4px;
+    right: 40px;
+    padding: 0 7px;
+    width: 12px;
+    z-index: 8;
+    background-color: #000;
+}
+
 #files .gcode_files .entry:before {
     content: url('../img/icons/gcode_white.svg');
     position: absolute;
@@ -1031,6 +1045,20 @@ input + span.add-on{
     width: 12px;
     z-index: 8;
 }
+
+/*----------------FOLDER---------------*/
+#files .gcode_files .entry.folder{
+	border: solid 2px #000 !important;
+}
+#files .gcode_files .entry.folder:after{
+    content: '';
+    background: #000 !important;
+    top: -5px;
+    right: -2px;
+    padding: 0 10px;
+
+}
+
 /*----------------STL---------------*/
 #files .gcode_files .entry.stl{
 	border: solid 2px #000 !important;
@@ -1116,6 +1144,18 @@ input + span.add-on{
 }
 .fileinput-button:hover{
     background: #aeab9d;
+}
+.createinput-button{
+    font: 200 15px "din-light", sans-serif;
+    text-align: center;
+    color: #fff;
+    text-shadow: none;
+    padding: 9px;
+    margin: 0 !important;
+    transition: all 0.2s ease;
+}
+.createinput-button:hover{
+    background: #0d0d0d;
 }
 .progress{
     height: 22px !important;
@@ -1246,6 +1286,7 @@ input + span.add-on{
     width: 800px;
     margin-left: -487px;
 }
+#wizard_dialog .modal-body .full-sized-box { padding: 0px !important; }
 
 /*---------------------SPECIFIC MODAL STRUCTURES ---------------------*/
 #settings_dialog .modal-body .full-sized-box,
@@ -1547,12 +1588,14 @@ td.settings_users_actions .m-icon {
 #slice_button,
 #settings_dialog .modal-footer .btn-primary,
 #settings_printerProfiles_editDialog .modal-footer .btn-primary,
+#wizard_dialog .modal-footer .btn-primary,
 #usersettings_dialog .modal-footer .btn-primary,
 #settings-usersDialogAddUser .modal-footer .btn-primary,
 #settings-usersDialogEditUser .modal-footer .btn-primary,
 #settings-usersDialogChangePassword .modal-footer .btn-primary,
 #settings_plugin_softwareupdate_configurationdialog .modal-footer .btn-primary,
-#save_scene_dialog .modal-footer .btn-primary{
+#save_scene_dialog .modal-footer .btn-primary,
+#user_feedback_dialog .modal-footer .btn-primary {
     padding: 20px 0;
     width: 175px;
     text-transform: uppercase;
@@ -1569,16 +1612,22 @@ td.settings_users_actions .m-icon {
     background: #fc0;
     display: inline-block;
 }
+#add_folder_dialog .modal-footer .btn-primary {
+    padding: 20px 0;
+    width: 150px;
+    text-transform: uppercase;
+    color: #fff;
+    background: #518359;
+    display: inline-block;
+}
 #maintenance_dialog .modal-footer .btn-primary {
     padding: 20px 0;
     text-transform: uppercase;
     color: #fff;
     background: #518359;
 }
-#maintenanceCloseButton,
-#login_dialog .modal-footer .btn,
-#cancelMaintenance,
-#aboutbee_dialog .modal-footer .btn {
+#maintenanceCloseButton, #maintenance_dialog .modal-footer .btn,
+#wizard_dialog .modal-footer .button-previous,#login_dialog .modal-footer .btn, #cancelMaintenance, #aboutbee_dialog .modal-footer .btn{
     padding: 20px;
     background: transparent;
     color: #898989;
@@ -1588,7 +1637,8 @@ td.settings_users_actions .m-icon {
     text-shadow: none;
 }
 
-#maintenanceNextButton {
+#maintenanceNextButton,
+#wizard_dialog .modal-footer .button-next {
     padding: 20px;
     background: #ffcc00;
     color: #000;
@@ -1937,6 +1987,9 @@ label:hover:before {
         top: auto !important;
         right: auto !important;
         border-left: solid 1px #000;
+    }
+    .octoprint-container .accordion-heading .accordion-heading-button a {
+        padding: 8px 12px !important;
     }
 
     .scale-x, .scale-y, .scale-z {

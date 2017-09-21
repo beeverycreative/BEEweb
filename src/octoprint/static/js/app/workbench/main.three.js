@@ -37,7 +37,7 @@ BEEwb.main = {
         var that = this;
         // Loads the printer profile
         $.ajax({
-            url: BEE_CUSTOM_API_BASEURL + "printer",
+            url: BEE_API_BASEURL + "printer",
             type: 'GET',
             success: function(data) {
                 that.bedDepth = data.profile.volume.depth;
@@ -269,6 +269,8 @@ BEEwb.main = {
 
             var mesh = new THREE.Mesh( geometry, material );
             //mesh.castShadow = true;
+            // Sets the name of the object to the same as the model file
+            mesh.name = modelName;
 
             // Calculates any possible translation in the X axis due to the previously loaded model
             var xShift = BEEwb.helpers.calculateObjectShift( geometry );
@@ -569,5 +571,20 @@ BEEwb.main = {
     deactivateWorkbenchKeys: function () {
         window.removeEventListener('keydown', BEEwb.events.onKeyDown);
         window.removeEventListener('keyup', BEEwb.events.onKeyUp);
+    },
+
+    getSceneModelsInformation: function () {
+        var models_info = [];
+        for (var i=0; i < this.objects.children.length; i++) {
+            var obj = this.objects.children[i];
+            if (obj !== null) {
+                // Calculates model dimensions
+                var bbox = new THREE.Box3().setFromObject( obj );
+                var size = bbox.getSize();
+                models_info.push({"name": obj.name, "dimensions": size});
+            }
+        }
+
+        return models_info;
     }
 };

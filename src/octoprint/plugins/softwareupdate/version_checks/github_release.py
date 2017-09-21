@@ -1,5 +1,5 @@
 # coding=utf-8
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 __author__ = "Gina Häußge <osd@foosel.net>"
 __license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
@@ -7,8 +7,6 @@ __copyright__ = "Copyright (C) 2014 The OctoPrint Project - Released under terms
 
 import requests
 import logging
-
-from ..exceptions import ConfigurationInvalid
 
 RELEASE_URL = "https://api.github.com/repos/{user}/{repo}/releases"
 
@@ -28,6 +26,7 @@ def _filter_out_latest(releases,
 	    >>> release_1_2_16rc2 = dict(name="1.2.16rc2", tag_name="1.2.16rc2", html_url="some_url", published_at="2016-08-30T12:00:00Z", prerelease=True, draft=False, target_commitish="rc/maintenance")
 	    >>> release_1_2_17rc1 = dict(name="1.2.17rc1", tag_name="1.2.17rc1", html_url="some_url", published_at="2016-08-31T12:00:00Z", prerelease=True, draft=True, target_commitish="rc/maintenance")
 	    >>> release_1_3_0rc1 = dict(name="1.3.0rc1", tag_name="1.3.0rc1", html_url="some_url", published_at="2016-12-12T12:00:00Z", prerelease=True, draft=False, target_commitish="rc/devel")
+	    >>> release_1_2_18 = dict(name="1.2.18", tag_name="1.2.18", html_url="some_url", published_at="2016-12-13T12:00:00Z", prerelease=False, draft=False, target_commitish="master")
 	    >>> release_1_4_0rc1 = dict(name="1.4.0rc1", tag_name="1.4.0rc1", html_url="some_url", published_at="2017-12-12T12:00:00Z", prerelease=True, draft=False, target_commitish="rc/future")
 	    >>> releases = [release_1_2_15, release_1_2_16rc1, release_1_2_16rc2, release_1_2_17rc1, release_1_3_0rc1, release_1_4_0rc1]
 	    >>> _filter_out_latest(releases, include_prerelease=False, prerelease_channel=None)
@@ -44,6 +43,14 @@ def _filter_out_latest(releases,
 	    (None, None, None)
 	    >>> _filter_out_latest([release_1_2_16rc1, release_1_2_16rc2])
 	    (None, None, None)
+	    >>> comparable_factory = _get_comparable_factory("python", force_base=True)
+	    >>> sort_key = lambda release: comparable_factory(_get_sanitized_version(release["tag_name"]))
+	    >>> _filter_out_latest(releases + [release_1_2_18], include_prerelease=False, prerelease_channel=None, sort_key=sort_key)
+	    ('1.2.18', '1.2.18', 'some_url')
+	    >>> _filter_out_latest(releases + [release_1_2_18], include_prerelease=True, prerelease_channel="rc/maintenance", sort_key=sort_key)
+	    ('1.2.18', '1.2.18', 'some_url')
+	    >>> _filter_out_latest(releases + [release_1_2_18], include_prerelease=True, prerelease_channel="rc/devel", sort_key=sort_key)
+	    ('1.3.0rc1', '1.3.0rc1', 'some_url')
 	"""
 
 	nothing = None, None, None
@@ -78,7 +85,7 @@ def _get_latest_release(user, repo, compare_type,
                         prerelease_channel=None,
                         force_base=True):
 	nothing = None, None, None
-	r = requests.get(RELEASE_URL.format(user=user, repo=repo))
+	r = requests.get(RELEASE_URL.format(user=user, repo=repo), timeout=30)
 
 	from . import log_github_ratelimit
 	log_github_ratelimit(logger, r)
@@ -108,12 +115,14 @@ def _get_sanitized_version(version_string):
 	Removes "-..." prefix from version strings.
 
 	Tests:
+	    >>> _get_sanitized_version(None)
 	    >>> _get_sanitized_version("1.2.15")
 	    '1.2.15'
 	    >>> _get_sanitized_version("1.2.15-dev12")
 	    '1.2.15'
 	"""
-	if "-" in version_string:
+
+	if version_string is not None and "-" in version_string:
 		version_string = version_string[:version_string.find("-")]
 	return version_string
 
@@ -142,6 +151,10 @@ def _get_comparable_version_pkg_resources(version_string, force_base=True):
 	import pkg_resources
 
 	version = pkg_resources.parse_version(version_string)
+
+	# A leading v is common in github release tags and old setuptools doesn't remove it.
+	if version and isinstance(version, tuple) and version[0].lower() == "*v":
+		version = version[1:]
 
 	if force_base:
 		if isinstance(version, tuple):
@@ -198,18 +211,20 @@ def _is_current(release_information, compare_type, custom=None, force_base=True)
 
 	Tests:
 
-	    >>> _is_current(dict(remote=dict(value=None))
+	    >>> _is_current(dict(remote=dict(value=None)), "python")
 	    True
-	    >>> _is_current(dict(local=dict(value="1.2.15"), remote=dict(value="1.2.16")))
+	    >>> _is_current(dict(local=dict(value="1.2.15"), remote=dict(value="1.2.16")), "python")
 	    False
-	    >>> _is_current(dict(local=dict(value="1.2.16dev1"), remote=dict(value="1.2.16dev2")))
+	    >>> _is_current(dict(local=dict(value="1.2.16dev1"), remote=dict(value="1.2.16dev2")), "python")
 	    True
-	    >>> _is_current(dict(local=dict(value="1.2.16dev1"), remote=dict(value="1.2.16dev2")), force_base=False)
+	    >>> _is_current(dict(local=dict(value="1.2.16dev1"), remote=dict(value="1.2.16dev2")), "python", force_base=False)
 	    False
-	    >>> _is_current(dict(local=dict(value="1.2.16dev3"), remote=dict(value="1.2.16dev2")), force_base=False)
+	    >>> _is_current(dict(local=dict(value="1.2.16dev3"), remote=dict(value="1.2.16dev2")), "python", force_base=False)
 	    True
-	    >>> _is_current(dict(local=dict(value="1.2.16dev3"), remote=dict(value="1.2.16dev2")), force_base=False, compare_type="python_unequal")
+	    >>> _is_current(dict(local=dict(value="1.2.16dev3"), remote=dict(value="1.2.16dev2")), "python_unequal", force_base=False)
 	    False
+	    >>> _is_current(dict(local=dict(value="1.3.0.post1+g1014712"), remote=dict(value="1.3.0")), "python")
+	    True
 
 	"""
 
@@ -232,10 +247,14 @@ def _is_current(release_information, compare_type, custom=None, force_base=True)
 
 
 def get_latest(target, check, custom_compare=None):
-	if not "user" in check or not "repo" in check:
-		raise ConfigurationInvalid("github_release update configuration for %s needs user and repo set" % target)
+	from ..exceptions import ConfigurationInvalid
 
+	user = check.get("user", None)
+	repo = check.get("repo", None)
 	current = check.get("current", None)
+	if user is None or repo is None or current is None:
+		raise ConfigurationInvalid("Update configuration for {} of type github_release needs all of user, repo and current set and not None".format(target))
+
 	include_prerelease = check.get("prerelease", False)
 	prerelease_channel = check.get("prerelease_channel", None)
 	force_base = check.get("force_base", True)

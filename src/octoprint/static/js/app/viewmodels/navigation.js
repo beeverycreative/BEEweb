@@ -6,8 +6,7 @@ $(function() {
         self.appearance = parameters[1];
         self.settings = parameters[2];
         self.usersettings = parameters[3];
-
-        self.systemActions = self.settings.system_actions;
+        self.system = parameters[4];
 
         self.appearanceClasses = ko.pureComputed(function() {
             var classes = self.appearance.color();
@@ -59,7 +58,7 @@ $(function() {
             });
 
             $.ajax({
-                url: BEE_CUSTOM_API_BASEURL + "firmware/current/version",
+                url: BEE_API_BASEURL + "firmware/current/version",
                 type: "GET",
                 dataType: "json",
                 contentType: "application/json; charset=UTF-8",
@@ -74,7 +73,7 @@ $(function() {
 
     OCTOPRINT_VIEWMODELS.push([
         NavigationViewModel,
-        ["loginStateViewModel", "appearanceViewModel", "settingsViewModel", "userSettingsViewModel"],
+        ["loginStateViewModel", "appearanceViewModel", "settingsViewModel", "userSettingsViewModel", "systemViewModel"],
         ["#navbar", "#aboutbee_dialog"]
     ]);
 });

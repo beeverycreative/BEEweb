@@ -887,6 +887,8 @@ $(function() {
             // Heating is finished, let's move on
             self._heatingDone();
 
+            self.finishExtruderMaintenance();
+
             $('#extMaintStep4').removeClass('hidden');
             $('#extMaintStep3').addClass('hidden');
             $('#extMaintStep2').addClass('hidden');
@@ -956,6 +958,21 @@ $(function() {
                         setTimeout(function() { self._updateTempProgressExtMaint() }, 2000);
                         fetchTemperatureRetries -= 1;
                     }
+            });
+        };
+
+        self.finishExtruderMaintenance = function() {
+
+            $.ajax({
+                url: API_BASEURL + "maintenance/finish_extruder_maintenance",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                success: function(result) {
+
+
+                },
+                error: function() {  }
             });
         };
 
@@ -1315,7 +1332,7 @@ $(function() {
                 }
                 if(self.processStage() == 6)
                 {
-                    self.nextStepReplaceNozzle6();
+                    self.saveNozzle();
                 }
             }
             if (self.changeFilament()) {
