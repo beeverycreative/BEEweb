@@ -4,7 +4,7 @@ var BEEwb = BEEwb || {};
 BEEwb.helpers = {};
 
 /**
- * Auxiliar function to generate the STL file and Scene name from the current canvas scene.
+ * Auxiliary function to generate the STL file and Scene name from the current canvas scene.
  *
  * param objects: Array of objects from a Threejs scene
  *
@@ -42,20 +42,20 @@ BEEwb.helpers.generateSceneName = function( ) {
 };
 
 /**
- * Calculates Geometry object size
+ * Calculates the size of an object
  *
- * param geometry: THREEJS.Geometry object
+ * param geometry: THREEJS.Object3D object
  *
  * Returns dictionary with size { 'x': ..., 'y': ..., 'z': ...}
  */
-BEEwb.helpers.objectSize = function( geometry ) {
+BEEwb.helpers.objectSize = function( object ) {
 
-    if ( geometry == null) {
+    if ( object == null) {
         return { 'x': 0, 'y': 0, 'z': 0};
     }
 
-    geometry.computeBoundingBox();
-    var bbox = geometry.boundingBox;
+    var bbox = new THREE.Box3().setFromObject( object );
+
     var xSize = 0;
     var ySize = 0;
     var zSize = 0;
@@ -235,3 +235,32 @@ BEEwb.helpers.centerModelBasedOnBoundingBox = function(geometry) {
     // Applies the transformation matrix for any necessary shift in position
     geometry.applyMatrix( new THREE.Matrix4().makeTranslation( -xShift, -yShift, -zShift ) );
 };
+
+
+function saveCookie(name, value, days) {
+    var expires;
+    if (days) {
+        var date = new Date();
+        date.setTime(date.getTime() + (days * 24 * 60 * 60 * 1000));
+        expires = "; expires=" + date.toGMTString();
+    }
+    else {
+        expires = "";
+    }
+    document.cookie = name + "=" + value + expires + "; path=/";
+}
+
+function readCookie(name) {
+
+	var nameEQ = name + "=";
+	var ca = document.cookie.split(';');
+
+	for(var i=0;i < ca.length;i++) {
+		var cookie = ca[i];
+		while (cookie.charAt(0) === ' ')
+		    cookie = cookie.substring(1, cookie.length);
+		if (cookie.indexOf(nameEQ) === 0)
+		    return cookie.substring(nameEQ.length, cookie.length);
+	}
+	return null;
+}

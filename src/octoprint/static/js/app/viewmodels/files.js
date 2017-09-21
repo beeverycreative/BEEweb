@@ -230,7 +230,6 @@ $(function() {
                 contentType: "application/json; charset=UTF-8",
                 data: JSON.stringify({command: "select", print: printAfterLoad})
             });
-
         };
 
         self.removeFile = function(file) {
@@ -510,6 +509,11 @@ $(function() {
             });
 
             self.requestData();
+
+            // Calls the estimation callback in case it is defined
+            if (self.slicing.slicingDoneEstimationCallback !== undefined) {
+                self.slicing.slicingDoneEstimationCallback();
+            }
         };
 
         self.onEventSlicingFailed = function(payload) {

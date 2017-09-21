@@ -29,6 +29,10 @@ $(function() {
 
         self.filamentChangedByUser = ko.observable(false); // Flag to detect if the user called the change filament operation,
                                                           // so we can show the print control buttons after enough filament is available
+        // Auxiliary variables to control state changes
+        var prevPaused = self.isPaused();
+        var prevPrinting = self.isPrinting();
+        var prevClosed = self.isErrorOrClosed();
 
         self.enablePrint = ko.pureComputed(function() {
             return self.insufficientFilament() && self.loginState.isUser() && self.filename() != undefined;
@@ -44,12 +48,19 @@ $(function() {
         self.enablePreparePrint = ko.pureComputed(function() {
             return self.loginState.isUser() && !self.connection.isConnecting()
                 && !self.connection.isErrorOrClosed() && !self.filename()
-                && !self.isPrinting() && !self.isPaused() && !self.isShutdown() && !self.isHeating() && !self.isResuming();
+                && !self.isPrinting() && !self.isPaused() && !self.isShutdown() && !self.isHeating()
+                && !self.isResuming() && !self.slicing.slicingInProgress();
+        });
+        self.enableEstimatePrint = ko.pureComputed(function() {
+            return self.loginState.isUser() && !self.connection.isConnecting()
+                && self.connection.isErrorOrClosed() && !self.filename()
+                && !self.isPrinting() && !self.isPaused() && !self.isShutdown() && !self.isHeating()
+                && !self.isResuming() && !self.slicing.slicingInProgress();
         });
         self.showInsufficientFilament = ko.pureComputed(function() {
             return self.loginState.isUser && self.insufficientFilament()
             && self.isReady() && !(self.isHeating() || self.isPrinting() || self.isPaused() || self.isShutdown())
-            && !self.ignoredInsufficientFilament() && self.filename() != undefined && !self.isPaused();
+            && !self.ignoredInsufficientFilament() && self.filename() !== undefined;
         });
         self.showPrintControlAfterFilamentChange = ko.pureComputed(function() {
             return self.loginState.isUser && !self.insufficientFilament()
@@ -109,20 +120,28 @@ $(function() {
             }
         };
 
+        self._showPrintFromMemory = function () {
+            $('#printFromMemoryDiv').removeClass('hidden');
+            $('#preparePrint').addClass('hidden');
+            $('#state_wrapper .accordion-heading').addClass('selected');
+
+            self.expandStatusPanel();
+        };
+
+        self._hidePrintFromMemory = function () {
+            $('#printFromMemoryDiv').addClass('hidden');
+            $('#preparePrint').removeClass('hidden');
+            $('#state_wrapper .accordion-heading').removeClass('selected');
+
+            self.retractStatusPanel();
+        };
+
         self.togglePrintFromMemory = function() {
             if (self.enablePrintFromMemory()) {
                 if ($('#printFromMemoryDiv').hasClass('hidden')) {
-                    $('#printFromMemoryDiv').removeClass('hidden');
-                    $('#preparePrint').addClass('hidden');
-                    $('#state_wrapper .accordion-heading').addClass('selected');
-
-                    self.expandStatusPanel();
+                    self._showPrintFromMemory();
                 } else {
-                    $('#printFromMemoryDiv').addClass('hidden');
-                    $('#preparePrint').removeClass('hidden');
-                    $('#state_wrapper .accordion-heading').removeClass('selected');
-
-                    self.retractStatusPanel();
+                    self._hidePrintFromMemory();
                 }
             }
         };
@@ -364,6 +383,10 @@ $(function() {
         };
 
         self._fromData = function(data) {
+            prevPaused = self.isPaused();
+            prevPrinting = self.isPrinting();
+            prevClosed = self.isErrorOrClosed();
+
             self._processStateData(data.state);
             self._processJobData(data.job);
             self._processProgressData(data.progress);
@@ -374,9 +397,6 @@ $(function() {
         };
 
         self._processStateData = function(data) {
-            var prevPaused = self.isPaused();
-            var prevPrinting = self.isPrinting();
-            var prevClosed = self.isErrorOrClosed();
 
             self.stateString(gettext(data.text));
             self.isErrorOrClosed(data.flags.closedOrError);
@@ -399,7 +419,7 @@ $(function() {
                 self.isConnecting(false);
             }
 
-            if (self.isPaused() != prevPaused) {
+            if (self.isPaused() !== prevPaused) {
                 if (self.isPaused()) {
                     self.titlePrintButton(self.TITLE_PRINT_BUTTON_PAUSED);
                     self.titlePauseButton(self.TITLE_PAUSE_BUTTON_PAUSED);
@@ -410,11 +430,17 @@ $(function() {
             }
 
             // detects if a print has finished to change the ignoredInsufficientFilament flag
-            if (prevPrinting == true && self.isPrinting() != prevPrinting && !self.isPaused() && !self.isShutdown()) {
+            if (prevPrinting === true && self.isPrinting() !== prevPrinting && !self.isPaused() && !self.isShutdown()) {
                 self.ignoredInsufficientFilament(false);
             }
 
-            if (self.isShutdown()) {
+            // detects if a print job as started to re-enable the main Print button through the slicing progress flag
+            if (prevPrinting === false && (self.isHeating() || self.isTransferring() || self.isPrinting())) {
+                self.slicing.slicingInProgress(false);
+            }
+
+            // if the printer is shutdown or paused state, expands the status panel
+            if (self.isShutdown() || self.isPaused()) {
                 self.expandStatusPanel();
             }
 
@@ -424,6 +450,12 @@ $(function() {
             if (prevClosed === true && self.isErrorOrClosed() === false && self.isReady() === true) {
                 self.printerProfiles.requestData();
             }
+
+            // detects if the state changed from ready to closed
+            if (prevClosed === false && self.isErrorOrClosed() === true && self.isOperational() === false) {
+                self._hidePrintFromMemory();
+            }
+
         };
 
         self._processJobData = function(data) {
@@ -459,15 +491,18 @@ $(function() {
 
                 self.insufficientFilament(false);
 
-                // Signals for insufficient filament only if a print operation is not ongoing
-                if (data.filament['tool0']['insufficient'] == true && !self.isPrinting() && !self.isHeating()) {
+                // detects if a print has finished to retract the panel in case it was expanded
+                if (prevPrinting === true && self.isPrinting() !== prevPrinting && !self.isPaused() && !self.isShutdown()) {
+                    self.retractStatusPanel();
+                } else if (data.filament['tool0']['insufficient'] == true && !self.isPrinting() && !self.isHeating()) {
+                    // Signals for insufficient filament only if a print operation is not ongoing
                     self.insufficientFilament(true);
                     // Expands the panel
                     self.expandStatusPanel();
                 }
 
                 // This means that the user changed the filament so we can change the flag to true (only if a print operation is not ongoing)
-                if (prevInsufficientFilamentFlag == true && self.insufficientFilament() == false && !self.isPrinting() && !self.isHeating()) {
+                if (prevInsufficientFilamentFlag === true && self.insufficientFilament() === false && !self.isPrinting() && !self.isHeating()) {
                     self.filamentChangedByUser(true);
                     self.retractStatusPanel();
                 }
@@ -576,6 +611,7 @@ $(function() {
             self._restoreShutdown();
             self.insufficientFilament(false);
             self.ignoredInsufficientFilament(false);
+            self.slicing.slicingInProgress(false);
 
             self._jobCommand("cancel", function() {
 
@@ -644,6 +680,13 @@ $(function() {
          * Shows the slicing dialog window for the workbench
          */
         self.preparePrint = function () {
+            self.slicing.show('local', BEEwb.helpers.generateSceneName(), false, true);
+		};
+
+        /**
+         * Shows the slicing/estimation dialog window for the workbench
+         */
+        self.estimatePrint = function () {
             self.slicing.show('local', BEEwb.helpers.generateSceneName(), true, true);
 		};
 

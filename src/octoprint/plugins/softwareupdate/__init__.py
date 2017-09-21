@@ -107,13 +107,13 @@ class SoftwareUpdatePlugin(octoprint.plugin.BlueprintPlugin,
 				if "__version" in data:
 					data_version = data["__version"]
 				else:
-					self._logger.info("Can't determine version of BEEsoft version cache was created for, not using it")
+					self._logger.info("Can't determine version of BEESOFT version cache was created for, not using it")
 					return
 
 				from octoprint._version import get_versions
 				octoprint_version = get_versions()["version"]
 				if data_version != octoprint_version:
-					self._logger.info("Version cache was created for another version of BEEsoft, not using it")
+					self._logger.info("Version cache was created for another version of BEESOFT, not using it")
 					return
 
 				self._version_cache = data
@@ -215,6 +215,16 @@ class SoftwareUpdatePlugin(octoprint.plugin.BlueprintPlugin,
 						"stable_branch": dict(branch="master", name="Stable"),
 						"prerelease_branches": [dict(branch="develop", name="Devel RCs")]
 					},
+				},
+				"pip_command": None,
+				"check_providers": {},
+
+				"cache_ttl": 24 * 60,
+			}
+
+			# If running as non desktop app i.e: RPI version adds the remaining updatable software
+			if octoprint.server.DESKTOP_APP is False:
+				default_settings['checks'].update({
 					"BEEsoft configurations": {
 						"type": "github_commit",
 						"user": "beeverycreative",
@@ -222,26 +232,25 @@ class SoftwareUpdatePlugin(octoprint.plugin.BlueprintPlugin,
 						"branch": configurationsReleaseBranch,
 						"update_script": update_script_callable_beewebpi,
 						"restart": "environment",
-						"checkout_folder": "/home/pi/beewebpi-repo" # default checkout path
+						"checkout_folder": "/home/pi/beewebpi-repo"  # default checkout path
 					},
 					"BEEpanel": {
 						"type": "github_release",
 						"user": "beeverycreative",
 						"repo": "BEEpanel2",
 						"restart": "environment",
-						"persist_current": True, # Custom property to force persistence of current version. The octoprint default, doesn't do it for some reason in github releases...
+						"persist_current": True,
+					    # Custom property to force persistence of current version. The octoprint default, doesn't do it for some reason in github releases...
 						"current": "unknown",
-						"checkout_folder": "/home/pi/beepanel2",  # default checkout path. For some unknown reason the path configured in the config.yaml is erased during setup (or boot)... :/
+						"checkout_folder": "/home/pi/beepanel2",
+					    # default checkout path. For some unknown reason the path configured in the config.yaml is erased during setup (or boot)... :/
 						"update_script": update_script_callable_beepanel,
 						"stable_branch": dict(branch="master", name="Stable"),
 						"prerelease_branches": [dict(branch="develop", name="Devel RCs")]
 					},
-				},
-				"pip_command": None,
-				"check_providers": {},
 
-				"cache_ttl": 24 * 60,
-			}
+				})
+
 
 		return default_settings
 

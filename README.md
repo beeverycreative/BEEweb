@@ -1,4 +1,4 @@
-BEEsoft.web
+BEESOFT.web
 ===========
 
 ![alt text](https://beeverycreative.com/wp-content/themes/beevc%20oficial/stylesheets/imgs/bee-soft-logo.png "BEEsoft logo")

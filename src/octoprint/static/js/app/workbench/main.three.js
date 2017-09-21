@@ -69,7 +69,7 @@ BEEwb.main = {
         this.containerHeightOffset = bondingOffset.top;
 
         // renderer
-        this.renderer = new THREE.WebGLRenderer({ alpha: true , antialias: true });
+        this.renderer = Detector.webgl? new THREE.WebGLRenderer({ alpha: true , antialias: true }): new THREE.SoftwareRenderer({ alpha: true });
         this.renderer.setSize(window.innerWidth, window.innerHeight / 1.5);
         this.container.appendChild( this.renderer.domElement );
 
@@ -103,23 +103,23 @@ BEEwb.main = {
         this.scene.add(this.objects);
 
         // Loads the model
-        var lastModel = document.cookie.replace(/(?:(?:^|.*;\s*)lastModel\s*\=\s*([^;]*).*$)|^.*$/, "$1");
+        var lastModel = readCookie('lastModel');
 
-        if (!lastModel) {
-            lastModel = 'BEE.stl';
-            this.loadModel(lastModel, true, true);
-        } else {
+        if (lastModel) {
             var that = this;
             $.ajax({
                 url:'./downloads/files/local/' + lastModel,
                 type:'HEAD',
                 error: function() {
-                    console.log('Last printed model does not exist.')
+                    console.log('Model not found.')
                 },
                 success: function() {
                     that.loadModel(lastModel, false, true);
                 }
             });
+        } else {
+            //lastModel = 'BEE.stl';
+            //this.loadModel(lastModel, true, true);
         }
 
         // Uncomment this if you want Trackball controls instead of Orbit controls
@@ -131,7 +131,7 @@ BEEwb.main = {
         this.sceneControls.enableZoom = true;
         this.sceneControls.zoomSpeed = 0.9;
         this.sceneControls.rotateSpeed = 0.1;
-        this.sceneControls.enablePan = false;
+        this.sceneControls.enablePan = true;
         this.sceneControls.enableDamping = true;
         this.sceneControls.dampingFactor = 0.25;
 
@@ -141,6 +141,7 @@ BEEwb.main = {
 
         this.selectedObject = null;
         this.transformControls = null;
+        this.dragControls = null;
 
         // Adds the printer bed auxiliary object
         this._addBed();
@@ -154,9 +155,7 @@ BEEwb.main = {
 
     render: function () {
 
-        if (this.transformControls != null) {
-            this.transformControls.update();
-        }
+        this.updateTransformControls();
         this.renderer.render( this.scene, this.camera );
     },
 
@@ -164,6 +163,49 @@ BEEwb.main = {
         requestAnimationFrame( this.animate.bind(this) );
         this.sceneControls.update();
         this.renderer.render( this.scene, this.camera );
+    },
+
+    updateTransformControls: function () {
+
+        if (this.transformControls !== null) {
+            this.transformControls.update();
+        }
+    },
+
+    disableSceneControls: function () {
+        if (this.sceneControls !== null) {
+            this.sceneControls.enabled = false;
+        }
+    },
+
+    enableSceneControls: function () {
+        if (this.sceneControls !== null) {
+            this.sceneControls.enabled = true;
+        }
+    },
+
+    disableDragControls: function () {
+        if (this.dragControls !== null) {
+            this.dragControls.dispose();
+            this.dragControls = null;
+        }
+    },
+
+    enableDragControls: function () {
+
+        if (this.selectedObject !== null) {
+            this.dragControls = new THREE.DragControls( [this.selectedObject], this.camera, this.renderer.domElement );
+
+            // Drag controls event callbacks
+            this.dragControls.addEventListener( 'dragstart', function ( event ) {
+                BEEwb.main.disableSceneControls();
+            });
+            this.dragControls.addEventListener( 'dragend', function ( event ) {
+                //BEEwb.transformOps.placeOnBed();
+                BEEwb.main.updateTransformControls();
+                BEEwb.main.enableSceneControls();
+            });
+        }
     },
 
     /**
@@ -222,28 +264,34 @@ BEEwb.main = {
         loader.load(folder + modelName, function ( geometry ) {
             var material = new THREE.MeshPhongMaterial( { color: 0x8C8C8C, specular: 0x111111, shininess: 100 } );
 
-            // Centers the object if it's not centered
-            BEEwb.helpers.centerModelBasedOnBoundingBox(geometry);
+            geometry.computeFaceNormals();
+            geometry.computeVertexNormals();
+
+            var mesh = new THREE.Mesh( geometry, material );
+            //mesh.castShadow = true;
 
             // Calculates any possible translation in the X axis due to the previously loaded model
             var xShift = BEEwb.helpers.calculateObjectShift( geometry );
+            if (xShift !== 0) {
+                mesh.position.set( xShift, 0, 0 );
+            }
 
-            var mesh = new THREE.Mesh( geometry, material );
-            mesh.position.set( xShift, 0, 0 );
+            // Centers the object only if it is not centered with the 3d scene
+            //if (BEEwb.helpers.objectOutOfBounds(mesh, [BEEwb.main.bedWidth, BEEwb.main.bedDepth, BEEwb.main.bedHeight])) {
+            BEEwb.helpers.centerModelBasedOnBoundingBox(mesh.geometry);
+            mesh.updateMatrix();
+            //}
 
-            //mesh.rotation.set( - Math.PI , Math.PI , 0 );
-            //mesh.scale.set( 1.5, 1.5, 1.5 );
-            mesh.castShadow = true;
-
-            that.scene.add( mesh );
+            that.scene.add(mesh);
             that.objects.add(mesh);
 
             // Runs the placeOnBed algorithm
             that.selectModel(mesh);
+
             BEEwb.transformOps.placeOnBed();
 
             $('#loadingDialog').modal('hide');
-            document.cookie="lastModel=" + modelName;
+            saveCookie('lastModel', modelName, 90);
         });
     },
 
@@ -256,9 +304,10 @@ BEEwb.main = {
     saveScene: function ( filename ) {
         var scope = this;
         var stlData = BEEwb.helpers.generateSTLFromScene( this.objects );
-
+        var showMessage = false;
         if (filename === undefined) {
             filename = BEEwb.helpers.generateSceneName();
+            showMessage = true;
         }
 
         var data = new FormData();
@@ -273,10 +322,11 @@ BEEwb.main = {
             contentType: false,
             processData: false,
             success: function(data) {
-
-                var html = _.sprintf(gettext("The scene was saved to the local filesystem."));
-                new PNotify({title: gettext("Save success"), text: html, type: "success", hide: true});
-
+                // only shows the success message if the filename was not specified, which means it was called from the workbench controls
+                if (showMessage) {
+                    var html = _.sprintf(gettext("The scene was saved to the local filesystem."));
+                    new PNotify({title: gettext("Save success"), text: html, type: "success", hide: true});
+                }
             },
             error: function() {
                 var html = _.sprintf(gettext("Could not save the scene in the server filesystem. Make sure you have the right permissions and disk space."));
@@ -322,7 +372,7 @@ BEEwb.main = {
         model.material.color = new THREE.Color(SELECT_COLOR);
 
         // Attaches the transform controls to the newly selected object
-        if (this.selectedObject == null || this.selectedObject !== model) {
+        if (this.selectedObject === null || this.selectedObject !== model) {
             this.scene.remove(this.transformControls);
             this.transformControls = new THREE.TransformControls( this.camera, this.renderer.domElement );
             this.transformControls.addEventListener( 'change', this.render.bind(this) );
@@ -390,11 +440,13 @@ BEEwb.main = {
             obj.material.color = new THREE.Color(DEFAULT_COLOR);
         });
 
-        if (this.transformControls != null) {
+        if (this.transformControls !== null) {
 
             this.transformControls.detach();
             //transformControls.dispose();
         }
+
+        BEEwb.main.disableDragControls();
 
         this.selectedObject = null;
 

@@ -152,28 +152,34 @@ BEEwb.transformOps._rotateStep = function( degrees ) {
 BEEwb.transformOps.scaleToMax = function() {
 
     if (BEEwb.main.selectedObject !== null) {
-        BEEwb.main.selectedObject.position.set( 0, 0, 0 );
 
         var hLimit = BEEwb.main.bedHeight;// z
         var wLimit = BEEwb.main.bedWidth; // x
         var dLimit = BEEwb.main.bedDepth; // y
 
-        var xScale = wLimit / this.initialSize['x'];
-        var yScale = dLimit / this.initialSize['y'];
-        var zScale = hLimit / this.initialSize['z'];
+        var currentSize = BEEwb.helpers.objectSize(BEEwb.main.selectedObject);
+
+        var xScale = wLimit / currentSize['x'];
+        var yScale = dLimit / currentSize['y'];
+        var zScale = hLimit / currentSize['z'];
 
         var scale = Math.min(xScale, Math.min (yScale, zScale));
         // Small adjustment to avoid false positive out of bounds message due to precision errors
         scale -= 0.01;
+        if (scale > 1) {
+            BEEwb.main.selectedObject.scale.set(scale, scale ,scale);
+            BEEwb.main.transformControls.update();
 
-        BEEwb.main.selectedObject.scale.set(scale, scale ,scale);
-        BEEwb.main.transformControls.update();
-
-        if ($('#scaleby-per').is(':checked')) {
-            BEEwb.transformOps.updateScaleSizeInputsByPercentage();
-        } else {
-            BEEwb.transformOps.updateScaleSizeInputs();
+            if ($('#scaleby-per').is(':checked')) {
+                BEEwb.transformOps.updateScaleSizeInputsByPercentage();
+            } else {
+                BEEwb.transformOps.updateScaleSizeInputs();
+            }
         }
+
+        BEEwb.main.selectedObject.position.set( 0, 0, 0 );
+
+        this.placeOnBed();
     }
 };
 
@@ -201,20 +207,21 @@ BEEwb.transformOps.placeOnBed = function() {
 
         // Computes the box after any transformations
         var bbox = new THREE.Box3().setFromObject( BEEwb.main.selectedObject );
-
-        if (bbox.min.z != 0) {
+        if (bbox.min.z !== 0) {
 
             var zShift = BEEwb.main.selectedObject.position.z - bbox.min.z;
+            // Adds a small increment to the shift to prevent out of bounds false positives due to rounding errors
+            zShift += 0.0001;
 
             BEEwb.main.selectedObject.position.setZ( zShift );
         }
 
         // Recomputes the bounding box to check for rounding errors
-        bbox = new THREE.Box3().setFromObject( BEEwb.main.selectedObject );
-        if (bbox.min.z < 0) {
-            zShift += (-bbox.min.z + 0.0001); // Increment the shift by a small amount in case of the model being below the platform
-            BEEwb.main.selectedObject.position.setZ( zShift );
-        }
+        // bbox = new THREE.Box3().setFromObject( BEEwb.main.selectedObject );
+        // if (bbox.min.z < 0) {
+        //     zShift += (-bbox.min.z + 0.0001); // Increment the shift by a small amount in case of the model being below the platform
+        //     BEEwb.main.selectedObject.position.setZ( zShift );
+        // }
 
         BEEwb.main.transformControls.update();
         this.updatePositionInputs();
@@ -244,6 +251,8 @@ BEEwb.transformOps.resetSelectedModel = function() {
         }
 
         this.updateRotationInputs();
+
+        this.placeOnBed();
     }
 };
 
@@ -259,6 +268,8 @@ BEEwb.transformOps.removeModel = function(modelObj) {
         BEEwb.main.scene.remove(BEEwb.main.transformControls);
 
         BEEwb.main.toggleObjectOutOfBounds(BEEwb.main.selectedObject, false);
+
+        BEEwb.main.disableDragControls();
     }
 };
 
@@ -336,6 +347,8 @@ BEEwb.transformOps.activateRotate = function() {
         this.selectedMode = 'rotate';
         BEEwb.main.transformControls.setMode("rotate");
 
+        BEEwb.main.disableDragControls();
+
         $('#btn-move').removeClass('btn-primary');
         $('#btn-scale').removeClass('btn-primary');
         $('#btn-rotate').removeClass('btn-default');
@@ -357,6 +370,8 @@ BEEwb.transformOps.activateScale = function() {
 
         this.selectedMode = 'scale';
         BEEwb.main.transformControls.setMode("scale");
+
+        BEEwb.main.disableDragControls();
 
         $('#btn-move').removeClass('btn-primary');
         $('#btn-rotate').removeClass('btn-primary');
@@ -385,6 +400,10 @@ BEEwb.transformOps.activateMove = function() {
 
         BEEwb.main.transformControls.setMode("translate");
         this.selectedMode = 'translate';
+
+        // Resets the drag controls for the object
+        BEEwb.main.disableDragControls();
+        BEEwb.main.enableDragControls();
 
         $('#btn-scale').removeClass('btn-primary');
         $('#btn-rotate').removeClass('btn-primary');
@@ -421,7 +440,7 @@ BEEwb.transformOps.updateScaleSizeInputs = function() {
 
     if (BEEwb.main.selectedObject != null) {
         if (this.initialSize == null) {
-            this.initialSize = BEEwb.helpers.objectSize(BEEwb.main.selectedObject.geometry);
+            this.initialSize = BEEwb.helpers.objectSize(BEEwb.main.selectedObject);
         }
 
         var newX = this.initialSize['x'] * BEEwb.main.selectedObject.scale.x;
@@ -588,6 +607,6 @@ BEEwb.transformOps._rotateByDegrees = function(x, y, z) {
 BEEwb.transformOps.setInitialSize = function() {
 
     if (BEEwb.main.selectedObject != null) {
-        this.initialSize = BEEwb.helpers.objectSize(BEEwb.main.selectedObject.geometry);
+        this.initialSize = BEEwb.helpers.objectSize(BEEwb.main.selectedObject);
     }
 };

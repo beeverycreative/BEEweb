@@ -154,8 +154,8 @@
                 <span class="icon trash"></span>
             </button>
             <hr>
-            <button class="btn btn-block" title="{{ _('Save Scene') }}" id="save_scene"
-                data-toggle="tooltip" data-placement="right" onclick="BEEwb.main.saveScene();">
+            <button class="btn btn-block" title="{{ _('Save to STL') }}" id="save_scene"
+                data-toggle="tooltip" data-placement="right" data-bind="click: showSaveScene">
                 <i class="icon-save" style="font-size: 32px;" ></i>
             </button>
              <button class="btn btn-block" id="reset_camera"
@@ -182,6 +182,30 @@
             <script>
                 BEEwb.main.init();
             </script>
+        </div>
+    </div>
+
+    <div id="save_scene_dialog" class="modal hide fade">
+        <div class="modal-header">
+            <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+            <h3>{{ _('Save to STL') }}</h3>
+        </div>
+        <div class="modal-body">
+            <p>{{ _('Please specify the name you want for the STL file.') }}</p>
+            <form class="form-horizontal" action="javascript:void(0)">
+                <div class="control-group">
+                    <label class="control-label">{{ _('Filename') }}</label>
+                    <div class="controls">
+                        <input id="sceneName" data-bind="value: sceneName, valueUpdate: 'afterkeydown'" style="width: 100%;" />
+                    </div>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <a href="#" class="btn" data-dismiss="modal">{{ _('Cancel') }}</a>
+            <a href="#" class="btn btn-primary" data-bind="click: function() { if ($root.enableSaveScene()) { $root.saveScene() } }, enabled: $root.enableSaveScene(), css: {disabled: $root.savingScene()}">
+                <i class="icon-spinner icon-spin" data-bind="visible: savingScene"></i> {{ _('Save') }}
+            </a>
         </div>
     </div>
 </div>

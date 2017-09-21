@@ -64,6 +64,7 @@ class BeePrinter(Printer):
         # user when either of these operations are triggered
         eventManager().subscribe(Events.FIRMWARE_UPDATE_STARTED, self.on_flash_firmware_started)
         eventManager().subscribe(Events.FIRMWARE_UPDATE_FINISHED, self.on_flash_firmware_finished)
+        eventManager().subscribe(Events.FIRMWARE_UPDATE_AVAILABLE, self.on_firmware_update_available)
 
         # subscribes print event handlers
         eventManager().subscribe(Events.PRINT_CANCELLED, self.on_print_cancelled)
@@ -107,6 +108,18 @@ class BeePrinter(Printer):
                 self._isConnecting = False
                 return False
 
+            # If a critical error occurred while establishing the connection (e.g: libusb problems), stops the connection
+            # monitor thread
+            if self._comm.isError():
+                if self._bvc_conn_thread is not None:
+                    self._bvc_conn_thread.stop_connection_monitor()
+                    self._bvc_conn_thread = None
+                self._isConnecting = False
+                # forces setState to send the message to the UI
+                self._setState(BeeCom.STATE_ERROR)
+                return False
+
+
             bee_commands = self._comm.getCommandsInterface()
 
             # homes all axis
@@ -114,7 +127,7 @@ class BeePrinter(Printer):
                 bee_commands.home()
 
             # Updates the printer connection state
-            self._comm.confirmConnection()
+            self._comm.updatePrinterState()
 
             self._isConnecting = False
 
@@ -245,34 +258,36 @@ class BeePrinter(Printer):
         if self._comm is None:
             return
 
-        self._comm.cancelPrint()
+        try:
+            self._comm.cancelPrint()
 
-        # reset progress, height, print time
-        self._setCurrentZ(None)
-        self._setProgressData()
-        self._resetPrintProgress()
-        self._currentPrintJobFile = None
+            # reset progress, height, print time
+            self._setCurrentZ(None)
+            self._setProgressData()
+            self._resetPrintProgress()
+            self._currentPrintJobFile = None
 
-        # mark print as failure
-        if self._selectedFile is not None:
-            self._fileManager.log_print(FileDestinations.SDCARD if self._selectedFile["sd"] else FileDestinations.LOCAL,
-                                        self._selectedFile["filename"], time.time(), self._comm.getPrintTime(), False,
-                                        self._printerProfileManager.get_current_or_default()["id"])
-            payload = {
-                "file": self._selectedFile["filename"],
-                "origin": FileDestinations.LOCAL
-            }
-            if self._selectedFile["sd"]:
-                payload["origin"] = FileDestinations.SDCARD
+            # mark print as failure
+            if self._selectedFile is not None:
+                self._fileManager.log_print(FileDestinations.SDCARD if self._selectedFile["sd"] else FileDestinations.LOCAL,
+                                            self._selectedFile["filename"], time.time(), self._comm.getPrintTime(), False,
+                                            self._printerProfileManager.get_current_or_default()["id"])
+                payload = {
+                    "file": self._selectedFile["filename"],
+                    "origin": FileDestinations.LOCAL
+                }
+                if self._selectedFile["sd"]:
+                    payload["origin"] = FileDestinations.SDCARD
 
-            # deletes the file if it was created with the temporary file name marker
-            if BeePrinter.TMP_FILE_MARKER in self._selectedFile["filename"]:
-                eventManager().fire(Events.PRINT_CANCELLED_DELETE_FILE, payload)
-            else:
-                eventManager().fire(Events.PRINT_CANCELLED, payload)
+                # deletes the file if it was created with the temporary file name marker
+                if BeePrinter.TMP_FILE_MARKER in self._selectedFile["filename"]:
+                    eventManager().fire(Events.PRINT_CANCELLED_DELETE_FILE, payload)
+                else:
+                    eventManager().fire(Events.PRINT_CANCELLED, payload)
 
-            eventManager().fire(Events.PRINT_FAILED, payload)
-
+                eventManager().fire(Events.PRINT_FAILED, payload)
+        except Exception as ex:
+            self._logger.error("Error canceling print job: %s" % str(ex))
 
     def jog(self, axis, amount):
         """
@@ -381,7 +396,7 @@ class BeePrinter(Printer):
 
             return targetTemperature
         except Exception as ex:
-            self._logger.error(ex)
+            self._logger.error('Error when starting the heating operation: %s' % str(ex))
 
 
     def cancelHeating(self):
@@ -464,7 +479,7 @@ class BeePrinter(Printer):
 
             return resp, temperature_profile_printer
         except Exception as ex:
-            self._logger.error(ex)
+            self._logger.error('Error saving filament string in printer: %s' % str(ex))
 
 
     def getSelectedFilamentProfile(self):
@@ -489,7 +504,7 @@ class BeePrinter(Printer):
 
             return None
         except Exception as ex:
-            self._logger.error(ex)
+            self._logger.error('Error when starting the heating operation: %s' % str(ex))
 
 
     def getFilamentString(self):
@@ -500,7 +515,7 @@ class BeePrinter(Printer):
         try:
             return self._comm.getCommandsInterface().getFilamentString()
         except Exception as ex:
-            self._logger.error(ex)
+            self._logger.error('Error getting filament string from printer: %s' % str(ex))
 
 
     def getFilamentInSpool(self):
@@ -517,7 +532,7 @@ class BeePrinter(Printer):
 
             return filament
         except Exception as ex:
-            self._logger.error(ex)
+            self._logger.error('Error getting amount of filament in spool: %s' % str(ex))
 
 
     def getFilamentWeightInSpool(self):
@@ -531,7 +546,7 @@ class BeePrinter(Printer):
             if filament_mm >= 0:
                 filament_cm = filament_mm / 10.0
 
-                filament_diameter, filament_density = self._getFilamentSettings()
+                filament_diameter, filament_density = self.getFilamentSettings()
 
                 filament_radius = float(int(filament_diameter) / 10000.0) / 2.0
                 filament_volume = filament_cm * (math.pi * filament_radius * filament_radius)
@@ -543,7 +558,7 @@ class BeePrinter(Printer):
                 # positives of not enough filament available
                 return 350.0
         except Exception as ex:
-            self._logger.error(ex)
+            self._logger.error('Error getting filament weight in spool: %s' % str(ex))
 
 
     def setFilamentInSpool(self, filamentInSpool):
@@ -557,7 +572,7 @@ class BeePrinter(Printer):
                 self._logger.error('Unable to set invalid filament weight: %s' % filamentInSpool)
                 return
 
-            filament_diameter, filament_density = self._getFilamentSettings()
+            filament_diameter, filament_density = self.getFilamentSettings()
 
             filament_volume = filamentInSpool / filament_density
             filament_radius = float(int(filament_diameter) / 10000.0) / 2.0
@@ -571,7 +586,7 @@ class BeePrinter(Printer):
 
             return comm_return
         except Exception as ex:
-            self._logger.error(ex)
+            self._logger.error('Error setting amount of filament in spool: %s' % str(ex))
 
 
     def setNozzleSize(self, nozzleSize):
@@ -652,28 +667,28 @@ class BeePrinter(Printer):
         Starts the printer calibration test
         :return:
         """
+        try:
+            """
+            TODO: For now we will hard-code a fixed string to fetch the calibration GCODE, since it is the same for all
+            the "first version" printers. In the future this function call must use the printer name for dynamic fetch
+            of the correct GCODE, using self._printerProfileManager.get_current_or_default()['name'] to get the current
+            printer name
+            """
+            test_gcode = CalibrationGCoder.get_calibration_gcode('BVC_BEETHEFIRST_V1')
+            lines = test_gcode.split(',')
 
-        """
-        TODO: For now we will hard-code a fixed string to fetch the calibration GCODE, since it is the same for all
-        the "first version" printers. In the future this function call must use the printer name for dynamic fetch
-        of the correct GCODE, using self._printerProfileManager.get_current_or_default()['name'] to get the current
-        printer name
-        """
-        test_gcode = CalibrationGCoder.get_calibration_gcode('BVC_BEETHEFIRST_V1')
-        lines = test_gcode.split(',')
+            file_path = os.path.join(settings().getBaseFolder("uploads"), 'BEETHEFIRST_calib_test.gcode')
+            calibtest_file = open(file_path, 'w')
+            for line in lines:
+                calibtest_file.write(line + '\n')
+            calibtest_file.close()
 
-        file_path = os.path.join(settings().getBaseFolder("uploads"), 'BEETHEFIRST_calib_test.gcode')
-        calibtest_file = open(file_path, 'w')
+            self.select_file(file_path, False)
+            self.start_print()
 
-        for line in lines:
-            calibtest_file.write(line + '\n')
-
-        calibtest_file.close()
-
-        self.select_file(file_path, False)
-        self.start_print()
-
-        self._runningCalibrationTest = True
+            self._runningCalibrationTest = True
+        except Exception as ex:
+            self._logger.error('Error printing calibration test : %s' % str(ex))
 
         return None
 
@@ -684,9 +699,21 @@ class BeePrinter(Printer):
         :return:
         """
         self.cancel_print()
-        self._runningCalibrationTest = False
+        self.endCalibrationTest()
 
         return None
+
+    def endCalibrationTest(self):
+        """
+        Runs the necessary cleanups after the calibration test
+        :return:
+        """
+        try:
+            self._runningCalibrationTest = False
+            file_path = os.path.join(settings().getBaseFolder("uploads"), 'BEETHEFIRST_calib_test.gcode')
+            self._fileManager.remove_file(FileDestinations.LOCAL, file_path)
+        except Exception as ex:
+            self._logger.error('Error finishing calibration test : %s' % str(ex))
 
 
     def toggle_pause_print(self):
@@ -710,6 +737,25 @@ class BeePrinter(Printer):
             return
 
         self._comm.setPause(False)
+
+    def unselect_file(self):
+        """
+        Unselects the current file ready for print and removes it if it's a temporary one
+        :return:
+        """
+        if self._selectedFile is not None:
+            payload = {
+                "file": self._selectedFile["filename"],
+                "origin": FileDestinations.LOCAL
+            }
+            if self._selectedFile["sd"]:
+                payload["origin"] = FileDestinations.SDCARD
+
+            # deletes the file if it was created with the temporary file name marker
+            if BeePrinter.TMP_FILE_MARKER in self._selectedFile["filename"]:
+                eventManager().fire(Events.PRINT_CANCELLED_DELETE_FILE, payload)
+            else:
+                eventManager().fire(Events.PRINT_CANCELLED, payload)
 
 
     # # # # # # # # # # # # # # # # # # # # # # #
@@ -904,6 +950,22 @@ class BeePrinter(Printer):
         else:
             return self._comm.getConnectedPrinterSN()
 
+    def getFilamentSettings(self):
+        """
+        Gets the necessary filament settings for weight/size conversions
+        Returns tuple with (diameter,density)
+        """
+        # converts the amount of filament in grams to mm
+        if self._currentFilamentProfile:
+            # Fetches the first position filament_diameter from the filament data and converts to microns
+            filament_diameter = self._currentFilamentProfile.data['filament_diameter'][0] * 1000
+            # TODO: The filament density should also be set based on profile data
+            filament_density = 1.275  # default value
+        else:
+            filament_diameter = 1.75 * 1000  # default value in microns
+            filament_density = 1.275  # default value
+
+        return filament_diameter, filament_density
 
     def printFromMemory(self):
         """
@@ -963,10 +1025,12 @@ class BeePrinter(Printer):
                 if progress >= 1 and self._comm.getCommandsInterface().isPreparingOrPrinting() is False:
 
                     self._comm.getCommandsInterface().stopStatusMonitor()
-                    self._runningCalibrationTest = False
 
                     # Runs the print finish communications callback
                     self._comm.triggerPrintFinished()
+
+                    if self._runningCalibrationTest:
+                        self.endCalibrationTest()
 
                     self._setProgressData()
                     self._resetPrintProgress()
@@ -999,7 +1063,7 @@ class BeePrinter(Printer):
         """
         Print cancelled callback for the EventManager.
         """
-        self.unselect_file()
+        super(BeePrinter, self).unselect_file()
 
         # sends usage statistics to remote server
         self._sendUsageStatistics('cancel')
@@ -1013,9 +1077,10 @@ class BeePrinter(Printer):
             self.on_print_cancelled(event, payload)
 
             self._fileManager.remove_file(payload['origin'], payload['file'])
-        except RuntimeError:
-            self._logger.exception('Error deleting temporary GCode file.')
-
+        except RuntimeError as re:
+            self._logger.exception(re)
+        except Exception as e:
+            self._logger.exception('Error deleting temporary GCode file: %s' % str(e))
 
     def on_comm_state_change(self, state):
         """
@@ -1042,11 +1107,17 @@ class BeePrinter(Printer):
         Event listener to when a print job finishes
         :return:
         """
-        if BeePrinter.TMP_FILE_MARKER in payload["file"]:
-            self._fileManager.remove_file(payload['origin'], payload['file'])
-
         # unselects the current file
-        self.unselect_file()
+        super(BeePrinter, self).unselect_file()
+        self._currentPrintJobFile = None
+
+        if BeePrinter.TMP_FILE_MARKER in payload["file"]:
+            try:
+                self._fileManager.remove_file(payload['origin'], payload['file'])
+            except RuntimeError as re:
+                self._logger.exception(re)
+            except Exception as e:
+                self._logger.exception('Error deleting temporary GCode file: %s' % str(e))
 
         # sends usage statistics
         self._sendUsageStatistics('stop')
@@ -1065,7 +1136,6 @@ class BeePrinter(Printer):
 
             # Starts the connection monitor thread
             if self._bvc_conn_thread is None and (self._comm is None or (self._comm is not None and not self._comm.isOperational())):
-                import threading
                 self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
                 self._bvc_conn_thread.start()
 
@@ -1106,6 +1176,13 @@ class BeePrinter(Printer):
             except:
                 self._logger.exception("Exception while notifying client of firmware update operation finished")
 
+    def on_firmware_update_available(self, event, payload):
+        for callback in self._callbacks:
+            try:
+                callback.sendFirmwareUpdateAvailable(payload['version'])
+            except:
+                self._logger.exception("Exception while notifying client of firmware update available")
+
     # # # # # # # # # # # # # # # # # # # # # # #
     ########### AUXILIARY FUNCTIONS #############
     # # # # # # # # # # # # # # # # # # # # # # #
@@ -1114,24 +1191,6 @@ class BeePrinter(Printer):
         super(BeePrinter, self)._setJobData(filename, filesize, sd)
 
         self._checkSufficientFilamentForPrint()
-
-
-    def _getFilamentSettings(self):
-        """
-        Gets the necessary filament settings for weight/size conversions
-        Returns tuple with (diameter,density)
-        """
-        # converts the amount of filament in grams to mm
-        if self._currentFilamentProfile:
-            # Fetches the first position filament_diameter from the filament data and converts to microns
-            filament_diameter = self._currentFilamentProfile.data['filament_diameter'][0] * 1000
-            # TODO: The filament density should also be set based on profile data
-            filament_density = 1.275  # default value
-        else:
-            filament_diameter = 1.75 * 1000  # default value in microns
-            filament_density = 1.275  # default value
-
-        return filament_diameter, filament_density
 
 
     def _checkSufficientFilamentForPrint(self):
@@ -1158,7 +1217,7 @@ class BeePrinter(Printer):
                         filament_extruder['insufficient'] = False
                         self._insufficientFilamentForCurrent = False
             except Exception as ex:
-                self._logger.error(ex)
+                self._logger.error('Error checking for sufficient filament for print: %s' % str(ex))
 
 
     def _setProgressData(self, completion=None, filepos=None, printTime=None, printTimeLeft=None):
@@ -1195,7 +1254,7 @@ class BeePrinter(Printer):
                 self._elapsedTime = 0
 
         except Exception as ex:
-            self._logger.error(ex)
+            self._logger.error('Error setting print progress data: %s' % str(ex))
 
         try:
             fileSize=int(self._selectedFile['filesize'])

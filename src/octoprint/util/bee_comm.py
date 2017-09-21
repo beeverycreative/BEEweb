@@ -55,9 +55,12 @@ class BeeCom(MachineCom):
         :return: True if the connection was successful
         """
         if self._beeConn is None:
-            self._beeConn = BeePrinterConn(self._connDisconnectHook)
+            self._beeConn = BeePrinterConn(self._connDisconnectHook, settings().getBoolean(["usb", "dummyPrinter"]))
             self._changeState(self.STATE_CONNECTING)
-            self._beeConn.connectToFirstPrinter()
+            if not self._beeConn.connectToFirstPrinter():
+                self._errorValue = 'Invalid USB driver'
+                self._changeState(self.STATE_ERROR)
+                return False
 
         if self._beeConn.isConnected():
             self._beeCommands = self._beeConn.getCommandIntf()
@@ -65,9 +68,15 @@ class BeeCom(MachineCom):
             # change to firmware
             if self._beeCommands.getPrinterMode() == 'Bootloader':
                 # checks for firmware updates
-                self.update_firmware()
+                firmware_available, firmware_version = self.check_firmware_update()
+                if firmware_available:
+                    self.update_firmware()
 
                 self._beeCommands.goToFirmware()
+            else:
+                firmware_available, firmware_version = self.check_firmware_update()
+                if firmware_available:
+                    eventManager().fire(Events.FIRMWARE_UPDATE_AVAILABLE, {"version": firmware_version})
 
             # restart connection
             self._beeConn.reconnect()
@@ -92,10 +101,56 @@ class BeeCom(MachineCom):
         else:
             return 'Not available'
 
+    def check_firmware_update(self):
+        """
+        Checks for an available firmware update for the printer by verifying if the value in the firmware.properties file is different
+        from the current printer firmware
+        :return: if a different version is available than the current, returns a tuple with True and the new version. If no
+        printer is detected or no update is available returns False
+        """
+        _logger = logging.getLogger()
+        # get the latest firmware file for the connected printer
+        conn_printer = self.getConnectedPrinterName()
+        if conn_printer is None:
+            return False
+
+        printer_id = conn_printer.replace(' ', '').lower()
+
+        _logger.info("Checking for firmware updates...")
+        from os.path import isfile, join
+        try:
+            firmware_path = settings().getBaseFolder('firmware')
+            firmware_properties = parsePropertiesFile(join(firmware_path, 'firmware.properties'))
+            firmware_file_name = firmware_properties['firmware.' + printer_id]
+        except KeyError as e:
+            _logger.error(
+                "Problem with printer_id %s. Firmware properties not found for this printer model." % printer_id)
+            return
+
+        if firmware_file_name is not None and isfile(join(firmware_path, firmware_file_name)):
+            fname_parts = firmware_file_name.split('-')
+
+            # gets the current firmware version, ex: BEEVC-BEETHEFIRST-10.5.23.BIN
+            curr_firmware = self.current_firmware()
+            curr_firmware_parts = curr_firmware.split('-')
+
+            if len(curr_firmware_parts) == 3 and curr_firmware is not "Not available":
+                curr_version_parts = curr_firmware_parts[2].split('.')
+                file_version_parts = fname_parts[2].split('.')
+
+                if len(curr_version_parts) >= 3 and len(file_version_parts) >= 3:
+                    for i in range(3):
+                        if int(file_version_parts[i]) != int(curr_version_parts[i]):
+                            return True, curr_firmware
+            elif curr_firmware == '0.0.0':
+                return True, curr_firmware
+
+        _logger.info("No firmware updates found")
+        return False, '0.0.0'
+
     def update_firmware(self):
         """
-        Updates the printer firmware if the value in the firmware.properties file is different
-        from the current printer firmware
+        Updates the printer firmware if a printer is connected
         :return: if no printer is connected just returns void
         """
         _logger = logging.getLogger()
@@ -122,28 +177,10 @@ class BeeCom(MachineCom):
             if firmware_file_name is not None and isfile(join(firmware_path, firmware_file_name)):
 
                 fname_parts = firmware_file_name.split('-')
-
-                # gets the current firmware version, ex: BEEVC-BEETHEFIRST-10.5.23.BIN
-                curr_firmware = self.current_firmware()
-                curr_firmware_parts = curr_firmware.split('-')
-
-                if len(curr_firmware_parts) == 3 and curr_firmware is not "Not available":
-                    curr_version_parts = curr_firmware_parts[2].split('.')
-                    file_version_parts = fname_parts[2].split('.')
-
-                    if len(curr_version_parts) >= 3 and len(file_version_parts) >=3:
-                        for i in xrange(3):
-                            if int(file_version_parts[i]) != int(curr_version_parts[i]):
-                                # version update found
-                                return self._flashFirmware(firmware_file_name, firmware_path, fname_parts[2])
-
-                elif curr_firmware == '0.0.0':
-                    # If curr_firmware is 0.0.0 it means something went wrong with a previous firmware update
-                    return self._flashFirmware(firmware_file_name, firmware_path, fname_parts[2])
+                return self._flashFirmware(firmware_file_name, firmware_path, fname_parts[2])
             else:
                 _logger.error("No firmware file matching the configuration for printer %s found" % conn_printer)
 
-            _logger.info("No firmware updates found")
 
     def sendCommand(self, cmd, cmd_type=None, processed=False, force=False, on_sent=None):
         """
@@ -221,20 +258,24 @@ class BeeCom(MachineCom):
         self._log('Changing monitoring state from \'%s\' to \'%s\'' % (oldState, self.getStateString()))
         self._callback.on_comm_state_change(newState)
 
-    def confirmConnection(self):
+    def updatePrinterState(self):
         """
         Confirms the connection changing the internal state of the printer
         :return:
         """
         if self._beeConn.isConnected():
-            if self._beeCommands.isPrinting():
-                self._changeState(self.STATE_PRINTING)
-            elif self._beeCommands.isShutdown():
-                self._changeState(self.STATE_SHUTDOWN)
-            elif self._beeCommands.isPaused():
-                self._changeState(self.STATE_PAUSED)
-            else:
+            if self._state != self.STATE_OPERATIONAL and self._beeCommands.isReady():
                 self._changeState(self.STATE_OPERATIONAL)
+                return
+            elif self._state != self.STATE_PAUSED and self._beeCommands.isPaused():
+                self._changeState(self.STATE_PAUSED)
+                return
+            elif self._state != self.STATE_PRINTING and self._beeCommands.isPrinting():
+                self._changeState(self.STATE_PRINTING)
+                return
+            elif self._state != self.STATE_SHUTDOWN and self._beeCommands.isShutdown():
+                self._changeState(self.STATE_SHUTDOWN)
+                return
         else:
             self._changeState(self.STATE_CLOSED)
 
@@ -500,8 +541,9 @@ class BeeCom(MachineCom):
         :return:
         """
         try:
-            self._changeState(self.STATE_OPERATIONAL)
-            return self._beeCommands.goToLoadUnloadPos()
+            res = self._beeCommands.goToLoadUnloadPos()
+            self.updatePrinterState()
+            return res
         except Exception as ex:
             self._logger.error(ex)
 
@@ -981,27 +1023,34 @@ class BeeCom(MachineCom):
         try:
             while self._beeCommands.isHeating():
                 time.sleep(1)
-                temperatureValue = self._beeCommands.getHeatingState()
-                if temperatureValue is None:
+                currentHeatingProgress = self._beeCommands.getHeatingState()
+                if currentHeatingProgress is None:
                     self._heatingProgress = 0.0
-                elif temperatureValue > self._heatingProgress:
+                elif currentHeatingProgress > self._heatingProgress:
                     # small verification to prevent temperature update errors coming from the printer due to sensor noise
                     # the temperature is only updated to a new value if it's greater than the previous when the printer is
                     # heating
-                    self._heatingProgress = round(temperatureValue, 2)
+                    self._heatingProgress = round(currentHeatingProgress, 2)
 
                 # makes use of the same method that is used for the print job progress, to update
                 # the heating progress since we are going to use the same progress bar
                 self._callback._setProgressData(self._heatingProgress, 0, 0, 0)
                 if not self._preparing_print:  # the print (heating) was cancelled
+                    self._heatingProgress = 0.0
                     return
-            self._callback._resetPrintProgress()
+
+            # Forces the heating progress to 100% to display the progress bar full, because the actual progress will
+            # stop just before 100%, to avoid heat sensor errors near final target temperature
+            self._heatingProgress = 1.0
+            self._callback._setProgressData(self._heatingProgress, 0, 0, 0)
         except Exception as ex:
             self._logger.error("Error while preparing print. Heating error: %s", str(ex))
             self._changeState(self.STATE_OPERATIONAL)
+            self._heatingProgress = 0.0
             return
 
         if self._currentFile is not None:
+            self._heatingProgress = 0.0
             # Starts the real printing operation
             self._changeState(self.STATE_PRINTING)
             self._currentFile.start()
@@ -1022,6 +1071,7 @@ class BeeCom(MachineCom):
                 self._heating = False
             self._preparing_print = False
         else:
+            self._heatingProgress = 0.0
             self._changeState(self.STATE_OPERATIONAL)
             self._logger.error('Error starting Print operation. No selected file found.')
 

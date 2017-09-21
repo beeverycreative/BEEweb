@@ -186,6 +186,16 @@ class Server(object):
 		sys.excepthook = exception_logger
 		self._logger.info("Starting BEEweb %s" % DISPLAY_VERSION)
 
+		if self._host is None:
+			self._host = s.get(["server", "host"])
+		if self._port is None:
+			self._port = s.getInt(["server", "port"])
+
+		# This is not a very pretty hack, but it's the most practical way to signal if the application is running in desktop
+		# mode, and thus
+		if self._port == 5007:
+			octoprint.server.DESKTOP_APP = True
+
 		# start the intermediary server
 		self._start_intermediary_server(s)
 
@@ -334,16 +344,6 @@ class Server(object):
 		self._setup_blueprints()
 
 		## Tornado initialization starts here
-
-		if self._host is None:
-			self._host = s.get(["server", "host"])
-		if self._port is None:
-			self._port = s.getInt(["server", "port"])
-
-		# This is not a very pretty hack, but it's the most practical way to signal if the application is running in desktop
-		# mode, and thus
-		if self._port == 5007:
-			octoprint.server.DESKTOP_APP = True
 
 		ioloop = IOLoop()
 		ioloop.install()
@@ -1086,6 +1086,9 @@ class Server(object):
 
 		threejs_libs = [
 			"js/lib/threejs/three.min.js",
+			"js/lib/threejs/CanvasRenderer.js",
+			"js/lib/threejs/SoftwareRenderer.js",
+			"js/lib/threejs/Projector.js",
 			"js/lib/threejs/STLLoader.js",
 			"js/lib/threejs/STLExporter.js",
 			"js/lib/threejs/STLBinaryExporter.js",
@@ -1094,6 +1097,7 @@ class Server(object):
 			"js/lib/threejs/TransformControls.js",
 			"js/lib/threejs/Detector.js",
 			"js/lib/threejs/OrbitControls.js",
+			"js/lib/threejs/DragControls.js",
 			"js/app/workbench/helpers.bee.js",
 			"js/app/workbench/events.three.js",
 			"js/app/workbench/main.three.js",

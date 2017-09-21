@@ -80,6 +80,9 @@ default_settings = {
 	"lastPrintJobFile": None,
 	"usb": {
 		"autoconnect": True,
+
+		# Flag that controls the if the driver is connected in virtual/dummy printer mode
+        "dummyPrinter": False
 	},
 	"serial": {
 		"port": None,
@@ -172,7 +175,9 @@ default_settings = {
 		"sizeThreshold": 20 * 1024 * 1024, # 20MB
 	},
 	"gcodeAnalysis": {
-		"maxExtruders": 10
+		"maxExtruders": 10,
+		"analyser": "BVC" # If this option is set for BVC it uses the custom gcode analyser from previous BEESOFT version
+						  # If it is set to another value, it uses the defaul GCodeAnalyser from octoprint
 	},
 	"feature": {
 		"temperatureGraph": True,

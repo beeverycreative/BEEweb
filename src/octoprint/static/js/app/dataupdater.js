@@ -304,6 +304,15 @@ function DataUpdater(allViewModels) {
                     }
                     break;
                 }
+                case "firmwareUpdate": {
+                    new PNotify({
+                        title: gettext("Firmware update available"),
+                        text: gettext("Please restart your printer in order to update to the latest firmware."),
+                        type: "warning",
+                        hide: false
+                    });
+                    break;
+                }
             }
 
             var end = new Date().getTime();

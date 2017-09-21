@@ -104,15 +104,6 @@ $(function() {
                 'margin-left': function() { return -($(this).width() /2); }
             });
 
-            // Gets the available filament list
-            self._getFilamentProfiles();
-
-            // Gets the available nozzle size list
-            self._getNozzleSizes();
-
-            // Gets the amount of filament left in spool
-            self._getFilamentInSpool();
-
             return false;
         };
 
@@ -121,6 +112,7 @@ $(function() {
         };
 
         self._heatingDone = function() {
+            self._showMovingMessage();
             $.ajax({
                 url: API_BASEURL + "maintenance/heating_done",
                 type: "POST",
@@ -128,9 +120,11 @@ $(function() {
                 contentType: "application/json; charset=UTF-8",
                 success: function() {
                     self.heatingDone(true);
+                    self._hideMovingMessage();
                 },
                 error: function() {
                     self.heatingDone(false);
+                    self._hideMovingMessage();
                 }
             });
         };
@@ -246,6 +240,13 @@ $(function() {
             $('#maintenanceNextButton').removeClass('hidden');
             $('#maintenanceCloseButton').addClass('hidden');
             self.changeFilament(true);
+
+            // Gets the available filament list
+            self._getFilamentProfiles();
+
+            // Gets the amount of filament left in spool
+            self._getFilamentInSpool();
+
             // Starts heating automatically
             self.startHeating();
         };
@@ -289,6 +290,7 @@ $(function() {
         self.nextStep3 = function() {
             // Heating is finished, let's move on
             self._heatingDone();
+            self.saveFilament();
 
             $('#step3').removeClass('hidden');
             $('#step4').addClass('hidden');
@@ -381,7 +383,7 @@ $(function() {
                         tempProgressBar.css('width', progressStr);
                         tempProgressBar.text(progressStr);
 
-                        if (progress >= 100) {
+                        if ((TARGET_TEMPERATURE - current_temp) <= 5) { // If the temperature is within 5º of target
                             self.heatingAchiveTargetTemperature(true);
                             $('#change-filament-heating-done').removeClass('hidden');
                             $('#maintenanceNextButton').removeClass('hidden');
@@ -467,11 +469,6 @@ $(function() {
                     if (response.indexOf('ok') > -1) {
                         self.filamentSelected(true);
 
-                        if (self.heatingDone()) {
-                            self.nextStep3();
-                        } else {
-                            self.nextStep2();
-                        }
                     } else {
                         self.filamentResponseError(true);
                     }
@@ -792,7 +789,6 @@ $(function() {
 
 
         self._sendJogCommand = function (axis, direction, distance) {
-            self._showMovingMessage();
             self.commandLock(true);
             var data = {
                 "command": "jog"
@@ -807,11 +803,9 @@ $(function() {
                 data: JSON.stringify(data),
                 success: function() {
                     self.commandLock(false);
-                    self._hideMovingMessage();
                 },
                 error: function() {
                     self.commandLock(false);
-                    self._hideMovingMessage();
                 }
             });
         };
@@ -946,7 +940,7 @@ $(function() {
                         tempProgressBar.css('width', progressStr);
                         tempProgressBar.text(progressStr);
 
-                        if (progress >= 100) {
+                        if ((TARGET_TEMPERATURE - current_temp) <= 5) { // If the temperature is within 5º of target
                             self.heatingAchiveTargetTemperature(true);
                             $('#ext-mtn-4').removeClass('hidden');
                             $('#maintenanceNextButton').removeClass('hidden');
@@ -976,6 +970,9 @@ $(function() {
         self.showReplaceNozzle = function() {
             self.switchNozzle(true);
 
+            // Gets the available nozzle size list
+            self._getNozzleSizes();
+
             $('#maintenanceNextButton').removeClass('hidden');
             $('#maintenanceList').addClass('hidden');
             $('#cancelMaintenance').removeClass('hidden');
@@ -983,7 +980,6 @@ $(function() {
             $('#maintenance_replaceNozzle').removeClass('hidden');
 
             $('#maintenanceCloseButton').addClass('hidden');
-
         };
 
         self.replaceNozzleStep0 = function() {
@@ -1162,7 +1158,7 @@ $(function() {
                         tempProgressBar.css('width', progressStr);
                         tempProgressBar.text(progressStr);
 
-                        if (progress >= 100) {
+                        if (progress >= 95) {
                             self.heatingAchiveTargetTemperature(true);
                             $('#replace-nozzle-heating-done').removeClass('hidden');
                             $('#progress-bar-replace-nozzle').addClass('hidden');
@@ -1283,7 +1279,6 @@ $(function() {
         self.nextOperations = function() {
             self.processStage(self.processStage()+1);
             if (self.calibrating()) {
-                console.log("calibrating next");
                 if(self.processStage() == 1)
                 {
                     self.nextStepCalibration1();
@@ -1326,7 +1321,7 @@ $(function() {
             if (self.changeFilament()) {
                 if(self.processStage() == 1)
                 {
-                    self.saveFilament();
+                    self.nextStep2();
                 }
                 if(self.processStage() == 2)
                 {
@@ -1352,7 +1347,8 @@ $(function() {
                 }
             }
         };
-    self.nextButtonEnable = function() {
+
+        self.nextButtonEnable = function() {
             if (self.calibrating()) {
                 if(self.processStage() == 0 || self.processStage() == 1 || self.processStage() == 2 || self.processStage() == 3 )
                 {
