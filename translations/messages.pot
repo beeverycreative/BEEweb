@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-07-21 14:47+0100\n"
+"POT-Creation-Date: 2017-09-25 18:07+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -864,7 +864,7 @@ msgid "Files"
 msgstr ""
 
 #: src/octoprint/server/views.py:539
-msgid "Workbench"
+msgid "Work Area"
 msgstr ""
 
 #: src/octoprint/server/views.py:544
@@ -1068,6 +1068,14 @@ msgstr ""
 msgid "The firmware was updated to the latest version."
 msgstr ""
 
+#: src/octoprint/static/js/app/dataupdater.js:275
+msgid "Firmware update available"
+msgstr ""
+
+#: src/octoprint/static/js/app/dataupdater.js:276
+msgid "Please restart your printer in order to update to the latest firmware."
+msgstr ""
+
 #: src/octoprint/static/js/app/helpers.js:378
 #, python-format
 msgid "%(hour)02d:%(minute)02d:%(second)02d"
@@ -1241,7 +1249,7 @@ msgstr ""
 #: src/octoprint/static/js/app/viewmodels/control.js:72
 #: src/octoprint/static/js/app/viewmodels/files.js:632
 #: src/octoprint/static/js/app/viewmodels/gcode.js:497
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:473
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:493
 msgid "Tool"
 msgstr ""
 
@@ -1277,14 +1285,14 @@ msgstr ""
 #: src/octoprint/static/js/app/viewmodels/files.js:632
 #: src/octoprint/static/js/app/viewmodels/gcode.js:494
 #: src/octoprint/static/js/app/viewmodels/gcode.js:497
-#: src/octoprint/static/js/app/viewmodels/slicing.js:439
-#: src/octoprint/static/js/app/viewmodels/slicing.js:444
+#: src/octoprint/static/js/app/viewmodels/slicing.js:441
+#: src/octoprint/static/js/app/viewmodels/slicing.js:446
 msgid "Filament"
 msgstr ""
 
 #: src/octoprint/static/js/app/viewmodels/files.js:636
 #: src/octoprint/static/js/app/viewmodels/gcode.js:501
-#: src/octoprint/static/js/app/viewmodels/slicing.js:433
+#: src/octoprint/static/js/app/viewmodels/slicing.js:435
 msgid "Estimated print time"
 msgstr ""
 
@@ -1352,7 +1360,7 @@ msgid "Could not slice %(stl)s to %(gcode)s: %(reason)s"
 msgstr ""
 
 #: src/octoprint/static/js/app/viewmodels/files.js:952
-#: src/octoprint/static/js/app/viewmodels/slicing.js:611
+#: src/octoprint/static/js/app/viewmodels/slicing.js:615
 msgid "Slicing failed"
 msgstr ""
 
@@ -1486,93 +1494,93 @@ msgstr ""
 msgid "Error"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:182
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:188
 msgid "Restarts the print job from the beginning"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:183
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:189
 msgid "Starts the print job"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:184
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:190
 msgid "Resumes the print job"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:185
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:191
 msgid "Pauses the print job"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:234
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:240
 msgid "Still stabilizing..."
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:244
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:250
 msgid ""
 "Based on a linear approximation (very low accuracy, especially at the "
 "beginning of the print)"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:247
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:253
 msgid "Based on the estimate from analysis of file (medium accuracy)"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:250
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:256
 msgid "Based on a mix of estimate from analysis and calculation (medium accuracy)"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:253
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:259
 msgid ""
 "Based on the average total of past prints of this model with the same "
 "printer profile (usually good accuracy)"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:256
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:262
 msgid ""
 "Based on a mix of average total from past prints and calculation (usually"
 " good accuracy)"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:259
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:265
 msgid "Based on the calculated estimate (best accuracy)"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:322
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:328
 msgid "Continue"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:324
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:330
 #: src/octoprint/templates/sidebar/printer_status.jinja2:46
 #: src/octoprint/templates/sidebar/state.jinja2:31
 msgid "Pause"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:335
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:341
 msgid "On Z Change"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:337
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:343
 msgid "Timed"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:337
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:343
 msgid "sec"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:536
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:559
 msgid "This will restart the print job from the beginning."
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:608
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:632
 msgid "This will cancel your print."
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:609
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:633
 #: src/octoprint/templates/dialogs/maintenance/replace_nozzle.jinja2:229
 #: src/octoprint/templates/dialogs/maintenance/replace_nozzle.jinja2:232
 msgid "No"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/printerstate.js:610
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:634
 #: src/octoprint/templates/dialogs/maintenance/replace_nozzle.jinja2:236
 #: src/octoprint/templates/dialogs/maintenance/replace_nozzle.jinja2:239
 msgid "Yes"
@@ -1660,66 +1668,66 @@ msgid ""
 "immediately."
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/slicing.js:147
+#: src/octoprint/static/js/app/viewmodels/slicing.js:149
 msgid "Do nothing"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/slicing.js:148
+#: src/octoprint/static/js/app/viewmodels/slicing.js:150
 msgid "Select for printing"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/slicing.js:149
+#: src/octoprint/static/js/app/viewmodels/slicing.js:151
 msgid "Start printing"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/slicing.js:169
+#: src/octoprint/static/js/app/viewmodels/slicing.js:171
 msgid ""
 "Could not estimate the print operation. Please make sure the slicer is "
 "configured, or contact the support for help."
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/slicing.js:170
+#: src/octoprint/static/js/app/viewmodels/slicing.js:172
 msgid "No slicer configured"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/slicing.js:176
+#: src/octoprint/static/js/app/viewmodels/slicing.js:178
 #, python-format
 msgid "Slicing %(filename)s"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/slicing.js:220
+#: src/octoprint/static/js/app/viewmodels/slicing.js:222
 msgid "Cannot slice on the same device while printing"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/slicing.js:222
+#: src/octoprint/static/js/app/viewmodels/slicing.js:224
 msgid "Cannot slice, not all parameters specified"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/slicing.js:225
+#: src/octoprint/static/js/app/viewmodels/slicing.js:227
 msgid "Start the slicing process"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/slicing.js:460
+#: src/octoprint/static/js/app/viewmodels/slicing.js:462
 msgid "Unable to get time estimation for file."
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/slicing.js:461
+#: src/octoprint/static/js/app/viewmodels/slicing.js:463
 msgid "Estimation failed"
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/slicing.js:610
+#: src/octoprint/static/js/app/viewmodels/slicing.js:614
 msgid ""
 "Could not slice the selected file. Please make sure your printer is "
 "connected."
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/slicing.js:647
+#: src/octoprint/static/js/app/viewmodels/slicing.js:654
 msgid ""
 "Could not find the prepared file for print. Please consult the logs for "
 "details."
 msgstr ""
 
-#: src/octoprint/static/js/app/viewmodels/slicing.js:648
+#: src/octoprint/static/js/app/viewmodels/slicing.js:655
 msgid "Print start failed"
 msgstr ""
 
@@ -1739,21 +1747,31 @@ msgstr ""
 msgid "This will delete the API Key. It will cease to to function immediately."
 msgstr ""
 
-#: src/octoprint/static/js/app/workbench/main.three.js:279
+#: src/octoprint/static/js/app/viewmodels/workbench.js:143
+#: src/octoprint/static/js/app/viewmodels/workbench.js:149
+msgid "An error occurred while saving your feedback. Please consult the logs."
+msgstr ""
+
+#: src/octoprint/static/js/app/viewmodels/workbench.js:144
+#: src/octoprint/static/js/app/viewmodels/workbench.js:150
+msgid "Save feedback failed"
+msgstr ""
+
+#: src/octoprint/static/js/app/workbench/main.three.js:329
 msgid "The scene was saved to the local filesystem."
 msgstr ""
 
-#: src/octoprint/static/js/app/workbench/main.three.js:280
+#: src/octoprint/static/js/app/workbench/main.three.js:330
 msgid "Save success"
 msgstr ""
 
-#: src/octoprint/static/js/app/workbench/main.three.js:284
+#: src/octoprint/static/js/app/workbench/main.three.js:334
 msgid ""
 "Could not save the scene in the server filesystem. Make sure you have the"
 " right permissions and disk space."
 msgstr ""
 
-#: src/octoprint/static/js/app/workbench/main.three.js:285
+#: src/octoprint/static/js/app/workbench/main.three.js:335
 msgid "Save failed"
 msgstr ""
 
@@ -2980,19 +2998,23 @@ msgstr ""
 msgid "Refresh file list"
 msgstr ""
 
-#: src/octoprint/templates/sidebar/files_header.jinja2:44
+#: src/octoprint/templates/sidebar/files_header.jinja2:43
+msgid "Create folder"
+msgstr ""
+
+#: src/octoprint/templates/sidebar/files_header.jinja2:51
 msgid "SD Card operations"
 msgstr ""
 
-#: src/octoprint/templates/sidebar/files_header.jinja2:48
+#: src/octoprint/templates/sidebar/files_header.jinja2:55
 msgid "Initialize SD card"
 msgstr ""
 
-#: src/octoprint/templates/sidebar/files_header.jinja2:49
+#: src/octoprint/templates/sidebar/files_header.jinja2:56
 msgid "Refresh SD files"
 msgstr ""
 
-#: src/octoprint/templates/sidebar/files_header.jinja2:50
+#: src/octoprint/templates/sidebar/files_header.jinja2:57
 msgid "Release SD card"
 msgstr ""
 
@@ -3391,5 +3413,10 @@ msgstr ""
 msgid ""
 "Needs to be reachable from the browser displaying the BEESOFT UI, used to"
 " embed the webcam stream into the page."
+msgstr ""
+
+#: src/octoprint/util/bvc_gcoder.py:73
+#, python-format
+msgid "raw G-Code line \"%s\" could not be parsed"
 msgstr ""
 
