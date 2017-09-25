@@ -11,21 +11,14 @@
     <div class="control-group">
         <label class="control-label" for="settings-cura2-path">{{ _('Path to CuraEngine') }}</label>
         <div class="controls">
-            <input type="text" class="input-block-level" data-bind="value: settings.plugins.cura2.cura_engine2">
+            <input id="settings-cura2-path" type="text" class="input-block-level" data-bind="value: settings.plugins.cura2.cura_engine" />
         </div>
     </div>
     <div class="control-group">
         <div class="controls">
             <label class="checkbox">
                 <input type="checkbox"
-                       data-bind="checked: settings.plugins.cura2.debug_logging"> {{ _('Log the output of CuraEngine to <code>plugin_cura2_engine.log</code>') }}
-            </label>
-        </div>
-    </div>
-    <div class="control-group">
-        <div class="controls">
-            <label class="checkbox">
-                <input type="checkbox" data-bind="checked: settings.plugins.cura2.cura2"> {{ _('Use CuraEngine 2.6') }}
+                       data-bind="checked: settings.plugins.cura2.debug_logging" /> {{ _('Log the output of CuraEngine to <code>plugin_cura2_engine.log</code>') }}
             </label>
         </div>
     </div>
@@ -34,9 +27,10 @@
 <h4>{{ _('Profiles') }}</h4>
 
 <div class="pull-right">
-    <small>{{ _('Sort by') }}:  <a href="#"  data-bind="click: function() { profiles.changeSorting('id'); }">{{ _('Identifier') }} ({{ _('ascending') }})</a> |
-                                <a href="#" ata-bind="click: function() { profiles.changeSorting('name'); }">{{ _('Name') }} ({{ _('ascending') }})</a> |
-                                <a href="#" ata-bind="click: function() { profiles.changeSorting('brand'); }">{{ _('Brand') }} ({{ _('ascending') }})</a>
+    <small>{{ _('Sort by') }}:
+        <a href="#" data-bind="click: function() { profiles.changeSorting('id'); }">{{ _('Identifier') }} ({{ _('ascending') }})</a> |
+        <a href="#" data-bind="click: function() { profiles.changeSorting('name'); }">{{ _('Name') }} ({{ _('ascending') }})</a> |
+        <a href="#" data-bind="click: function() { profiles.changeSorting('brand'); }">{{ _('Brand') }} ({{ _('ascending') }})</a>
     </small>
 </div>
 <table class="table table-striped table-hover table-condensed table-hover">
@@ -90,7 +84,7 @@
                 <span class="btn fileinput-button">
                     <span>{{ _('Browse...') }}</span>
                     <input id="settings-cura2-import" type="file" name="file"
-                           data-url="{{ url_for("plugin.cura2.import_cura_profile") }}" accept=".json">
+                           data-url="{{ url_for('plugin.cura2.import_cura_profile') }}" accept=".json" />
                 </span>
                         <span class="add-on" data-bind="text: fileName"></span>
                     </div>
@@ -100,28 +94,28 @@
                 <label class="control-label">{{ _('Identifier') }}</label>
                 <div class="controls">
                     <input type="text" class="input-block-level"
-                           data-bind=" attr: {placeholder: placeholderName}">
+                           data-bind=" attr: {placeholder: placeholderName}" />
                 </div>
             </div>
             <div class="control-group">
                 <label class="control-label">{{ _('Name') }}</label>
                 <div class="controls">
                     <input type="text" class="input-block-level"
-                           data-bind=" attr: {placeholder: placeholderDisplayName}">
+                           data-bind=" attr: {placeholder: placeholderDisplayName}" />
                 </div>
             </div>
             <div class="control-group">
                 <label class="control-label">{{ _('Description') }}</label>
                 <div class="controls">
                     <input type="text" class="input-block-level"
-                           data-bind=" attr: {placeholder: placeholderDescription}">
+                           data-bind=" attr: {placeholder: placeholderDescription}" />
                 </div>
             </div>
             <div class="control-group">
                 <div class="controls">
                     <label class="checkbox">
                         <input type="checkbox"
-                               data-bind="checked: profileAllowOverwrite"> {{ _('Overwrite existing file') }}
+                               data-bind="checked: profileAllowOverwrite" /> {{ _('Overwrite existing file') }}
                     </label>
                 </div>
             </div>
@@ -151,7 +145,7 @@
     <div class="modal-body">
         <form class="form-horizontal">
             <div class="control-group">
-                <select class="form-control" id="sel1">
+                <select class="form-control" id="cura2-filament-select">
                     <option>PLA_generic</option>
                     <option>TPU_generic</option>
                     <option>Nylon_generic</option>
@@ -163,14 +157,14 @@
                 </select>
             </div>
             <div class="control-group">
-                <select class="form-control" id="sel1">
+                <select class="form-control" id="cura2-resolution-select">
                     <option>Low</option>
                     <option>Medium</option>
                     <option>High</option>
                     <option>High+</option>
                 </select>
-                <button class="btn green" id="settings-cura2-import-start">{{ _('+') }}</button>
-                <button class="btn green" id="settings-cura2-import-start">{{ _('-') }}</button>
+                <button class="btn green" id="settings-cura2-resolution-add">{{ _('+') }}</button>
+                <button class="btn green" id="settings-cura2-resolution-remove">{{ _('-') }}</button>
             </div>
 
             <div class="panel-group" id="accordion">
@@ -186,7 +180,7 @@
                         <div class="control-group">
                             <label class="control-label">{{ _('Material flow') }}</label>
                             <div class="controls">
-                                <input type="text" class="input-block-level" >
+                                <input type="text" class="input-block-level" />
                             </div>
                         </div>
                     </div>
@@ -203,13 +197,13 @@
                             <div class="control-group">
                                 <label class="control-label">{{ _('Wall thickness') }}</label>
                                 <div class="controls">
-                                    <input type="text" class="input-block-level" >
+                                    <input type="text" class="input-block-level" />
                                 </div>
                             </div>
                             <div class="control-group">
                                 <label class="control-label">{{ _('Speed print') }}</label>
                                 <div class="controls">
-                                    <input type="text" class="input-block-level" >
+                                    <input type="text" class="input-block-level" />
                                 </div>
                             </div>
 

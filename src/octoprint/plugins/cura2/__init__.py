@@ -16,6 +16,7 @@ import octoprint.plugin
 import octoprint.util
 import octoprint.slicing
 from octoprint.settings import settings
+from octoprint.util.paths import normalize as normalize_path
 
 from .profileReader import ProfileReader
 
@@ -161,7 +162,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 	##~~ SlicerPlugin API
 
 	def is_slicer_configured(self):
-		cura_engine = self._settings.get(["cura_engine2"])
+		cura_engine = self._settings.get(["cura_engine"])
 		if cura_engine is not None and os.path.exists(cura_engine):
 			return True
 		else:
@@ -242,9 +243,9 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 				self._cura_logger.info(u"### Slicing %s to %s using profile stored at %s" % (model_path, machinecode_path, profile_path))
 				from octoprint.server import slicingManager
 				profile_default_printer_path = slicingManager.get_slicer_profile_path("cura2") + '/Printers/fdmprinter.def.json'
-				engine_settings, extruder_settings = self.getSettingsToSlice(printer_profile["name"], str(nozzle_size), profile_path, resolution, overrides)
+				engine_settings, extruder_settings = ProfileReader.getSettingsToSlice(printer_profile["name"], str(nozzle_size), profile_path, resolution, overrides)
 
-				executable = self._settings.get(["cura_engine2"])
+				executable = normalize_path(self._settings.get(["cura_engine"]))
 				if not executable:
 					return False, "Path to CuraEngine is not configured "
 
