@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-09-25 18:07+0100\n"
+"POT-Creation-Date: 2017-09-27 12:23+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -2916,7 +2916,7 @@ msgid "Uploaded"
 msgstr ""
 
 #: src/octoprint/templates/sidebar/files.jinja2:56
-msgid "Load and Print"
+msgid "Print GCode"
 msgstr ""
 
 #: src/octoprint/templates/sidebar/files.jinja2:58
@@ -3035,7 +3035,7 @@ msgid ""
 msgstr ""
 
 #: src/octoprint/templates/sidebar/printer_status.jinja2:30
-msgid " Change filament or proceed at your own risk."
+msgid "Change filament or proceed at your own risk."
 msgstr ""
 
 #: src/octoprint/templates/sidebar/printer_status.jinja2:36

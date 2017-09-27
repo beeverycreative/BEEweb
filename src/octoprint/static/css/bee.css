@@ -1621,10 +1621,10 @@ td.settings_users_actions .m-icon {
     display: inline-block;
 }
 #maintenance_dialog .modal-footer .btn-primary {
-    padding: 20px 0;
+    padding: 20px 0 !important;
     text-transform: uppercase;
-    color: #fff;
-    background: #518359;
+    color: #fff !important;
+    background: #518359 !important;
 }
 #maintenanceCloseButton, #maintenance_dialog .modal-footer .btn,
 #wizard_dialog .modal-footer .button-previous,#login_dialog .modal-footer .btn, #cancelMaintenance, #aboutbee_dialog .modal-footer .btn{
@@ -1639,12 +1639,12 @@ td.settings_users_actions .m-icon {
 
 #maintenanceNextButton,
 #wizard_dialog .modal-footer .button-next {
-    padding: 20px;
-    background: #ffcc00;
-    color: #000;
-    border: none;
-    box-shadow: none;
-    text-shadow: none;
+    padding: 20px !important;
+    background: #ffcc00 !important;
+    color: #000 !important;
+    border: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
 }
 
 .slider .slider-selection{

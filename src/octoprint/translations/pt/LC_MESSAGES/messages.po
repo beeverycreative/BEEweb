@@ -173,7 +173,7 @@ msgid "Update successful!"
 msgstr "Atualização bem sucedida!"
 
 msgid "The update finished successfully."
-msgstr "A atualização foi concluída"
+msgstr "A atualização foi concluída."
 
 msgid "Update failed!"
 msgstr "Atualização falhou!"
@@ -189,20 +189,19 @@ msgid "Are you sure you want to update now?"
 msgstr "Tens a certeza que pretendes atualizar agora?"
 
 msgid "This will update the following components and restart the server:"
-msgstr "Isto ira atualizar os componentes seguintes e reiniciar o BEESOFT:"
+msgstr "Isto irá atualizar os componentes seguintes e reiniciar o BEESOFT:"
 
 msgid ""
 "Be sure to read through any linked release notes, especially those for "
 "BEESOFT since they might contain important information you need to know "
 "<strong>before</strong> upgrading."
 msgstr ""
-"Garante que lês todos as notas de lançamentos, especialmente aquelas que "
-"forem para o BEESOFT pois podem conter informação necessária para a "
-"<strong>before</strong> atualização."
+"Garante que lês todas as notas de lançamentos, especialmente aquelas que "
+"forem para o BEESOFT pois podem conter informação necessária saber "
+"<strong>antes</strong> da atualização."
 
 msgid "Are you sure you want to proceed?"
-msgstr "Tens que certeza que pretendes "
-"continuar?"
+msgstr "Tens a certeza que pretendes continuar?"
 
 msgid "Cancel"
 msgstr "Cancelar"
@@ -1036,7 +1035,7 @@ msgid "Estimate"
 msgstr "Estimar"
 
 msgid "Print"
-msgstr "Impressão"
+msgstr "Imprimir"
 
 msgid "Slice"
 msgstr "Slice"
@@ -1085,7 +1084,7 @@ msgid ""
 "WARNING: If you have moved the table up too far against the nozzle, click"
 " \"Cancel\" and restart the operation."
 msgstr ""
-"ATENÇÃO: Se a mesa se encontrar muito afastada do nozzle, clica \"Cancel\""
+"ATENÇÃO: Se a mesa se encontrar muito afastada do nozzle, clica \"Cancelar\""
 " e reinicia todo o processo."
 
 msgid "Step 2"
@@ -1116,7 +1115,7 @@ msgid ""
 "Click \"Calibration test\" if you want to make sure the table has been "
 "correctly calibrated."
 msgstr ""
-"Clica em \"Calibration test\" se pretendes verificar se a mesa ficou bem "
+"Clica em \"Teste de calibração\" se pretendes verificar se a mesa ficou bem "
 "calibrada."
 
 msgid "The extruder nozzle will move along the table."
@@ -1454,7 +1453,7 @@ msgid "No"
 msgstr "Não"
 
 msgid "Yes"
-msgstr "SIm"
+msgstr "Sim"
 
 msgid "Name"
 msgstr "Nome"
@@ -1786,14 +1785,14 @@ msgid ""
 "The estimated amount of filament in the spool is not enough to complete "
 "the print job!"
 msgstr ""
-"O filamento remanescente na bobine pode não ser suficiente para terminar "
+"O filamento na bobine pode não ser suficiente para terminar "
 "a impressão!"
 
 msgid "Change filament or proceed at your own risk."
-msgstr "Muda de filamento ou continua"
+msgstr "Muda de filamento ou continua."
 
 msgid "Loaded File"
-msgstr "Ficheiros carregados"
+msgstr "Ficheiro carregado"
 
 msgid "Resume"
 msgstr "Continuar"
@@ -1886,6 +1885,7 @@ msgid "Cancels the print job"
 msgstr "Cancela a impressão"
 
 
+
 #: src/octoprint/templates/dialogs/files.jinja2:4
 msgid "Create Folder"
 msgstr "Criar Pasta"
@@ -1898,9 +1898,15 @@ msgstr "Introduza o nome da pasta que pretende criar."
 msgid "Folder name"
 msgstr "Nome da pasta"
 
+msgid "Create"
+msgstr "Criar"
+
 #: src/octoprint/templates/dialogs/tab/worbench.jinja2
 msgid "Object Position (mm)"
 msgstr "Posição do objeto (mm)"
+
+msgid "Object Dimensions (mm)"
+msgstr "Dimensão do objeto (mm)"
 
 msgid "Scale Object"
 msgstr "Dimensionar Objeto"
@@ -1924,7 +1930,7 @@ msgid "45° Right"
 msgstr "45° Direita"
 
 msgid "Place on bed"
-msgstr "Posicionar na mesa"
+msgstr "Posicionar na plataforma"
 
 msgid "Move Object"
 msgstr "Mover objeto"
@@ -1945,7 +1951,7 @@ msgid "Reset camera position"
 msgstr "Reverter câmara"
 
 msgid "Clear Platform"
-msgstr "Limpar mesa"
+msgstr "Limpar plataforma"
 
 msgid "The model is out of the printing area."
 msgstr "O modelo está fora da área de impressão."
@@ -1965,8 +1971,34 @@ msgstr "Como classificas a qualidade da impressão?"
 msgid "From 1 to 10, being 10 the best quality."
 msgstr "De 1 a 10, sendo 10 a melhor qualidade."
 
+msgid "Was the print successful?"
+msgstr "A impressão foi bem sucedida?"
+
 msgid "Observations"
 msgstr "Observações"
 
 msgid "Send"
 msgstr "Enviar"
+
+#: src/octoprint/templates/sidebar/files.jinja2:56
+msgid "Print GCode"
+msgstr "Imprimir GCode"
+
+msgid "Heating"
+msgstr "A aquecer"
+
+msgid "Transferring"
+msgstr "A transferir"
+
+msgid "Ready"
+msgstr "Operacional"
+
+msgid "Disconnected"
+msgstr "Desligada"
+
+msgid "Resuming"
+msgstr "A reiniciar"
+
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:632
+msgid "This will cancel your print."
+msgstr "Isto irá cancelar a impressão."
