@@ -957,9 +957,12 @@ input + span.add-on{
 .btn-cancel{
     width: 35%;
     padding: 10px 10px !important;
-    font: 200 18px "din-light", sans-serif;
+    font: 200 13px "din-light", sans-serif;
     background: #676356 !important;
     color: #fff !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .btn-stop{

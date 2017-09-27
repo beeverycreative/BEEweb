@@ -1694,7 +1694,7 @@ msgid ""
 "below."
 msgstr ""
 "Há uma nova versão ativa do BEESOFT agora, é necessário recarregar o "
-"utilizador. Isto irá interromper os trabalhos de impressão em curso "
+"utilizador. Isto não irá interromper os trabalhos de impressão em curso "
 "que possas ter. Por favor recarrega o interface agora clicando no "
 "botão em baixo."
 
@@ -1789,7 +1789,7 @@ msgstr ""
 "a impressão!"
 
 msgid "Change filament or proceed at your own risk."
-msgstr "Muda de filamento ou continua."
+msgstr "Muda de filamento ou continua a teu risco."
 
 msgid "Loaded File"
 msgstr "Ficheiro carregado"
@@ -1801,7 +1801,7 @@ msgid "Restart"
 msgstr "Reiniciar"
 
 msgid "Press PRINT... to print the object(s) on the platform"
-msgstr "Clica em IMPRIMIR... para imprimir o(s) objetos da plataforma"
+msgstr "Clica em IMPRIMIR... para imprimir o(s) objeto(s) da plataforma"
 
 msgid "Print..."
 msgstr "Imprimir..."
@@ -1997,8 +1997,30 @@ msgid "Disconnected"
 msgstr "Desligada"
 
 msgid "Resuming"
-msgstr "A reiniciar"
+msgstr "Reiniciando"
 
 #: src/octoprint/static/js/app/viewmodels/printerstate.js:632
 msgid "This will cancel your print."
 msgstr "Isto irá cancelar a impressão."
+
+msgid ""
+"The server appears to be offline, at least I'm not getting any response "
+"from it. I'll try to reconnect automatically <strong>over the next couple"
+" of minutes</strong>, however you are welcome to try a manual reconnect "
+"anytime using the button below."
+msgstr ""
+"O BEESOFT está a reiniciar, até agora não foi possível obter resposta. "
+"Iremos tentar reconectar automaticamente durante os próximos <strong>dois minutos"
+"</strong>, no entanto se pretenderes tentar manualmente podes clicar no botão"
+" abaixo."
+
+msgid ""
+"The server appears to be offline, at least I'm not getting any response "
+"from it. I <strong>could not reconnect automatically</strong>, but you "
+"may try a manual reconnect using the button below."
+msgstr ""
+"O BEESOFT está a reiniciar, até agora não foi possível obter resposta. "
+"<strong>Não foi possível reconectar automaticamente</strong>,"
+"no entanto se pretenderes tentar manualmente podes clicar no botão"
+" abaixo."
+
