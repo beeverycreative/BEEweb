@@ -1036,7 +1036,7 @@ msgstr ""
 #, python-format
 msgid ""
 "The was an unhandled error while talking to the printer. Due to that "
-"OctoPrint disconnected. Error: %(error)s"
+"BEESOFT disconnected. Error: %(error)s"
 msgstr ""
 
 #: src/octoprint/static/js/app/dataupdater.js:249
@@ -1758,11 +1758,11 @@ msgid "Save feedback failed"
 msgstr ""
 
 #: src/octoprint/static/js/app/workbench/main.three.js:329
-msgid "The scene was saved to the local filesystem."
+msgid "The workarea was saved on the local filesystem."
 msgstr ""
 
 #: src/octoprint/static/js/app/workbench/main.three.js:330
-msgid "Save success"
+msgid "Successfully saved"
 msgstr ""
 
 #: src/octoprint/static/js/app/workbench/main.three.js:334
@@ -2068,7 +2068,7 @@ msgid "OctoPrint"
 msgstr ""
 
 #: src/octoprint/templates/dialogs/about/about.jinja2:3
-msgid "The snappy web interface for your 3D printer"
+msgid "A simple and easy multi-platform 3D printing software"
 msgstr ""
 
 #: src/octoprint/templates/dialogs/maintenance/calibration.jinja2:2
@@ -2466,7 +2466,7 @@ msgstr ""
 #: src/octoprint/templates/dialogs/maintenance/replace_nozzle.jinja2:150
 #: src/octoprint/templates/dialogs/maintenance/replace_nozzle.jinja2:180
 msgid ""
-"WARNING: BE CAREFUL NOT TO TOUCH THE NOZZLE WITH YOUR SKIN DURING THIS "
+"WARNING: BE CAREFUL NOT TO TOUCH THE NOZZLE DURING THIS "
 "PROCESS."
 msgstr ""
 
@@ -2534,7 +2534,7 @@ msgid ""
 msgstr ""
 
 #: src/octoprint/templates/dialogs/maintenance/replace_nozzle.jinja2:222
-msgid "Proceed to insert filament wizard"
+msgid "Proceed to filament wizard"
 msgstr ""
 
 #: src/octoprint/templates/dialogs/settings/accesscontrol.jinja2:5
@@ -2599,7 +2599,7 @@ msgstr ""
 
 #: src/octoprint/templates/dialogs/settings/appearance.jinja2:2
 msgid ""
-"Name of this OctoPrint instance, will be shown in the navigation bar and "
+"Name of this BEESOFT instance, will be shown in the navigation bar and "
 "broadcast on the network"
 msgstr ""
 
@@ -2608,7 +2608,7 @@ msgid "Title"
 msgstr ""
 
 #: src/octoprint/templates/dialogs/settings/appearance.jinja2:8
-msgid "Personalize the color of the navigation bar - maybe to match your printer?"
+msgid "Personalize the color of the navigation bar"
 msgstr ""
 
 #: src/octoprint/templates/dialogs/settings/appearance.jinja2:9
@@ -3130,7 +3130,7 @@ msgid "Current timelapse configuration"
 msgstr ""
 
 #: src/octoprint/templates/sidebar/state.jinja2:8
-msgid "Estimated total print time base on statical analysis or past prints"
+msgid "Estimated total print time base on statistical analysis or past prints"
 msgstr ""
 
 #: src/octoprint/templates/sidebar/state.jinja2:8
