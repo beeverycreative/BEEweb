@@ -326,7 +326,7 @@ msgstr "Plugins"
 msgid "Files"
 msgstr "Ficheiros"
 
-msgid "Workbench"
+msgid "Work Area"
 msgstr "Área de trabalho"
 
 msgid "Temperature"
@@ -1810,10 +1810,10 @@ msgid "Printer options"
 msgstr "Opções da impressora"
 
 msgid "Your"
-msgstr "Teu"
+msgstr "A tua"
 
 msgid "has a file in its internal memory."
-msgstr "tem um ficheiro na sua memória interna."
+msgstr "tem um ficheiro na sua memória."
 
 msgid ""
 "It corresponds to the last file that was printed. Press the button below "
@@ -1883,6 +1883,7 @@ msgstr "Bytes impressos vs total de bytes do ficheiro"
 
 msgid "Cancels the print job"
 msgstr "Cancela a impressão"
+
 
 
 
