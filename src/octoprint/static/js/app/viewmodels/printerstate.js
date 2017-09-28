@@ -101,7 +101,7 @@ $(function() {
                 $('#state').addClass('expanded');
                 $('#state_wrapper').addClass('expanded');
 
-                var h = $('#files').height() - 289;
+                var h = $('#files').height() -  ($('#state_wrapper').height() - 10);
                 $(".gcode_files").height(h);
                 $('.slimScrollDiv').height(h);
             }
@@ -115,7 +115,7 @@ $(function() {
                 $('#state').removeClass('expanded');
                 $('#state_wrapper').removeClass('expanded');
 
-                var h = $('#files').height() - 189;
+                var h = $('#files').height() - ($('#state_wrapper').height() - 10);
                 $(".gcode_files").height(h);
                 $('.slimScrollDiv').height(h);
             }
@@ -303,8 +303,8 @@ $(function() {
             }
             if (self.isPrinting()){
                 var printTimeLeftString = "";
-                if(self.printTimeLeftString() != "-")
-                    printTimeLeftString= _.sprintf("( %s remaining)", self.printTimeLeftString());
+                if(self.printTimeLeftString() !== "-")
+                    printTimeLeftString= _.sprintf("( %s %s)", self.printTimeLeftString(), gettext("remaining"));
                 return _.sprintf("%d%% %s", self.progressString(), printTimeLeftString);
             }
             if (self.isTransferring()){
@@ -587,10 +587,10 @@ $(function() {
         self.pause = function(action) {
             $('#job_pause').prop('disabled', true);
             $('#job_cancel').prop('disabled', true);
-            OctoPrint.job.togglePause(function () {
+            OctoPrint.job.togglePause({'success': function () {
                 $('#job_pause').prop('disabled', false);
                 $('#job_cancel').prop('disabled', false);
-            });
+            }});
 
             self._restoreShutdown();
         };
@@ -622,11 +622,11 @@ $(function() {
                 $('#job_cancel').prop('disabled', true);
                 $('#job_pause').prop('disabled', true);
 
-                OctoPrint.job.cancel(function() {
+                OctoPrint.job.cancel({'success' : function() {
                     $('#job_cancel').prop('disabled', false);
                     $('#job_pause').prop('disabled', false);
                     self.retractStatusPanel();
-                });
+                 }});
             } else {
                 showConfirmationDialog({
                     message: gettext("This will cancel your print."),
@@ -636,11 +636,12 @@ $(function() {
                         $('#job_cancel').prop('disabled', true);
                         $('#job_pause').prop('disabled', true);
 
-                        OctoPrint.job.cancel(function() {
+                        OctoPrint.job.cancel({'success' : function() {
                             $('#job_cancel').prop('disabled', false);
                             $('#job_pause').prop('disabled', false);
                             self.retractStatusPanel();
-                        });
+                            self.insufficientFilament(false); // Forces the insufficient filament to false in case the panel was updated during the confirmation dialog
+                        }});
                     }
 
                 });

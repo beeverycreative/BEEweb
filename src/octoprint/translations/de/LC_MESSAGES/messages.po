@@ -1501,7 +1501,7 @@ msgstr "Aktualisierung nicht gestartet!"
 
 #: src/octoprint/plugins/softwareupdate/static/js/softwareupdate.js:493
 msgid ""
-"The update could not be started. Is it already active? Please consult the"
+"The update could not be started. Please consult the"
 " log for details."
 msgstr ""
 "Die Aktualisierung konnte nicht gestartet werden. Läuft bereits eine? "
@@ -2007,7 +2007,7 @@ msgstr ""
 #, python-format
 msgid ""
 "The was an unhandled error while talking to the printer. Due to that "
-"OctoPrint disconnected. Error: %(error)s"
+"BEESOFT disconnected. Error: %(error)s"
 msgstr ""
 "Es gab einen unbehandelten Fehler bei der Kommunikation mit dem Drucker. "
 "Daher hat OctoPrint die Verbindung getrennt. Fehler: %(error)s"
@@ -3044,8 +3044,8 @@ msgstr ""
 " \"Weiter\" oder \"Beenden\" überspringen."
 
 #: src/octoprint/templates/dialogs/about/about.jinja2:3
-msgid "The snappy web interface for your 3D printer"
-msgstr "The snappy web interface for your 3D printer"
+msgid "A simple and easy multi-platform 3D printing software"
+msgstr "A simple and easy multi-platform 3D printing software"
 
 #: src/octoprint/templates/dialogs/settings/accesscontrol.jinja2:5
 #: src/octoprint/templates/dialogs/settings/accesscontrol.jinja2:66
@@ -3157,7 +3157,7 @@ msgid "Title"
 msgstr "Titel"
 
 #: src/octoprint/templates/dialogs/settings/appearance.jinja2:8
-msgid "Personalize the color of the navigation bar - maybe to match your printer?"
+msgid "Personalize the color of the navigation bar"
 msgstr ""
 "Personalisiere die Farbe the Navigationsleiste - vielleicht um zum "
 "Drucker zu passen?"
@@ -4127,7 +4127,7 @@ msgid "Current timelapse configuration"
 msgstr "Zeitraffer rendern"
 
 #: src/octoprint/templates/sidebar/state.jinja2:8
-msgid "Estimated total print time base on statical analysis or past prints"
+msgid "Estimated total print time base on statistical analysis or past prints"
 msgstr ""
 "Geschätzte Gesamtdauer basierend auf statischer Analyse oder vergangenen "
 "Drucken"

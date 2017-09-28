@@ -76,7 +76,7 @@
 
 <div id="step3" class="hidden">
     <div class="row-fluid">
-        <div class="span2"></div>
+        <div class="span1"></div>
         <div class="span4 text-center unload-gifs">
             <img src="{{ url_for('static', filename='img/maintenance/unload_filament_external.gif') }}" />
         </div>
@@ -89,7 +89,7 @@
         <div class="span4 text-center load-gifs" style="display: none;">
             <img src="{{ url_for('static', filename='img/maintenance/load_filament_internal.gif') }}" />
         </div>
-        <div class="span2">
+        <div class="span3">
             <div class="row-fluid">
                 <button id="load-btn" title="Load" class="btn btn-primary btn-block yellow"
                     data-bind="click: loadFilament, enable: printerState.isOperational()
@@ -114,7 +114,7 @@
     <div class="row-fluid">
         <p><strong>{{ _('Make sure the filament is correctly unloaded before proceeding' ) }}</strong></p>
         <br />
-        <p>{{ _('To unload the filament, push the Unload button and pull the filament steadily.  To load the filament insert it in the inlet hole and push it until it reaches the end. Then click on the Load button, and push the filament a little more until the printer pulls it and extrudes a little filament.') }}
+        <p>{{ _('To unload the filament, push the Unload button and pull the filament steadily. To load the filament insert it in the inlet hole and push it until it reaches the end. Then click on the Load button, and push the filament a little more until the printer pulls it and extrudes a little filament.') }}
         </p>
     </div>
     <hr />

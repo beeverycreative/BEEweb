@@ -326,8 +326,8 @@ BEEwb.main = {
             success: function(data) {
                 // only shows the success message if the filename was not specified, which means it was called from the workbench controls
                 if (showMessage) {
-                    var html = _.sprintf(gettext("The scene was saved to the local filesystem."));
-                    new PNotify({title: gettext("Save success"), text: html, type: "success", hide: true});
+                    var html = _.sprintf(gettext("The workarea was saved on the local filesystem."));
+                    new PNotify({title: gettext("Successfully saved"), text: html, type: "success", hide: true});
                 }
             },
             error: function() {

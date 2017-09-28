@@ -616,17 +616,17 @@ a.brand{
     width: 100%;
 }
 #state.expanded {
-    height: 245px !important;
+    height: 300px !important;
 }
 #state_wrapper {
     position: absolute;
     bottom: 0px;
-    height: 150px;
+    height: 195px;
     width: 100%;
     z-index: 10;
 }
 #state_wrapper.expanded {
-    height: 300px !important;
+    height: 350px !important;
 }
 #state > .accordion-inner{
     background: #32312b !important;
@@ -639,7 +639,7 @@ a.brand{
     width: 100%;
 }
 #state_wrapper.expanded .accordion-heading {
-    bottom: 245px;
+    bottom: 300px;
 }
 #state_wrapper .accordion-heading > .accordion-toggle:first-of-type{
     display: none;
@@ -957,9 +957,12 @@ input + span.add-on{
 .btn-cancel{
     width: 35%;
     padding: 10px 10px !important;
-    font: 200 18px "din-light", sans-serif;
+    font: 200 13px "din-light", sans-serif;
     background: #676356 !important;
     color: #fff !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .btn-stop{
@@ -1401,6 +1404,7 @@ td.settings_users_actions .m-icon {
 }
 .modal-footer-btn {
     padding: 20px 10px !important;
+    min-width: 100px;
 }
 #usersettings_dialog .input-append input {
     width: 375px;
@@ -1621,10 +1625,10 @@ td.settings_users_actions .m-icon {
     display: inline-block;
 }
 #maintenance_dialog .modal-footer .btn-primary {
-    padding: 20px 0;
+    padding: 20px 0 !important;
     text-transform: uppercase;
-    color: #fff;
-    background: #518359;
+    color: #fff !important;
+    background: #518359 !important;
 }
 #maintenanceCloseButton, #maintenance_dialog .modal-footer .btn,
 #wizard_dialog .modal-footer .button-previous,#login_dialog .modal-footer .btn, #cancelMaintenance, #aboutbee_dialog .modal-footer .btn{
@@ -1639,12 +1643,12 @@ td.settings_users_actions .m-icon {
 
 #maintenanceNextButton,
 #wizard_dialog .modal-footer .button-next {
-    padding: 20px;
-    background: #ffcc00;
-    color: #000;
-    border: none;
-    box-shadow: none;
-    text-shadow: none;
+    padding: 20px !important;
+    background: #ffcc00 !important;
+    color: #000 !important;
+    border: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
 }
 
 .slider .slider-selection{

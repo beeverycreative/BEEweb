@@ -819,7 +819,7 @@ $(function() {
             });
 
             $(".gcode_files").slimScroll({
-                height: $('#files').height() - 189,
+                height: $('#files').height() - ($('#state_wrapper').height() - 10),
                 size: "5px",
                 distance: "0",
                 railVisible: true,

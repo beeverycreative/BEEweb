@@ -492,7 +492,7 @@ $(function() {
                     self.updateInProgress = false;
                     self._showPopup({
                         title: gettext("Update not started!"),
-                        text: gettext("The update could not be started. Is it already active? Please consult the log for details."),
+                        text: gettext("The update could not be started. Please consult the log for details."),
                         type: "error",
                         hide: false,
                         buttons: {
