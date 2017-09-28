@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2017-09-27 12:23+0100\n"
+"POT-Creation-Date: 2017-09-28 17:03+0100\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -596,9 +596,7 @@ msgid "Update not started!"
 msgstr ""
 
 #: src/octoprint/plugins/softwareupdate/static/js/softwareupdate.js:495
-msgid ""
-"The update could not be started. Is it already active? Please consult the"
-" log for details."
+msgid "The update could not be started. Please consult the log for details."
 msgstr ""
 
 #: src/octoprint/plugins/softwareupdate/static/js/softwareupdate.js:511
@@ -1544,6 +1542,10 @@ msgstr ""
 msgid "Based on the calculated estimate (best accuracy)"
 msgstr ""
 
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:307
+msgid "remaining"
+msgstr ""
+
 #: src/octoprint/static/js/app/viewmodels/printerstate.js:328
 msgid "Continue"
 msgstr ""
@@ -1793,6 +1795,7 @@ msgid "Powered by "
 msgstr ""
 
 #: src/octoprint/templates/dialogs/files.jinja2:4
+#: src/octoprint/templates/sidebar/files_header.jinja2:43
 msgid "Create Folder"
 msgstr ""
 
@@ -2292,7 +2295,7 @@ msgstr ""
 #: src/octoprint/templates/dialogs/maintenance/change_filament.jinja2:117
 msgid ""
 "To unload the filament, push the Unload button and pull the filament "
-"steadily.  To load the filament insert it in the inlet hole and push it "
+"steadily. To load the filament insert it in the inlet hole and push it "
 "until it reaches the end. Then click on the Load button, and push the "
 "filament a little more until the printer pulls it and extrudes a little "
 "filament."
@@ -2465,9 +2468,7 @@ msgstr ""
 #: src/octoprint/templates/dialogs/maintenance/replace_nozzle.jinja2:89
 #: src/octoprint/templates/dialogs/maintenance/replace_nozzle.jinja2:150
 #: src/octoprint/templates/dialogs/maintenance/replace_nozzle.jinja2:180
-msgid ""
-"WARNING: BE CAREFUL NOT TO TOUCH THE NOZZLE DURING THIS "
-"PROCESS."
+msgid "WARNING: BE CAREFUL NOT TO TOUCH THE NOZZLE DURING THIS PROCESS."
 msgstr ""
 
 #: src/octoprint/templates/dialogs/maintenance/replace_nozzle.jinja2:73
@@ -2996,10 +2997,6 @@ msgstr ""
 
 #: src/octoprint/templates/sidebar/files_header.jinja2:37
 msgid "Refresh file list"
-msgstr ""
-
-#: src/octoprint/templates/sidebar/files_header.jinja2:43
-msgid "Create folder"
 msgstr ""
 
 #: src/octoprint/templates/sidebar/files_header.jinja2:51

@@ -2000,3 +2000,5 @@ msgstr ""
 "no entanto se pretenderes tentar manualmente podes clicar no botão"
 " abaixo."
 
+msgid "remaining"
+msgstr "restante"

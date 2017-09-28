@@ -1014,7 +1014,7 @@ msgid "FILAMENT"
 msgstr "FILAMENTO"
 
 msgid "Remaining filament"
-msgstr "Filamento remanescente"
+msgstr "Filamento restante"
 
 msgid "NOZZLE"
 msgstr "NOZZLE"
@@ -1264,7 +1264,7 @@ msgid ""
 "value."
 msgstr ""
 "Verifica o peso inicial de filamento da bobine. Se a bobine já não for nova "
-"e tens registado a quantidade remanescente, por favor insere esse valor."
+"e tens registado a quantidade restante, por favor insere esse valor."
 
 msgid "Weight of filament left (g)"
 msgstr "Peso do filamento restante (gr)"
@@ -1876,7 +1876,7 @@ msgstr ""
 
 
 msgid "Print Time Left"
-msgstr "Tempo de impressão remanescente"
+msgstr "Tempo de impressão restante"
 
 msgid "Bytes printed vs total bytes of file"
 msgstr "Bytes impressos vs total de bytes do ficheiro"
@@ -2025,3 +2025,5 @@ msgstr ""
 "no entanto se pretenderes tentar manualmente podes clicar no botão"
 " abaixo."
 
+msgid "remaining"
+msgstr "restante"
