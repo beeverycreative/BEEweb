@@ -587,10 +587,10 @@ $(function() {
         self.pause = function(action) {
             $('#job_pause').prop('disabled', true);
             $('#job_cancel').prop('disabled', true);
-            OctoPrint.job.togglePause(function () {
+            OctoPrint.job.togglePause({'success': function () {
                 $('#job_pause').prop('disabled', false);
                 $('#job_cancel').prop('disabled', false);
-            });
+            }});
 
             self._restoreShutdown();
         };
@@ -622,11 +622,11 @@ $(function() {
                 $('#job_cancel').prop('disabled', true);
                 $('#job_pause').prop('disabled', true);
 
-                OctoPrint.job.cancel(function() {
+                OctoPrint.job.cancel({'success' : function() {
                     $('#job_cancel').prop('disabled', false);
                     $('#job_pause').prop('disabled', false);
                     self.retractStatusPanel();
-                });
+                 }});
             } else {
                 showConfirmationDialog({
                     message: gettext("This will cancel your print."),
@@ -636,11 +636,12 @@ $(function() {
                         $('#job_cancel').prop('disabled', true);
                         $('#job_pause').prop('disabled', true);
 
-                        OctoPrint.job.cancel(function() {
+                        OctoPrint.job.cancel({'success' : function() {
                             $('#job_cancel').prop('disabled', false);
                             $('#job_pause').prop('disabled', false);
                             self.retractStatusPanel();
-                        });
+                            self.insufficientFilament(false); // Forces the insufficient filament to false in case the panel was updated during the confirmation dialog
+                        }});
                     }
 
                 });

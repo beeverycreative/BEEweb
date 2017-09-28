@@ -1404,6 +1404,7 @@ td.settings_users_actions .m-icon {
 }
 .modal-footer-btn {
     padding: 20px 10px !important;
+    min-width: 100px;
 }
 #usersettings_dialog .input-append input {
     width: 375px;
