@@ -101,7 +101,7 @@ $(function() {
                 $('#state').addClass('expanded');
                 $('#state_wrapper').addClass('expanded');
 
-                var h = $('#files').height() - 289;
+                var h = $('#files').height() -  ($('#state_wrapper').height() - 10);
                 $(".gcode_files").height(h);
                 $('.slimScrollDiv').height(h);
             }
@@ -115,7 +115,7 @@ $(function() {
                 $('#state').removeClass('expanded');
                 $('#state_wrapper').removeClass('expanded');
 
-                var h = $('#files').height() - 189;
+                var h = $('#files').height() - ($('#state_wrapper').height() - 10);
                 $(".gcode_files").height(h);
                 $('.slimScrollDiv').height(h);
             }

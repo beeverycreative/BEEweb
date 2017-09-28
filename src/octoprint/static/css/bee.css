@@ -616,17 +616,17 @@ a.brand{
     width: 100%;
 }
 #state.expanded {
-    height: 245px !important;
+    height: 300px !important;
 }
 #state_wrapper {
     position: absolute;
     bottom: 0px;
-    height: 150px;
+    height: 195px;
     width: 100%;
     z-index: 10;
 }
 #state_wrapper.expanded {
-    height: 300px !important;
+    height: 350px !important;
 }
 #state > .accordion-inner{
     background: #32312b !important;
@@ -639,7 +639,7 @@ a.brand{
     width: 100%;
 }
 #state_wrapper.expanded .accordion-heading {
-    bottom: 245px;
+    bottom: 300px;
 }
 #state_wrapper .accordion-heading > .accordion-toggle:first-of-type{
     display: none;
