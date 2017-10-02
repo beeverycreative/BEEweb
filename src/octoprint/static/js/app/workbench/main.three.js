@@ -478,6 +478,16 @@ BEEwb.main = {
      },
 
     /**
+     * Helper method to know if there is currently any model on the platform bed
+     */
+    isModelInPlatform: function ( ) {
+        if (this.objects === null || this.objects === undefined)
+            return false;
+
+        return this.objects.children.length > 0;
+    },
+
+    /**
      * Adds the printer bed to the canvas
      *
      */
