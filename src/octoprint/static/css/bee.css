@@ -2124,11 +2124,25 @@ label:hover:before {
 body:lang(de) {
     font-size: 14px !important;
 }
-
 body:lang(de) .fileinput-button {
     font-size: 16px !important;
 }
-
 body:lang(de) .addplatform {
     font-size: 11px !important;
+}
+
+body:lang(pt) {
+    font-size: 14px !important;
+}
+body:lang(pt) .fileinput-button {
+    font-size: 16px !important;
+}
+body:lang(pt) .addplatform {
+    font-size: 12px !important;
+}
+body:lang(pt) .btn-software-update {
+    font-size: 12px !important;
+}
+body:lang(pt) .print-button-msg {
+    font-size: 13px !important;
 }
