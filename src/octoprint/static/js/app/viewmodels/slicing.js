@@ -159,7 +159,7 @@ $(function() {
             self.estimatedFilament(null);
 
             if (!BEEwb.main.isModelInPlatform()) {
-                html = _.sprintf(gettext("There is no model on the platform. First import a model to Print or Estimate."));
+                html = _.sprintf(gettext("There is no model on the platform. First import a model to print or estimate the print time."));
                 new PNotify({title: gettext("No model on the platform"), text: html, type: "warning", hide: false});
                 return;
             }

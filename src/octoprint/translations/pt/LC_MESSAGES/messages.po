@@ -2027,3 +2027,9 @@ msgstr ""
 
 msgid "remaining"
 msgstr "restante"
+
+msgid "There is no model on the platform. First import a model to print or estimate the print time."
+msgstr "Não está nenhum modelo na plataforma. Primeiro importa um modelo 3D para imprimires ou estimares o tempo de impressão."
+
+msgid "No model on the platform"
+msgstr "Nenhum modelo na plataforma"
