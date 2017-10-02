@@ -2118,3 +2118,16 @@ label:hover:before {
 @media (max-width: 320px){
 
 }
+
+/* Language specific CSS hacks */
+body:lang(de) {
+    font-size: 14px !important;
+}
+
+body:lang(de) .fileinput-button {
+    font-size: 16px !important;
+}
+
+body:lang(de) .addplatform {
+    font-size: 11px !important;
+}

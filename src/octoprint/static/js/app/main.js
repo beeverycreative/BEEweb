@@ -137,6 +137,9 @@ $(function() {
 
         moment.locale(LOCALE);
 
+        // This small hack sets the body tag to the currently used language so that the CSS can be adjusted
+        $("body").prop('lang', LOCALE);
+
         // Dummy translation requests for dynamic strings supplied by the backend
         var dummyTranslations = [
             // printer states
@@ -151,7 +154,10 @@ $(function() {
             gettext("Printing"),
             gettext("Paused"),
             gettext("Closed"),
-            gettext("Transfering file to SD")
+            gettext("Transfering file to SD"),
+            gettext("Resuming"),
+            gettext("Heating"),
+            gettext("Transferring")
         ];
 
         //~~ Initialize PNotify
