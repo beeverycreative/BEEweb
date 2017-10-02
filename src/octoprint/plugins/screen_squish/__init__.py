@@ -11,7 +11,7 @@ class ScreenSquishPlugin(octoprint.plugin.AssetPlugin, octoprint.plugin.Template
 		# this is the maintain by hand method, eventually responsive will be built
 		# in or we'll do a complete alternate UI and we won't maintain it this
 		# way
-		self.octoprint_max_version = "1.3.0"
+		self.octoprint_max_version = "2.0.0"
 
 	def get_settings_defaults(self):
 		return dict(
