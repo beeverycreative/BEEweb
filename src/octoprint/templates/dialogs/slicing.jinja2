@@ -193,9 +193,11 @@
                             </label>
                     </div>
                     <div data-bind="visible: gcodeDownloadLink">
-                        <a href="#" class="btn btn-info" data-bind="attr: {href: gcodeDownloadLink}">
+                        <a href="#" class="btn btn-info" data-bind="attr: {href: gcodeDownloadLink}"
+                            onclick="BEEwb.showDownloadFileFeedback();" download>
                             <span class="m-icon downloadwicon"></span>
-                            {{ _('Download GCode') }}</a>
+                            {{ _('Download GCode') }}
+                        </a>
                         <br /><br />
                     </div>
                 </div>

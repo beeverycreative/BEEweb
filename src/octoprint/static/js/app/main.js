@@ -672,5 +672,16 @@ $(function() {
         $('#slicing_configuration_dialog .form-horizontal .control-label').on('click', function(){
             $(this).toggleClass('closed');
         });
+
+        /**
+         * Helper function to show some feedback when a download is finished. Ideally this browser should show
+         * the save as dialog, but at this time nativefier doesn't allow that.
+         */
+        BEEwb.showDownloadFileFeedback = function () {
+            setTimeout(function () {
+                var html = _.sprintf(gettext("The file was saved to your default Downloads folder."));
+                new PNotify({title: gettext("Download complete"), text: html, type: "success", hide: true});
+            }, 700);
+        }
     }
 );
