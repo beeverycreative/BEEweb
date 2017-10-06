@@ -61,7 +61,7 @@ $(function() {
         self.showInsufficientFilament = ko.pureComputed(function() {
             return self.loginState.isUser && self.insufficientFilament()
             && self.isReady() && !(self.isHeating() || self.isPrinting() || self.isPaused() || self.isShutdown())
-            && !self.ignoredInsufficientFilament() && self.filename() !== undefined;
+            && !self.ignoredInsufficientFilament() && self.filename() !== undefined && self.filename() !== null;
         });
         self.showPrintControlAfterFilamentChange = ko.pureComputed(function() {
             return self.loginState.isUser && !self.insufficientFilament()
@@ -434,6 +434,7 @@ $(function() {
             // detects if a print has finished to change the ignoredInsufficientFilament flag
             if (prevPrinting === true && self.isPrinting() !== prevPrinting && !self.isPaused() && !self.isShutdown()) {
                 self.ignoredInsufficientFilament(false);
+                self.filename(undefined);
 
                 // Shows user feedback dialog
                 $("#user_feedback_dialog").modal({
@@ -463,6 +464,7 @@ $(function() {
             // detects if the state changed from ready to closed
             if (prevClosed === false && self.isErrorOrClosed() === true && self.isOperational() === false) {
                 self._hidePrintFromMemory();
+                self.ignoredInsufficientFilament(false);
             }
 
         };

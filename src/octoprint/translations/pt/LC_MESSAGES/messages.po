@@ -754,7 +754,7 @@ msgstr ""
 "(habitualmente preciso)"
 
 msgid "Based on the calculated estimate (best accuracy)"
-msgstr "COm base na estimativa calculada (melhor precisão)"
+msgstr "Com base na estimativa calculada (melhor precisão)"
 
 msgid "Continue"
 msgstr "Continuar"
@@ -1826,8 +1826,7 @@ msgid "Repeat last Print"
 msgstr "Repete a última impressão"
 
 msgid "Press PRINT... to estimate the print time for the objects in the platform."
-msgstr "Clica IMPRIMIR... para ter uma estimativa do tempo de impressão para os "
-"objetos na plataforma."
+msgstr "Clica IMPRIMIR... para estimar o tempo de impressão dos objetos na plataforma."
 
 msgid "Print Time"
 msgstr "Tempo de impressão"
@@ -2027,3 +2026,9 @@ msgstr ""
 
 msgid "remaining"
 msgstr "restante"
+
+msgid "There is no model on the platform. First import a model to print or estimate the print time."
+msgstr "Não está nenhum modelo na plataforma. Primeiro importa um modelo 3D para imprimires ou estimares o tempo de impressão."
+
+msgid "No model on the platform"
+msgstr "Nenhum modelo na plataforma"

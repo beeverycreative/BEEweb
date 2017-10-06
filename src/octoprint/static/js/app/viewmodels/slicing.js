@@ -158,6 +158,12 @@ $(function() {
             self.estimatedPrintTime(null);
             self.estimatedFilament(null);
 
+            if (!BEEwb.main.isModelInPlatform()) {
+                html = _.sprintf(gettext("There is no model on the platform. First import a model to print or estimate the print time."));
+                new PNotify({title: gettext("No model on the platform"), text: html, type: "warning", hide: false});
+                return;
+            }
+
             if (force === true) {
                 self.estimationDialog(true);
             }
@@ -606,7 +612,7 @@ $(function() {
                 .done( function ( ) {
                     self.sliceButtonControl(true);
 
-                    // Only enables the estimation button dialog if it's not an estimate operation
+                    // Only enables the estimation button if it's not an estimate operation
                     if (self.afterSlicing() !== "none") {
                         self.estimateButtonControl(true);
                     }
@@ -615,7 +621,8 @@ $(function() {
                     new PNotify({title: gettext("Slicing failed"), text: html, type: "error", hide: false});
 
                     self.sliceButtonControl(true);
-                    // Only enables the estimation button dialog if it's not an estimate operation
+                    self.estimating(false);
+                    // Only enables the estimation button if it's not an estimate operation
                     if (self.afterSlicing() !== "none") {
                         self.estimateButtonControl(true);
                     }

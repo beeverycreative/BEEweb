@@ -392,7 +392,7 @@ a.brand{
 .usericon  { background: url('../img/icons/profile.svg'); }
 .usersettingsicon  { background: url('../img/icons/profile_grey.svg'); }
 .abouticon  { background: url('../img/icons/aboutgrey.svg'); }
-.helpicon  { background: url('../img/icons/helpgrey.svg'); }
+.helpicon  { background: url('../img/icons/help.svg'); }
 .logouticon  { background: url('../img/icons/logoutgrey.svg'); }
 .shutdownicon { background: url('../img/icons/shutdown.svg'); }
 .addicon { background: url('../img/icons/add.svg'); }
@@ -442,6 +442,7 @@ a.brand{
 .checkgicon { background: url('../img/icons/ok_grey.svg'); }
 .profilegicon { background: url('../img/icons/profile_grey.svg'); }
 .settingsgicon { background: url('../img/icons/settings_grey.svg'); }
+.helpgicon  { background: url('../img/icons/helpgrey.svg'); }
 /*white*/
 .printwicon  { background: url('../img/icons/print_white.svg'); }
 .editwicon  { background: url('../img/icons/edit_white.svg'); }
@@ -2117,4 +2118,31 @@ label:hover:before {
 
 @media (max-width: 320px){
 
+}
+
+/* Language specific CSS hacks */
+body:lang(de) {
+    font-size: 14px !important;
+}
+body:lang(de) .fileinput-button {
+    font-size: 16px !important;
+}
+body:lang(de) .addplatform {
+    font-size: 11px !important;
+}
+
+body:lang(pt) {
+    font-size: 14px !important;
+}
+body:lang(pt) .fileinput-button {
+    font-size: 16px !important;
+}
+body:lang(pt) .addplatform {
+    font-size: 12px !important;
+}
+body:lang(pt) .btn-software-update {
+    font-size: 12px !important;
+}
+body:lang(pt) .print-button-msg {
+    font-size: 13px !important;
 }

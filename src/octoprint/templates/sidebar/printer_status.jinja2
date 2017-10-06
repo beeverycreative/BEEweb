@@ -71,7 +71,7 @@
 </div>
 
 <div id="preparePrint" data-bind="visible: enablePreparePrint" class="hidden">
-    <span>{{ _('Press PRINT... to print the object(s) on the platform') }}</span>
+    <span class="print-button-msg">{{ _('Press PRINT... to print the object(s) on the platform') }}</span>
     <br /><br />
     <button class="btn-prepareprint" id="print_scene"
         data-bind="click: preparePrint, enable: enablePreparePrint">
@@ -97,7 +97,7 @@
     </button>
 </div>
 <div id="noPrinterConnected" data-bind="visible: noPrinterDetected" class="hidden">
-    <span>{{ _('Press PRINT... to estimate the print time for the objects in the platform.') }}</span>
+    <span class="print-button-msg">{{ _('Press PRINT... to estimate the print time for the objects in the platform.') }}</span>
     <br /><br />
     <button class="btn-estimate-print" id="estimate_scene"
         data-bind="click: estimatePrint, enable: enableEstimatePrint">

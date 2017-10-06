@@ -137,6 +137,9 @@ $(function() {
 
         moment.locale(LOCALE);
 
+        // This small hack sets the body tag to the currently used language so that the CSS can be adjusted
+        $("body").prop('lang', LOCALE);
+
         // Dummy translation requests for dynamic strings supplied by the backend
         var dummyTranslations = [
             // printer states
@@ -151,7 +154,10 @@ $(function() {
             gettext("Printing"),
             gettext("Paused"),
             gettext("Closed"),
-            gettext("Transfering file to SD")
+            gettext("Transfering file to SD"),
+            gettext("Resuming"),
+            gettext("Heating"),
+            gettext("Transferring")
         ];
 
         //~~ Initialize PNotify
@@ -666,5 +672,16 @@ $(function() {
         $('#slicing_configuration_dialog .form-horizontal .control-label').on('click', function(){
             $(this).toggleClass('closed');
         });
+
+        /**
+         * Helper function to show some feedback when a download is finished. Ideally this browser should show
+         * the save as dialog, but at this time nativefier doesn't allow that.
+         */
+        BEEwb.showDownloadFileFeedback = function () {
+            setTimeout(function () {
+                var html = _.sprintf(gettext("The file was saved to your default Downloads folder."));
+                new PNotify({title: gettext("Download complete"), text: html, type: "success", hide: true});
+            }, 700);
+        }
     }
 );
