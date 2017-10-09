@@ -377,7 +377,13 @@ class BeeCom(MachineCom):
             elif pos == 'from_memory':
                 print_resp = self._beeCommands.repeatLastPrint()
             else:
-                print_resp = self._beeCommands.printFile(self._currentFile.getFilename())
+                if pos is not None and "estimatedPrintTime" in pos:
+                    print_resp = self._beeCommands.printFile(
+                        self._currentFile.getFilename(),
+                        estimatedPrintTime=pos['estimatedPrintTime']
+                    )
+                else:
+                    print_resp = self._beeCommands.printFile(self._currentFile.getFilename())
 
             if print_resp is True:
                 self._heatupWaitStartTime = time.time()

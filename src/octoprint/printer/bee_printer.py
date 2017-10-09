@@ -50,6 +50,7 @@ class BeePrinter(Printer):
         self._stats = BaseStatistics()
         self._printerStats = None
         self._currentPrintStatistics = None
+        self._currentFileAnalysis = None  # Kept for simple access to send estimations to the printer
 
         # Initializes the slicing manager for filament profile information
         self._slicingManager = SlicingManager(settings().getBaseFolder("slicingProfiles"), printerProfileManager)
@@ -244,6 +245,9 @@ class BeePrinter(Printer):
             self._setProgressData(completion=0)
             self._setCurrentZ(None)
 
+        if self._fileManager.has_analysis(FileDestinations.LOCAL, path):
+            self._currentFileAnalysis = self._fileManager.get_metadata(FileDestinations.LOCAL, path)['analysis']
+
         # saves the path to the selected file
         settings().set(['lastPrintJobFile'], path)
         settings().save()
@@ -255,9 +259,13 @@ class BeePrinter(Printer):
     def start_print(self, pos=None):
         """
         Starts a new print job
-        :param pos:
+        :param pos: Kept for interface purposes (Used in BVC implementation for extra info: in_memory file or gcode analysis data)
         :return:
         """
+        # Uses the pos parameter to pass the analysis of the file to be printed
+        if pos is None and self._currentFileAnalysis is not None:
+            pos = self._currentFileAnalysis
+
         super(BeePrinter, self).start_print(pos)
 
         # saves the current PrintFileInformation object so we can later recover it if the printer is disconnected
