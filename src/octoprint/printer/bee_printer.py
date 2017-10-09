@@ -1248,16 +1248,7 @@ class BeePrinter(Printer):
         """
         Callback method for the comm object, called if the connection state changes.
         """
-        oldState = self._state
-
-        # forward relevant state changes to gcode manager
-        if oldState == BeeCom.STATE_PRINTING:
-            self._analysisQueue.resume()  # printing done, put those cpu cycles to good use
-
-        elif state == BeeCom.STATE_PRINTING:
-            self._analysisQueue.pause()  # do not analyse files while printing
-
-        elif state == BeeCom.STATE_CLOSED or state == BeeCom.STATE_CLOSED_WITH_ERROR:
+        if state == BeeCom.STATE_CLOSED or state == BeeCom.STATE_CLOSED_WITH_ERROR:
             if self._comm is not None:
                 self._comm = None
 
