@@ -368,22 +368,20 @@ class BeeCom(MachineCom):
         try:
             self._changeState(self.STATE_PREPARING_PRINT)
 
-            if self.isSdFileSelected():
-                print_resp = self._beeCommands.startSDPrint(self._currentFile.getFilename())
-
-                if print_resp:
-                    self._sd_status_timer = RepeatedTimer(self._timeout_intervals.get("sdStatus", 1.0), self._poll_sd_status, run_first=True)
-                    self._sd_status_timer.start()
-            elif pos == 'from_memory':
+            if pos == 'from_memory':
+                # special case that signals the print from memory operation
                 print_resp = self._beeCommands.repeatLastPrint()
             else:
+                # standard case where the analysis object is passed in the pos variable
+                estimatedPrintTime = None
+                gcodeLines = None
                 if pos is not None and "estimatedPrintTime" in pos:
-                    print_resp = self._beeCommands.printFile(
-                        self._currentFile.getFilename(),
-                        estimatedPrintTime=pos['estimatedPrintTime']
-                    )
-                else:
-                    print_resp = self._beeCommands.printFile(self._currentFile.getFilename())
+                    estimatedPrintTime = pos['estimatedPrintTime']
+                if pos is not None and "gcodeLines" in pos:
+                    gcodeLines = pos['gcodeLines']
+
+                print_resp = self._beeCommands.printFile(self._currentFile.getFilename(),estimatedPrintTime=estimatedPrintTime, gcodeLines=gcodeLines)
+
 
             if print_resp is True:
                 self._heatupWaitStartTime = time.time()
@@ -714,6 +712,21 @@ class BeeCom(MachineCom):
         :return:
         """
         return self._currentFile
+
+    def getCurrentFileNameFromPrinter(self):
+        """
+        Gets the filename of the file being currently printed or None if no informations is available
+        :return: string with the filename or None
+        """
+        if not self.isOperational():
+            return None
+        try:
+            if self._beeCommands is not None:
+                return self._beeCommands.getCurrentPrintFilename()
+        except Exception as ex:
+            self._logger.error(ex)
+
+        return None
 
     def _getResponse(self):
         """

@@ -156,15 +156,23 @@ class BeePrinter(Printer):
             # and starts the progress monitor
             lastFile = settings().get(['lastPrintJobFile'])
             if lastFile is not None and (self.is_shutdown() or self.is_printing() or self.is_paused()):
-                # Calls the select_file with the real previous PrintFileInformation object to recover the print status
-                if self._currentPrintJobFile is not None:
-                    self.select_file(self._currentPrintJobFile, False)
-                else:
-                    self.select_file(lastFile, False)
+                # Gets the name of the file currently being printed from the printer's memory
+                currentPrinterFile = self._comm.getCurrentFileNameFromPrinter()
 
-                # starts the progress monitor if a print is on going
-                if self.is_printing():
-                    self._comm.startPrintStatusProgressMonitor()
+                if currentPrinterFile is not None and lastFile != currentPrinterFile:
+                    # This means the the connection was established with a different printer than before so we must create a "dummy"
+                    # file information with just the name returned by the printer
+                    self.select_file(PrintingFileInformation(currentPrinterFile), False)
+                else:
+                    # Calls the select_file with the real previous PrintFileInformation object to recover the print status
+                    if self._currentPrintJobFile is not None:
+                        self.select_file(self._currentPrintJobFile, False)
+                    else:
+                        self.select_file(lastFile, False)
+
+                    # starts the progress monitor if a print is on going
+                    if self.is_printing():
+                        self._comm.startPrintStatusProgressMonitor()
 
             elif lastFile is not None and (not self.is_printing() and not self.is_shutdown() and not self.is_paused()):
                 # if a connection is established with a printer that is not printing, unselects any previous file
@@ -245,6 +253,7 @@ class BeePrinter(Printer):
             self._setProgressData(completion=0)
             self._setCurrentZ(None)
 
+        # saves the selected file analysis info to be later passed to the printer in the communications layer
         if self._fileManager.has_analysis(FileDestinations.LOCAL, path):
             self._currentFileAnalysis = self._fileManager.get_metadata(FileDestinations.LOCAL, path)['analysis']
 
