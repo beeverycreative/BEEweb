@@ -228,7 +228,7 @@ $(function() {
             if (self.printTimeLeft() == undefined) {
                 if ( self.isPaused()) {
                     return "-";
-                }else if (!self.printTime() || !(self.isPrinting() )){
+                } else if (!self.printTime() || !(self.isPrinting() )){
                     if (self.lastPrintTime()){
                         return formatFuzzyPrintTime(self.lastPrintTime() * ( 100 - self.progressString()) / 100);
                     }
@@ -237,7 +237,7 @@ $(function() {
                     }
                     return "-";
                 } else {
-                    return gettext("Still stabilizing...");
+                    return "-"; //gettext("Still stabilizing...");
                 }
             } else {
                 return formatFuzzyPrintTime(self.printTimeLeft());
