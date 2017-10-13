@@ -905,7 +905,7 @@ input + span.add-on{
     box-shadow: none !important;
     border: none !important;
     color: #fff;
-    background: #999688;
+    background: #518359;
     padding: 15px;
     margin-right: -2px;
 }
@@ -1175,9 +1175,47 @@ input + span.add-on{
     color: #fff;
     font-size: 14px;
 }
+
+.remote-print-progress {
+    margin: 0px 10px 0px 10px;
+}
+
+.bar.heating-remote-bar {
+    background: orangered !important;
+}
+
+.bar.printing-remote-bar {
+    background: #feca2f !important;
+}
+
+.remote-color {
+	margin: 0px 0px 0px 0px;
+}
+
+.remote-table {
+    padding: 15px;
+    width: 100%;
+}
+
+.remote-table-row {
+    border-bottom: 1px solid #ddd;
+    padding: 10px;
+    height: 100px;
+}
+
+tr:hover {
+    background-color: #ddd !important;
+}
+
+tr:hover td {
+    background-color: transparent !important;
+}
+
+
 #maintenance_dialog .progress {
     margin: 10px -23px -20px -0px !important;
 }
+
 
 .input-search-box{
     background: #111 !important;

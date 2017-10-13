@@ -1,7 +1,7 @@
 <div id="slicing_configuration_dialog" class="modal hide fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
-        <h3><span class="m-icon printgicon"></span>{{ _('Print Setup') }}</h3>
+        <h3><span class="m-icon printgicon"></span>{{ _('Available Printers') }}</h3>
     </div>
     <div class="modal-body">
         <div data-bind="visible: !enableSlicingDialog()">
@@ -10,225 +10,69 @@
         <div data-bind="visible: enableSlicingDialog()">
             <!--<p>{{ _('Please configure which slicer and which slicing profile to use and name the GCode file to slice to below, or click "Cancel" if you do not wish to slice the file now.') }}</p>-->
             <form id="slicing_form" class="form-horizontal">
-               <!-- <div class="control-group">
-                    <label class="control-label">{{ _('Slicer') }}</label>
-                    <div class="controls">
-                        <select data-bind="options: matchingSlicers, optionsText: 'name', optionsValue: 'key', optionsCaption: '{{ _('Select a slicer...') }}', value: slicer, valueAllowUnset: true"></select>
-                    </div>
-                </div>
-                 <div class="control-group">
-                    <label class="control-label">{{ _('Runs locally') }}</label>
-                    <div class="controls">
-                        <strong data-bind="text: slicerSameDevice() ? gettext('Yes') : gettext('No')"></strong>
-                        <span class="help-block"><small>{{ _('For performance reasons locally run slicers are disabled while printing') }}</small></span>
-                    </div>
-                </div>
-                <div class="control-group">
-                    <label class="control-label">{{ _('Slicing Profile') }}</label>
-                    <div class="controls">
-                        <select data-bind="options: profiles, optionsText: 'name', optionsValue: 'key', optionsCaption: '{{ _('Select a slicing profile...') }}', value: profile, valueAllowUnset: true"></select>
-                    </div>
-                </div> -->
 
-                <label class="control-label slice-option">{{ _('Resolution') }}</label>
-                <div class="control-group">
-                    <div class="controls">
-                        <input type="radio" id="resolution1" name="resolution" data-bind="checked: selResolution" value="Low"/>
-                            <label class="radio " for="resolution1">
-                               <span class="icon res1icon"></span>
-                                <div>LOW</div>
-                                <p>0.3mm</p>
-                            </label>
-                        <input type="radio" id="resolution2" name="resolution" data-bind="checked: selResolution" value="Medium" checked/>
-                            <label class="radio " for="resolution2">
-                                <span class="icon res2icon"></span>
-                                <div>MEDIUM</div>
-                                <p>0.2mm</p>
-                            </label>
-                        <input type="radio" id="resolution3" name="resolution" data-bind="checked: selResolution" value="High"/>
-                            <label class="radio " for="resolution3">
-                                <span class="icon res3icon"></span>
-                                <div>HIGH</div>
-                                <p>0.1mm</p>
-                            </label>
-                        <input type="radio" id="resolution4" name="resolution" data-bind="checked: selResolution, enable: enableHighPlusResolution" value="Highplus"/>
-                            <label class="radio " for="resolution4">
-                                <span class="icon res4icon"></span>
-                                <div>HIGH +</div>
-                                <p>0.05mm</p>
-                            </label>
-                    </div>
-                </div>
-                <label class="control-label slice-option">{{ _('Density') }}  <span>({{ _('Infill') }})</span></label>
-                    <div class="control-group">
-                        <div class="controls">
-                            <input type="radio" id="density1" name="density" data-bind="checked: selDensity" value="Low" checked/>
-                                <label class="radio " for="density1">
-                                    <span class="icon den1icon"></span>
-                                    <div>LOW</div>
-                                    <p>5 %</p>
-                                </label>
-                            <input type="radio" id="density2" name="density" data-bind="checked: selDensity" value="Medium"/>
-                                <label class="radio " for="density2">
-                                    <span class="icon den2icon"></span>
-                                    <div>MEDIUM</div>
-                                    <p>10 %</p>
-                                </label>
-                            <input type="radio" id="density3" name="density" data-bind="checked: selDensity" value="High"/>
-                                <label class="radio " for="density3">
-                                    <span class="icon den3icon"></span>
-                                    <div>HIGH</div>
-                                    <p>20 %</p>
-                                </label>
-                            <input type="radio" id="density4" name="density" data-bind="checked: selDensity" value="High+"/>
-                                <label class="radio " for="density4">
-                                    <span class="icon den4icon"></span>
-                                    <div>HIGH +</div>
-                                    <p>40 %</p>
-                                </label>
-                            <input type="radio" id="density5" name="density" data-bind="checked: selDensity" value="Custom"/>
-                                <label class="radio " for="density5">
-                                    <span class="icon den5icon"></span>
-                                    <input id="custom_density" type="number" min="0" max="100" placeholder="X %" data-bind="value: customDensity"/>
-                                </label>
-                        </div>
-                    </div>
-                <label class="control-label slice-option">{{ _('Platform Adhesion') }}</label>
-                    <div class="control-group">
-                        <div class="controls">
-                            <input type="radio" name="platform" id="plat1" data-bind="checked: platformAdhesion" value="None" checked/>
-                                <label class="radio " for="plat1">
-                                    <span class="icon plat1icon"></span>
-                                    <div>{{ _('NONE') }}</div>
-                                    <p></p>
-                                </label>
-
-                            <input type="radio" name="platform" id="plat3" data-bind="checked: platformAdhesion" value="Brim"/>
-                                 <label class="radio" for="plat3">
-                                   <span class="icon plat3icon"></span>
-                                    <div>{{ _('BRIM') }}</div>
-                                    <p></p>
-                                    <!--<small>{{ _('This option creates a base that will allow the model to adhere to the table and help avoid warping. The raft may be hard to remove from the model, so only use when needed.') }}</small>-->
-                                </label>
-                            <input type="radio" name="platform" id="plat2" data-bind="checked: platformAdhesion" value="Raft"/>
-                                 <label class="radio" for="plat2">
-                                    <span class="icon plat2icon"></span>
-                                    <div>{{ _('RAFT') }}</div>
-                                    <p></p>
-                                    <!--<small>{{ _('This option creates a base that will allow the model to adhere to the table and help avoid warping. The raft may be hard to remove from the model, so only use when needed.') }}</small>-->
-                                </label>
-                        </div>
-                    </div>
-                <label class="control-label slice-option"> {{ _('Support') }}</label>
-                    <div class="control-group">
-                        <div class="controls">
-                            <input type="radio" name="support" id="supp1" data-bind="checked: support" value="None" checked/>
-                                <label class="radio " for="supp1">
-                                    <span class="icon supp1icon"></span>
-                                    <div>{{ _('NONE') }}</div>
-                                    <p></p>
-                                </label>
-                            <input type="radio" name="support" id="supp2" data-bind="checked: support" value="Touching Platform" />
-                                 <label class="radio" for="supp2">
-                                    <span class="icon supp2icon"></span>
-                                    <div>{{ _('TOUCHING PLATFORM') }}</div>
-                                    <p></p>
-                                    <!--<small>{{ _('This option creates a base that will allow the model to adhere to the table and help avoid warping. The raft may be hard to remove from the model, so only use when needed.') }}</small>-->
-                                </label>
-                                <input type="radio" name="support" id="supp3" data-bind="checked: support" value="Everywhere"/>
-                                <label class="radio" for="supp3">
-                                   <span class="icon supp3icon"></span>
-                                    <div>{{ _('EVERYWHERE') }}</div>
-                                    <p></p>
-                                    <!--<small>{{ _('This option creates a base that will allow the model to adhere to the table and help avoid warping. The raft may be hard to remove from the model, so only use when needed.') }}</small>-->
-                                </label>
-                        </div>
-                    </div>
-                <!--<div class="control-group">-->
-                    <!--<label class="control-label"><small>{{ _('Filename') }}</small>{{ _('Output') }}</label>-->
-                    <!--<div class="controls">-->
-                        <!--<div class="input-append">-->
-                            <!--<input type="text" data-bind="value: destinationFilename">-->
-                            <!--<span class="add-on" data-bind="text: '.' + destinationExtension()"></span>-->
-                        <!--</div>-->
-                    <!--</div>-->
-                <!--</div>-->
-                <label class="control-label slice-option">{{ _('Details') }}</label>
-                    <div class="control-group">
-                        <div class="controls">
-                            <div class="filament-div">
-                                <span class="small-label">{{ _('FILAMENT') }}:</span>
-                                <span class="filament" data-bind="text: selColor, visible: !estimationDialog()"></span>
-                                <select data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
-                                <span class="remaining-filament" data-bind="visible: !estimationDialog()">
-                                    <div>{{ _('Remaining filament') }}:  <span data-bind="text: filamentInSpool" ></span> (g)</div>
-                                </span>
+                <table align="center" class="remote-table">
+                    <tr class="remote-table-row">
+                        <td width="5%"></td>
+                        <td colspan="2">
+                            <img src="{{ url_for('static', filename='img/logo_beethefirstplus.png') }}" width="100%" />
+                        </td>
+                        <td colspan="4">
+                            <div class="progress remote-print-progress" style="text-align: center">
+                                <div class="bar heating-remote-bar" style="width: 60%">Heating 60%</div>
                             </div>
-                            <div class="nozzle-div">
-                                <span class="small-label">{{ _('NOZZLE') }}: </span>
-                                <span class="nozzle" data-bind="text: selNozzle, visible: !estimationDialog()"></span>
-                                <select data-bind="options: nozzleTypes, value: selNozzle, valueAllowUnset: false, visible: estimationDialog()" ></select>
+                        </td>
+                        <td colspan="1" style="text-align: center">PLA</td>
+                        <td colspan="1">
+                            <div class="progress remote-color" style="text-align: center">
+                                <div class="bar" style="width: 100%;background-color: #0aaaf1 !important;"></div>
                             </div>
-                        </div>
-                    </div>
+                        </td>
+                        <td width="5%"></td>
+                    </tr>
+                    <tr class="remote-table-row">
+                        <td width="5%"></td>
+                        <td colspan="2">
+                            <img src="{{ url_for('static', filename='img/logo_beethefirstplus.png') }}" width="100%" />
+                        </td>
+                        <td colspan="4">
+                            <div class="progress remote-print-progress">
+                                <div class="bar ready-remote-bar" style="width: 100%">READY</div>
+                            </div>
+                        </td>
+                        <td colspan="1" style="text-align: center">PETG</td>
+                        <td colspan="1" >
+                            <div class="progress remote-color" style="text-align: center">
+                                <div class="bar" style="width: 100%;background-color: snow !important;"></div>
+                            </div>
+                        </td>
+                        <td width="5%"></td>
+                    </tr>
+                    <tr class="remote-table-row">
+                        <td width="5%"></td>
+                        <td colspan="2">
+                            <img src="{{ url_for('static', filename='img/logo_beethefirstplus.png') }}" width="100%" />
+                        </td>
+                        <td colspan="4">
+                            <div class="progress remote-print-progress">
+                                <div class="bar printing-remote-bar" style="width: 35%">Printing 35%</div>
+                            </div>
+                        </td>
+                        <td colspan="1" style="text-align: center">Nylon</td>
+                        <td colspan="1" >
+                            <div class="progress remote-color" style="text-align: center">
+                                <div class="bar" style="width: 100%;background-color: red !important;"></div>
+                            </div>
+                        </td>
+                        <td width="5%"></td>
+                    </tr>
+                </table>
 
-                <label class="control-label" data-bind="visible: estimating() || estimationReady()">{{ _('Print Estimation') }}</label>
-                <div class="control-group" id="estimation-output" data-bind="visible: estimating() || estimationReady()">
-                    <br />
-                    <p data-bind="visible: estimating()" >
-                        <span id="estimate_button_loader" class="icon-spinner icon-spin icon-3x" ></span><br />
-                        {{ _('Estimating, please wait...') }}
-                    </p>
-                    <div class="controls" data-bind="visible: estimationReady">
-
-                        <input type="radio" id="estimatedPrintTime" name="time" value="Estimation Time" disabled="disabled"/>
-                            <label class="estimation" for="estimatedPrintTime">
-                               <span class="icon printicon"></span>
-                                <div data-bind="text: estimatedPrintTime"></div>
-                            </label>
-                        <input type="radio" id="estimatedFilament" name="time" value="Estimated Filament" disabled="disabled"/>
-                            <label class="estimation" for="estimatedFilament">
-                               <span class="icon filamenticon"></span>
-                                <div data-bind="text: estimatedFilament"></div>
-                            </label>
-                    </div>
-                    <div data-bind="visible: gcodeDownloadLink">
-                        <a href="#" class="btn btn-info" data-bind="attr: {href: gcodeDownloadLink}"
-                            onclick="BEEwb.showDownloadFileFeedback();" download>
-                            <span class="m-icon downloadwicon"></span>
-                            {{ _('Download GCode') }}
-                        </a>
-                        <br /><br />
-                    </div>
-                </div>
-                <!--<div class="control-group">
-                    <label class="control-label">{{ _('Printer Profile') }}</label>
-                    <div class="controls">
-                        <select data-bind="options: printerProfiles.profiles.items, optionsText: 'name', optionsValue: 'id', value: printerProfile, optionsCaption: '{{ _('Select a printer profile...') }}'"></select>
-                    </div>
-                </div> -->
-                <!--<div class="control-group">-->
-                    <!--<label class="control-label">{{ _('Action') }}</label>-->
-                    <!--<div class="controls">-->
-                        <!--<select data-bind="options: afterSlicingOptions, optionsText: 'text', optionsValue: 'value', value: afterSlicing"></select>-->
-                    <!--</div>-->
-                <!--</div>-->
             </form>
         </div>
     </div>
     <div class="modal-footer">
         <a href="#" class="btn modal-footer-btn" data-dismiss="modal" aria-hidden="true" data-bind="click: closeSlicing">{{ _('Cancel') }}</a>
-        <button id="estimate_button" href="#" class="btn btn-default modal-footer-btn" data-bind="click: sliceAndEstimate, enable: enableEstimateButton">
-            <span class="m-icon estimateicon" data-bind="visible: estimateButtonControl"></span>
-            <span >{{ _('Estimate') }} </span>
-
-        </button>
-        <button id="slice_button" href="#" class="btn btn-primary modal-footer-btn"
-            data-bind="click: $root.printOrSlice(), enable: enableSliceButton, css: {disabled: !$root.enableSliceButton()}, attr: {title: $root.sliceButtonTooltip}">
-            <span class="m-icon printwicon"></span>
-            <span>{{ _('Print') }} </span>
-            <i id="slice_button_loader" class="icon-spinner icon-spin" data-bind="visible: !sliceButtonControl()" ></i>
-        </button>
     </div>
 </div>
 <script>
