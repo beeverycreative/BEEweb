@@ -1401,30 +1401,19 @@ class BeePrinter(Printer):
         :param completion:
         :param filepos:
         :param printTime:
-        :param printTimeLeft:
+        :param printTimeLeft: Kept for interface purposes
         :return:
         """
         try:
-            estimatedTotalPrintTime = self._estimateTotalPrintTime(completion, printTimeLeft)
-            totalPrintTime = estimatedTotalPrintTime
+            totalPrintTime = None
 
             if self._selectedFile and "estimatedPrintTime" in self._selectedFile \
                     and self._selectedFile["estimatedPrintTime"]:
-
-                statisticalTotalPrintTime = self._selectedFile["estimatedPrintTime"]
-                if completion and printTimeLeft:
-                    if estimatedTotalPrintTime is None:
-                        totalPrintTime = statisticalTotalPrintTime
-                    else:
-                        if completion < 0.5:
-                            sub_progress = completion * 2
-                        else:
-                            sub_progress = 1.0
-                        totalPrintTime = (1 - sub_progress) * statisticalTotalPrintTime + sub_progress * estimatedTotalPrintTime
+                totalPrintTime = self._selectedFile["estimatedPrintTime"]
 
             self._progress = completion
             self._printTime = printTime
-            self._printTimeLeft = totalPrintTime - printTimeLeft if (totalPrintTime is not None and printTimeLeft is not None) else None
+            self._printTimeLeft = totalPrintTime - printTime if (totalPrintTime is not None and printTime is not None) else None
             if printTime is None:
                 self._elapsedTime = 0
 
