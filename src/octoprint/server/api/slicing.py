@@ -250,3 +250,41 @@ def _getSlicingProfileData(slicer, name, profile, brand=None):
 	if profile.brand is not None:
 		result["brand"] = profile.brand
 	return result
+
+
+@api.route("/slicing/getRemotePrinters", methods=["POST"])
+@restricted_access
+def getRemotePrinters():
+
+	remotePrinters = {}
+
+	remotePrinter = {}
+	remotePrinter['id'] = 1
+	remotePrinter['model'] = 'BEETHEFIRST+'
+	remotePrinter['state'] = 'Printing'
+	remotePrinter['Progress'] = 60
+	remotePrinter['Material'] = 'PLA'
+	remotePrinter['Color'] = 'Black'
+	remotePrinters[remotePrinter['id']] = remotePrinter
+
+	remotePrinter = {}
+	remotePrinter['id'] = 2
+	remotePrinter['model'] = 'BEETHEFIRST+'
+	remotePrinter['state'] = 'READY'
+	remotePrinter['Progress'] = 100
+	remotePrinter['Material'] = 'PETG'
+	remotePrinter['Color'] = 'Transparent'
+	remotePrinters[remotePrinter['id']] = remotePrinter
+
+	remotePrinter = {}
+	remotePrinter['id'] = 3
+	remotePrinter['model'] = 'BEETHEFIRST+'
+	remotePrinter['state'] = 'Heating'
+	remotePrinter['Progress'] = 80
+	remotePrinter['Material'] = 'Nylon'
+	remotePrinter['Color'] = 'Red'
+	remotePrinters[remotePrinter['id']] = remotePrinter
+
+	return jsonify({
+		"response": remotePrinters
+	})

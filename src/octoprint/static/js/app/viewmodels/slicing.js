@@ -158,6 +158,8 @@ $(function() {
             self.estimatedPrintTime(null);
             self.estimatedFilament(null);
 
+            self.getRemotePrinters()
+
             if (!BEEwb.main.isModelInPlatform()) {
                 html = _.sprintf(gettext("There is no model on the platform. First import a model to print or estimate the print time."));
                 new PNotify({title: gettext("No model on the platform"), text: html, type: "warning", hide: false});
@@ -721,6 +723,36 @@ $(function() {
                 success: function(response) {
                 }
             });
+        };
+
+        /**
+         * Connects to remote server and retrieves connected printer information
+         */
+        self.getRemotePrinters = function() {
+
+            console.log("JS GetPrinters\n")
+
+            /*
+            self.commandLock(true);
+            self._showMovingMessage();
+            $('.load-gifs').show();
+            $('.unload-gifs').hide();
+            */
+
+            $.ajax({
+                url: API_BASEURL + "slicing/getRemotePrinters",
+                type: "POST",
+                dataType: "json",
+                success: function(data) {
+                    var obj = JSON.parse(data);
+                    console.log(obj.response);
+                    console.log("Success GetRemotePrinters\n"+data)
+                },
+                error: function() {
+                    console.log("Error GetRemotePrinters\n");
+                }
+            });
+
         };
     }
 
