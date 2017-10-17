@@ -673,6 +673,10 @@ $(function() {
             $(this).toggleClass('closed');
         });
 
+        $('#remote_printers_dialog .form-horizontal .control-label').on('click', function(){
+            $(this).toggleClass('closed');
+        });
+
         /**
          * Helper function to show some feedback when a download is finished. Ideally this browser should show
          * the save as dialog, but at this time nativefier doesn't allow that.

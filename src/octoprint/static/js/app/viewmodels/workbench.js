@@ -181,7 +181,7 @@ $(function () {
 			// This is a list of dependencies to inject into the plugin, the order which you request here is the order
 			// in which the dependencies will be injected into your view model upon instantiation via the parameters
 			// argument
-			["filesViewModel", "loginStateViewModel", "connectionViewModel", "slicingViewModel", "printerStateViewModel"],
+			["filesViewModel", "loginStateViewModel", "connectionViewModel", "slicingViewModel", "printerStateViewModel","RemoteprintersViewModel"],
 
 			// Finally, this is the list of all elements we want this view model to be bound to.
 			[("#workbench")]

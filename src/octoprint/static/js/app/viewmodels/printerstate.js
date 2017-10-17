@@ -7,6 +7,7 @@ $(function() {
         self.slicing = parameters[2];
         self.connection = parameters[3];
         self.settings = parameters[4];
+        self.remoteprinters = parameters[5];
 
         self.stateString = ko.observable(undefined);
         self.isErrorOrClosed = ko.observable(undefined);
@@ -716,7 +717,8 @@ $(function() {
          * Shows the slicing/estimation dialog window for the workbench
          */
         self.estimatePrint = function () {
-            self.slicing.show('local', BEEwb.helpers.generateSceneName(), true, true);
+            //self.slicing.show('local', BEEwb.helpers.generateSceneName(), true, true);
+            self.remoteprinters.show('local', BEEwb.helpers.generateSceneName(), true, true);
 		};
 
 		self.resizeSidebar = function () {
@@ -745,7 +747,7 @@ $(function() {
 
     OCTOPRINT_VIEWMODELS.push([
         PrinterStateViewModel,
-        ["loginStateViewModel", "printerProfilesViewModel", "slicingViewModel", "connectionViewModel", "settingsViewModel"],
+        ["loginStateViewModel", "printerProfilesViewModel", "slicingViewModel", "connectionViewModel", "settingsViewModel","RemoteprintersViewModel"],
         ["#state_wrapper", "#drop_overlay"]
     ]);
 });
