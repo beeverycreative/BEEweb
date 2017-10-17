@@ -285,6 +285,15 @@ def getRemotePrinters():
 	remotePrinter['Color'] = 'Red'
 	remotePrinters[remotePrinter['id']] = remotePrinter
 
+	remotePrinter = {}
+	remotePrinter['id'] = 4
+	remotePrinter['model'] = 'BEETHEFIRST+'
+	remotePrinter['state'] = 'Heating'
+	remotePrinter['Progress'] = 80
+	remotePrinter['Material'] = 'Nylon'
+	remotePrinter['Color'] = 'Red'
+	remotePrinters[remotePrinter['id']] = remotePrinter
+
 	return jsonify({
 		"response": remotePrinters
 	})

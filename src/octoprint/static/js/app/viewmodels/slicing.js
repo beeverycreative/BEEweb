@@ -743,9 +743,12 @@ $(function() {
                 url: API_BASEURL + "slicing/getRemotePrinters",
                 type: "POST",
                 dataType: "json",
-                success: function(data) {
-                    var obj = JSON.parse(data);
-                    console.log(obj.response);
+                success: function(response) {
+                    //var obj = JSON.parse(response);
+                    $.each(response, function(i, field){
+                        $("div").append(field + " ");
+                    });
+                    //console.log(obj.response);
                     console.log("Success GetRemotePrinters\n"+data)
                 },
                 error: function() {
