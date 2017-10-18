@@ -304,7 +304,7 @@ $(function() {
             if (self.isPrinting()){
                 var printTimeLeftString = "";
                 if(self.printTimeLeftString() !== "-")
-                    printTimeLeftString= _.sprintf("( %s %s)", self.printTimeLeftString(), gettext("remaining"));
+                    printTimeLeftString= _.sprintf("( %s %s )", self.printTimeLeftString(), gettext("remaining"));
                 return _.sprintf("%d%% %s", self.progressString(), printTimeLeftString);
             }
             if (self.isTransferring()){
