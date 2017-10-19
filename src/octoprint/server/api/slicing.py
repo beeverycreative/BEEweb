@@ -261,37 +261,45 @@ def getRemotePrinters():
 	remotePrinter = {}
 	remotePrinter['id'] = 1
 	remotePrinter['model'] = 'BEETHEFIRST+'
+	remotePrinter['imgPath'] = url_for('static', filename='img/logo_beethefirstplus.png')
 	remotePrinter['state'] = 'Printing'
-	remotePrinter['Progress'] = 60
+	remotePrinter['Progress'] = '60%'
 	remotePrinter['Material'] = 'PLA'
 	remotePrinter['Color'] = 'Black'
+	remotePrinter['rgb'] = '#000000 !important'
 	remotePrinters[remotePrinter['id']] = remotePrinter
 
 	remotePrinter = {}
 	remotePrinter['id'] = 2
 	remotePrinter['model'] = 'BEETHEFIRST+'
+	remotePrinter['imgPath'] = url_for('static', filename='img/logo_beethefirstplus.png')
 	remotePrinter['state'] = 'READY'
-	remotePrinter['Progress'] = 100
+	remotePrinter['Progress'] = '100%'
 	remotePrinter['Material'] = 'PETG'
 	remotePrinter['Color'] = 'Transparent'
+	remotePrinter['rgb'] = 'snow  !important'
 	remotePrinters[remotePrinter['id']] = remotePrinter
 
 	remotePrinter = {}
 	remotePrinter['id'] = 3
 	remotePrinter['model'] = 'BEETHEFIRST+'
+	remotePrinter['imgPath'] = url_for('static', filename='img/logo_beethefirstplus.png')
 	remotePrinter['state'] = 'Heating'
-	remotePrinter['Progress'] = 80
+	remotePrinter['Progress'] = '80%'
 	remotePrinter['Material'] = 'Nylon'
 	remotePrinter['Color'] = 'Red'
+	remotePrinter['rgb'] = 'red  !important'
 	remotePrinters[remotePrinter['id']] = remotePrinter
 
 	remotePrinter = {}
 	remotePrinter['id'] = 4
 	remotePrinter['model'] = 'BEETHEFIRST+'
+	remotePrinter['imgPath'] = url_for('static', filename='img/logo_beethefirstplus.png')
 	remotePrinter['state'] = 'Heating'
-	remotePrinter['Progress'] = 80
+	remotePrinter['Progress'] = '80%'
 	remotePrinter['Material'] = 'Nylon'
 	remotePrinter['Color'] = 'Red'
+	remotePrinter['rgb'] = 'red  !important'
 	remotePrinters[remotePrinter['id']] = remotePrinter
 
 	return jsonify({

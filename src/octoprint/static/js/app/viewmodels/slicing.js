@@ -739,17 +739,82 @@ $(function() {
             $('.unload-gifs').hide();
             */
 
+            var table = $("#remote_printers_table");
+            table.empty();
+
+
             $.ajax({
                 url: API_BASEURL + "slicing/getRemotePrinters",
                 type: "POST",
                 dataType: "json",
-                success: function(response) {
-                    //var obj = JSON.parse(response);
-                    $.each(response, function(i, field){
-                        $("div").append(field + " ");
+                success: function(data) {
+
+                    $.each(data.response, function (i, item)
+                    {
+                        var tableRow = $('<tr class="remote-table-row"/>');
+
+                        //Left row space
+                        tableRow.append('<td width="5%"></td>');
+
+                        //Printer logo
+                        var imageCol = $('<td colspan="2"/>');
+                        var img = $('<img src="' + item.imgPath + '">');
+                        imageCol.append(img);
+                        tableRow.append(imageCol);
+
+                        //Printer progress
+                        var progressCol = $('<td colspan="4"/>');
+                        var progressDiv = $('<div class="progress remote-print-progress" style="text-align: center"/>');
+                        var barDiv =$('<div/>');
+                        barDiv.addClass("bar");
+
+                        if(item.state=="READY"){
+                            barDiv.addClass("ready-remote-bar");
+                            barDiv.append('READY');
+                        } else if (item.state=="Printing") {
+                            barDiv.addClass("printing-remote-bar");
+                            barDiv.append('Printing: ' + item.Progress);
+                        } else if (item.state=="Heating") {
+                            barDiv.addClass("heating-remote-bar");
+                            barDiv.append('Heating: ' + item.Progress);
+                        }
+
+                        barDiv.css('width',item.Progress);
+                        progressDiv.append(barDiv);
+                        progressCol.append(progressDiv);
+                        tableRow.append(progressCol);
+
+                        //Material
+                        var materialCol = $('<td colspan="1" style="text-align: center"/>');
+                        materialCol.append(item.Material);
+                        tableRow.append(materialCol);
+
+                        //Color
+                        var colorDiv = $('<div/>');
+                        colorDiv.addClass('progress');
+                        colorDiv.addClass('remote-color');
+                        colorDiv.css("text-align","center");
+                        var rgbDiv = $('<div/>');
+                        rgbDiv.addClass("bar");
+                        rgbDiv.css("width","100%",
+                            "background-color",item.rgb);
+
+                        colorDiv.append(rgbDiv);
+                        tableRow.append(colorDiv);
+                        /*<td colspan="1">
+                            <div class="progress remote-color" style="text-align: center">
+                                <div class="bar" style="width: 100%;background-color: #0aaaf1 !important;"></div>
+                            </div>
+                        </td>*/
+
+                        //Right row space
+                        tableRow.append('<td width="5%"></td>');
+
+                        table.append(tableRow);
                     });
-                    //console.log(obj.response);
-                    console.log("Success GetRemotePrinters\n"+data)
+
+
+                    console.log("Success GetRemotePrinters\n");
                 },
                 error: function() {
                     console.log("Error GetRemotePrinters\n");
