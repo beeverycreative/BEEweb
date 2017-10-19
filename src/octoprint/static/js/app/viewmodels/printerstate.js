@@ -436,12 +436,14 @@ $(function() {
                 self.ignoredInsufficientFilament(false);
                 self.filename(undefined);
 
-                // Shows user feedback dialog
-                $("#user_feedback_dialog").modal({
-                    backdrop: 'static',
-                    keyboard: false
-                });
-                $("#user_feedback_dialog").modal('show');
+                if (!self.isErrorOrClosed()) {
+                    // Shows user feedback dialog
+                    $("#user_feedback_dialog").modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                    $("#user_feedback_dialog").modal('show');
+                }
             }
 
             // detects if a print job as started to re-enable the main Print button through the slicing progress flag
