@@ -601,6 +601,7 @@ def analyse(filePath):
     result['filament_used'] = gCode.filament_length
     result['num_layers'] = gCode.num_layers()
     result['estimated_duration'] = gCode.estimate_duration()
+    result['gcode_lines'] = len(gCode.lines)
 
     return result
 
