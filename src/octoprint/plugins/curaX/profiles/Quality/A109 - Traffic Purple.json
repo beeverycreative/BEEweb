@@ -1,6 +1,6 @@
 {
-    "id": "A119-signalblack",
-    "name": "A119 - Signal Black",
+    "id": "A109-trafficpurple",
+    "name": "A109 - Traffic Purple",
     "version": 2,
     "inherits": "pla_a1xx",
     "cost": 20,
@@ -20,7 +20,7 @@
                     "top_layers": { "default_value": 4 },
                     "bottom_layers": { "default_value": 4 },
                     "default_material_print_temperature": { "default_value": 205 },
-                    "material_flow": { "default_value": 97 }
+                    "material_flow": { "default_value": 98.6 }
                 },
 
                 "medium":
@@ -30,7 +30,7 @@
                     "top_layers": { "default_value": 5 },
                     "bottom_layers": { "default_value": 5 },
                     "default_material_print_temperature": { "default_value": 200 },
-                    "material_flow": { "default_value": 96 }
+                    "material_flow": { "default_value": 97.5 }
                 },
 
                 "high":
@@ -40,7 +40,7 @@
                     "top_layers": { "default_value": 10 },
                     "bottom_layers": { "default_value": 10 },
                     "default_material_print_temperature": { "default_value": 200 },
-                    "material_flow": { "default_value": 96 }
+                    "material_flow": { "default_value": 97.5 }
                 },
 
                 "high+":
@@ -50,7 +50,7 @@
                     "top_layers": { "default_value": 10 },
                     "bottom_layers": { "default_value": 10 },
                     "default_material_print_temperature": { "default_value": 200 },
-                    "material_flow": { "default_value": 96 }
+                    "material_flow": { "default_value": 97.5 }
                 }
             }
         }

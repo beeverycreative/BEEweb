@@ -1,8 +1,8 @@
 {
-    "id": "A119-signalblack",
-    "name": "A119 - Signal Black",
+    "id": "A021-transparent",
+    "name": "A021 - Transparent",
     "version": 2,
-    "inherits": "pla_a1xx",
+    "inherits": "pla_a0xx",
     "cost": 20,
     "color": "#ffffff" ,
     "nozzles_supported": [0.4, 0.6],
