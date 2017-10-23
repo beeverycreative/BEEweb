@@ -2,7 +2,7 @@
     "id": "custom_pla",
     "name": "Custom PLA",
     "version": 2,
-    "inherits": "pla-1xx",
+    "inherits": "pla_a1xx",
     "cost": 20,
     "color": "#e5be04" ,
     "nozzles_supported": [0.4],
