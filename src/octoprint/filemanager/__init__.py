@@ -289,10 +289,13 @@ class FileManager(object):
 					try:
 						if analyser is not None and analyser == 'BVC':
 							import octoprint.util.bvc_gcoder as bvcGcoder
+
 							gcoder_result = bvcGcoder.analyse(self.path_on_disk(dest_location, dest_path))
 							if 'estimated_duration' in gcoder_result:
 								_analysis["estimatedPrintTime"] = gcoder_result['estimated_duration']
+								_analysis["gcodeLines"] = gcoder_result['gcode_lines']
 								self._add_analysis_result(dest_location, dest_path, _analysis)
+
 					except Exception as ex:
 						self._logger.error(ex)
 

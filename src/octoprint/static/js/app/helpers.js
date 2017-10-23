@@ -490,17 +490,8 @@ function formatFuzzyPrintTime(totalSeconds) {
             } else {
                 text = gettext("2 minutes");
             }
-        } else if (minutes < 30) {
-            if (seconds > 30) {
-                replacements.minutes += 1;
-            }
-            text = gettext("%(minutes)d minutes");
-        } else if (minutes <= 40) {
-            text = gettext("40 minutes");
-        } else if (minutes <= 50) {
-            text = gettext("50 minutes");
         } else {
-            text = gettext("1 hour");
+            text = gettext("%(minutes)d minutes");
         }
     } else {
         // only seconds

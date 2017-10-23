@@ -1,0 +1,10 @@
+{
+    "id": "bvc-tpu",
+    "name": "BVC TPU",
+    "version": 2,
+    "inherits": "generic_tpu",
+    "brand": "BeeVeryCreative",	
+    "overrides": {
+    }
+}
+

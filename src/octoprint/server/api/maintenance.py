@@ -149,9 +149,9 @@ def filamentProfiles():
 	Gets the slicing profiles (Filament colors) configured for Cura engine
 	:return:
 	"""
-	print s().get(["slicing", "cura2"])
-	if s().get(["slicing", "cura2"]):
-		default_slicer = "cura2"
+	print s().get(["slicing", "curaX"])
+	if s().get(["slicing", "curaX"]):
+		default_slicer = "curaX"
 	else:
 		default_slicer = s().get(["slicing", "defaultSlicer"])
 

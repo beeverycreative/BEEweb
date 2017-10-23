@@ -398,6 +398,9 @@ class BVCGcodeAnalysisQueue(AbstractAnalysisQueue):
 						"length": gcoder_result['filament_used'],
 						"volume": filament_volume
 					}
+			if "gcode_lines" in gcoder_result:
+				result['gcodeLines'] = gcoder_result['gcode_lines']
+
 			return result
 		except Exception as ex:
 			self._logger.error(ex)

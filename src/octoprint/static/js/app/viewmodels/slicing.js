@@ -618,7 +618,7 @@ $(function() {
                         self.estimateButtonControl(true);
                     }
                 }).error( function (  ) {
-                    html = _.sprintf(gettext("Could not slice the selected file. Please make sure your printer is connected."));
+                    html = _.sprintf(gettext("Could not slice the selected file."));
                     new PNotify({title: gettext("Slicing failed"), text: html, type: "error", hide: false});
 
                     self.sliceButtonControl(true);

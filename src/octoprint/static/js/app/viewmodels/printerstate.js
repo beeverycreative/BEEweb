@@ -228,7 +228,7 @@ $(function() {
             if (self.printTimeLeft() == undefined) {
                 if ( self.isPaused()) {
                     return "-";
-                }else if (!self.printTime() || !(self.isPrinting() )){
+                } else if (!self.printTime() || !(self.isPrinting() )){
                     if (self.lastPrintTime()){
                         return formatFuzzyPrintTime(self.lastPrintTime() * ( 100 - self.progressString()) / 100);
                     }
@@ -237,7 +237,7 @@ $(function() {
                     }
                     return "-";
                 } else {
-                    return gettext("Still stabilizing...");
+                    return "-"; //gettext("Still stabilizing...");
                 }
             } else {
                 return formatFuzzyPrintTime(self.printTimeLeft());
@@ -304,7 +304,7 @@ $(function() {
             if (self.isPrinting()){
                 var printTimeLeftString = "";
                 if(self.printTimeLeftString() !== "-")
-                    printTimeLeftString= _.sprintf("( %s %s)", self.printTimeLeftString(), gettext("remaining"));
+                    printTimeLeftString= _.sprintf("( %s %s )", self.printTimeLeftString(), gettext("remaining"));
                 return _.sprintf("%d%% %s", self.progressString(), printTimeLeftString);
             }
             if (self.isTransferring()){
@@ -436,12 +436,14 @@ $(function() {
                 self.ignoredInsufficientFilament(false);
                 self.filename(undefined);
 
-                // Shows user feedback dialog
-                $("#user_feedback_dialog").modal({
-                    backdrop: 'static',
-                    keyboard: false
-                });
-                $("#user_feedback_dialog").modal('show');
+                if (!self.isErrorOrClosed()) {
+                    // Shows user feedback dialog
+                    $("#user_feedback_dialog").modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                    $("#user_feedback_dialog").modal('show');
+                }
             }
 
             // detects if a print job as started to re-enable the main Print button through the slicing progress flag
