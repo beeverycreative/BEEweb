@@ -90,7 +90,7 @@ class ProfileReader(object):
 		while not done:
 			if inheritPrinter != 'fdmprinter':
 				inheritsList.append(copy.copy(machine_json))
-				machine_json = cls.getPrinterJsonFileByid(id=inheritPrinter, slicer_profile_path=profile_path)
+				machine_json = cls.getPrinterJsonFileByid(printer_id=inheritPrinter, slicer_profile_path=profile_path)
 				inheritPrinter = machine_json['inherits']
 			else:
 				inheritsList.append(machine_json)
@@ -146,9 +146,9 @@ class ProfileReader(object):
 						if 'default_value' in raw_settings[key][k].keys():
 							engine_settings[k] = raw_settings[key][k]
 
-			interface_overrrides = cls.overrideCustomValues(engine_settings,overrides)
+			interface_overrides = cls.overrideCustomValues(engine_settings,overrides)
 			# merge interface overrides
-			engine_settings.update(interface_overrrides)
+			engine_settings.update(interface_overrides)
 
 		return engine_settings, extruder_settings
 
@@ -225,9 +225,9 @@ class ProfileReader(object):
 
 	# get Printer Overrides
 	@classmethod
-	def getPrinterJsonFileByid(cls, id='', slicer_profile_path=''):
+	def getPrinterJsonFileByid(cls, printer_id = '', slicer_profile_path = ''):
 
-		if slicer_profile_path == '' or id == '':
+		if slicer_profile_path == '' or printer_id == '':
 			return None
 
 		for entry in os.listdir(slicer_profile_path + "Printers/"):
@@ -235,7 +235,7 @@ class ProfileReader(object):
 				filePath = slicer_profile_path + 'Printers/' + entry
 				if filePath.endswith('json'):
 					json_file = json.load(open(slicer_profile_path +'Printers/' + entry))
-					if(json_file['id']==id):
+					if json_file['id'] == printer_id:
 						return json_file
 			except:
 				pass
@@ -390,6 +390,7 @@ class ProfileReader(object):
 	def getFilamentHeader(cls, header_id, filament_id, slicer_profile_path):
 		header_value = None
 		custom = False
+		filament_json = dict()
 
 		for entry in os.listdir(slicer_profile_path + "Variants/"):
 			if not entry.endswith(".json"):
