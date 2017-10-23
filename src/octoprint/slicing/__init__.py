@@ -294,7 +294,7 @@ class SlicingManager(object):
 		if printer_profile is None:
 			printer_profile = self._printer_profile_manager.get_current_or_default()
 
-		if slicer_name == "curaX" and settings().get(["slicing", "curaX"]):
+		if slicer_name == "curaX":
 			def slicer_worker(slicer, model_path, machinecode_path, profile_name, overrides, printer_profile, position, callback, callback_args, callback_kwargs):
 				try:
 					ok, result = slicer.do_slice(
@@ -802,7 +802,7 @@ class SlicingManager(object):
 		if not name:
 			raise ValueError("name must be set")
 
-		if settings().get(["slicing", "curaX"]) and slicer == "curaX":
+		if slicer == "curaX":
 			slicer_object_curaX = self.get_slicer(slicer)
 			path = slicer_object_curaX.pathToFilament(self._desanitize(name))
 			if path is None:

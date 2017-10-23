@@ -303,9 +303,8 @@ default_settings = {
 	},
 	"slicing": {
 		"enabled": True,
-		"defaultSlicer": "cura",
+		"defaultSlicer": "curaX",
 		"defaultProfiles": None,
-		"curaX": True  # false if default Slicer is cura 15.04, True to use cura 2.6
 	},
 	"events": {
 		"enabled": True,
@@ -323,7 +322,7 @@ default_settings = {
 		{ "name": "Suppress wait responses", "regex": "Recv: wait"}
 	],
 	"plugins": {
-		"_disabled": ['announcements']
+		"_disabled": ['announcements', 'cura', 'virtual_printer']
 	},
 	"scripts": {
 		"gcode": {

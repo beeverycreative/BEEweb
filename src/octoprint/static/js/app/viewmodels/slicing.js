@@ -66,37 +66,6 @@ $(function() {
             });
         };
 
-        self.profilesForSlicer = function(key) {
-            if (key == undefined) {
-                key = self.slicer();
-            }
-            if (key == undefined || !self.data.hasOwnProperty(key)) {
-                return;
-            }
-            var slicer = self.data[key];
-
-            var selectedProfile = undefined;
-            self.profiles.removeAll();
-            _.each(_.values(slicer.profiles), function(profile) {
-                var name = profile.displayName;
-                if (name == undefined) {
-                    name = profile.key;
-                }
-
-                if (profile.default) {
-                    selectedProfile = profile.key;
-                }
-
-                self.profiles.push({
-                    key: profile.key,
-                    name: name
-                })
-            });
-
-            self.profile(selectedProfile);
-            self.defaultProfile = selectedProfile;
-        };
-
         self.resetProfiles = function() {
             self.profiles.removeAll();
             self.profile(undefined);
@@ -518,22 +487,13 @@ $(function() {
         };
 
         self.slice = function(modelToRemoveAfterSlice) {
-
             // Selects the slicing profile based on the color and resolution
             if (self.selColor() !== null && self.selResolution() !== null) {
-                var nozzleSizeNorm = self.selNozzle() * 1000;
-                var nozzleSizeStr = 'NZ' + nozzleSizeNorm;
 
                 _.each(self.profiles(), function(profile) {
                     // checks if the profile contains the selected color and nozzle size
                     if (_.contains(profile.name, self.selColor())) {
-
-                        if (_.contains(profile.name, self.selResolution())) {
-
-                            if (_.contains(profile.name, nozzleSizeStr)) {
-                                self.profile(profile.key);
-                            }
-                        }
+                        self.profile(profile.key);
                     }
                 });
             }
