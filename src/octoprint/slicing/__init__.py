@@ -294,7 +294,7 @@ class SlicingManager(object):
 		if printer_profile is None:
 			printer_profile = self._printer_profile_manager.get_current_or_default()
 
-		if slicer_name == "cura2" and settings().get(["slicing", "cura2"]):
+		if slicer_name == "curaX" and settings().get(["slicing", "curaX"]):
 			def slicer_worker(slicer, model_path, machinecode_path, profile_name, overrides, printer_profile, position, callback, callback_args, callback_kwargs):
 				try:
 					ok, result = slicer.do_slice(
@@ -715,7 +715,7 @@ class SlicingManager(object):
 
 			printer_id = printer_id.upper()
 
-		slicer_object_cura2 = self.get_slicer(slicer)
+		slicer_object_curaX = self.get_slicer(slicer)
 		for folder in os.listdir(slicer_profile_path):
 			if folder == "Quality" or folder == "Variants":
 				for entry in os.listdir(slicer_profile_path +"/" +folder):
@@ -724,12 +724,12 @@ class SlicingManager(object):
 						continue
 
 					if from_current_printer:
-						if not slicer_object_cura2.isPrinterAndNozzleCompatible(entry, printer_id, nozzle_size):
+						if not slicer_object_curaX.isPrinterAndNozzleCompatible(entry, printer_id, nozzle_size):
 							continue
 
 					#path = os.path.join(slicer_profile_path, entry)
 					profile_name = entry[:-len(".json")]
-					brand= slicer_object_cura2.getFilamentHeader("brand", entry, slicer_profile_path + "/")
+					brand= slicer_object_curaX.getFilamentHeader("brand", entry, slicer_profile_path + "/")
 					# creates a shallow slicing profile
 					temp_profile = self._create_shallow_profile(profile_name, slicer, "json", require_configured, brand)
 					profiles[profile_name] = temp_profile
@@ -802,9 +802,9 @@ class SlicingManager(object):
 		if not name:
 			raise ValueError("name must be set")
 
-		if settings().get(["slicing", "cura2"]) and slicer == "cura2":
-			slicer_object_cura2 = self.get_slicer(slicer)
-			path=slicer_object_cura2.pathToFilament(self._desanitize(name))
+		if settings().get(["slicing", "curaX"]) and slicer == "curaX":
+			slicer_object_curaX = self.get_slicer(slicer)
+			path = slicer_object_curaX.pathToFilament(self._desanitize(name))
 			if path is None:
 				path = os.path.join(self.get_slicer_profile_path(slicer)+"/Variants", "{name}.json".format(name=name))
 		else:

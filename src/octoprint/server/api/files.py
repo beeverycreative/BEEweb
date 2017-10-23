@@ -499,9 +499,9 @@ def gcodeFileCommand(filename, target):
 			return make_response("File not found on '%s': %s" % (target, filename), 404)
 
 		try:
-			if "cura2" in slicingManager.registered_slicers:
-				slicer = "cura2"
-				slicer_instance = slicingManager.get_slicer("cura2")
+			if "curaX" in slicingManager.registered_slicers:
+				slicer = "curaX"
+				slicer_instance = slicingManager.get_slicer("curaX")
 
 			elif "slicer" in data:
 				slicer = data["slicer"]

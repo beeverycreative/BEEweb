@@ -623,7 +623,7 @@ def _process_templates():
 	plugin_names = set()
 	seen_wizards = settings().get(["server", "seenWizards"]) if not first_run else dict()
 	for implementation in template_plugins:
-		if implementation._identifier == "cura2" and not enable_devMode:
+		if implementation._identifier == "curaX" and not enable_devMode:
 			continue
 		name = implementation._identifier
 		# Skips the cura plugin rendering in non developer mode

@@ -211,7 +211,7 @@ def slicingDuplicateSlicerProfile(slicer, name):
 
 def _getSlicingProfilesData(slicer, require_configured=False):
 	result = dict()
-	if slicer == "cura2":
+	if slicer == "curaX":
 		profiles = slicingManager.all_profiles_list_json(slicer,
 													require_configured=require_configured,
 													nozzle_size=printer.getNozzleTypeString().replace("nz", ""),
