@@ -1,6 +1,6 @@
 {
-    "id": "A119-signalblack",
-    "name": "A119 - Signal Black",
+    "id": "A108-lightpink",
+    "name": "A108 - Light Pink",
     "version": 2,
     "inherits": "pla_a1xx",
     "cost": 20,

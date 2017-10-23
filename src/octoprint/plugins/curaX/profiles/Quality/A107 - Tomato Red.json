@@ -1,6 +1,6 @@
 {
-    "id": "A119-signalblack",
-    "name": "A119 - Signal Black",
+    "id": "A107-tomatored",
+    "name": "A107 - Tomato Red",
     "version": 2,
     "inherits": "pla_a1xx",
     "cost": 20,
