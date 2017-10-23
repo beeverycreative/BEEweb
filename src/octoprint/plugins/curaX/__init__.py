@@ -396,7 +396,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 					del self._slicing_commands[machinecode_path]
 
 			self._cura_logger.info("-" * 40)
-		self._cura_logger.info("Slicing Ended")
+			self._cura_logger.info("Slicing Ended")
 
 	def cancel_slicing(self, machinecode_path):
 		with self._job_mutex:

@@ -156,7 +156,6 @@ def install_source(python_executable, folder, user=False, sudo=False):
     # folder where the installation settings files are located
     settings_folder = settings(init=True).getBaseFolder('base')
     try:
-        # copies the files in the /etc directory
         copy_tree(folder + '/firmware', settings_folder + '/firmware')
     except Exception as ex:
         raise RuntimeError(
@@ -164,6 +163,20 @@ def install_source(python_executable, folder, user=False, sudo=False):
     finally:
         print("Firmware files installed.")
 
+
+    # Copies the CuraEngine files to the settings directory
+    print(">>> Copying CuraX files to settings directory...")
+    # folder where the installation settings files are located
+    settings_folder = settings(init=True).getBaseFolder('base')
+    try:
+        # copies the files in the /etc directory
+        copy_tree(folder + '/src/octoprint/plugins/curaX/profiles', settings_folder + '/slicingProfiles/curaX')
+        copy_tree(folder + '/src/octoprint/plugins/curaX/executables', settings_folder + '../CuraEngine2')
+    except Exception as ex:
+        raise RuntimeError(
+            "Could not update, copying the CuraEngine files to respective settings directory failed with error: %s" % ex.message)
+    finally:
+        print("CuraEngine files installed.")
 
     print(">>> Removing client cache files...")
     try:
