@@ -252,7 +252,10 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 				working_dir, _ = os.path.split(executable)
 				args = [executable, 'slice', '-v', '-p', '-j', profile_default_printer_path]
 				for k, v in engine_settings.items():
-					args += ["-s", "%s=%s" % (k, str(v['default_value']))]
+					if 'default_value' in v.keys():
+						args += ["-s", "%s=%s" % (k, str(v['default_value']))]
+					if 'children' in v.keys():
+						args += [["-s","{}={}".format(x, v[x]['default_value'])] for x in v.keys()]
 				if extruder_settings is not None:
 					args += ["-g"]
 					for extruder in extruder_settings:

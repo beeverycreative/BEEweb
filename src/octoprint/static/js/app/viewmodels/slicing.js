@@ -479,6 +479,7 @@ $(function() {
          * Saves the current workbench scene and calls the slicing operation on the resulting STL file
          */
         self.prepareAndSlice = function() {
+
             self.sliceButtonControl(false);
             self.slicingInProgress(true);
 
