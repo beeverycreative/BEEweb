@@ -85,10 +85,12 @@ class ProfileReader(object):
 		inheritsList = []
 		inheritPrinter = machine_json['inherits']
 		done = False
+		engine_settings = {}
+
 		while not done:
-			if(inheritPrinter!='fdmprinter'):
+			if inheritPrinter != 'fdmprinter':
 				inheritsList.append(copy.copy(machine_json))
-				machine_json = cls.getPrinterJsonFileByid(id=inheritPrinter,slicer_profile_path=profile_path)
+				machine_json = cls.getPrinterJsonFileByid(id=inheritPrinter, slicer_profile_path=profile_path)
 				inheritPrinter = machine_json['inherits']
 			else:
 				inheritsList.append(machine_json)
@@ -106,8 +108,8 @@ class ProfileReader(object):
 						raw_settings[key] = {}
 					raw_settings[key].update(i['overrides'][key])
 
-		#Check if it is a printer with more than one extruder
-		#TODO Edit dictionaries merge for multi extruder printers
+		# Check if it is a printer with more than one extruder
+		# TODO Edit dictionaries merge for multi extruder printers
 		if isinstance(nozzle, list) and isinstance(filament, list):
 			extruder_settings = {}
 			#for each extruder
@@ -120,11 +122,11 @@ class ProfileReader(object):
 		# if single extruder
 		else:
 			# get filament and parent overrides
-			filament_Overrides = cls.getFilamentOverrides(filament, printer, nozzle, profile_path, quality);
+			filament_Overrides = cls.getFilamentOverrides(filament, printer, nozzle, profile_path, quality)
 			# get nozzle overrides
-			nozzle_Overrides = cls.getNozzleOverrides(nozzle, profile_path);
+			nozzle_Overrides = cls.getNozzleOverrides(nozzle, profile_path)
 
-			# merge everything toghether
+			# merge everything together
 			for key in filament_Overrides.keys():
 				if key not in raw_settings.keys():
 					raw_settings[key] = {}
@@ -136,7 +138,6 @@ class ProfileReader(object):
 			#engine_settings = cls.merge_dicts(engine_settings, filament_Overrides, nozzle_Overrides)
 			# merge interface overrides
 
-			engine_settings = {}
 			for key in raw_settings.keys():
 				if 'default_value' in raw_settings[key].keys():
 					engine_settings[key] = raw_settings[key]
@@ -151,8 +152,8 @@ class ProfileReader(object):
 
 		return engine_settings, extruder_settings
 
-	# Connect interface choises with curaEngine 2 parameters
-	# Interfaces choises are: fill_density, platform_adhesion and support
+	# Connect interface choices with curaEngine 2 parameters
+	# Interfaces choices are: fill_density, platform_adhesion and support
 	@classmethod
 	def overrideCustomValues(cls, engine_settings,overrides):
 
@@ -229,7 +230,6 @@ class ProfileReader(object):
 		if slicer_profile_path == '' or id == '':
 			return None
 
-		printer_json = None
 		for entry in os.listdir(slicer_profile_path + "Printers/"):
 			try:
 				filePath = slicer_profile_path + 'Printers/' + entry
@@ -293,6 +293,8 @@ class ProfileReader(object):
 	def getFilamentOverrides(cls, filament_id, printer_id, nozzle_id, slicer_profile_path, quality=None):
 		overrides_Values = {}
 		custom = False
+		logger = logging.getLogger("octoprint.plugin.curaX.profileReader")
+		filament_json = dict()
 
 		for entry in os.listdir(slicer_profile_path + "Variants/"):
 			if not entry.endswith(".json"):
@@ -334,7 +336,7 @@ class ProfileReader(object):
 		# check if nozzle in printer is compatible
 		if 'nozzles_supported' in filament_json:
 			if nozzle_id not in str(filament_json['nozzles_supported']):
-				print "Nozzle not supported"
+				logger.warning("Nozzle not supported")
 
 		# check if it was parent, if so, get overrides
 		if 'inherits' in filament_json:
@@ -365,18 +367,17 @@ class ProfileReader(object):
 	@classmethod
 	def getPrinterHeader(cls, header_id, printer_id, slicer_profile_path):
 		header_value = None
-		custom = True
+		printer_json = dict()
 		for entry in os.listdir(slicer_profile_path + "Printers/"):
 			if not entry.endswith(".json"):
 				# we are only interested in profiles and no hidden files
 				continue
 
-			if printer_id.lower().replace(" ", "") != entry.lower().replace(" ", "")[:-len(".json")] :
+			if printer_id.lower().replace(" ", "") != entry.lower().replace(" ", "")[:-len(".json")]:
 				continue
 
 			with open(slicer_profile_path +'Printers/' + entry) as data_file:
 				printer_json = json.load(data_file)
-
 
 		if header_id in printer_json:
 			header_value = printer_json[header_id]
@@ -470,7 +471,7 @@ class ProfileReader(object):
 		from octoprint.server import slicingManager
 		logger = logging.getLogger("octoprint.plugin.curaX.profileReader")
 		slicer_profile_path= slicingManager.get_slicer_profile_path("curaX")+'/'
-		printer_json = None
+
 		try:
 			#check nozzle
 			for entry in os.listdir(slicer_profile_path + "Printers/"):
