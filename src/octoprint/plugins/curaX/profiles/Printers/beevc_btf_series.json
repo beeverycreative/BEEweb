@@ -1,0 +1,81 @@
+{
+    "id": "beevc_btf_series",
+    "name": "BEEVC BTF Series",
+    "version": 2,
+    "inherits": "fdmprinter",
+    "nozzles_supported": [0.4, 0.6],
+    "machine_cost": 1,
+    "electric_consumption": 0.2,
+    "metadata": 
+    {
+        "visible": true,
+        "author": "BEEVERYCREATIVE",
+        "manufacturer": "BEEVERYCREATIVE",
+        "category": "Other",
+        "platform": "BEEVERYCREATIVE-BEETHEFIRST.stl",
+        "platform_offset": [0, 0, 0],
+        "file_formats": "text/x-gcode"
+    },
+
+    "overrides": 
+    {
+        "machine_settings":
+        {       
+            "machine_name": { "default_value": "BEETHEFIRST" },
+            "machine_start_gcode": { "default_value": "; -- START GCODE --\nG21                     ;set units to millimetres\nG90                     ;set to absolute positioning\nM107                    ;set fan speed to zero (turned off)\nG28 X0 Y0               ;move to the X/Y origin (Home)\nM107 \nG28 \nG92 E \nG1 X-98.0 Y-20.0 Z5.0 F3000 \nG1 Y-70.0 Z0.3 \nG1 X-98.0 Y44.0 F500 E27 \nG92 E\n; -- end of START GCODE --" },
+            "machine_end_gcode": { "default_value": "; -- END GCODE --\nM104 S0                 ;set extruder temperature to zero (turned off)\nG28 X Z  ; home X axis and z\nG1 Y65 \nG92 E \nM300;\nM84                     ;turn off steppers\n; -- end of END GCODE --" },
+            "material_bed_temp_wait": { "default_value": false },
+            "material_print_temp_wait": { "default_value": false },
+            "machine_width": { "default_value": 190 },
+            "machine_depth": { "default_value": 135 },
+            "machine_height": { "default_value": 125 },
+            "machine_heated_bed": { "default_value": false },
+            "machine_center_is_zero": { "default_value": true },
+            "machine_extruder_count": { "default_value": 1 },
+            "machine_acceleration": { "default_value": 500}
+    	},
+
+        "shell": 
+        {	
+            "wall_0_wipe_dist": { "default_value": 0.2},
+            "outer_inset_first": { "default_value": false },
+            "z_seam_type": { "default_value": "sharpest_corner" }
+        },
+
+        "infill": 
+        { 
+            "infill_pattern": { "default_value": "triangles" }
+         },
+
+        "material":
+        {
+            "material_diameter": { "default_value": 1.75},
+            "retract_at_layer_change": { "default_value": false },
+            "retraction_amount": { "default_value": 1.5},
+            "retraction_speed": { "default_value": 50},
+            "retraction_extra_prime_amount": { "default_value": 0}
+         },
+
+        "speed":
+        {
+            "speed_travel": { "default_value": 100},
+            "acceleration_enabled": { "default_value": true },
+            "acceleration_print": { "default_value": 500},
+            "jerk_enabled": { "default_value": false }
+        },
+
+        "travel":
+        {
+        	"travel_retract_before_outer_wall": { "default_value": false }
+        },
+
+        "experimental":
+        {
+        	"coasting_enable": { "default_value": false },
+        	"coasting_volume": { "default_value": 0.064},
+        	"coasting_min_volume": { "default_value": 0.8},
+            "support_skip_some_zags": { "default_value": false },
+        	"coasting_speed": { "default_value": 90}
+        }
+    }
+}

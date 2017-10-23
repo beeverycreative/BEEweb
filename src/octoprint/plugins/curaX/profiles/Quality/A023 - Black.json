@@ -1,50 +1,56 @@
 {
-    "id": "A023-black",
-    "name": "A023 - Black",
+    "id": "A119-signalblack",
+    "name": "A119 - Signal Black",
     "version": 2,
-    "inherits": "pla-0xx",
+    "inherits": "pla_a1xx",
     "cost": 20,
     "color": "#ffffff" ,
-    "nozzles_supported": [0.4],
+    "nozzles_supported": [0.4, 0.6],
     "unload_temperature": 210,
     "PrinterGroups":[
         {
             "group_printers": ["beethefirst","beethefirstplus","beethefirstplusa","beeme","beeinschool","beeinschoola"],
-            "quality": {
-                "low": {		
-		    "speed_print":  { "default_value": 60   },
-		    "layer_height": { "default_value": 0.5  }
+            "quality":
+            {
+
+                "low":
+                {		
+        		    "layer_height": { "default_value": 0.3 },
+                    "layer_height_0": { "default_value": 0.3 },
+                    "top_layers": { "default_value": 4 },
+                    "bottom_layers": { "default_value": 4 },
+                    "default_material_print_temperature": { "default_value": 205 },
+                    "material_flow": { "default_value": 97 }
                 },
-                "medium":{		
-		    "layer_height": { "default_value": 0.2  }
+
+                "medium":
+                {		
+        		    "layer_height": { "default_value": 0.2 },
+                    "layer_height_0": { "default_value": 0.2 },
+                    "top_layers": { "default_value": 5 },
+                    "bottom_layers": { "default_value": 5 },
+                    "default_material_print_temperature": { "default_value": 200 },
+                    "material_flow": { "default_value": 96 }
                 },
-                "high":{		
-		    "layer_height": { "default_value": 0.1  },
-                    "material_flow": { "default_value": 104 }
+
+                "high":
+                {		
+        		    "layer_height": { "default_value": 0.1 },
+                    "layer_height_0": { "default_value": 0.2 },
+                    "top_layers": { "default_value": 10 },
+                    "bottom_layers": { "default_value": 10 },
+                    "default_material_print_temperature": { "default_value": 200 },
+                    "material_flow": { "default_value": 96 }
                 },
-                "high+":{		
-		    "layer_height": { "default_value": 0.05 },
-                    "material_flow": { "default_value": 104 }
-                }
-            }
-        },
-        {
-            "group_printers": ["hellobeeprusa"],
-            "quality": {
-                "low": {		
-		    "speed_print":  { "default_value": 60   },
-		    "layer_height": { "default_value": 0.5  }
-                },
-                "medium":{		
-		    "layer_height": { "default_value": 0.2  }
-                },
-                "high":{		
-		    "layer_height": { "default_value": 0.1  },
-                    "material_flow": { "default_value": 104 }
-                },
-                "high+":{		
-		    "layer_height": { "default_value": 0.05 },
-                    "material_flow": { "default_value": 104 }
+
+                "high+":
+                {		
+        		    "layer_height": { "default_value": 0.05 },
+                    "layer_height_0": { "default_value": 0.2 },
+                    "top_layers": { "default_value": 10 },
+                    "bottom_layers": { "default_value": 10 },
+                    "default_material_print_temperature": { "default_value": 200 },
+                    "material_flow": { "default_value": 96 }
                 }
             }
         }
