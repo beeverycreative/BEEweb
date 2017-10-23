@@ -1,11 +1,6 @@
 # coding=utf-8
 from __future__ import absolute_import
 
-from StdSuites.AppleScript_Suite import inches
-from string import _multimap
-
-from tornado.gen import engine
-
 __author__ = "Bruno Andrade"
 __license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
 __copyright__ = "Copyright (C) 2014 The OctoPrint Project - Released under terms of the AGPLv3 License"
