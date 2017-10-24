@@ -171,7 +171,6 @@ def install_source(python_executable, folder, user=False, sudo=False):
     try:
         # copies the files in the /etc directory
         copy_tree(folder + '/src/octoprint/plugins/curaX/profiles', settings_folder + '/slicingProfiles/curaX')
-        copy_tree(folder + '/src/octoprint/plugins/curaX/executables', settings_folder + '../CuraEngine2')
     except Exception as ex:
         raise RuntimeError(
             "Could not update, copying the CuraEngine files to respective settings directory failed with error: %s" % ex.message)

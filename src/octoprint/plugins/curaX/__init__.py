@@ -143,7 +143,6 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 		new_debug_logging = self._settings.get_boolean(["debug_logging"])
 
-		settings().set(["slicing", "curaX"], self._settings.get_boolean(["curaX"]))
 		if old_debug_logging != new_debug_logging:
 			if new_debug_logging:
 				self._cura_logger.setLevel(logging.DEBUG)
@@ -153,10 +152,9 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 	def get_settings_defaults(self):
 		return dict(
-			cura_engine2=None,
+			cura_engine=None,
 			default_profile=None,
-			debug_logging=False,
-			curaX=settings().get(["slicing", "curaX"])
+			debug_logging=False
 		)
 
 	##~~ SlicerPlugin API
