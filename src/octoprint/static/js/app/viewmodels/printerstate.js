@@ -747,7 +747,7 @@ $(function() {
 
     OCTOPRINT_VIEWMODELS.push([
         PrinterStateViewModel,
-        ["loginStateViewModel", "printerProfilesViewModel", "slicingViewModel", "connectionViewModel", "settingsViewModel","RemoteprintersViewModel"],
+        ["loginStateViewModel", "printerProfilesViewModel", "slicingViewModel", "connectionViewModel", "settingsViewModel","remotePrintersViewModel"],
         ["#state_wrapper", "#drop_overlay"]
     ]);
 });

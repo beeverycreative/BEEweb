@@ -1,5 +1,5 @@
 $(function() {
-    function RemoteprintersViewModel(parameters) {
+    function RemotePrintersViewModel(parameters) {
         var self = this;
 
         self.loginState = parameters[0];
@@ -153,44 +153,11 @@ $(function() {
         self.afterSlicing = ko.observable("none");
 
         self.show = function(target, file, force, workbench, path) {
-            self.estimationDialog(false);
-            self.slicingDoneEstimationCallback = undefined;
-            self.estimatedPrintTime(null);
-            self.estimatedFilament(null);
 
-            if (!BEEwb.main.isModelInPlatform()) {
-                html = _.sprintf(gettext("There is no model on the platform. First import a model to print or estimate the print time."));
-                new PNotify({title: gettext("No model on the platform"), text: html, type: "warning", hide: false});
-                return;
-            }
+            self.getRemotePrinters();
 
-            if (force === true) {
-                self.estimationDialog(true);
-            }
+            $("#remote_printers_dialog").modal("show");
 
-            var filename = file.substr(0, file.lastIndexOf("."));
-            if (filename.lastIndexOf("/") != 0) {
-                path = path || filename.substr(0, filename.lastIndexOf("/"));
-                filename = filename.substr(filename.lastIndexOf("/") + 1);
-            }            self.requestData(function() {
-                if (!self.enableSlicingDialog() && !self.estimationDialog()) {
-                    html = _.sprintf(gettext("Could not estimate the print operation. Please make sure the slicer is configured, or contact the support for help."));
-                    new PNotify({title: gettext("No slicer configured"), text: html, type: "error", hide: false});
-                    return;
-                }
-                self._nozzleFilamentUpdate();
-            self.target = target;
-            self.file(file);
-            self.path = path;self.title(_.sprintf(gettext("Slicing %(filename)s"), {filename: filename}));
-            self.destinationFilename(filename);
-            self.printerProfile(self.printerProfiles.currentProfile());
-            self.afterSlicing("print");
-
-                $("#remote_printers_dialog").modal("show");
-
-                // Flag to signal if the slicing window was called by the workbench
-                self.workbenchFile = workbench;
-            });
         };
 
         self.slicer.subscribe(function(newValue) {
@@ -630,7 +597,7 @@ $(function() {
 
             // Only hides the slicing dialog if it's not an estimate operation
             if (self.afterSlicing() !== "none") {
-                $("#remote_printers_dialog").modal("hide");
+                $("#slicing_configuration_dialog").modal("hide");
                 self.destinationFilename(undefined);
             }
 
@@ -669,7 +636,7 @@ $(function() {
 
             //Makes sure the options panels are all expanded after the dialog is closed
             $(".slice-option.closed").click();
-            $("#remote_printers_dialog").modal("hide");
+            $("#slicing_configuration_dialog").modal("hide");
 
             // Statistics logging
             self._send3DModelsInformations();
@@ -722,10 +689,103 @@ $(function() {
                 }
             });
         };
+
+        /**
+         * Connects to remote server and retrieves connected printer information
+         */
+        self.getRemotePrinters = function() {
+
+            console.log("JS GetPrinters\n")
+
+            var table = $("#remote_printers_table");
+            table.empty();
+
+
+            $.ajax({
+                url: API_BASEURL + "remote/getRemotePrinters",
+                type: "POST",
+                dataType: "json",
+                success: function(data) {
+
+                    debugger;
+
+                    $.each(data.response, function (i, item)
+                    {
+                        var tableRow = $('<tr class="remote-table-row"/>');
+
+                        //Left row space
+                        tableRow.append('<td width="5%"></td>');
+
+                        //Printer logo
+                        var imageCol = $('<td colspan="2"/>');
+                        var img = $('<img src="' + item.imgPath + '">');
+                        imageCol.append(img);
+                        tableRow.append(imageCol);
+
+                        //Printer progress
+                        var progressCol = $('<td colspan="4"/>');
+                        var progressDiv = $('<div class="progress remote-print-progress" style="text-align: center"/>');
+                        var barDiv =$('<div/>');
+                        barDiv.addClass("bar");
+
+                        if(item.state=="READY"){
+                            barDiv.addClass("ready-remote-bar");
+                            barDiv.append('READY');
+                        } else if (item.state=="Printing") {
+                            barDiv.addClass("printing-remote-bar");
+                            barDiv.append('Printing: ' + item.Progress);
+                        } else if (item.state=="Heating") {
+                            barDiv.addClass("heating-remote-bar");
+                            barDiv.append('Heating: ' + item.Progress);
+                        }
+
+                        barDiv.css('width',item.Progress);
+                        progressDiv.append(barDiv);
+                        progressCol.append(progressDiv);
+                        tableRow.append(progressCol);
+
+                        //Material
+                        var materialCol = $('<td colspan="1" style="text-align: center"/>');
+                        materialCol.append(item.Material);
+                        tableRow.append(materialCol);
+
+                        //Color
+                        var colorDiv = $('<div/>');
+                        colorDiv.addClass('progress');
+                        colorDiv.addClass('remote-color');
+                        colorDiv.css("text-align","center");
+                        var rgbDiv = $('<div/>');
+                        rgbDiv.addClass("bar");
+                        rgbDiv.css("width","100%",
+                            "background-color",item.rgb);
+
+                        colorDiv.append(rgbDiv);
+                        tableRow.append(colorDiv);
+                        /*<td colspan="1">
+                            <div class="progress remote-color" style="text-align: center">
+                                <div class="bar" style="width: 100%;background-color: #0aaaf1 !important;"></div>
+                            </div>
+                        </td>*/
+
+                        //Right row space
+                        tableRow.append('<td width="5%"></td>');
+
+                        table.append(tableRow);
+                    });
+
+
+                    console.log("Success GetRemotePrinters\n");
+                },
+                error: function() {
+                    console.log("Error GetRemotePrinters\n");
+                }
+            });
+
+        };
     }
 
     OCTOPRINT_VIEWMODELS.push([
-        RemoteprintersViewModel,
+        RemotePrintersViewModel,
         ["loginStateViewModel", "printerProfilesViewModel", /*"printerStateViewModel"*/],
         "#remote_printers_dialog"
     ]);
