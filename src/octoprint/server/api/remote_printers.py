@@ -30,7 +30,7 @@ def getRemotePrinters():
 	remotePrinter['Progress'] = '60%'
 	remotePrinter['Material'] = 'PLA'
 	remotePrinter['Color'] = 'Black'
-	remotePrinter['rgb'] = '#000000 !important'
+	remotePrinter['rgb'] = '#000000'
 	remotePrinters[remotePrinter['id']] = remotePrinter
 
 	remotePrinter = {}
@@ -41,7 +41,7 @@ def getRemotePrinters():
 	remotePrinter['Progress'] = '100%'
 	remotePrinter['Material'] = 'PETG'
 	remotePrinter['Color'] = 'Transparent'
-	remotePrinter['rgb'] = 'snow  !important'
+	remotePrinter['rgb'] = 'snow'
 	remotePrinters[remotePrinter['id']] = remotePrinter
 
 	remotePrinter = {}
@@ -52,7 +52,7 @@ def getRemotePrinters():
 	remotePrinter['Progress'] = '80%'
 	remotePrinter['Material'] = 'Nylon'
 	remotePrinter['Color'] = 'Red'
-	remotePrinter['rgb'] = 'red  !important'
+	remotePrinter['rgb'] = 'red'
 	remotePrinters[remotePrinter['id']] = remotePrinter
 
 	remotePrinter = {}
@@ -63,7 +63,7 @@ def getRemotePrinters():
 	remotePrinter['Progress'] = '80%'
 	remotePrinter['Material'] = 'Nylon'
 	remotePrinter['Color'] = 'Red'
-	remotePrinter['rgb'] = 'red  !important'
+	remotePrinter['rgb'] = 'red'
 	remotePrinters[remotePrinter['id']] = remotePrinter
 
 	return jsonify({

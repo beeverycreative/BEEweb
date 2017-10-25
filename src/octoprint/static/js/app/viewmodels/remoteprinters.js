@@ -179,13 +179,7 @@ $(function() {
         };
 
         self.enableSliceButton = ko.pureComputed(function() {
-            return self.destinationFilename() !== undefined
-                && self.destinationFilename().trim() !== ""
-                && self.slicer() != undefined
-                && self.sliceButtonControl()
-                && !self.estimationDialog();
-                //&& self.profile() != undefined
-                //&&( !(self.printerState.isPrinting() || self.printerState.isPaused()) || !self.slicerSameDevice());
+            return true;
         });
 
         self.sliceButtonTooltip = ko.pureComputed(function() {
@@ -707,8 +701,6 @@ $(function() {
                 dataType: "json",
                 success: function(data) {
 
-                    debugger;
-
                     $.each(data.response, function (i, item)
                     {
                         var tableRow = $('<tr class="remote-table-row"/>');
@@ -750,17 +742,19 @@ $(function() {
                         tableRow.append(materialCol);
 
                         //Color
+                        var colorCol = $('<td colspan="1"/>');
                         var colorDiv = $('<div/>');
                         colorDiv.addClass('progress');
                         colorDiv.addClass('remote-color');
                         colorDiv.css("text-align","center");
                         var rgbDiv = $('<div/>');
                         rgbDiv.addClass("bar");
-                        rgbDiv.css("width","100%",
-                            "background-color",item.rgb);
+                        //rgbDiv.css("width","100%")
+                        rgbDiv.attr('style','width: 100%;background-color: ' + item.rgb + ' !important;')
 
                         colorDiv.append(rgbDiv);
-                        tableRow.append(colorDiv);
+                        colorCol.append(colorDiv)
+                        tableRow.append(colorCol);
                         /*<td colspan="1">
                             <div class="progress remote-color" style="text-align: center">
                                 <div class="bar" style="width: 100%;background-color: #0aaaf1 !important;"></div>
