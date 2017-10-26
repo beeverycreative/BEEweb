@@ -689,8 +689,6 @@ $(function() {
          */
         self.getRemotePrinters = function() {
 
-            console.log("JS GetPrinters\n")
-
             var table = $("#remote_printers_table");
             table.empty();
 
@@ -766,9 +764,6 @@ $(function() {
 
                         table.append(tableRow);
                     });
-
-
-                    console.log("Success GetRemotePrinters\n");
                 },
                 error: function() {
                     console.log("Error GetRemotePrinters\n");

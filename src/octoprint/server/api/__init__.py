@@ -37,6 +37,7 @@ from . import users as api_users
 from . import log as api_logs
 from . import slicing as api_slicing
 from . import remote_printers as api_remote_printers
+from . import prodsmart_utils as api_prodsmart
 from . import printer_profiles as api_printer_profiles
 from . import languages as api_languages
 from . import maintenance as api_maintenance
