@@ -81,6 +81,22 @@
                             </button>
                         </div>
                     </div>
+                    <div class="modal-row">
+                        <div class="span1 text-center">
+                            <span class="icon nozzlegicon"></span>
+                        </div>
+                         <div class="span4">
+                             <h3>{{ _('Calibrate Extruder') }}</h3>
+                             <p>{{ _('Calibrating the extruder blablabla')}}
+                             </p>
+                        </div>
+                        <div class="span7 text-right">
+                            <button class="btn btn-maintenance yellow"
+                                data-bind="click: showCalibrateExtruder, enable: !printerState.isBusy() && !printerState.isErrorOrClosed()">
+                                <span class="m-icon nozzleicon"></span>{{ _('Calibrate extruder now') }}
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="maintenance_dialog_content">
@@ -95,6 +111,9 @@
                     </div>
                     <div id="maintenance_replaceNozzle" class="hidden">
                         {% include 'dialogs/maintenance/replace_nozzle.jinja2' ignore missing %}
+                    </div>
+                    <div id="maintenance_calibrateExtruder" class="hidden">
+                        {% include 'dialogs/maintenance/calibrate_extruder.jinja2' ignore missing %}
                     </div>
                 </div>
             </div>
