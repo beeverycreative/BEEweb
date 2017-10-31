@@ -1589,7 +1589,85 @@ td.settings_users_actions .m-icon {
     font-size: 12px;
     display: block;
 }
+/*------------------------------------------------------------------------------*/
+#settings_plugin_curaX_edit .modal-body{
+    padding: 0  !important;
+}
 
+#settings_plugin_curaX_edit .form-horizontal .control-label.closed + .control-group > .controls {
+    height: 0;
+    display: none;
+}
+#settings_plugin_curaX_edit .form-horizontal .control-label:after {
+    content: '\f106';
+    right: 23px;
+    font-size: 20px;
+    position: absolute;
+    font-family: fontAwesome;
+    color: #bcbcbc;
+    transition: all 0.2s ease;
+}
+#settings_plugin_curaX_edit .form-horizontal .control-label.closed:after {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+}
+#settings_plugin_curaX_edit .control-group{
+    margin-bottom: 2px;
+    text-align: center;
+    background: #e1e2e1;
+}
+#settings_plugin_curaX_edit .form-horizontal .controls{
+    margin-left: 0;
+    display: flex;
+    padding: 0 23px;
+    transition: all 0.1s ease;
+}
+#settings_plugin_curaX_edit .form-horizontal .controls label {
+    width: 20%;
+    height: 85px;
+    padding: 10px 0 5px;
+    margin: 0;
+    transition: all 0.2s ease;
+}
+#settings_plugin_curaX_edit .form-horizontal .controls label.estimation {
+    width: 50% !important;
+    cursor: default;
+}
+#settings_plugin_curaX_edit .form-horizontal .controls label > div {  margin: 10px 0 0; }
+#settings_plugin_curaX_edit .form-horizontal .controls label > p   {  margin: 0; }
+
+
+#settings_plugin_curaX_edit .form-horizontal .controls > input{ display: none; }
+
+#settings_plugin_curaX_edit .form-horizontal .controls > input:checked + label{
+    background: #fc0;
+    color: #000;
+    box-shadow: inset 0 3px 5px 0 rgba(0, 0, 0, 0.15);
+}
+
+#settings_plugin_curaX_edit .form-horizontal{
+    margin: 0;
+}
+
+#settings_plugin_curaX_edit .form-horizontal > .control-label{
+    width: unset;
+    text-align: left;
+    float: none;
+    text-transform: uppercase;
+    padding: 5px 23px 6px;
+    margin-bottom: 0;
+    border-bottom: 1px solid #c5c5c5;
+    background: #e1e2e1;
+}
+#settings_plugin_curaX_edit .control-label small{
+    font-size: 12px;
+    display: block;
+}
+
+/*----------------------------------------------------------------------------------*/
 #slice_button,
 #settings_dialog .modal-footer .btn-primary,
 #settings_printerProfiles_editDialog .modal-footer .btn-primary,

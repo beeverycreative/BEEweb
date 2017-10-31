@@ -387,6 +387,25 @@ class ProfileReader(object):
 	# get values in header
 	# in filament: id, name, brand, color, inherits, nozzles_supported, unload_temperature, cost
 	@classmethod
+	def getFilamentHeaderName(cls, header_id, filament_id, slicer_profile_path):
+		header_value = None
+		filament_json = dict()
+
+		for entry in os.listdir(slicer_profile_path + "Materials"):
+			if not entry.endswith(".json"):
+				continue
+
+			if filament_id.lower() not in entry.lower():
+				continue
+
+			with open(slicer_profile_path + 'Materials/' + entry) as data_file:
+				filament_json = json.load(data_file)
+
+			header_value = filament_json[header_id]
+
+		return header_value
+
+	@classmethod
 	def getFilamentHeader(cls, header_id, filament_id, slicer_profile_path):
 		header_value = None
 		custom = False

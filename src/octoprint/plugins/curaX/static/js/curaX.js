@@ -68,6 +68,32 @@ $(function() {
             1000
         );
 
+        self.materials = new ItemListHelper(
+            "plugin_cura_profiles",
+            {
+                "description": function(a, b) {
+                    // sorts ascending
+                    var aDescription = a.description();
+                    if (aDescription === undefined) {
+                        aDescription = "";
+                    }
+                    var bDescription = b.description();
+                    if (bDescription === undefined) {
+                        bDescription = "";
+                    }
+
+                    if (aName.toLocaleLowerCase() < bBrand.toLocaleLowerCase()) return -1;
+                    if (aName.toLocaleLowerCase() > bBrand.toLocaleLowerCase()) return 1;
+                    return 0;
+                },
+            },
+            {},
+            "id",
+            [],
+            [],
+            20
+        );
+
         self._sanitize = function(name) {
             return name.replace(/[^a-zA-Z0-9\-_\.\(\) ]/g, "").replace(/ /g, "_");
         };
@@ -204,6 +230,19 @@ $(function() {
 
         /*********************************************************************************************************/
 
+        self.findMaterialOnArray = function (data,material) {
+
+             if(data.length == 0)
+                 return true;
+
+             for (index = 0; index < data.length; ++index) {
+                 if(data[index].description == material)
+                        return false;
+             }
+             return true;
+        };
+
+
         self.requestData = function() {
             $.ajax({
                 url: API_BASEURL + "slicing/curaX/profiles",
@@ -214,18 +253,47 @@ $(function() {
         };
 
         self.fromResponse = function(data) {
-            var profiles = [];
+            console.log(data)
+
+            var dataFilter = self.getRadiosData();
+
+            var profiles  = [];
+            var materials = [];
+
             _.each(_.keys(data), function(key) {
-                profiles.push({
-                    key: key,
-                    name: ko.observable(data[key].displayName),
-                    description: ko.observable(data[key].description),
-                    isdefault: ko.observable(data[key].default),
-                    resource: ko.observable(data[key].resource),
-                    brand: ko.observable(data[key].brand)
-                });
+                 if (data[key].brand == dataFilter[0]) {
+                     profiles.push({
+                         key: key,
+                         name: ko.observable(data[key].displayName),
+                         description: ko.observable(data[key].description),
+                         isdefault: ko.observable(data[key].default),
+                         resource: ko.observable(data[key].resource),
+                         brand: ko.observable(data[key].brand)
+                     });
+
+                     if (self.findMaterialOnArray(materials, data[key].description)) {
+                         material.push({
+                             description: data[key].description
+                         });
+                     }
+                 }
+
             });
+
+            self.materials.updateItems(materials);
             self.profiles.updateItems(profiles);
+        };
+
+        self.getRadiosData = function () {
+            var brandName;
+
+            var radiosBrand =  document.getElementsByName("brand");
+            for(var i = 0, length = radiosBrand.length ; i < length ; i++) {
+                if (radiosBrand[i].checked) {
+                        brandName = radiosBrand[i].value;
+                }
+            }
+            return [brandName];
         };
 
         self.onBeforeBinding = function () {

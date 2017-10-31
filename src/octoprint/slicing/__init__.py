@@ -730,8 +730,13 @@ class SlicingManager(object):
 					#path = os.path.join(slicer_profile_path, entry)
 					profile_name = entry[:-len(".json")]
 					brand= slicer_object_curaX.getFilamentHeader("brand", entry, slicer_profile_path + "/")
+
+					filament_id  = slicer_object_curaX.getFilamentHeader("inherits", entry, slicer_profile_path + "/")
+
+					filament_name = slicer_object_curaX.getFilamentHeaderName("name", filament_id, slicer_profile_path + "/")
+
 					# creates a shallow slicing profile
-					temp_profile = self._create_shallow_profile(profile_name, slicer, "json", require_configured, brand)
+					temp_profile = self._create_shallow_profile(filament_name, slicer, "json", require_configured, brand)
 					profiles[profile_name] = temp_profile
 		return profiles
 

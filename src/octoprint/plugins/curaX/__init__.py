@@ -464,6 +464,9 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 	def pathToFilament(self, filament_id):
 		return ProfileReader.pathToFilament(filament_id)
 
+	def getFilamentHeaderName(cls, header_id, filament_id, slicer_profile_path):
+		return  ProfileReader.getFilamentHeaderName(header_id,filament_id,slicer_profile_path)
+
 __plugin_name__ = "CuraEngineX (>= 2.7)"
 __plugin_author__ = "Bruno Andrade"
 __plugin_url__ = "https://github.com/Beeverycreative"
