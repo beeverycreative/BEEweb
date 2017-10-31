@@ -1,46 +1,46 @@
-{#<h4>{{ _('General') }}</h4>#}
-{##}
-{#<p>{% trans %}#}
-{#    Specify the path to the CuraEngine binary. Note that only#}
-{#    <strong>versions up to and including 2.x</strong> are supported.#}
-{#    CuraEngine version 15.06 or older is <strong>not</strong>#}
-{#    compatible with this plugin.#}
-{#{% endtrans %}</p>#}
-{##}
-{#<form class="form-horizontal">#}
-{#    <div class="control-group">#}
-{#        <label class="control-label" for="settings-curaX-path">{{ _('Path to CuraEngine') }}</label>#}
-{#        <div class="controls">#}
-{#            <input id="settings-curaX-path" type="text" class="input-block-level" data-bind="value: settings.plugins.curaX.cura_engine" />#}
-{#        </div>#}
-{#    </div>#}
-{#    <div class="control-group">#}
-{#        <div class="controls">#}
-{#            <label class="checkbox">#}
-{#                <input type="checkbox"#}
-{#                       data-bind="checked: settings.plugins.curaX.debug_logging" /> {{ _('Log the output of CuraEngine to <code>plugin_curaX_engine.log</code>') }}#}
-{#            </label>#}
-{#        </div>#}
-{#    </div>#}
-{#</form>#}
-{##}
-{#<h4>{{ _('Profiles') }}</h4>#}
-{##}
-{#<div class="pull-right">#}
-{#    <small>{{ _('Sort by') }}:#}
-{#        <a href="#" data-bind="click: function() { profiles.changeSorting('id'); }">{{ _('Identifier') }} ({{ _('ascending') }})</a> |#}
-{#        <a href="#" data-bind="click: function() { profiles.changeSorting('name'); }">{{ _('Name') }} ({{ _('ascending') }})</a> |#}
-{#        <a href="#" data-bind="click: function() { profiles.changeSorting('brand'); }">{{ _('Brand') }} ({{ _('ascending') }})</a>#}
-{#    </small>#}
-{#</div>#}
-{#<table class="table table-striped table-hover table-condensed table-hover">#}
-{##}
-{#    <tbody data-bind="foreach: profiles.paginatedItems">#}
-{#    <tr data-bind="attr: {title: description}">#}
-{#        <td class="settings_plugin_curaX_profiles_key">#}
+<h4>{{ _('General') }}</h4>
+
+<p>{% trans %}
+    Specify the path to the CuraEngine binary. Note that only
+    <strong>versions up to and including 2.x</strong> are supported.
+    CuraEngine version 15.06 or older is <strong>not</strong>
+    compatible with this plugin.
+{% endtrans %}</p>
+
+<form class="form-horizontal">
+    <div class="control-group">
+        <label class="control-label" for="settings-curaX-path">{{ _('Path to CuraEngine') }}</label>
+        <div class="controls">
+            <input id="settings-curaX-path" type="text" class="input-block-level" data-bind="value: settings.plugins.curaX.cura_engine" />
+        </div>
+    </div>
+    <div class="control-group">
+        <div class="controls">
+            <label class="checkbox">
+                <input type="checkbox"
+                       data-bind="checked: settings.plugins.curaX.debug_logging" /> {{ _('Log the output of CuraEngine to <code>plugin_curaX_engine.log</code>') }}
+            </label>
+        </div>
+    </div>
+</form>
+
+<h4>{{ _('Profiles') }}</h4>
+
+<div class="pull-right">
+    <small>{{ _('Sort by') }}:
+        <a href="#" data-bind="click: function() { profiles.changeSorting('id'); }">{{ _('Identifier') }} ({{ _('ascending') }})</a> |
+        <a href="#" data-bind="click: function() { profiles.changeSorting('name'); }">{{ _('Name') }} ({{ _('ascending') }})</a> |
+        <a href="#" data-bind="click: function() { profiles.changeSorting('brand'); }">{{ _('Brand') }} ({{ _('ascending') }})</a>
+    </small>
+</div>
+<table class="table table-striped table-hover table-condensed table-hover">
+
+    <tbody data-bind="foreach: materials.paginatedItems">
+    <tr data-bind="attr: {title: description}">
+        <td class="settings_plugin_curaX_profiles_key">
 {#            <span class="icon-star" data-bind="invisible: !isdefault()"></span>#}
-{#            <span data-bind="text: key"></span>#}
-{#        </td>#}
+            <span data-bind="text: description"></span>
+        </td>
 {#        <td class="settings_plugin_curaX_profiles_name" data-bind="text: name"></td>#}
 {#        <td class="settings_plugin_curaX_profiles_brand" data-bind="text: brand"></td>#}
 {#        <td class="settings_plugin_curaX_profiles_actions">#}
@@ -53,22 +53,58 @@
 {#            <a href="#" class="icon-cog" title="{{ _('Edit') }}"#}
 {#               data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }"></a>#}
 {#        </td>#}
-{#    </tr>#}
-{#    </tbody>#}
-{#</table>#}
-{##}
-{#<div>#}
-{#    <button class="btn pull-right yellow"#}
-{#            data-bind="click: function() { $root.showImportProfileDialog() }">{{ _('Import Profile...') }}</button>#}
-{#    <button class="btn pull-right yellow"#}
-{#            data-bind="click: function() { $root.editProfile() }">{{ _('New Profile...') }}</button>#}
-{#</div>#}
-{##}
-{#<div style="clear: both">#}
-{#    <small>{% trans %}For more information on configuration and usage please#}
-{#        <a href="{{ plugin_curaX_homepage }}" target="_blank">see the Plugin's homepage</a>.{% endtrans %}</small>#}
-{#</div>#}
+    </tr>
+    </tbody>
+</table>
 
+<div>
+    <button class="btn pull-right yellow"
+            data-bind="click: function() { $root.showImportProfileDialog() }">{{ _('Import Profile...') }}</button>
+    <button class="btn pull-right yellow"
+            data-bind="click: function() { $root.editProfile() }">{{ _('New Profile...') }}</button>
+</div>
+
+<div style="clear: both">
+    <small>{% trans %}For more information on configuration and usage please
+        <a href="{{ plugin_curaX_homepage }}" target="_blank">see the Plugin's homepage</a>.{% endtrans %}</small>
+</div>
+
+
+
+                    <a class="" href="#">
+                        <span data-toggle="collapse" data-parent="#menu-group-1" href="#sub-item-8" class="sign"><i class=" icon-plus-sign-alt"></i></span>
+                        <span class="lbl">MATERIALS</span>
+                    </a>
+                    <ul class="children nav-child unstyled small collapse" id="sub-item-8">
+                        <ul data-bind="foreach: materials.paginatedItems">
+                            <li class="item-9 deeper parent">
+                                <a class="" href="#">
+{#                                      <span data-bind="text: description"></span>#}
+                                      <span data-toggle="collapse" data-parent="#menu-group-1" data-bind="attr: {'data-target': '#row' + $index()}" class="sign"><i class="icon-plus-sign-alt"></i></span>
+                                    <span class= "lbl" data-bind = "text: description"></span>
+                                </a>
+                            <ul data-bind="attr: {id: 'row' + $index()}" class="collapse">
+                                <ul data-bind ="foreach: $parent.profiles.paginatedItems">
+                                    <ul  data-bind="if: $data.description() == $parent.description">
+                                        <li class="item-10">
+                                            <a class="" href="#">
+                                                <span class="sign"><i class="icon-play"></i></span>
+                                                <span data-bind = "text:key"></span>
+                                                <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">
+                                                    <i class="icon-copy"></i></span>
+                                                <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">
+                                                    <i class="icon-trash"></i></span>
+                                                <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">
+                                                    <i class="icon-edit"></i></span>
+
+                                            </a>
+                                        </li>
+                                    </ul>
+                                </ul>
+                            </ul>
+                            </li>
+                        </ul>
+                    </ul>
 
 <div class="row">
         <div id="left">
@@ -81,7 +117,7 @@
                     <ul class="children nav-child unstyled small collapse" id="sub-item-1" >
                         <li class="item-2 deeper parent active">
                             <a class="" href="#">
-                                <input type="radio" class="form-check-input" name="brand" id="optionsRadios1" data-bind="event: {change : $root.onInputChange('brand') }" value="BeeVeryCreative"  checked="checked">
+                                <input type="radio" class="form-check-input" name="brand" id="optionsRadios1" data-bind="event: {change : $root.onInputChange('brand') }" value="BEEVERYCREATIVE"  checked="checked">
                                 <span class="lbl">BEEVERYCREATIVE</span>
                             </a>
                         </li>
@@ -110,28 +146,29 @@
                         <ul data-bind="foreach: materials.paginatedItems">
                             <li class="item-9 deeper parent">
                                 <a class="" href="#">
-                                    <span data-toggle="collapse" data-parent="#menu-group-1" data-bind="attr: {'data-target': '#row' + $index()}" class="sign"><i class="icon-plus-sign-alt"></i></span>
+{#                                      <span data-bind="text: description"></span>#}
+                                      <span data-toggle="collapse" data-parent="#menu-group-1" data-bind="attr: {'data-target': '#row' + $index()}" class="sign"><i class="icon-plus-sign-alt"></i></span>
                                     <span class= "lbl" data-bind = "text: description"></span>
                                 </a>
-                            <ul data-bind="attr: {id: 'row' + $index()}" class="collapse">
-                                <ul data-bind ="foreach: $parent.profiles.paginatedItems">
-                                    <ul  data-bind="if: $data.description() == $parent.description">
-                                        <li class="item-10">
-                                            <a class="" href="#">
-                                                <span class="sign"><i class="icon-play"></i></span>
-                                                <span data-bind = "text:name"></span>
-                                                <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">
-                                                    <i class="icon-copy"></i></span>
-                                                <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">
-                                                    <i class="icon-trash"></i></span>
-                                                <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">
-                                                    <i class="icon-edit"></i></span>
-
-                                            </a>
-                                        </li>
-                                    </ul>
-                                </ul>
-                            </ul>
+{#                            <ul data-bind="attr: {id: 'row' + $index()}" class="collapse">#}
+{#                                <ul data-bind ="foreach: $parent.profiles.paginatedItems">#}
+{#                                    <ul  data-bind="if: $data.description() == $parent.description">#}
+{#                                        <li class="item-10">#}
+{#                                            <a class="" href="#">#}
+{#                                                <span class="sign"><i class="icon-play"></i></span>#}
+{#                                                <span data-bind = "text:name"></span>#}
+{#                                                <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">#}
+{#                                                    <i class="icon-copy"></i></span>#}
+{#                                                <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">#}
+{#                                                    <i class="icon-trash"></i></span>#}
+{#                                                <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">#}
+{#                                                    <i class="icon-edit"></i></span>#}
+{##}
+{#                                            </a>#}
+{#                                        </li>#}
+{#                                    </ul>#}
+{#                                </ul>#}
+{#                            </ul>#}
                             </li>
                         </ul>
                     </ul>

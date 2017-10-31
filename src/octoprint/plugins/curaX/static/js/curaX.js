@@ -258,10 +258,10 @@ $(function() {
             var dataFilter = self.getRadiosData();
 
             var profiles  = [];
-            var materials = [];
+            var material = [];
 
             _.each(_.keys(data), function(key) {
-                 if (data[key].brand == dataFilter[0]) {
+                  if (data[key].brand == dataFilter[0]) {
                      profiles.push({
                          key: key,
                          name: ko.observable(data[key].displayName),
@@ -271,23 +271,28 @@ $(function() {
                          brand: ko.observable(data[key].brand)
                      });
 
-                     if (self.findMaterialOnArray(materials, data[key].description)) {
+                     if (self.findMaterialOnArray(material, data[key].description)) {
                          material.push({
+                             key: key,
                              description: data[key].description
                          });
                      }
                  }
 
             });
+            console.log(material);
+            console.log(profiles);
 
-            self.materials.updateItems(materials);
             self.profiles.updateItems(profiles);
+            self.materials.updateItems(material);
+
         };
 
         self.getRadiosData = function () {
             var brandName;
 
             var radiosBrand =  document.getElementsByName("brand");
+            console.log(radiosBrand);
             for(var i = 0, length = radiosBrand.length ; i < length ; i++) {
                 if (radiosBrand[i].checked) {
                         brandName = radiosBrand[i].value;
