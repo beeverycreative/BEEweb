@@ -141,19 +141,21 @@ $(function() {
             if (filename.lastIndexOf("/") != 0) {
                 path = path || filename.substr(0, filename.lastIndexOf("/"));
                 filename = filename.substr(filename.lastIndexOf("/") + 1);
-            }            self.requestData(function() {
+            }
+
+            self.requestData(function() {
                 if (!self.enableSlicingDialog() && !self.estimationDialog()) {
                     html = _.sprintf(gettext("Could not estimate the print operation. Please make sure the slicer is configured, or contact the support for help."));
                     new PNotify({title: gettext("No slicer configured"), text: html, type: "error", hide: false});
                     return;
                 }
                 self._nozzleFilamentUpdate();
-            self.target = target;
-            self.file(file);
-            self.path = path;self.title(_.sprintf(gettext("Slicing %(filename)s"), {filename: filename}));
-            self.destinationFilename(filename);
-            self.printerProfile(self.printerProfiles.currentProfile());
-            self.afterSlicing("print");
+                self.target = target;
+                self.file(file);
+                self.path = path;self.title(_.sprintf(gettext("Slicing %(filename)s"), {filename: filename}));
+                self.destinationFilename(filename);
+                self.printerProfile(self.printerProfiles.currentProfile());
+                self.afterSlicing("print");
 
                 $("#slicing_configuration_dialog").modal("show");
 
