@@ -1,0 +1,26 @@
+{
+	"id" : "print_options_available", 
+	"name" : "Print Options Available", 
+	"description" : "List of options available to each material", 
+	"types": ["integer", "double", "boolean", "array", "droplist"],
+	"options":
+	[
+		{
+			"id": "Geral",
+			"list":
+			[		
+				{"id": "speed_print", 	"DisplayName": "Speed Print", 	"Type": "integer" },
+				{"id": "wall_thickness","DisplayName": "Wall Thickness","Type": "integer" }
+			]
+		},
+		{
+			"id": "Material",
+			"list":
+			[	
+				
+				{"id": "material_flow", "DisplayName": "Material Flow", "Type": "integer" }
+			]
+		}
+	]
+
+}
