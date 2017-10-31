@@ -246,10 +246,12 @@ $(function() {
 
             // Gets the amount of filament left in spool
             self._getFilamentInSpool();
-
-            // Starts heating automatically
-            self.startHeating();
         };
+
+        // Starts heating when a filament is selected
+        self.selectedFilament.subscribe(function () {
+            self.startHeating();
+        }, this);
 
         self.changeFilamentStep0 = function() {
             $('#step4').addClass('hidden');
@@ -314,10 +316,15 @@ $(function() {
             self.commandLock(true);
             self.operationLock(true);
 
+            var data = {
+                'selected_filament': self.selectedFilament()
+            };
+
             $.ajax({
                 url: API_BASEURL + "maintenance/start_heating",
                 type: "POST",
                 dataType: "json",
+                data: JSON.stringify(data),
                 contentType: "application/json; charset=UTF-8",
                 success: function(result) {
                     $('#start-heating-btn').addClass('hidden');
@@ -909,6 +916,7 @@ $(function() {
                 url: API_BASEURL + "maintenance/start_heating",
                 type: "POST",
                 dataType: "json",
+                data: JSON.stringify({}),
                 contentType: "application/json; charset=UTF-8",
                 success: function(result) {
                     $('#progress-bar-ext-mtn').removeClass('hidden');
@@ -1141,6 +1149,7 @@ $(function() {
                 url: API_BASEURL + "maintenance/start_heating",
                 type: "POST",
                 dataType: "json",
+                data: JSON.stringify({}),
                 contentType: "application/json; charset=UTF-8",
                 success: function(result) {
                     $('#progress-bar-replace-nozzle').removeClass('hidden');

@@ -467,7 +467,7 @@ class ProfileReader(object):
 
 	#check if printer(printer_id) with a nozzle size (nozzle_id) on extruder can use a especific filament(filament_id)
 	@classmethod
-	def isPrinterAndNozzleCompatible(cls, filament_id, printer_id, nozzle_id):
+	def isPrinterAndNozzleCompatible(cls, filament_id, printer_id, nozzle_id='400'):
 		# check if printer is can use this filament profile
 		from octoprint.server import slicingManager
 		logger = logging.getLogger("octoprint.plugin.curaX.profileReader")

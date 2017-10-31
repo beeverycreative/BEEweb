@@ -425,19 +425,23 @@ class BeePrinter(Printer):
         bee_commands.move(0, 0, 0, amount, extrusion_speed)
 
 
-    def startHeating(self, targetTemperature=210):
+    def startHeating(self, selected_filament=None):
         """
         Starts the heating procedure
-        :param targetTemperature:
+        :param selected_filament:
         :return:
         """
         try:
-            # defines the target temperature based on the selected filament
-            profile_name = self.getSelectedFilamentProfile().display_name
-            if "petg" in profile_name.lower() or "nylon" in profile_name.lower():
-                targetTemperature = 230
-            elif "tpu" in profile_name.lower():
-                targetTemperature = 225
+            # finds the target temperature based on the selected filament
+            if selected_filament:
+                filamentProfile = self._slicingManager.load_profile(self._slicingManager.default_slicer, selected_filament,
+                                                                    require_configured=False)
+            else:
+                filamentProfile = self.getSelectedFilamentProfile()
+
+            targetTemperature = 210  # default target temperature
+            if filamentProfile is not None and 'unload_temperature' in filamentProfile.data:
+                targetTemperature = filamentProfile.data['unload_temperature']
 
             # resets the current temperature
             self._current_temperature = self._comm.getCommandsInterface().getNozzleTemperature()
@@ -548,15 +552,16 @@ class BeePrinter(Printer):
             if not filamentStr:
                 return None
 
-            filamentNormalizedName = filamentStr.lower().replace(' ', '_') + '_' + self.getPrinterNameNormalized()
-            profiles = self._slicingManager.all_profiles_list(self._slicingManager.default_slicer)
+            #filamentNormalizedName = filamentStr.lower().replace(' ', '_') + '_' + self.getPrinterNameNormalized()
+            profiles = self._slicingManager.all_profiles_list_json(self._slicingManager.default_slicer,
+                                                    require_configured=False,
+                                                    nozzle_size=self.getNozzleTypeString().replace("nz", ""),
+                                                    from_current_printer=True)
 
             if len(profiles) > 0:
                 for key,value in profiles.items():
-                    if filamentNormalizedName in key:
-                        filamentProfile = self._slicingManager.load_profile(self._slicingManager.default_slicer, key, require_configured=False)
-                        # because the name attribute is being returned empty, we set the filament code as name for later convenience
-                        filamentProfile.name = filamentStr
+                    if filamentStr in key:
+                        filamentProfile = self._slicingManager.load_profile(self._slicingManager.default_slicer, key,require_configured=False)
 
                         return filamentProfile
 
