@@ -48,7 +48,7 @@ $(function () {
         });
 
         // User feedback dialog attributes
-        self.printSuccess = ko.observable(true);
+        self.printSuccess = ko.observable("yes");
         self.sendingFeedback = ko.observable(false);
         self.printObservations = ko.observable("");
         self.printClassification = ko.observable(5).extend({min: 1, max: 10});
@@ -110,11 +110,6 @@ $(function () {
 		    self.saveSceneDialog.modal("show");
         };
 
-        // User feedback dialog methods
-		self.showUserFeedbackDialog = function () {
-		    self.userFeedback.modal("show");
-        };
-
         self.sendUserFeedback = function () {
             self.sendingFeedback(true);
 
@@ -127,7 +122,7 @@ $(function () {
             }
 
             var feedback = {
-                print_success: self.printSuccess(),
+                print_success: self.printSuccess() === 'yes',
                 print_rating: self.printClassification(),
                 observations: self.printObservations()
             };
