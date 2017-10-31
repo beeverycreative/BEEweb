@@ -255,13 +255,13 @@ $(function() {
         self.fromResponse = function(data) {
             console.log(data)
 
-            var dataFilter = self.getRadiosData();
+            // var dataFilter = self.getRadiosData();
 
             var profiles  = [];
             var material = [];
 
             _.each(_.keys(data), function(key) {
-                  if (data[key].brand == dataFilter[0]) {
+                  if (data[key].brand == "BEEVERYCREATIVE") {
                      profiles.push({
                          key: key,
                          name: ko.observable(data[key].displayName),
@@ -300,6 +300,7 @@ $(function() {
             }
             return [brandName];
         };
+
 
         self.onBeforeBinding = function () {
             self.settings = self.settingsViewModel.settings;
