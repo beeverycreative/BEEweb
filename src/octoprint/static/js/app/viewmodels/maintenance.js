@@ -28,6 +28,8 @@ $(function() {
 
         self.processStage = ko.observable(0);
 
+        self.okButtonEnable = ko.observable(true);
+
         // Helper to store the filament profiles and order them alphabetically
         self.profiles = new ItemListHelper(
             "plugin_cura_profiles",
@@ -139,6 +141,7 @@ $(function() {
             $('#maintenance_calibration').addClass('hidden');
             $('#maintenance_extruderMaintenance').addClass('hidden');
             $('#maintenance_replaceNozzle').addClass('hidden');
+            $('#maintenance_calibrateExtruder').addClass('hidden');
 
             $('#maintenanceNextButton').addClass('hidden');
             $('#maintenanceOkButton').addClass('hidden');
@@ -177,6 +180,8 @@ $(function() {
             $('#maintenance_calibration').addClass('hidden');
             $('#maintenance_extruderMaintenance').addClass('hidden');
             $('#maintenance_replaceNozzle').addClass('hidden');
+            $('#maintenance_calibrateExtruder').addClass('hidden');
+
 
             $('#maintenanceCloseButton').removeClass('hidden');
 
@@ -219,6 +224,14 @@ $(function() {
             progressStr = 0 + "%";
             tempProgressBar.css('width', progressStr);
             tempProgressBar.text(progressStr);
+
+            // Resets calibrate extruder temperature progress
+            tempProgress = $("#temperature_progress_calbrate_extruder");
+            tempProgressBar = $(".bar", tempProgress);
+
+            progressStr = 0 + "%";
+            tempProgressBar.css('width', progressStr);
+            tempProgressBar.text(progressStr);
         };
 
         self._showMovingMessage = function() {
@@ -231,109 +244,6 @@ $(function() {
 
         self._hasClass = function (element, cls) {
             return (' ' + element.className + ' ').indexOf(' ' + cls + ' ') > -1;
-        };
-
-        /***************************************************************************/
-        /************             Filament Change functions             ************/
-        /***************************************************************************/
-        self.showFilamentChange = function() {
-            $('#maintenanceList').addClass('hidden');
-            $('#cancelMaintenance').removeClass('hidden');
-
-            $('#maintenance_changeFilament').removeClass('hidden');
-            $('#maintenanceNextButton').removeClass('hidden');
-            $('#maintenanceCloseButton').addClass('hidden');
-            self.changeFilament(true);
-
-            // Gets the available filament list
-            self._getFilamentProfiles();
-
-            // Gets the amount of filament left in spool
-            self._getFilamentInSpool();
-
-            // Starts heating automatically
-            self.startHeating();
-        };
-
-        self.changeFilamentStep0 = function() {
-            $('#step4').addClass('hidden');
-            $('#step2').addClass('hidden');
-            $('#step3').addClass('hidden');
-            $('#step1').removeClass('hidden');
-
-            var tempProgress = $("#temperature_progress");
-            var tempProgressBar = $(".bar", tempProgress);
-
-            tempProgressBar.css('width', '0%');
-            tempProgressBar.text('0%');
-
-            $('#start-heating-btn').removeClass('hidden');
-            $('#progress-bar-div').addClass('hidden');
-            $('#change-filament-heating-done').addClass('hidden');
-
-            self.operationLock(false);
-
-            self.filamentSelected(false);
-            self.filamentResponseError(false);
-            self.filamentWeightSaveSuccess(false);
-            self.filamentWeightResponseError(false);
-
-            $('#maintenanceOkButton').addClass('hidden');
-        };
-
-        self.nextStep2 = function() {
-            $('#step2').removeClass('hidden');
-            $('#step4').addClass('hidden');
-            $('#step3').addClass('hidden');
-            $('#step1').addClass('hidden');
-            if (!self.heatingDone() && !self.heatingAchiveTargetTemperature()){
-                $('#maintenanceNextButton').addClass('hidden');
-            }
-        };
-
-        self.nextStep3 = function() {
-            // Heating is finished, let's move on
-            self._heatingDone();
-            self.saveFilament();
-
-            $('#step3').removeClass('hidden');
-            $('#step4').addClass('hidden');
-            $('#step2').addClass('hidden');
-            $('#step1').addClass('hidden');
-        };
-
-        self.nextStep4 = function() {
-            $('#step4').removeClass('hidden');
-            $('#step3').addClass('hidden');
-            $('#step2').addClass('hidden');
-            $('#step1').addClass('hidden');
-            $('#maintenanceNextButton').addClass('hidden');
-            $('#maintenanceOkButton').removeClass('hidden');
-        };
-
-        self.startHeating = function() {
-            cancelTemperatureUpdate = false;
-            self.heatingDone(false);
-
-            self.commandLock(true);
-            self.operationLock(true);
-
-            $.ajax({
-                url: API_BASEURL + "maintenance/start_heating",
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json; charset=UTF-8",
-                success: function(result) {
-                    $('#start-heating-btn').addClass('hidden');
-                    $('#progress-bar-div').removeClass('hidden');
-
-                    TARGET_TEMPERATURE = result['target_temperature'];
-                    self._updateTempProgress();
-
-                    self.commandLock(false);
-                },
-                error: function() { self.commandLock(false);  }
-            });
         };
 
         /***************************************************************************/
@@ -1470,6 +1380,29 @@ $(function() {
                     self.nextStepExtMaint3();
                 }
             }
+
+            if(self.calibrateExtruder()) {
+                if(self.processStage() == 1)
+                {
+                    self.ExtruderCalStep1();
+                }
+                if(self.processStage() == 2)
+                {
+                    self.ExtruderCalStep2();
+                }
+                if(self.processStage() == 3)
+                {
+                    self.ExtruderCalStep3();
+                }
+                if(self.processStage() == 4)
+                {
+                    self.ExtruderCalStep4();
+                }
+                if(self.processStage() == 5)
+                {
+                    self.ExtruderCalStep5();
+                }
+            }
         };
 
         self.nextButtonEnable = function() {
@@ -1511,6 +1444,18 @@ $(function() {
                         && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser();
                 }
             }
+
+            if (self.calibrateExtruder()) {
+                if (self.processStage() == 0 || self.processStage() == 1) {
+                    return self.printerState.isOperational() && !self.commandLock()
+                        && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser() && self.selectedFilament;
+                }
+                if(self.processStage() == 2 || self.processStage() == 3 || self.processStage() == 4)
+                {
+                    return  self.printerState.isOperational() && !self.commandLock()
+                        && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser();
+                }
+            }
         };
 
         /***************************************************************************/
@@ -1520,7 +1465,9 @@ $(function() {
         /***************************************************************************/
         /************             Extruder Calibration functions             ************/
         /***************************************************************************/
+
         self.showCalibrateExtruder = function() {
+
             $('#maintenanceList').addClass('hidden');
             $('#cancelMaintenance').removeClass('hidden');
 
@@ -1536,72 +1483,116 @@ $(function() {
             self._getFilamentInSpool();
 
             // Starts heating automatically
-            self.startHeating();
-
-            self.switchNozzle(true);
-
-            // Gets the available nozzle size list
-            self._getNozzleSizes();
+            self.startExtCalHeating();
 
         };
 
-        self.calibrationStep0 = function() {
-            $('#step4').addClass('hidden');
-            $('#step2').addClass('hidden');
-            $('#step3').addClass('hidden');
-            $('#step1').removeClass('hidden');
+        //Initial Menu where user selects filament
+        self.calibrateExtruderStep0 = function() {
+            $('#extCalStep1').removeClass('hidden');
+            $('#extCalStep2').addClass('hidden');
+            $('#extCalStep3').addClass('hidden');
+            $('#extCalStep4').addClass('hidden');
+            $('#extCalStep5').addClass('hidden');
+            $('#extCalStep6').addClass('hidden');
 
-            var tempProgress = $("#temperature_progress");
+            var tempProgress = $("#temperature_progress_calbrate_extruder");
             var tempProgressBar = $(".bar", tempProgress);
 
             tempProgressBar.css('width', '0%');
             tempProgressBar.text('0%');
 
             $('#start-heating-btn').removeClass('hidden');
-            $('#progress-bar-div').addClass('hidden');
-            $('#change-filament-heating-done').addClass('hidden');
+            $('#ext-progress-bar-div').addClass('hidden');
+            $('#ext-calibration-heating-done').addClass('hidden');
 
             self.operationLock(false);
 
             self.filamentSelected(false);
             self.filamentResponseError(false);
             self.filamentWeightSaveSuccess(false);
-            self.filamentWeightResponseError(false);
+            self.filamentWeightResponseError(f3alse);
 
             $('#maintenanceOkButton').addClass('hidden');
         };
 
-        self.nextStep2 = function() {
-            $('#step2').removeClass('hidden');
-            $('#step4').addClass('hidden');
-            $('#step3').addClass('hidden');
-            $('#step1').addClass('hidden');
+        //Heating
+        self.ExtruderCalStep1 = function() {
+            $('#extCalStep2').removeClass('hidden');
+            $('#extCalStep6').addClass('hidden');
+            $('#extCalStep5').addClass('hidden');
+            $('#extCalStep4').addClass('hidden');
+            $('#extCalStep3').addClass('hidden');
+            $('#extCalStep1').addClass('hidden');
             if (!self.heatingDone() && !self.heatingAchiveTargetTemperature()){
                 $('#maintenanceNextButton').addClass('hidden');
             }
         };
 
-        self.nextStep3 = function() {
+        //Load/Unload Step
+        self.ExtruderCalStep2 = function() {
             // Heating is finished, let's move on
             self._heatingDone();
             self.saveFilament();
 
-            $('#step3').removeClass('hidden');
-            $('#step4').addClass('hidden');
-            $('#step2').addClass('hidden');
-            $('#step1').addClass('hidden');
+            $('#extCalStep3').removeClass('hidden');
+            $('#extCalStep6').addClass('hidden');
+            $('#extCalStep5').addClass('hidden');
+            $('#extCalStep4').addClass('hidden');
+            $('#extCalStep2').addClass('hidden');
+            $('#extCalStep1').addClass('hidden');
+
+            $('#maintenanceNextButton').removeClass('hidden');
         };
 
-        self.nextStep4 = function() {
-            $('#step4').removeClass('hidden');
-            $('#step3').addClass('hidden');
-            $('#step2').addClass('hidden');
-            $('#step1').addClass('hidden');
+        //Pull and Mark 1
+        self.ExtruderCalStep3 = function() {
+
+            $('#extCalStep4').removeClass('hidden');
+            $('#extCalStep6').addClass('hidden');
+            $('#extCalStep5').addClass('hidden');
+            $('#extCalStep3').addClass('hidden');
+            $('#extCalStep2').addClass('hidden');
+            $('#extCalStep1').addClass('hidden');
+
+            $('#maintenanceNextButton').removeClass('hidden');
+        };
+
+        //Pull and mark 2
+        self.ExtruderCalStep4 = function() {
+
+            self._ExtrudeCalibrationFilament();
+
+            $('#extCalStep5').removeClass('hidden');
+            $('#extCalStep6').addClass('hidden');
+            $('#extCalStep4').addClass('hidden');
+            $('#extCalStep3').addClass('hidden');
+            $('#extCalStep2').addClass('hidden');
+            $('#extCalStep1').addClass('hidden');
+
+            $('#maintenanceNextButton').removeClass('hidden');
+        };
+
+        //Insert Extruded filament
+        self.ExtruderCalStep5 = function() {
+
+            self.unloadFilament();
+
+            $('#extCalStep6').removeClass('hidden');
+            $('#extCalStep5').addClass('hidden');
+            $('#extCalStep4').addClass('hidden');
+            $('#extCalStep3').addClass('hidden');
+            $('#extCalStep2').addClass('hidden');
+            $('#extCalStep1').addClass('hidden');
+
+            self.okButtonEnable(false);
+
             $('#maintenanceNextButton').addClass('hidden');
             $('#maintenanceOkButton').removeClass('hidden');
         };
 
-        self.startHeating = function() {
+
+        self.startExtCalHeating = function() {
             cancelTemperatureUpdate = false;
             self.heatingDone(false);
 
@@ -1615,15 +1606,145 @@ $(function() {
                 contentType: "application/json; charset=UTF-8",
                 success: function(result) {
                     $('#start-heating-btn').addClass('hidden');
-                    $('#progress-bar-div').removeClass('hidden');
+                    $('#ext-progress-bar-div').removeClass('hidden');
 
                     TARGET_TEMPERATURE = result['target_temperature'];
-                    self._updateTempProgress();
+                    self._updateExtCalTempProgress();
 
                     self.commandLock(false);
                 },
                 error: function() { self.commandLock(false);  }
             });
+        };
+
+        self.cancelExtruderCalibrationHeating = function() {
+
+            $.ajax({
+                url: API_BASEURL + "maintenance/cancel_heating",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                success: function() {
+                    $('#start-heating-btn').removeClass('hidden');
+                    $('#ext-progress-bar-div').addClass('hidden');
+
+                    var tempProgress = $("#temperature_progress_calbrate_extruder");
+                    var tempProgressBar = $(".bar", tempProgress);
+                    tempProgressBar.css('width', '0%');
+                    tempProgressBar.text('0%');
+
+                    self.commandLock(false);
+                    self.operationLock(false);
+
+                    self.heatingDone(false);
+
+                },
+                error: function() {
+                    self.commandLock(false);
+                    self.operationLock(false);
+                }
+            });
+
+            cancelTemperatureUpdate = true;
+        };
+
+        self._updateExtCalTempProgress = function() {
+
+            fetchTemperatureRetries = 5;
+
+            $.ajax({
+                url: API_BASEURL + "maintenance/temperature",
+                type: "GET",
+                dataType: "json",
+                success: function(data) {
+                    if (!cancelTemperatureUpdate) {
+                        var current_temp = data['temperature'];
+                        var progress = ((current_temp / TARGET_TEMPERATURE) * 100).toFixed(0);
+
+                        var tempProgress = $("#temperature_progress_calbrate_extruder");
+                        var tempProgressBar = $(".bar", tempProgress);
+
+                        var progressStr = progress + "%";
+                        tempProgressBar.css('width', progressStr);
+                        tempProgressBar.text(progressStr);
+
+                        if ((TARGET_TEMPERATURE - current_temp) <= 5) { // If the temperature is within 5º of target
+                            self.heatingAchiveTargetTemperature(true);
+                            $('#ext-calibration-heating-done').removeClass('hidden');
+                            $('#maintenanceNextButton').removeClass('hidden');
+                            $('#ext-progress-bar-div').addClass('hidden');
+                        } else {
+                            setTimeout(function() { self._updateExtCalTempProgress() }, 2000);
+                        }
+                    }
+                },
+                error: function() {
+                    while (fetchTemperatureRetries > 0) {
+                        setTimeout(function() { self._updateExtCalTempProgress() }, 2000);
+                        fetchTemperatureRetries -= 1;
+                    }
+                }
+            });
+        };
+
+        self._ExtrudeCalibrationFilament = function() {
+            self._showMovingMessage();
+
+            $.ajax({
+                url: API_BASEURL + "maintenance/ExtrudeCalibrationAmount",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                data: JSON.stringify({"extrude": 150},{"flowrate":240}),
+                success: function() {
+                    self._hideMovingMessage();
+                },
+                error: function() {
+                    self._hideMovingMessage();
+                }
+            });
+        };
+
+        self.saveExtruderAmount = function() {
+            self.commandLock(true);
+
+            self.filamentWeightSaveSuccess(false);
+            self.filamentWeightResponseError(false);
+
+            var data = {
+                command: "filament",
+                filamentWeight: self.filamentWeightInput()
+            };
+
+            $.ajax({
+                url: API_BASEURL + "maintenance/DefineExtruderSteps",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                data: JSON.stringify(data),
+                success: function(data) {
+                    var response = data['response'];
+
+                    if (response.indexOf('ok') > -1) {
+                        self.filamentWeightSaveSuccess(true);
+
+
+                        self.commandLock(false);
+                        self.operationLock(false);
+
+                    } else {
+                        self.filamentWeightResponseError(true);
+                        self.commandLock(false);
+                    }
+                },
+                error: function() {
+                    self.commandLock(false);
+                    self.operationLock(false);
+                    self.filamentWeightResponseError(true);
+                }
+            });
+
+            self.okButtonEnable(true);
         };
 
         /***************************************************************************/

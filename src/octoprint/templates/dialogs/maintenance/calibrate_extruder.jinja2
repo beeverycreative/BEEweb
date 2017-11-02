@@ -2,7 +2,7 @@
     <h3>{{ _('Extruder Calibration')}}</h3>
 </div>
 
-<div id="step1" >
+<div id="extCalStep1" >
     <div class="row-fluid">
         <div class="span3"></div>
         <div class="span6 text-center">
@@ -41,7 +41,8 @@
     </div>
 </div>
 
-<div id="step2" class="hidden">
+
+<div id="extCalStep2" class="hidden">
 
     <div class="row-fluid">
         <div class="span4"></div>
@@ -54,13 +55,13 @@
         <p>{{ _('Extruder nozzle has to be heated whenever you change the filament. When it reaches the ideal temperature you may move to the next stage.' ) }}
         </p>
     </div>
-    <div id="progress-bar-div" class="row-fluid hidden text-center">
+    <div id="ext-progress-bar-div" class="row-fluid text-center">
         <div class="row-fluid text-center">
             <div class="span12 text-center">
                 <strong>{{ _('Heating please wait...') }}</strong>
             </div>
         </div>
-        <div id="temperature_progress" class="progress" style="width: 100%;">
+        <div id="temperature_progress_calbrate_extruder" class="progress" style="width: 100%;">
             <div class="bar" style="width: 0%"></div>
         </div>
     </div>
@@ -74,7 +75,8 @@
     <br />
 </div>
 
-<div id="step3" class="hidden">
+
+<div id="extCalStep3" class="hidden">
     <div class="row-fluid">
         <div class="span1"></div>
         <div class="span4 text-center unload-gifs">
@@ -91,7 +93,7 @@
         </div>
         <div class="span3">
             <div class="row-fluid">
-                <button id="load-btn" title="Load" class="btn btn-primary btn-block yellow"
+                <button id="ext-cal-load-btn" title="Load" class="btn btn-primary btn-block yellow"
                     data-bind="click: loadFilament, enable: printerState.isOperational()
                     && printerState.isReady() && !commandLock()
                     && !printerState.isPrinting() && loginState.isUser()">
@@ -101,7 +103,7 @@
             <br /><br />
 
             <div class="row-fluid">
-                <button id="unload-btn" title="Unload" class="btn btn-primary btn-block yellow"
+                <button id="ext-cal-unload-btn" title="Unload" class="btn btn-primary btn-block yellow"
                     data-bind="click: unloadFilament, enable: printerState.isOperational()
                     && printerState.isReady() && !commandLock()
                     && !printerState.isPrinting() && loginState.isUser()">
@@ -118,22 +120,53 @@
         </p>
     </div>
     <hr />
-    <div class="row-fluid">
-        <strong>{{ _('Filament left in spool' ) }}:</strong>
-        <span data-bind="text: filamentInSpool"></span> (g)
-        <br /><br />
-        <span>
-            <i class="icon-exclamation-sign"></i>
-            <small>{{ _('Please take note of the amount of filament in spool, so you can re-use the spool later on.' ) }}</small>
-        </span>
-    </div>
 
 </div>
 
-<div id="step4" class="hidden">
+<div id="extCalStep4" class="hidden">
+    <div class="row-fluid">
+        <div class="span3"></div>
+        <div class="span6 text-center">
+            <img src="{{ url_for('static', filename='img/maintenance/troca_filamento_ambos.png') }}" />
+        </div>
+        <div class="span3"></div>
+    </div>
+    <br />
+
+    <div class="row-fluid">
+        <div class="span12">
+            <strong>{{ _('Pull Filament and mark 1') }}</strong>
+            <br />
+
+
+        </div>
+    </div>
+</div>
+
+<div id="extCalStep5" class="hidden">
+    <div class="row-fluid">
+        <div class="span3"></div>
+        <div class="span6 text-center">
+            <img src="{{ url_for('static', filename='img/maintenance/troca_filamento_ambos.png') }}" />
+        </div>
+        <div class="span3"></div>
+    </div>
+    <br />
+
+    <div class="row-fluid">
+        <div class="span12">
+            <strong>{{ _('Pull Filament and mark 2') }}</strong>
+            <br />
+
+
+        </div>
+    </div>
+</div>
+
+<div id="extCalStep6" class="hidden">
     <div class="row-fluid">
         <div class="span6">
-            <strong>{{ _('Set Filament in Spool') }}</strong>
+            <strong>{{ _('Measure Extruded Filament') }}</strong>
         </div>
     </div>
     <div class="row-fluid">
@@ -148,8 +181,8 @@
             <div class="control-group">
             <strong>{{ _('Weight of filament left (g)' ) }}:</strong>
                 <input type="number" data-bind="value: filamentWeightInput"></input>
-                <button id="submit-filament-weight" title="Save Filament Weight" class="btn btn-primary yellow"
-                    data-bind="click: saveFilamentWeight, enable: printerState.isOperational() && !commandLock()
+                <button id="submit-extruder-amount" title="Save Filament Weight" class="btn btn-primary yellow"
+                    data-bind="click: saveExtruderAmount, enable: printerState.isOperational() && !commandLock()
                     && printerState.isReady() && !printerState.isPrinting() && loginState.isUser()">
                     <i class="icon-save"></i> {{ _('Save')}}
                 </button>
@@ -160,10 +193,5 @@
                 <br />
             </div>
         </form>
-        <div class="alert alert-danger text-center" data-bind="visible: filamentWeightResponseError">
-            <span><i class="icon-exclamation-sign"></i>
-            {{ _('An error occurred while saving. Please make sure the input value is valid weight in grams.')}}
-            </span>
-        </div>
     </div>
 </div>

@@ -339,3 +339,26 @@ def finishExtruderMaintenance():
 	printer.finishExtruderMaintenance()
 
 	return NO_CONTENT
+
+@api.route("/maintenance/ExtrudeCalibrationAmount", methods=["POST"])
+@restricted_access
+def ExtrudeCalibrationAmount():
+
+	if not printer.is_operational():
+		return make_response("Printer is not operational", 409)
+
+	printer.extrude(150,feedrate=240)
+
+	return NO_CONTENT
+
+
+@api.route("/maintenance/DefineExtruderSteps", methods=["POST"])
+@restricted_access
+def DefineExtruderSteps():
+
+	if not printer.is_operational():
+		return make_response("Printer is not operational", 409)
+
+	printer.extrude(150,feedrate=240)
+
+	return NO_CONTENT

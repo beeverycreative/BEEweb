@@ -409,7 +409,7 @@ class BeePrinter(Printer):
         except Exception as ex:
             self._logger.exception(ex)
 
-    def extrude(self, amount):
+    def extrude(self, amount,feedrate=None):
         """
         Extrudes the defined amount
         :param amount:
@@ -419,7 +419,10 @@ class BeePrinter(Printer):
             raise ValueError("amount must be a valid number: {amount}".format(amount=amount))
 
         printer_profile = self._printerProfileManager.get_current_or_default()
-        extrusion_speed = printer_profile["axes"]["e"]["speed"]
+        if feedrate is None:
+            extrusion_speed = printer_profile["axes"]["e"]["speed"]
+        else:
+            extrusion_speed = feedrate
 
         bee_commands = self._comm.getCommandsInterface()
         bee_commands.move(0, 0, 0, amount, extrusion_speed)

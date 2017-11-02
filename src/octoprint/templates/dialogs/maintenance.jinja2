@@ -133,7 +133,7 @@
                     <i class="icon-remove"></i> {{ _('Close') }}
                 </button>
                 <button id="maintenanceOkButton" class="btn btn-block btn-primary hidden" data-dismiss="modal"
-                        aria-hidden="true" data-bind="click: finishOperations">
+                        aria-hidden="true" data-bind="click: finishOperations, enable: okButtonEnable()">
                         {{ _('OK') }}
                 </button>
                 <button id="maintenanceNextButton" class="btn btn-block yellow hidden"
