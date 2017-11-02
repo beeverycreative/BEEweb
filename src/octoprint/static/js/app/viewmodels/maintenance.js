@@ -1511,7 +1511,7 @@ $(function() {
             self.filamentSelected(false);
             self.filamentResponseError(false);
             self.filamentWeightSaveSuccess(false);
-            self.filamentWeightResponseError(f3alse);
+            self.filamentWeightResponseError(false);
 
             $('#maintenanceOkButton').addClass('hidden');
         };
