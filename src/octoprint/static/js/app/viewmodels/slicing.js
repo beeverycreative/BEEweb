@@ -54,6 +54,8 @@ $(function() {
 
         self.slicingInProgress = ko.observable(false); // this flag is used to control the visibility of the main Print... button
 
+        self.slicingDialog = $("#slicing_configuration_dialog");
+
         self.slicersForFile = function(file) {
             if (file === undefined) {
                 return [];
@@ -157,7 +159,11 @@ $(function() {
                 self.printerProfile(self.printerProfiles.currentProfile());
                 self.afterSlicing("print");
 
-                $("#slicing_configuration_dialog").modal("show");
+                self.slicingDialog.modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                self.slicingDialog.modal("show");
 
                 // Flag to signal if the slicing window was called by the workbench
                 self.workbenchFile = workbench;
@@ -593,7 +599,7 @@ $(function() {
 
             // Only hides the slicing dialog if it's not an estimate operation
             if (self.afterSlicing() !== "none") {
-                $("#slicing_configuration_dialog").modal("hide");
+                self.slicingDialog.modal("hide");
                 self.destinationFilename(undefined);
             }
 
@@ -632,7 +638,7 @@ $(function() {
 
             //Makes sure the options panels are all expanded after the dialog is closed
             $(".slice-option.closed").click();
-            $("#slicing_configuration_dialog").modal("hide");
+            self.slicingDialog.modal("hide");
 
             // Statistics logging
             self._send3DModelsInformations();
