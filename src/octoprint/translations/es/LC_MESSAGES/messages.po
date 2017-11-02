@@ -438,6 +438,14 @@ msgstr "Firmware actualizado con éxito"
 msgid "The firmware was updated to the latest version."
 msgstr "El firmware se actualizó a la última versión."
 
+#: src/octoprint/static/js/app/dataupdater.js:275
+msgid "Firmware update available"
+msgstr "Actualización de firmware disponible"
+
+#: src/octoprint/static/js/app/dataupdater.js:276
+msgid "Please restart your printer in order to update to the latest firmware."
+msgstr "Por favor, reinicie la impresora para actualizar al último firmware."
+
 msgid "%(hour)02d:%(minute)02d:%(second)02d"
 msgstr "%(hour)02d:%(minute)02d:%(second)02d"
 
@@ -2002,3 +2010,8 @@ msgstr ""
 
 msgid "remaining"
 msgstr "restante"
+
+#: src/octoprint/server/api/system.py:154
+#: src/octoprint/templates/snippets/settings/server/serverCommandServerRestart.jinja2:2
+msgid "Restart BEESOFT"
+msgstr "Reiniciar BEESOFT"

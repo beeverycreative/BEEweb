@@ -2032,3 +2032,8 @@ msgstr "Não está nenhum modelo na plataforma. Primeiro importa um modelo 3D pa
 
 msgid "No model on the platform"
 msgstr "Nenhum modelo na plataforma"
+
+#: src/octoprint/server/api/system.py:154
+#: src/octoprint/templates/snippets/settings/server/serverCommandServerRestart.jinja2:2
+msgid "Restart BEESOFT"
+msgstr "Reiniciar BEESOFT"
