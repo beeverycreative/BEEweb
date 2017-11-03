@@ -436,11 +436,11 @@ class BeePrinter(Printer):
         """
         try:
             # defines the target temperature based on the selected filament
-            profile_name = self.getSelectedFilamentProfile().display_name
-            if "petg" in profile_name.lower() or "nylon" in profile_name.lower():
-                targetTemperature = 230
-            elif "tpu" in profile_name.lower():
-                targetTemperature = 225
+            #profile_name = self.getSelectedFilamentProfile().display_name
+            #if "petg" in profile_name.lower() or "nylon" in profile_name.lower():
+            #    targetTemperature = 230
+            #elif "tpu" in profile_name.lower():
+            #    targetTemperature = 225
 
             # resets the current temperature
             self._current_temperature = self._comm.getCommandsInterface().getNozzleTemperature()
@@ -1123,6 +1123,40 @@ class BeePrinter(Printer):
             self._logger.error('Error saving 3D model information statistics: %s' % str(ex))
 
             return False
+
+    def getExtruderStepsMM(self):
+        """
+        Gets extruder steps per mm
+        :return:
+        """
+        try:
+            if self._comm is None:
+                self._logger.info("Cannot get extruder steps: printer not connected or currently busy")
+                return
+
+            return self._comm._getExtruderStepsMM()
+        except Exception as ex:
+            self._logger.error(ex)
+
+        return
+
+    def setExtruderStepsMM(self,steps):
+        """
+        Sets extruder steps per mm
+        :param steps:
+        :return:
+        """
+        
+        try:
+            if self._comm is None:
+                self._logger.info("Cannot set extruder steps: printer not connected or currently busy")
+                return
+
+            return self._comm._setExtruderStepsMM(steps)
+        except Exception as ex:
+            self._logger.error(ex)
+
+        return
 
     # # # # # # # # # # # # # # # # # # # # # # #
     ##########  CALLBACK FUNCTIONS  #############

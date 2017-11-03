@@ -81,6 +81,10 @@ $(function() {
         self.filamentWeightResponseError = ko.observable(false);
         self.filamentWeightSaveSuccess = ko.observable(false);
 
+        self.measuredFilamentInput = ko.observable();
+        self.newStepsSaveSuccess = ko.observable(false);
+        self.newStepsResponseError = ko.observable(false);
+
         self.onStartup = function() {
 
             /**
@@ -1468,6 +1472,7 @@ $(function() {
 
         self.showCalibrateExtruder = function() {
 
+
             $('#maintenanceList').addClass('hidden');
             $('#cancelMaintenance').removeClass('hidden');
 
@@ -1479,9 +1484,6 @@ $(function() {
             // Gets the available filament list
             self._getFilamentProfiles();
 
-            // Gets the amount of filament left in spool
-            self._getFilamentInSpool();
-
             // Starts heating automatically
             self.startExtCalHeating();
 
@@ -1489,6 +1491,7 @@ $(function() {
 
         //Initial Menu where user selects filament
         self.calibrateExtruderStep0 = function() {
+
             $('#extCalStep1').removeClass('hidden');
             $('#extCalStep2').addClass('hidden');
             $('#extCalStep3').addClass('hidden');
@@ -1708,13 +1711,16 @@ $(function() {
         self.saveExtruderAmount = function() {
             self.commandLock(true);
 
-            self.filamentWeightSaveSuccess(false);
-            self.filamentWeightResponseError(false);
+            self.newStepsSaveSuccess(false);
+            self.newStepsResponseError(false);
+
 
             var data = {
-                command: "filament",
-                filamentWeight: self.filamentWeightInput()
+                "command": "defineSteps"
             };
+            data['Info'] = [self.measuredFilamentInput(),self.selectedFilament()];
+
+            debugger;
 
             $.ajax({
                 url: API_BASEURL + "maintenance/DefineExtruderSteps",

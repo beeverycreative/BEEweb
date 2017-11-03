@@ -359,6 +359,21 @@ def DefineExtruderSteps():
 	if not printer.is_operational():
 		return make_response("Printer is not operational", 409)
 
-	printer.extrude(150,feedrate=240)
+	valid_commands = {
+		"defineSteps": []
+	}
+
+	command, data, response = get_json_command_from_request(request, valid_commands)
+	if response is not None:
+		return response
+
+	currSteps = printer.getExtruderStepsMM()
+	#materialFlow =
+
+	newSteps = currSteps * float(150)/float(data['Info'][0])
+
+
+
+
 
 	return NO_CONTENT

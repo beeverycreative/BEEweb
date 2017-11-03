@@ -172,16 +172,16 @@
     <div class="row-fluid">
         <span>
             <i class="icon-exclamation-sign"></i>
-            <strong>{{ _('Please insert the amount of filament (in grams) left in the spool.' ) }}</strong>
+            <strong>{{ _('PLEASE INSERT DISTANCE BETWEEN MARKS' ) }}</strong>
         </span>
-        <p>{{ _('Check the spool for the filament weight information. If the spool was already used and you registered the remaining weight please use that value.' ) }}
+        <p>{{ _('MEASURE THE DISTANCE BETWEEN MARKS' ) }}
         </p>
         <br /><br />
         <form class="form-horizontal">
             <div class="control-group">
-            <strong>{{ _('Weight of filament left (g)' ) }}:</strong>
-                <input type="number" data-bind="value: filamentWeightInput"></input>
-                <button id="submit-extruder-amount" title="Save Filament Weight" class="btn btn-primary yellow"
+            <strong>{{ _('Distance between filament marks (mm)' ) }}:</strong>
+                <input type="number" data-bind="value: measuredFilamentInput"></input>
+                <button id="submit-extruder-amount" title="Set Extruded Amount" class="btn btn-primary yellow"
                     data-bind="click: saveExtruderAmount, enable: printerState.isOperational() && !commandLock()
                     && printerState.isReady() && !printerState.isPrinting() && loginState.isUser()">
                     <i class="icon-save"></i> {{ _('Save')}}
