@@ -425,7 +425,7 @@ class BeePrinter(Printer):
             extrusion_speed = feedrate
 
         bee_commands = self._comm.getCommandsInterface()
-        bee_commands.move(0, 0, 0, amount, extrusion_speed)
+        bee_commands.move(0, 0, 0, amount, extrusion_speed,wait='3')
 
 
     def startHeating(self, selected_filament=None):

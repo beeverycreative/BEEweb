@@ -271,7 +271,15 @@ $(function() {
 
         // Starts heating when a filament is selected
         self.selectedFilament.subscribe(function () {
-            self.startHeating();
+            if(self.changeFilament())
+            {
+                self.startHeating();
+            }
+            if(self.calibrateExtruder())
+            {
+                self.startExtCalHeating();
+            }
+
         }, this);
 
         self.changeFilamentStep0 = function() {
@@ -394,6 +402,8 @@ $(function() {
         self._updateTempProgress = function() {
 
             fetchTemperatureRetries = 5;
+
+            debugger;
 
             $.ajax({
                 url: API_BASEURL + "maintenance/temperature",
@@ -955,6 +965,8 @@ $(function() {
         self._updateTempProgressExtMaint = function() {
             fetchTemperatureRetries = 5;
 
+            debugger;
+
             $.ajax({
                 url: API_BASEURL + "maintenance/temperature",
                 type: "GET",
@@ -1189,6 +1201,8 @@ $(function() {
         self._updateTempProgressReplaceNozzle = function() {
             fetchTemperatureRetries = 5;
 
+            debugger;
+
             $.ajax({
                 url: API_BASEURL + "maintenance/temperature",
                 type: "GET",
@@ -1409,6 +1423,7 @@ $(function() {
                 }
                 if(self.processStage() == 4)
                 {
+                    self._ExtrudeCalibrationFilament();
                     self.ExtruderCalStep4();
                 }
                 if(self.processStage() == 5)
@@ -1476,7 +1491,7 @@ $(function() {
         /***************************************************************************/
 
         /***************************************************************************/
-        /************             Extruder Calibration functions             ************/
+        /************             Extruder Calibration functions        ************/
         /***************************************************************************/
 
         self.showCalibrateExtruder = function() {
@@ -1494,7 +1509,7 @@ $(function() {
             self._getFilamentProfiles();
 
             // Starts heating automatically
-            self.startExtCalHeating();
+            //self.startExtCalHeating();
 
         };
 
@@ -1573,8 +1588,6 @@ $(function() {
         //Pull and mark 2
         self.ExtruderCalStep4 = function() {
 
-            self._ExtrudeCalibrationFilament();
-
             $('#extCalStep5').removeClass('hidden');
             $('#extCalStep6').addClass('hidden');
             $('#extCalStep4').addClass('hidden');
@@ -1611,12 +1624,18 @@ $(function() {
             self.commandLock(true);
             self.operationLock(true);
 
+            var data = {
+                'selected_filament': self.selectedFilament()
+            };
+
             $.ajax({
                 url: API_BASEURL + "maintenance/start_heating",
                 type: "POST",
                 dataType: "json",
+                data: JSON.stringify(data),
                 contentType: "application/json; charset=UTF-8",
                 success: function(result) {
+
                     $('#start-heating-btn').addClass('hidden');
                     $('#ext-progress-bar-div').removeClass('hidden');
 
@@ -1664,11 +1683,14 @@ $(function() {
 
             fetchTemperatureRetries = 5;
 
+            debugger;
+
             $.ajax({
                 url: API_BASEURL + "maintenance/temperature",
                 type: "GET",
                 dataType: "json",
                 success: function(data) {
+                    debugger;
                     if (!cancelTemperatureUpdate) {
                         var current_temp = data['temperature'];
                         var progress = ((current_temp / TARGET_TEMPERATURE) * 100).toFixed(0);
@@ -1728,8 +1750,6 @@ $(function() {
                 "command": "defineSteps"
             };
             data['Info'] = [self.measuredFilamentInput(),self.selectedFilament()];
-
-            debugger;
 
             $.ajax({
                 url: API_BASEURL + "maintenance/DefineExtruderSteps",

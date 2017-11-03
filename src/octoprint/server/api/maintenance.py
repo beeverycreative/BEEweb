@@ -12,6 +12,8 @@ from octoprint.server.util.flask import restricted_access, get_json_command_from
 from octoprint.server.api import api
 from octoprint.settings import settings as s
 from octoprint.server.api.slicing import _getSlicingProfilesData as getSlicingProfilesData
+from octoprint.slicing import SlicingManager
+from octoprint.settings import settings
 
 @api.route("/maintenance/start_heating", methods=["POST"])
 @restricted_access
@@ -376,13 +378,24 @@ def DefineExtruderSteps():
 	if response is not None:
 		return response
 
-	currSteps = printer.getExtruderStepsMM()
-	#materialFlow =
+	materialFlow = 100.0
 
-	newSteps = currSteps * float(150)/float(data['Info'][0])
+	slicingManager = SlicingManager(settings().getBaseFolder("slicingProfiles"), printerProfileManager)
+	slicingManager.reload_slicers()
+	selected_filament = data['Info'][1]
+	# finds the target temperature based on the selected filament
+	if selected_filament:
+		filamentProfile = slicingManager.load_profile(slicingManager.default_slicer, selected_filament,
+															require_configured=False)
+
+		materialFlow = float(filamentProfile.data['PrinterGroups'][0]['quality']['medium']['material_flow']['default_value'])
 
 
+	currSteps = float(printer.getExtruderStepsMM())
 
 
+	newSteps = currSteps * float(150)/float(data['Info'][0]) * (materialFlow/100)
+
+	printer.setExtruderStepsMM('{0:.4f}'.format(newSteps))
 
 	return NO_CONTENT
