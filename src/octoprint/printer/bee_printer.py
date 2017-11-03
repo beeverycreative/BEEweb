@@ -160,8 +160,9 @@ class BeePrinter(Printer):
                 currentPrinterFile = self._comm.getCurrentFileNameFromPrinter()
 
                 if currentPrinterFile is not None and lastFile != currentPrinterFile:
-                    # This means the the connection was established with a different printer than before so we must create a "dummy"
-                    # file information with just the name returned by the printer
+                    # This means the the connection was established with a different printer than before or
+                    # the file is missing so we must create a generic (empty) file information with just
+                    # the name returned by the printer
                     self.select_file(PrintingFileInformation(currentPrinterFile), False)
                 else:
                     # Calls the select_file with the real previous PrintFileInformation object to recover the print status
@@ -170,13 +171,13 @@ class BeePrinter(Printer):
                     else:
                         self.select_file(lastFile, False)
 
-                    # starts the progress monitor if a print is on going
-                    if self.is_printing():
-                        self._comm.startPrintStatusProgressMonitor()
-
             elif lastFile is not None and (not self.is_printing() and not self.is_shutdown() and not self.is_paused()):
                 # if a connection is established with a printer that is not printing, unselects any previous file
                 self._comm.unselectFile()
+
+            # starts the progress monitor if a print is on going
+            if self.is_printing():
+                self._comm.startPrintStatusProgressMonitor()
 
             # gets current Filament profile data
             self._currentFilamentProfile = self.getSelectedFilamentProfile()
@@ -221,7 +222,15 @@ class BeePrinter(Printer):
             self._bvc_status_thread = None
 
     def select_file(self, path, sd, printAfterSelect=False, pos=None):
+        """
+        Selects a file in the selected filesystem and loads it before printing
 
+        :param path: Absolute path to the file
+        :param sd: storage system: SD or LOCAL
+        :param printAfterSelect: Flag to signal if the print should start after the selection
+        :param pos: currently unused. kept for interface purposes
+        :return:
+        """
         if self._comm is None:
             self._logger.info("Cannot load file: printer not connected or currently busy")
             return
@@ -231,31 +240,21 @@ class BeePrinter(Printer):
             return
 
         # special case where we want to recover the file information after a disconnect/connect during a print job
-        if path is None or not os.path.exists(path) or not os.path.isfile(path):
-            self._comm._currentFile = PrintingFileInformation('shutdown_recover_file')
-            return # In case the server was restarted during connection break-up and path variable is passed empty from the connect method
-
-        recovery_data = self._fileManager.get_recovery_data()
-        if recovery_data:
-            # clean up recovery data if we just selected a different file than is logged in that
-            expected_origin = FileDestinations.SDCARD if sd else FileDestinations.LOCAL
-            actual_origin = recovery_data.get("origin", None)
-            actual_path = recovery_data.get("path", None)
-
-            if actual_origin is None or actual_path is None or actual_origin != expected_origin or actual_path != path:
-                self._fileManager.delete_recovery_data()
+        # if path is None or not os.path.exists(path) or not os.path.isfile(path):
+        #     self._comm._currentFile = PrintingFileInformation('shutdown_recover_file')
+        #     return # In case the server was restarted during connection break-up and path variable is passed empty from the connect method
 
         self._printAfterSelect = printAfterSelect
-        self._posAfterSelect = pos
+
+        # saves the selected file analysis info to be later passed to the printer in the communications layer
+        if self._fileManager.has_analysis(FileDestinations.LOCAL, path):
+            self._currentFileAnalysis = self._fileManager.get_metadata(FileDestinations.LOCAL, path)['analysis']
+
         self._comm.selectFile("/" + path if sd and not settings().getBoolean(["feature", "sdRelativePath"]) else path, sd)
 
         if not self._comm.isPrinting() and not self._comm.isShutdown():
             self._setProgressData(completion=0)
             self._setCurrentZ(None)
-
-        # saves the selected file analysis info to be later passed to the printer in the communications layer
-        if self._fileManager.has_analysis(FileDestinations.LOCAL, path):
-            self._currentFileAnalysis = self._fileManager.get_metadata(FileDestinations.LOCAL, path)['analysis']
 
         # saves the path to the selected file
         settings().set(['lastPrintJobFile'], path)
@@ -272,7 +271,7 @@ class BeePrinter(Printer):
         :return:
         """
         # Uses the pos parameter to pass the analysis of the file to be printed
-        if pos is None and self._currentFileAnalysis is not None:
+        if self._currentFileAnalysis is not None:
             pos = self._currentFileAnalysis
 
         super(BeePrinter, self).start_print(pos)
@@ -318,6 +317,7 @@ class BeePrinter(Printer):
                 eventManager().fire(Events.PRINT_FAILED, payload)
         except Exception as ex:
             self._logger.error("Error canceling print job: %s" % str(ex))
+            eventManager().fire(Events.PRINT_CANCELLED, None)
 
     def jog(self, axes, relative=True, speed=None, *args, **kwargs):
         """
@@ -428,19 +428,23 @@ class BeePrinter(Printer):
         bee_commands.move(0, 0, 0, amount, extrusion_speed)
 
 
-    def startHeating(self, targetTemperature=210):
+    def startHeating(self, selected_filament=None):
         """
         Starts the heating procedure
-        :param targetTemperature:
+        :param selected_filament:
         :return:
         """
         try:
-            # defines the target temperature based on the selected filament
-            #profile_name = self.getSelectedFilamentProfile().display_name
-            #if "petg" in profile_name.lower() or "nylon" in profile_name.lower():
-            #    targetTemperature = 230
-            #elif "tpu" in profile_name.lower():
-            #    targetTemperature = 225
+            # finds the target temperature based on the selected filament
+            if selected_filament:
+                filamentProfile = self._slicingManager.load_profile(self._slicingManager.default_slicer, selected_filament,
+                                                                    require_configured=False)
+            else:
+                filamentProfile = self.getSelectedFilamentProfile()
+
+            targetTemperature = 210  # default target temperature
+            if filamentProfile is not None and 'unload_temperature' in filamentProfile.data:
+                targetTemperature = filamentProfile.data['unload_temperature']
 
             # resets the current temperature
             self._current_temperature = self._comm.getCommandsInterface().getNozzleTemperature()
@@ -551,15 +555,16 @@ class BeePrinter(Printer):
             if not filamentStr:
                 return None
 
-            filamentNormalizedName = filamentStr.lower().replace(' ', '_') + '_' + self.getPrinterNameNormalized()
-            profiles = self._slicingManager.all_profiles_list(self._slicingManager.default_slicer)
+            #filamentNormalizedName = filamentStr.lower().replace(' ', '_') + '_' + self.getPrinterNameNormalized()
+            profiles = self._slicingManager.all_profiles_list_json(self._slicingManager.default_slicer,
+                                                    require_configured=False,
+                                                    nozzle_size=self.getNozzleTypeString().replace("nz", ""),
+                                                    from_current_printer=True)
 
             if len(profiles) > 0:
                 for key,value in profiles.items():
-                    if filamentNormalizedName in key:
-                        filamentProfile = self._slicingManager.load_profile(self._slicingManager.default_slicer, key, require_configured=False)
-                        # because the name attribute is being returned empty, we set the filament code as name for later convenience
-                        filamentProfile.name = filamentStr
+                    if filamentStr in key:
+                        filamentProfile = self._slicingManager.load_profile(self._slicingManager.default_slicer, key,require_configured=False)
 
                         return filamentProfile
 
@@ -1146,7 +1151,7 @@ class BeePrinter(Printer):
         :param steps:
         :return:
         """
-        
+
         try:
             if self._comm is None:
                 self._logger.info("Cannot set extruder steps: printer not connected or currently busy")
@@ -1317,7 +1322,12 @@ class BeePrinter(Printer):
         # log print statistics
         if not self.isRunningCalibrationTest() and self._currentPrintStatistics is not None:
             # total print time in seconds
-            self._currentPrintStatistics.set_total_print_time(round(self._comm.getCleanedPrintTime(), 1))
+            total_print_time = self._comm.getCleanedPrintTime()
+            if total_print_time is None or total_print_time <= 0:
+                #this means that probably the printer was disconnected during the print the actual print job lost it's information
+                total_print_time = self._elapsedTime
+            self._currentPrintStatistics.set_total_print_time(round(total_print_time, 1))
+
             self._currentPrintStatistics.set_print_finished(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
             # removes redundant information
             self._currentPrintStatistics.remove_redundant_information()
@@ -1455,32 +1465,25 @@ class BeePrinter(Printer):
         :param completion:
         :param filepos:
         :param printTime:
-        :param printTimeLeft:
+        :param printTimeLeft: Kept for interface purposes
         :return:
         """
         try:
-            estimatedTotalPrintTime = self._estimateTotalPrintTime(completion, printTimeLeft)
-            totalPrintTime = estimatedTotalPrintTime
-
             if self._selectedFile and "estimatedPrintTime" in self._selectedFile \
                     and self._selectedFile["estimatedPrintTime"]:
-
-                statisticalTotalPrintTime = self._selectedFile["estimatedPrintTime"]
-                if completion and printTimeLeft:
-                    if estimatedTotalPrintTime is None:
-                        totalPrintTime = statisticalTotalPrintTime
-                    else:
-                        if completion < 0.5:
-                            sub_progress = completion * 2
-                        else:
-                            sub_progress = 1.0
-                        totalPrintTime = (1 - sub_progress) * statisticalTotalPrintTime + sub_progress * estimatedTotalPrintTime
+                totalPrintTime = self._selectedFile["estimatedPrintTime"]
+            else:
+                totalPrintTime = self._estimatedTime # This information comes from the progress update from the printer
 
             self._progress = completion
-            self._printTime = printTime
-            self._printTimeLeft = totalPrintTime - printTimeLeft if (totalPrintTime is not None and printTimeLeft is not None) else None
+
+            # if the printTime information is null, probably the current file object being used by the comm layer
+            # does not contain this information either because the printer changed computer, could be a print from a
+            # previous file in memory or a recovery from shutdown
             if printTime is None:
-                self._elapsedTime = 0
+                printTime = self._elapsedTime
+
+            self._printTimeLeft = totalPrintTime - printTime if (totalPrintTime is not None and printTime is not None) else None
 
         except Exception as ex:
             self._logger.error('Error setting print progress data: %s' % str(ex))

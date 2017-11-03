@@ -197,26 +197,46 @@ def slicingDelSlicerProfile(slicer, name):
 
 	return NO_CONTENT
 
+@api.route("/slicing/<string:slicer>/profiles/<string:name>", methods=["POST"])
+@restricted_access
+def slicingDuplicateSlicerProfile(slicer, name):
+	try:
+		result = slicingManager.duplicate_profile(slicer, name)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except CouldNotDeleteProfile as e:
+		return make_response("Could not delete profile {profile} for slicer {slicer}: {cause}".format(profile=name, slicer=slicer, cause=str(e.cause)), 500)
+
+	return NO_CONTENT
+
 def _getSlicingProfilesData(slicer, require_configured=False):
-	profiles = slicingManager.all_profiles_list(slicer,
-												require_configured=require_configured,
-												from_current_printer=True)
-	# gets the nozzle size to filter the slicing profiles by nozzle type
-	nozzle = printer.getNozzleTypeString()
-	printer_name = printer.getPrinterNameNormalized()
-
 	result = dict()
-	for name, profile in profiles.items():
-		if nozzle is not None and not nozzle in name:
-			continue
+	if slicer == "curaX":
+		profiles = slicingManager.all_profiles_list_json(slicer,
+													require_configured=require_configured,
+													nozzle_size=printer.getNozzleTypeString().replace("nz", ""),
+													from_current_printer=True)
+		for name, profile in profiles.items():
+			result[name] = _getSlicingProfileData(slicer, name, profile)
+	else:
+		profiles = slicingManager.all_profiles_list(slicer,
+													require_configured=require_configured,
+													from_current_printer=True)
+		# gets the nozzle size to filter the slicing profiles by nozzle type
+		nozzle = printer.getNozzleTypeString()
+		printer_name = printer.getPrinterNameNormalized()
 
-		if printer_name is not None and not printer_name in name:
-			continue
+		for name, profile in profiles.items():
+			if nozzle is not None and not nozzle in name:
+				continue
 
-		result[name] = _getSlicingProfileData(slicer, name, profile)
+			if printer_name is not None and not printer_name in name:
+				continue
+
+			result[name] = _getSlicingProfileData(slicer, name, profile)
 	return result
 
-def _getSlicingProfileData(slicer, name, profile):
+def _getSlicingProfileData(slicer, name, profile, brand=None):
 	defaultProfiles = s().get(["slicing", "defaultProfiles"])
 	result = dict(
 		key=name,
@@ -227,4 +247,6 @@ def _getSlicingProfileData(slicer, name, profile):
 		result["displayName"] = profile.display_name
 	if profile.description is not None:
 		result["description"] = profile.description
+	if profile.brand is not None:
+		result["brand"] = profile.brand
 	return result

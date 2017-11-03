@@ -1,0 +1,25 @@
+{
+    "id": "nozzle-0_6",
+    "name": "0.6",
+    "version": 2,
+    "overrides": 
+    {
+    	"resolution": 
+        {
+            "machine_nozzle_size": { "default_value": 0.6 },
+        	"line_width": { "default_value": 0.6 }
+        },
+
+         "shell": 
+         { 
+            "wall_thickness": { "default_value": 1.2 },
+            "wall_line_count": { "default_value": 2 }
+
+         },
+         "infill":
+         {
+            "infill_line_width": { "default_value": 0.6 }
+         }
+    }
+}
+    

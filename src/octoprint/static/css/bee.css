@@ -2130,6 +2130,12 @@ body:lang(de) .fileinput-button {
 body:lang(de) .addplatform {
     font-size: 11px !important;
 }
+body:lang(de) #workbench-controls-container button + .tooltip .tooltip-inner{
+    font-size: 11px !important;
+}
+body:lang(de) #job_shutdown {
+    font-size: 11px !important;
+}
 
 body:lang(pt) {
     font-size: 14px !important;

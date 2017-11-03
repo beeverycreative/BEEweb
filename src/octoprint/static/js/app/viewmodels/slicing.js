@@ -54,6 +54,8 @@ $(function() {
 
         self.slicingInProgress = ko.observable(false); // this flag is used to control the visibility of the main Print... button
 
+        self.slicingDialog = $("#slicing_configuration_dialog");
+
         self.slicersForFile = function(file) {
             if (file === undefined) {
                 return [];
@@ -64,37 +66,6 @@ $(function() {
                     return _.endsWith(file.toLowerCase(), "." + extension.toLowerCase());
                 });
             });
-        };
-
-        self.profilesForSlicer = function(key) {
-            if (key == undefined) {
-                key = self.slicer();
-            }
-            if (key == undefined || !self.data.hasOwnProperty(key)) {
-                return;
-            }
-            var slicer = self.data[key];
-
-            var selectedProfile = undefined;
-            self.profiles.removeAll();
-            _.each(_.values(slicer.profiles), function(profile) {
-                var name = profile.displayName;
-                if (name == undefined) {
-                    name = profile.key;
-                }
-
-                if (profile.default) {
-                    selectedProfile = profile.key;
-                }
-
-                self.profiles.push({
-                    key: profile.key,
-                    name: name
-                })
-            });
-
-            self.profile(selectedProfile);
-            self.defaultProfile = selectedProfile;
         };
 
         self.resetProfiles = function() {
@@ -172,21 +143,27 @@ $(function() {
             if (filename.lastIndexOf("/") != 0) {
                 path = path || filename.substr(0, filename.lastIndexOf("/"));
                 filename = filename.substr(filename.lastIndexOf("/") + 1);
-            }            self.requestData(function() {
+            }
+
+            self.requestData(function() {
                 if (!self.enableSlicingDialog() && !self.estimationDialog()) {
                     html = _.sprintf(gettext("Could not estimate the print operation. Please make sure the slicer is configured, or contact the support for help."));
                     new PNotify({title: gettext("No slicer configured"), text: html, type: "error", hide: false});
                     return;
                 }
                 self._nozzleFilamentUpdate();
-            self.target = target;
-            self.file(file);
-            self.path = path;self.title(_.sprintf(gettext("Slicing %(filename)s"), {filename: filename}));
-            self.destinationFilename(filename);
-            self.printerProfile(self.printerProfiles.currentProfile());
-            self.afterSlicing("print");
+                self.target = target;
+                self.file(file);
+                self.path = path;self.title(_.sprintf(gettext("Slicing %(filename)s"), {filename: filename}));
+                self.destinationFilename(filename);
+                self.printerProfile(self.printerProfiles.currentProfile());
+                self.afterSlicing("print");
 
-                $("#slicing_configuration_dialog").modal("show");
+                self.slicingDialog.modal({
+                    backdrop: 'static',
+                    keyboard: false
+                });
+                self.slicingDialog.modal("show");
 
                 // Flag to signal if the slicing window was called by the workbench
                 self.workbenchFile = workbench;
@@ -479,6 +456,7 @@ $(function() {
          * Saves the current workbench scene and calls the slicing operation on the resulting STL file
          */
         self.prepareAndSlice = function() {
+
             self.sliceButtonControl(false);
             self.slicingInProgress(true);
 
@@ -517,22 +495,13 @@ $(function() {
         };
 
         self.slice = function(modelToRemoveAfterSlice) {
-
             // Selects the slicing profile based on the color and resolution
             if (self.selColor() !== null && self.selResolution() !== null) {
-                var nozzleSizeNorm = self.selNozzle() * 1000;
-                var nozzleSizeStr = 'NZ' + nozzleSizeNorm;
 
                 _.each(self.profiles(), function(profile) {
                     // checks if the profile contains the selected color and nozzle size
                     if (_.contains(profile.name, self.selColor())) {
-
-                        if (_.contains(profile.name, self.selResolution())) {
-
-                            if (_.contains(profile.name, nozzleSizeStr)) {
-                                self.profile(profile.key);
-                            }
-                        }
+                        self.profile(profile.key);
                     }
                 });
             }
@@ -617,7 +586,7 @@ $(function() {
                         self.estimateButtonControl(true);
                     }
                 }).error( function (  ) {
-                    html = _.sprintf(gettext("Could not slice the selected file. Please make sure your printer is connected."));
+                    html = _.sprintf(gettext("Could not slice the selected file."));
                     new PNotify({title: gettext("Slicing failed"), text: html, type: "error", hide: false});
 
                     self.sliceButtonControl(true);
@@ -630,7 +599,7 @@ $(function() {
 
             // Only hides the slicing dialog if it's not an estimate operation
             if (self.afterSlicing() !== "none") {
-                $("#slicing_configuration_dialog").modal("hide");
+                self.slicingDialog.modal("hide");
                 self.destinationFilename(undefined);
             }
 
@@ -669,7 +638,7 @@ $(function() {
 
             //Makes sure the options panels are all expanded after the dialog is closed
             $(".slice-option.closed").click();
-            $("#slicing_configuration_dialog").modal("hide");
+            self.slicingDialog.modal("hide");
 
             // Statistics logging
             self._send3DModelsInformations();

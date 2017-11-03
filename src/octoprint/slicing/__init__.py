@@ -50,12 +50,13 @@ class SlicingProfile(object):
 	    default (bool): Whether this is the default slicing profile for the slicer.
 	"""
 
-	def __init__(self, slicer, name, data, display_name=None, description=None, default=False):
+	def __init__(self, slicer, name, data, display_name=None, description=None, default=False, brand=None):
 		self.slicer = slicer
 		self.name = name
 		self.data = data
 		self.display_name = display_name
 		self.description = description
+		self.brand = brand
 		self.default = default
 
 
@@ -293,29 +294,56 @@ class SlicingManager(object):
 		if printer_profile is None:
 			printer_profile = self._printer_profile_manager.get_current_or_default()
 
-		def slicer_worker(slicer, model_path, machinecode_path, profile_name, overrides, printer_profile, position, callback, callback_args, callback_kwargs):
-			try:
-				slicer_name = slicer.get_slicer_properties()["type"]
-				with self._temporary_profile(slicer_name, name=profile_name, overrides=overrides) as profile_path:
+		if slicer_name == "curaX":
+			def slicer_worker(slicer, model_path, machinecode_path, profile_name, overrides, printer_profile, position, callback, callback_args, callback_kwargs):
+				try:
 					ok, result = slicer.do_slice(
 						model_path,
 						printer_profile,
 						machinecode_path=machinecode_path,
-						profile_path=profile_path,
+						profile_path=profile_name,
+						overrides=overrides,
+						resolution=resolution,
+						nozzle_size=nozzle_size,
 						position=position,
 						on_progress=on_progress,
 						on_progress_args=on_progress_args,
 						on_progress_kwargs=on_progress_kwargs
 					)
 
-				if not ok:
-					callback_kwargs.update(dict(_error=result))
-				elif result is not None and isinstance(result, dict) and "analysis" in result:
-					callback_kwargs.update(dict(_analysis=result["analysis"]))
-			except SlicingCancelled:
-				callback_kwargs.update(dict(_cancelled=True))
-			finally:
-				callback(*callback_args, **callback_kwargs)
+					if not ok:
+						callback_kwargs.update(dict(_error=result))
+					elif result is not None and isinstance(result, dict) and "analysis" in result:
+						callback_kwargs.update(dict(_analysis=result["analysis"]))
+				except SlicingCancelled:
+					callback_kwargs.update(dict(_cancelled=True))
+				finally:
+					callback(*callback_args, **callback_kwargs)
+
+		else:
+			def slicer_worker(slicer, model_path, machinecode_path, profile_name, overrides, printer_profile, position, callback, callback_args, callback_kwargs):
+				try:
+					slicer_name = slicer.get_slicer_properties()["type"]
+					with self._temporary_profile(slicer_name, name=profile_name, overrides=overrides) as profile_path:
+						ok, result = slicer.do_slice(
+							model_path,
+							printer_profile,
+							machinecode_path=machinecode_path,
+							profile_path=profile_path,
+							position=position,
+							on_progress=on_progress,
+							on_progress_args=on_progress_args,
+							on_progress_kwargs=on_progress_kwargs
+						)
+
+					if not ok:
+						callback_kwargs.update(dict(_error=result))
+					elif result is not None and isinstance(result, dict) and "analysis" in result:
+						callback_kwargs.update(dict(_analysis=result["analysis"]))
+				except SlicingCancelled:
+					callback_kwargs.update(dict(_cancelled=True))
+				finally:
+					callback(*callback_args, **callback_kwargs)
 
 		import threading
 		slicer_worker_thread = threading.Thread(target=slicer_worker,
@@ -522,6 +550,41 @@ class SlicingManager(object):
 		settings().set(["slicing", "defaultProfiles"], default_profiles)
 		settings().save(force=True)
 
+	def duplicate_profile(self, slicer, name):
+		if not slicer in self.registered_slicers:
+			raise UnknownSlicer(slicer)
+
+		if not name:
+			raise ValueError("name must be set")
+
+
+		profile = self.load_profile(slicer, name)
+
+		profile.slicer = slicer
+		profile.name = name
+		slicerPath = self.get_slicer_profile_path(slicer)
+		destinationPath = None
+		tempPath = self.get_slicer_profile_path(slicer) + "/Variants/" + "{name}.json".format(name=name)
+		count=0;
+
+		while True:
+			count = count + 1
+			is_overwrite = os.path.exists(tempPath)
+
+			if is_overwrite:
+				tempPath = slicerPath + "/Variants/" + "{name} (copy {number} ).json".format(name=name, number=count)
+			else:
+				break
+
+		destinationPath = tempPath
+		self._save_profile_to_path(slicer, destinationPath, profile)
+
+		payload = dict(slicer=slicer, profile=name)
+		event =  octoprint.events.Events.SLICING_PROFILE_ADDED
+		octoprint.events.eventManager().fire(event, payload)
+
+		return profile
+
 	def all_profiles(self, slicer, require_configured=False):
 		"""
 		Retrieves all profiles for slicer ``slicer``.
@@ -616,6 +679,61 @@ class SlicingManager(object):
 			profiles[profile_name] = self._create_shallow_profile(profile_name, slicer, ".profile", require_configured)
 		return profiles
 
+	def all_profiles_list_json(self, slicer, require_configured=False, from_current_printer=True, nozzle_size=None):
+		"""
+		Retrieves all profiles for slicer ``slicer`` but avoiding to parse every single profile file for better performance
+		If ``require_configured`` is set to True (default is False), only will return the profiles if the ``slicer``
+		is already configured, otherwise a :class:`SlicerNotConfigured` exception will be raised.
+		Arguments:
+			slicer (str): Identifier of the slicer for which to retrieve all slicer profiles
+			require_configured (boolean): Whether to require the slicer ``slicer`` to be already configured (True)
+				or not (False, default). If False and the slicer is not yet configured, a :class:`~octoprint.slicing.exceptions.SlicerNotConfigured`
+				exception will be raised.
+			from_current_printer (boolean): Whether to select only profiles from the current or default printer
+			nozzle_size (string) : value of nozzle size (ex: 400 )
+		Returns:
+			list of SlicingProfile: A list of all :class:`SlicingProfile` instances available for the slicer ``slicer``.
+		Raises:
+			~octoprint.slicing.exceptions.UnknownSlicer: The slicer ``slicer`` is unknown.
+			~octoprint.slicing.exceptions.SlicerNotConfigured: The slicer ``slicer`` is not configured and ``require_configured`` was True.
+		"""
+
+		if not slicer in self.registered_slicers:
+			raise UnknownSlicer(slicer)
+		if require_configured and not slicer in self.configured_slicers:
+			raise SlicerNotConfigured(slicer)
+		profiles = dict()
+		slicer_profile_path = self.get_slicer_profile_path(slicer)
+
+		if from_current_printer:
+			# adds an '_' to the end to avoid false positive string lookups for the printer names
+			printer_name = self._printer_profile_manager.get_current_or_default()['name']
+			printer_id = printer_name.replace(' ', '')
+			# removes the A suffix of some models for filament lookup matching
+			if printer_id.endswith('A'):
+				printer_id = printer_id[:-1]
+
+			printer_id = printer_id.upper()
+
+		slicer_object_curaX = self.get_slicer(slicer)
+		for folder in os.listdir(slicer_profile_path):
+			if folder == "Quality" or folder == "Variants":
+				for entry in os.listdir(slicer_profile_path +"/" +folder):
+					if not entry.endswith(".json") or octoprint.util.is_hidden_path(entry):
+						# we are only interested in profiles and no hidden files
+						continue
+
+					if from_current_printer:
+						if not slicer_object_curaX.isPrinterAndNozzleCompatible(entry, printer_id, nozzle_size):
+							continue
+
+					#path = os.path.join(slicer_profile_path, entry)
+					profile_name = entry[:-len(".json")]
+					brand= slicer_object_curaX.getFilamentHeader("brand", entry, slicer_profile_path + "/")
+					# creates a shallow slicing profile
+					temp_profile = self._create_shallow_profile(profile_name, slicer, "json", require_configured, brand)
+					profiles[profile_name] = temp_profile
+		return profiles
 
 	def profiles_last_modified(self, slicer):
 		"""
@@ -684,9 +802,15 @@ class SlicingManager(object):
 		if not name:
 			raise ValueError("name must be set")
 
-		name = self._sanitize(name)
+		if slicer == "curaX":
+			slicer_object_curaX = self.get_slicer(slicer)
+			path = slicer_object_curaX.pathToFilament(self._desanitize(name))
+			if path is None:
+				path = os.path.join(self.get_slicer_profile_path(slicer)+"/Variants", "{name}.json".format(name=name))
+		else:
+			name = self._sanitize(name)
+			path = os.path.join(self.get_slicer_profile_path(slicer), "{name}.profile".format(name=name))
 
-		path = os.path.join(self.get_slicer_profile_path(slicer), "{name}.profile".format(name=name))
 		if not os.path.realpath(path).startswith(os.path.realpath(self._profile_path)):
 			raise IOError("Path to profile {name} tried to break out of allows sub path".format(**locals()))
 		if must_exist and not (os.path.exists(path) and os.path.isfile(path)):
@@ -705,6 +829,23 @@ class SlicingManager(object):
 		sanitized_name = ''.join(c for c in name if c in valid_chars)
 		sanitized_name = sanitized_name.replace(" ", "_")
 		return sanitized_name
+
+	def _desanitize(self, name):
+		if name is None:
+			return None
+
+		if "/" in name or "\\" in name:
+			raise ValueError("name must not contain / or \\")
+		try:
+			import string
+			valid_chars = "-_.() {ascii}{digits}".format(ascii=string.ascii_letters, digits=string.digits)
+			sanitized_name = ''.join(c for c in name if c in valid_chars)
+			sanitized_name = sanitized_name.replace("_", " ")
+			pos= sanitized_name.index(' bee')
+			sanitized_name =sanitized_name[:pos]
+			return str(sanitized_name)
+		except:
+			return name
 
 	def _load_profile_from_path(self, slicer, path, require_configured=False):
 		profile = self.get_slicer(slicer, require_configured=require_configured).get_slicer_profile(path)
@@ -727,7 +868,7 @@ class SlicingManager(object):
 
 		return self.get_slicer(slicer).get_slicer_default_profile()
 
-	def _create_shallow_profile(self, profile_name, slicer, extensionFile, require_configured):
+	def _create_shallow_profile(self, profile_name, slicer, extensionFile, require_configured, brand=None):
 
 		# reverses the name sanitization
 		formatted_name = profile_name.replace('_', ' ').title()
@@ -755,6 +896,9 @@ class SlicingManager(object):
 				else:
 					formatted_name += ' ' + part
 
+		if extensionFile == "json":
+			formatted_name = profile_name
+
 		description = profile_name
 		profile_dict = {'_display_name': formatted_name}
 
@@ -762,4 +906,4 @@ class SlicingManager(object):
 
 		return octoprint.slicing.SlicingProfile(properties["type"],
 												"unknown", profile_dict, display_name=formatted_name,
-												description=description)
+												description=description, brand=brand)

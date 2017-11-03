@@ -58,8 +58,10 @@ $(function() {
         });
 
         self.settings.printerProfiles.currentProfileData.subscribe(function () {
-            self._updateExtruderCount();
-            self.settings.printerProfiles.currentProfileData().extruder.count.subscribe(self._updateExtruderCount);
+            if (self.settings.printerProfiles.currentProfileData() !== undefined) {
+                self._updateExtruderCount();
+                self.settings.printerProfiles.currentProfileData().extruder.count.subscribe(self._updateExtruderCount);
+            }
         });
         self._updateExtruderCount = function () {
             var tools = [];
