@@ -403,8 +403,6 @@ $(function() {
 
             fetchTemperatureRetries = 5;
 
-            debugger;
-
             $.ajax({
                 url: API_BASEURL + "maintenance/temperature",
                 type: "GET",
@@ -965,8 +963,6 @@ $(function() {
         self._updateTempProgressExtMaint = function() {
             fetchTemperatureRetries = 5;
 
-            debugger;
-
             $.ajax({
                 url: API_BASEURL + "maintenance/temperature",
                 type: "GET",
@@ -1200,8 +1196,6 @@ $(function() {
 
         self._updateTempProgressReplaceNozzle = function() {
             fetchTemperatureRetries = 5;
-
-            debugger;
 
             $.ajax({
                 url: API_BASEURL + "maintenance/temperature",
@@ -1683,14 +1677,11 @@ $(function() {
 
             fetchTemperatureRetries = 5;
 
-            debugger;
-
             $.ajax({
                 url: API_BASEURL + "maintenance/temperature",
                 type: "GET",
                 dataType: "json",
                 success: function(data) {
-                    debugger;
                     if (!cancelTemperatureUpdate) {
                         var current_temp = data['temperature'];
                         var progress = ((current_temp / TARGET_TEMPERATURE) * 100).toFixed(0);
@@ -1761,14 +1752,14 @@ $(function() {
                     var response = data['response'];
 
                     if (response.indexOf('ok') > -1) {
-                        self.filamentWeightSaveSuccess(true);
+                        self.newStepsSaveSuccess(true);
 
 
                         self.commandLock(false);
                         self.operationLock(false);
 
                     } else {
-                        self.filamentWeightResponseError(true);
+                        self.newStepsResponseError(true);
                         self.commandLock(false);
                     }
                 },

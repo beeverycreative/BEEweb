@@ -396,6 +396,6 @@ def DefineExtruderSteps():
 
 	newSteps = currSteps * float(150)/float(data['Info'][0]) * (materialFlow/100)
 
-	printer.setExtruderStepsMM('{0:.4f}'.format(newSteps))
+	resp = printer.setExtruderStepsMM('{0:.4f}'.format(newSteps))
 
-	return NO_CONTENT
+	return jsonify({"response": resp})

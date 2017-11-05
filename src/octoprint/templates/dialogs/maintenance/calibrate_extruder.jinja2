@@ -116,6 +116,7 @@
 </div>
 
 <div id="extCalStep4" class="hidden">
+    <br/>
     <div class="row-fluid">
         <div class="span3"></div>
         <div class="span6 text-center">
@@ -123,8 +124,8 @@
         </div>
         <div class="span3"></div>
     </div>
-    <br />
-
+    <br/>
+    <br/>
     <div class="row-fluid">
         <div class="span12">
             <strong>{{ _('Stretch the filament and mark the first mark') }}</strong>
@@ -137,6 +138,7 @@
 </div>
 
 <div id="extCalStep5" class="hidden">
+    <br />
     <div class="row-fluid">
         <div class="span3"></div>
         <div class="span6 text-center">
@@ -145,7 +147,7 @@
         <div class="span3"></div>
     </div>
     <br />
-
+    <br />
     <div class="row-fluid">
         <div class="span12">
             <strong>{{ _('Stretch the filament and mark the second mark') }}</strong>
@@ -193,12 +195,17 @@
                     && printerState.isReady() && !printerState.isPrinting() && loginState.isUser()">
                     <i class="icon-save"></i> {{ _('Save')}}
                 </button>
-                <span class="bee-alert success" data-bind="visible: extruderCalibrationSaveSuccess">
+                <span class="bee-alert success" data-bind="visible: newStepsSaveSuccess">
                     <i class="icon-check"></i>
                     {{ _('Extruder calibration Saved.')}}
                 </span>
                 <br />
             </div>
         </form>
+        <div class="alert alert-danger text-center" data-bind="visible: newStepsResponseError">
+            <span><i class="icon-exclamation-sign"></i>
+            {{ _('An error occurred while saving. Please make sure the input value is valid distance in mm.')}}
+            </span>
+        </div>
     </div>
 </div>
