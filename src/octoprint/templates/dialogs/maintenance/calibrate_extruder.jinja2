@@ -78,19 +78,11 @@
 
 <div id="extCalStep3" class="hidden">
     <div class="row-fluid">
-        <div class="span1"></div>
+        <div class="span2"></div>
         <div class="span4 text-center unload-gifs">
-            <img src="{{ url_for('static', filename='img/maintenance/unload_filament_external.gif') }}" />
-        </div>
-        <div class="span4 text-center unload-gifs">
-            <img src="{{ url_for('static', filename='img/maintenance/unload_filament_internal.gif') }}" />
-        </div>
-        <div class="span4 text-center load-gifs" style="display: none;">
-            <img src="{{ url_for('static', filename='img/maintenance/load_filament_external.gif') }}" />
-        </div>
-        <div class="span4 text-center load-gifs" style="display: none;">
             <img src="{{ url_for('static', filename='img/maintenance/load_filament_internal.gif') }}" />
         </div>
+        <div class="span3"></div>
         <div class="span3">
             <div class="row-fluid">
                 <button id="ext-cal-load-btn" title="Load" class="btn btn-primary btn-block yellow"
@@ -114,7 +106,7 @@
     </div>
     <br /><br />
     <div class="row-fluid">
-        <p><strong>{{ _('Make sure the filament is correctly unloaded before proceeding' ) }}</strong></p>
+        <p><strong>{{ _('Make sure the filament is correctly LOADED before proceeding' ) }}</strong></p>
         <br />
         <p>{{ _('To unload the filament, push the Unload button and pull the filament steadily. To load the filament insert it in the inlet hole and push it until it reaches the end. Then click on the Load button, and push the filament a little more until the printer pulls it and extrudes a little filament.') }}
         </p>
@@ -127,7 +119,7 @@
     <div class="row-fluid">
         <div class="span3"></div>
         <div class="span6 text-center">
-            <img src="{{ url_for('static', filename='img/maintenance/troca_filamento_ambos.png') }}" />
+            <img src="{{ url_for('static', filename='img/maintenance/mark_filament.gif') }}" />
         </div>
         <div class="span3"></div>
     </div>
@@ -135,9 +127,10 @@
 
     <div class="row-fluid">
         <div class="span12">
-            <strong>{{ _('Pull Filament and mark 1') }}</strong>
+            <strong>{{ _('Stretch the filament and mark the first mark') }}</strong>
             <br />
-
+            <p>{{ _('Use the filament inlet to draw a line in the filament. Mantain the filament strech while doing this step.') }}
+            </p>
 
         </div>
     </div>
@@ -147,7 +140,7 @@
     <div class="row-fluid">
         <div class="span3"></div>
         <div class="span6 text-center">
-            <img src="{{ url_for('static', filename='img/maintenance/troca_filamento_ambos.png') }}" />
+            <img src="{{ url_for('static', filename='img/maintenance/mark_filament.gif') }}" />
         </div>
         <div class="span3"></div>
     </div>
@@ -155,8 +148,10 @@
 
     <div class="row-fluid">
         <div class="span12">
-            <strong>{{ _('Pull Filament and mark 2') }}</strong>
+            <strong>{{ _('Stretch the filament and mark the second mark') }}</strong>
             <br />
+            <p>{{ _('Use the filament inlet to draw a line in the filament. Mantain the filament strech while doing this step.') }}
+            </p>
 
 
         </div>
@@ -165,6 +160,18 @@
 
 <div id="extCalStep6" class="hidden">
     <div class="row-fluid">
+        <div class="span2"></div>
+        <div class="span4 text-center">
+            <img src="/static/img/maintenance/unload_filament_internal.gif">
+        </div>
+        <div class="span4 text-center">
+            <img src="/static/img/maintenance/measure_filament.gif">
+        </div>
+        <div class="span1"></div>
+    </div>
+
+    <br>
+    <div class="row-fluid">
         <div class="span6">
             <strong>{{ _('Measure Extruded Filament') }}</strong>
         </div>
@@ -172,23 +179,23 @@
     <div class="row-fluid">
         <span>
             <i class="icon-exclamation-sign"></i>
-            <strong>{{ _('PLEASE INSERT DISTANCE BETWEEN MARKS' ) }}</strong>
+            <strong>{{ _('Please measure the distance between the two filament marks (in mm).' ) }}</strong>
         </span>
-        <p>{{ _('MEASURE THE DISTANCE BETWEEN MARKS' ) }}
+        <p>{{ _('Gentely push the filament from the printer inlet. Use a 20+cm ruler to measure the distance between the prviously drawn marks.' ) }}
         </p>
-        <br /><br />
+        <br />
         <form class="form-horizontal">
             <div class="control-group">
-            <strong>{{ _('Distance between filament marks (mm)' ) }}:</strong>
+            <strong>{{ _('Measured Distance (mm):' ) }}:</strong>
                 <input type="number" data-bind="value: measuredFilamentInput"></input>
                 <button id="submit-extruder-amount" title="Set Extruded Amount" class="btn btn-primary yellow"
                     data-bind="click: saveExtruderAmount, enable: printerState.isOperational() && !commandLock()
                     && printerState.isReady() && !printerState.isPrinting() && loginState.isUser()">
                     <i class="icon-save"></i> {{ _('Save')}}
                 </button>
-                <span class="bee-alert success" data-bind="visible: filamentWeightSaveSuccess">
+                <span class="bee-alert success" data-bind="visible: extruderCalibrationSaveSuccess">
                     <i class="icon-check"></i>
-                    {{ _('Filament weight saved.')}}
+                    {{ _('Extruder calibration Saved.')}}
                 </span>
                 <br />
             </div>
