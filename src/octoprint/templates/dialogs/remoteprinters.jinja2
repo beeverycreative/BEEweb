@@ -8,6 +8,35 @@
             <!-- Table filled with remote data -->
         </table>
     </div>
+
+    <div class="control-group" id="estimation-output" data-bind="visible: loadingPrinters() || estimationReady()">
+        <br />
+        <p data-bind="visible: loadingPrinters()" >
+            <span id="loading_printers_loader" class="icon-spinner icon-spin icon-3x" ></span><br />
+            {{ _('Loading Printers, please wait...') }}
+        </p>
+        <div class="controls" data-bind="visible: estimationReady">
+
+            <input type="radio" id="estimatedPrintTime" name="time" value="Estimation Time" disabled="disabled"/>
+                <label class="estimation" for="estimatedPrintTime">
+                   <span class="icon printicon"></span>
+                    <div data-bind="text: estimatedPrintTime"></div>
+                </label>
+            <input type="radio" id="estimatedFilament" name="time" value="Estimated Filament" disabled="disabled"/>
+                <label class="estimation" for="estimatedFilament">
+                   <span class="icon filamenticon"></span>
+                    <div data-bind="text: estimatedFilament"></div>
+                </label>
+        </div>
+        <div data-bind="visible: gcodeDownloadLink">
+            <a href="#" class="btn btn-info" data-bind="attr: {href: gcodeDownloadLink}"
+                onclick="BEEwb.showDownloadFileFeedback();" download>
+                <span class="m-icon downloadwicon"></span>
+                {{ _('Download GCode') }}
+            </a>
+            <br /><br />
+        </div>
+    </div>
     <div class="modal-footer">
         <a href="#" class="btn modal-footer-btn" data-dismiss="modal" aria-hidden="true" data-bind="click: closeSlicing">{{ _('Cancel') }}</a>
         <button id="remote_print_button" href="#" class="btn btn-primary modal-footer-btn"
