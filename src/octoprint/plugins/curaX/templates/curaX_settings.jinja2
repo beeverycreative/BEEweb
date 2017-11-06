@@ -102,11 +102,11 @@
      </a>
     <div id="brands_tab">
        <li><a class="" href="#">
-            <input type="radio" name="brand" value="BEEVERYCREATIVE"  checked="checked">
+            <input type="radio" name="brand" value="BEEVERYCREATIVE"  data-bind="event: {change : $root.onInputChange('brand')}" checked="checked">
             <span class="lbl">BEEVERYCREATIVE</span>
         </a></li>
         <li><a class="" href="#">
-            <input type="radio" name="brand" value="BQ"  checked="checked">
+            <input type="radio" name="brand" value="BQ" data-bind="event: {change : $root.onInputChange('brand')}" >
             <span class="lbl">BQ</span>
         </a></li>
     </div>
