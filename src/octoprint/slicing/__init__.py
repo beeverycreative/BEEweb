@@ -625,6 +625,34 @@ class SlicingManager(object):
 		self._logger.info("Retriving Profiles take "+ str(elapsed_time) +" s")
 		return profiles
 
+
+	def load_profile_quality(self,slicer, name):
+		slicer_object_curaX = self.get_slicer(slicer)
+		try:
+			path = self.get_slicer_profile_path(slicer);
+		except IOError:
+			return None
+
+		return slicer_object_curaX.getProfileQuality(path, name)
+
+	def load_options(self, slicer):
+		slicer_object_curaX = self.get_slicer(slicer)
+		try:
+			path = self.get_slicer_profile_path(slicer);
+		except IOError:
+			return None
+
+		return slicer_object_curaX.getOptionSettings(path)
+
+	def load_single_profile(self, slicer, name, quality):
+		slicer_object_curaX = self.get_slicer(slicer)
+		try:
+			path = self.get_slicer_profile_path(slicer);
+		except IOError:
+			return None
+
+		return slicer_object_curaX.getProfileTeste(name, path, quality)
+
 	def all_profiles_list(self, slicer, require_configured=False, from_current_printer=True):
 		"""
 		Retrieves all profiles for slicer ``slicer`` but avoiding to parse every single profile file for better performance

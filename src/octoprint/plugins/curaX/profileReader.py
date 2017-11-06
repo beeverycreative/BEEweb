@@ -569,3 +569,111 @@ class ProfileReader(object):
 		else :
 			profile[key] = {'default_value': value}
 		return profile
+
+	@classmethod
+	def getFilamentQuality(cls, slicer_profile_path, filament_id):
+		overrides_Values = {}
+		custom = False
+
+		for entry in os.listdir(slicer_profile_path + "/Variants/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			if filament_id.lower() not in entry.lower():
+				continue
+
+			# creates a shallow slicing profile
+			with open(slicer_profile_path + '/Variants/' + entry) as data_file:
+				filament_json = json.load(data_file)
+				custom = True
+
+		if not custom:
+			for entry in os.listdir(slicer_profile_path + "/Quality/"):
+				if not entry.endswith(".json"):
+					# we are only interested in profiles and no hidden files
+					continue
+
+				if filament_id.lower() not in entry.lower():
+					continue
+
+				# creates a shallow slicing profile
+				with open(slicer_profile_path + '/Quality/' + entry) as data_file:
+					filament_json = json.load(data_file)
+
+		if 'PrinterGroups' in filament_json:
+			for list in filament_json['PrinterGroups']:
+					overrides_Values = list['quality']
+
+		return overrides_Values
+
+	@classmethod
+	def getOptions(cls, slicer_profile_path):
+
+		with open(slicer_profile_path + "/optionsAvailable.json") as data_file:
+			filament_json = json.load(data_file)
+
+		return filament_json
+
+	@classmethod
+	def getFilamentOverridesTeste(cls, filament_id, slicer_profile_path, quality):
+
+		overrides_Values = {}
+		custom = False
+
+		for entry in os.listdir(slicer_profile_path + "/Variants/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			if filament_id.lower() not in entry.lower():
+				continue
+
+			# creates a shallow slicing profile
+			with open(slicer_profile_path + '/Variants/' + entry) as data_file:
+				filament_json = json.load(data_file)
+				custom = True
+
+		if not custom:
+			for entry in os.listdir(slicer_profile_path + "/Quality/"):
+				if not entry.endswith(".json"):
+					# we are only interested in profiles and no hidden files
+					continue
+
+				if filament_id.lower() not in entry.lower():
+					continue
+
+				# creates a shallow slicing profile
+				with open(slicer_profile_path + '/Quality/' + entry) as data_file:
+					filament_json = json.load(data_file)
+
+		if 'PrinterGroups' in filament_json:
+			for list in filament_json['PrinterGroups']:
+				if quality in list['quality']:
+					overrides_Values = list['quality'][quality]
+
+		# check for overrides that do not depend on quality
+		if 'overrides' in filament_json:
+			overrides_Values = cls.merge_dicts(filament_json['overrides'], overrides_Values)
+
+		# check if it was parent, if so, get overrides
+		if 'inherits' in filament_json:
+			overrides_Values = cls.merge_dicts(cls.getParentOverridesTeste(filament_json['inherits'], slicer_profile_path), overrides_Values)
+		return overrides_Values
+
+	@classmethod
+	def getParentOverridesTeste(cls, filament_id, slicer_profile_path):
+		overrides_Values = {}
+		with open(slicer_profile_path + '/Materials/' + filament_id + ".json") as data_file:
+			filament_json = json.load(data_file)
+
+		# check for overrides
+		if 'overrides' in filament_json:
+			for key in filament_json['overrides'].keys():
+				overrides_Values.update(filament_json['overrides'][key])
+			# overrides_Values = cls.merge_dicts(filament_json['overrides'], overrides_Values)
+		# check if it was parent, if so, get overrides
+		if 'inherits' in filament_json:
+			overrides_Values = cls.merge_dicts(
+				cls.getParentOverridesTeste(filament_json['inherits'], slicer_profile_path), overrides_Values)
+		return overrides_Values

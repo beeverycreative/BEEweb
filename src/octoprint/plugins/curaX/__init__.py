@@ -467,6 +467,15 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 	def getFilamentHeaderName(cls, header_id, filament_id, slicer_profile_path):
 		return  ProfileReader.getFilamentHeaderName(header_id,filament_id,slicer_profile_path)
 
+	def getProfileQuality(self, slicer_profile_path, filament_id):
+		return ProfileReader.getFilamentQuality(slicer_profile_path, filament_id)
+
+	def getOptionSettings(self, slicer_profile_path):
+		return ProfileReader.getOptions(slicer_profile_path)
+
+	def getProfileTeste(self, filament_id,slicer_profile_path, quality):
+		return ProfileReader.getFilamentOverridesTeste(filament_id, slicer_profile_path, quality)
+
 __plugin_name__ = "CuraEngineX (>= 2.7)"
 __plugin_author__ = "Bruno Andrade"
 __plugin_url__ = "https://github.com/Beeverycreative"

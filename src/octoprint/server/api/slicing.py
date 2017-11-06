@@ -89,6 +89,38 @@ def slicingListAll():
 
 	return jsonify(result)
 
+@api.route("/slicing/<string:slicer>/getSingleProfile/<string:name>/<string:quality>", methods=["GET"])
+def slicingGetSingleProfile(slicer, name, quality):
+	try:
+		profile = slicingManager.load_single_profile(slicer, name, quality)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except UnknownProfile:
+		return make_response("Profile not found", 404)
+	print(profile)
+	return jsonify(profile)
+
+@api.route("/slicing/<string:slicer>/getOptions", methods=["GET"])
+def slicingGetOptions(slicer):
+	try:
+		profile = slicingManager.load_options(slicer)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except UnknownProfile:
+		return make_response("Profile not found", 404)
+	return  jsonify(profile)
+
+@api.route("/slicing/<string:slicer>/getProfileQuality/<string:name>", methods=["GET"])
+def slicingGetProfileQuality(slicer, name):
+	try:
+		profile = slicingManager.load_profile_quality( slicer, name)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except UnknownProfile:
+		return make_response("Profile not found", 404)
+	return  jsonify(profile)
+
+
 @api.route("/slicing/<string:slicer>/profiles", methods=["GET"])
 def slicingListSlicerProfiles(slicer):
 	configured = False
@@ -112,6 +144,8 @@ def slicingGetSlicerProfile(slicer, name):
 	result = _getSlicingProfileData(slicer, name, profile)
 	result["data"] = profile.data
 	return jsonify(result)
+
+
 
 @api.route("/slicing/<string:slicer>/profiles/<string:name>", methods=["PUT"])
 @restricted_access

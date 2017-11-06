@@ -219,15 +219,51 @@ $(function() {
         };
 
         self.editProfile = function(data) {
-            if (!data) {
-                //New profile
-                $("#settings_plugin_curaX_edit").modal("show");
-            }
-            //get Profile information before open window
-            $("#settings_plugin_curaX_edit").modal("show");
+            // if (!data) {
+            //     //New profile
+            //     $("#settings_plugin_curaX_edit").modal("show");
+            // }
+            // //get Profile information before open window
+            // $("#settings_plugin_curaX_edit").modal("show");
+
+             $.ajax({
+                url: API_BASEURL + "slicing/curaX/getProfileQuality/" + data["key"] ,
+                type: "GET",
+                dataType: "json",
+                success:function (current) {
+                    console.log(current)
+                    $('#comboQuality').empty();
+                    for ( var options in current ) {
+                      var newOption = $('<option>' + options + '</option>');
+                      $('#comboQuality').append(newOption);
+                    }
+                    self.getProfileToEdit(data)
+                }
+            });
         };
 
+        self.getProfileToEdit = function(data){
+            var quality = $('#comboQuality').find('option:selected').text();
 
+            $.ajax({
+                url: API_BASEURL + "slicing/curaX/getSingleProfile/" + data["key"] + "/" + quality ,
+                type: "GET",
+                dataType: "json",
+                success:function(data){
+                    var $current = $('#accordion_teste div').find('input');
+                    console.log(data)
+                    console.log($current)
+                    for(var i = 0 ; i < $current.length; i++){
+                        var fieldID = $current[i].id;
+                         if($current[i].type == 'number')
+                             $('#'+ fieldID).val(data[fieldID].default_value);
+                    }
+
+                    if(!($('#settings_plugin_curaX_edit_profile').is(':visible')))
+                        $("#settings_plugin_curaX_edit_profile").modal("show");
+                }
+            });
+        };
         /*********************************************************************************************************/
 
         self.findMaterialOnArray = function (data,material) {
@@ -313,6 +349,32 @@ $(function() {
         };
     }
 
+    $(document).ready(function(){
+
+            $.ajax({
+                url: API_BASEURL + "slicing/curaX/getOptions",
+                type: "GET",
+                dataType: "json",
+                success: function (data) {
+                    for (var i = 0; i < data.options.length ; i++) {
+                        var counter = data.options[i];
+                        var $input = $('<div class="panel_collapse panel-default"><a class="" href="#"><span class="signa"><i class="'+counter.icon+'"></i></span>' +
+                             '<span class="lbl">' + counter.id +'</span>' + '<span data-toggle="collapse" href="#'+ counter.id +'" class="sign"><i class="icon-chevron-down"></i></span></a>');
+                        $('#accordion_teste').append($input);
+
+                        var $input = $('<div id="'+counter.id+'" class="collapse show"></div> </div>');
+                        $('#accordion_teste').append($input);
+
+                        for(var j = 0; j < counter.list.length ; j++) {
+                            var idcounter = counter.list[j];
+                            var $input = $('<div class="form-group"><a class="" href="#"><span  class="lbl">'+counter.list[j].DisplayName +'</span>' +
+                                 '<input class="inpt" id = "' + idcounter.id + '" type="number"  step="0.01"></a></div>');
+                            $('#'+ counter.id ).append($input);
+                        }
+                    }
+                },
+            });
+        });
     // view model class, parameters for constructor, container to bind to
     OCTOPRINT_VIEWMODELS.push([
         curaXViewModel,
