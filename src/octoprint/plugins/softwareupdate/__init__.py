@@ -240,6 +240,7 @@ class SoftwareUpdatePlugin(octoprint.plugin.BlueprintPlugin,
 			"pip_command": None,
 				"check_providers": {},
 				"cache_ttl": 24 * 60,
+				"notify_users": True
 			}
 		# in case of OS X desktop installation
 		elif sys.platform == "darwin":
@@ -265,6 +266,7 @@ class SoftwareUpdatePlugin(octoprint.plugin.BlueprintPlugin,
 				"pip_command": None,
 				"check_providers": {},
 				"cache_ttl": 24 * 60,
+				"notify_users": True
 			}
 		else:
 			update_script_callable_beeweb = "{{python}} \"{update_script}\" --branch={{branch}} --force={{force}} \"{{folder}}\" {{target}}".format(

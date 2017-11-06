@@ -167,7 +167,6 @@ def install_source(python_executable, folder, user=False, sudo=False):
     # Copies the CuraEngine files to the settings directory
     print(">>> Copying CuraX files to settings directory...")
     # folder where the installation settings files are located
-    settings_folder = settings(init=True).getBaseFolder('base')
     try:
         # copies the files in the /etc directory
         copy_tree(folder + '/src/octoprint/plugins/curaX/profiles', settings_folder + '/slicingProfiles/curaX')
