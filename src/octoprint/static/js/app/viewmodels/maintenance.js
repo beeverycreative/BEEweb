@@ -1505,6 +1505,8 @@ $(function() {
             // Starts heating automatically
             //self.startExtCalHeating();
 
+            //TODO: Filter filament box to show only A1xx
+
         };
 
         //Initial Menu where user selects filament
@@ -1713,6 +1715,7 @@ $(function() {
         };
 
         self._ExtrudeCalibrationFilament = function() {
+            self.commandLock(true)
             self._showMovingMessage();
 
             $.ajax({
@@ -1723,9 +1726,11 @@ $(function() {
                 data: JSON.stringify({"extrude": 150},{"flowrate":240}),
                 success: function() {
                     self._hideMovingMessage();
+                    self.commandLock(false)
                 },
                 error: function() {
                     self._hideMovingMessage();
+                    self.commandLock(false)
                 }
             });
         };
@@ -1749,6 +1754,7 @@ $(function() {
                 contentType: "application/json; charset=UTF-8",
                 data: JSON.stringify(data),
                 success: function(data) {
+
                     var response = data['response'];
 
                     if (response.indexOf('ok') > -1) {

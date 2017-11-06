@@ -390,12 +390,10 @@ def DefineExtruderSteps():
 
 		materialFlow = float(filamentProfile.data['PrinterGroups'][0]['quality']['medium']['material_flow']['default_value'])
 
-
-	currSteps = float(printer.getExtruderStepsMM())
-
-
-	newSteps = currSteps * float(150)/float(data['Info'][0]) * (materialFlow/100)
-
-	resp = printer.setExtruderStepsMM('{0:.4f}'.format(newSteps))
+	resp = "Invalid Extruded value"
+	if data['Info'][0] and float(data['Info'][0]) >= 0:
+		currSteps = float(printer.getExtruderStepsMM())
+		newSteps = currSteps * float(150)/float(data['Info'][0]) * (materialFlow/100)
+		resp = printer.setExtruderStepsMM('{0:.4f}'.format(newSteps))
 
 	return jsonify({"response": resp})

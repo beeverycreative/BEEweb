@@ -6,7 +6,7 @@
     <div class="row-fluid">
         <div class="span3"></div>
         <div class="span6 text-center">
-            <img src="{{ url_for('static', filename='img/maintenance/troca_filamento_ambos.png') }}" />
+            <img src="{{ url_for('static', filename='img/maintenance/troca_filamento.png') }}" />
         </div>
         <div class="span3"></div>
     </div>
@@ -26,9 +26,7 @@
                         <div class="span8">
                             <p>{{ _('Please select the correct code for the filament. You can find that code on the spool, (e.g: A101 - Transparent).') }}
                             </p>
-                            <p>{{ _('A – External spool holder for all spool weights and all filament types.') }}
-                            </p>
-                            <p>{{ _('B – Internal spool holder for PLA filament and 330g spool only.') }}
+                            <p>{{ _('Please use the internal spool holder for PLA filament and 330g spool only.') }}
                             </p>
                         </div>
                     </div>
@@ -80,6 +78,9 @@
     <div class="row-fluid">
         <div class="span2"></div>
         <div class="span4 text-center unload-gifs">
+            <img src="{{ url_for('static', filename='img/maintenance/unload_filament_internal.gif') }}" />
+        </div>
+        <div class="span4 text-center load-gifs" style="display: none;">
             <img src="{{ url_for('static', filename='img/maintenance/load_filament_internal.gif') }}" />
         </div>
         <div class="span3"></div>
@@ -128,7 +129,7 @@
     <br/>
     <div class="row-fluid">
         <div class="span12">
-            <strong>{{ _('Stretch the filament and mark the first mark') }}</strong>
+            <strong><h4>{{ _('Stretch the filament and mark the first mark') }}</h4></strong>
             <br />
             <p>{{ _('Use the filament inlet to draw a line in the filament. Mantain the filament strech while doing this step.') }}
             </p>
@@ -150,9 +151,9 @@
     <br />
     <div class="row-fluid">
         <div class="span12">
-            <strong>{{ _('Stretch the filament and mark the second mark') }}</strong>
+            <strong><h4>{{ _('Stretch the filament and mark the second mark') }}</h4></strong>
             <br />
-            <p>{{ _('Use the filament inlet to draw a line in the filament. Mantain the filament strech while doing this step.') }}
+            <p>{{ _('Wait for the filament to stop moving and use the filament inlet to draw a line in the filament. Mantain the filament streched while doing this step.') }}
             </p>
 
 
@@ -162,14 +163,11 @@
 
 <div id="extCalStep6" class="hidden">
     <div class="row-fluid">
-        <div class="span2"></div>
-        <div class="span4 text-center">
-            <img src="/static/img/maintenance/unload_filament_internal.gif">
-        </div>
+        <div class="span4"></div>
         <div class="span4 text-center">
             <img src="/static/img/maintenance/measure_filament.gif">
         </div>
-        <div class="span1"></div>
+        <div class="span2"></div>
     </div>
 
     <br>
@@ -188,7 +186,7 @@
         <br />
         <form class="form-horizontal">
             <div class="control-group">
-            <strong>{{ _('Measured Distance (mm):' ) }}:</strong>
+            <strong>{{ _('Measured Distance (mm):' ) }}</strong>
                 <input type="number" data-bind="value: measuredFilamentInput"></input>
                 <button id="submit-extruder-amount" title="Set Extruded Amount" class="btn btn-primary yellow"
                     data-bind="click: saveExtruderAmount, enable: printerState.isOperational() && !commandLock()
