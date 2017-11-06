@@ -746,7 +746,7 @@ class BeeCom(MachineCom):
 
         return None
 
-    def _getExtruderStepsMM(self):
+    def getExtruderStepsMM(self):
         """
         Gets Extruder Steps/mm
         :return: steps/mm
@@ -761,7 +761,7 @@ class BeeCom(MachineCom):
 
         return None
 
-    def _setExtruderStepsMM(self,steps):
+    def setExtruderStepsMM(self,steps):
         """
         Sets Extruder Steps/mm
         :param steps:

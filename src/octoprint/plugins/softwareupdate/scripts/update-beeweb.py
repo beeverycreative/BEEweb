@@ -176,37 +176,6 @@ def install_source(python_executable, folder, user=False, sudo=False):
     finally:
         print("CuraEngine files installed.")
 
-    print(">>> Removing client cache files...")
-    try:
-        import os
-        from glob import glob
-        from shutil import rmtree
-
-        # If the update is running on Windows tries to remove cache files from the client app
-        if sys.platform == "win32":
-            app_data_folder = os.getenv('APPDATA')
-            pattern = app_data_folder + '\\beesoft-*\\Cache\\*'
-        elif sys.platform == "darwin":
-            from AppKit import NSSearchPathForDirectoriesInDomains
-            # http://developer.apple.com/DOCUMENTATION/Cocoa/Reference/Foundation/Miscellaneous/Foundation_Functions/Reference/reference.html#//apple_ref/c/func/NSSearchPathForDirectoriesInDomains
-            # NSApplicationSupportDirectory = 14
-            # NSUserDomainMask = 1
-            # True for expanding the tilde into a fully qualified path
-            app_data_folder = NSSearchPathForDirectoriesInDomains(14, 1, True)[0]
-            pattern = app_data_folder + '/beesoft-*/Cache/*'
-        else:
-            pattern = os.path.expanduser(os.path.join("~", "." + '/beesoft-*/Cache/*'))
-
-        for item in glob(pattern):
-            if os.path.exists(item):
-                try:
-                    os.remove(item)
-                except Exception:
-                    continue
-
-    except Exception as ex:
-        raise RuntimeError('Could not remove the cache files from client app: %s' % ex.strerror)
-
 
 def parse_arguments():
     import argparse

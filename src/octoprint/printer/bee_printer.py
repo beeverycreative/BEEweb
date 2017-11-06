@@ -1139,25 +1139,40 @@ class BeePrinter(Printer):
                 self._logger.info("Cannot get extruder steps: printer not connected or currently busy")
                 return
 
-            return self._comm._getExtruderStepsMM()
+            return self._comm.getExtruderStepsMM()
         except Exception as ex:
             self._logger.error(ex)
 
         return
 
-    def setExtruderStepsMM(self,steps):
+    def setExtruderStepsMM(self, selected_filament, measuredFilamentInput):
         """
         Sets extruder steps per mm
-        :param steps:
+        :param selected_filament: Selected filament string identifier
+        :param measuredFilamentInput:
         :return:
         """
-
         try:
             if self._comm is None:
                 self._logger.info("Cannot set extruder steps: printer not connected or currently busy")
                 return
 
-            return self._comm._setExtruderStepsMM(steps)
+            materialFlow = 100.0
+
+            # finds the target temperature based on the selected filament
+            if selected_filament:
+                filamentProfile = self._slicingManager.load_profile(self._slicingManager.default_slicer, selected_filament,
+                                                              require_configured=False)
+                materialFlow = float(
+                    filamentProfile.data['PrinterGroups'][0]['quality']['medium']['material_flow']['default_value'])
+
+            if measuredFilamentInput and measuredFilamentInput >= 0:
+                currSteps = float(self.getExtruderStepsMM())
+                newSteps = currSteps * float(150) / float(measuredFilamentInput) * (materialFlow / 100)
+
+                return self._comm.setExtruderStepsMM('{0:.4f}'.format(newSteps))
+            else:
+                raise Exception('Invalid Extruder value input')
         except Exception as ex:
             self._logger.error(ex)
 
