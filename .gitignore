@@ -41,4 +41,4 @@ venv35
 venv36
 
 #Allow
-!/src/octoprint/plugins/curaX/executables/win/CuraEngine2.7-win.exe
+!/src/octoprint/plugins/curaX/executables/win/CuraEngineX.exe
