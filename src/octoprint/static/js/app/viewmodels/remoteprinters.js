@@ -54,6 +54,9 @@ $(function() {
 
         self.slicingInProgress = ko.observable(false); // this flag is used to control the visibility of the main Print... button
 
+        self.loadingPrinters = ko.observable(true);
+        self.remotePrintersReady = ko.observable(false);
+
         self.slicersForFile = function(file) {
             if (file === undefined) {
                 return [];
@@ -689,6 +692,11 @@ $(function() {
          */
         self.getRemotePrinters = function() {
 
+            self.loadingPrinters(true);
+            self.remotePrintersReady(false);
+
+            debugger;
+
             var table = $("#remote_printers_table");
             table.empty();
 
@@ -701,6 +709,9 @@ $(function() {
 
                     $.each(data.response, function (i, item)
                     {
+
+                        debugger;
+
                         var tableRow = $('<tr class="remote-table-row"/>');
 
                         //Left row space
@@ -748,7 +759,7 @@ $(function() {
                         var rgbDiv = $('<div/>');
                         rgbDiv.addClass("bar");
                         //rgbDiv.css("width","100%")
-                        rgbDiv.attr('style','width: 100%;background-color: ' + item.rgb + ' !important;')
+                        rgbDiv.attr('style','width: 100%;background-color: #' + item.rgb + ' !important;')
 
                         colorDiv.append(rgbDiv);
                         colorCol.append(colorDiv)
@@ -763,10 +774,16 @@ $(function() {
                         tableRow.append('<td width="5%"></td>');
 
                         table.append(tableRow);
+
+                        self.loadingPrinters(false);
+                        self.remotePrintersReady(true);
                     });
                 },
                 error: function() {
                     console.log("Error GetRemotePrinters\n");
+
+                    self.loadingPrinters(false);
+                    self.remotePrintersReady(false);
                 }
             });
 

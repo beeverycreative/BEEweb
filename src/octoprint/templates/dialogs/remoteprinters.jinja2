@@ -1,41 +1,21 @@
-<div id="remote_printers_dialog" class="modal hide fade">
+<div id="remote_printers_dialog" class="modal hide fade remote">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
         <h3><span class="m-icon printgicon"></span>{{ _('Available Printers') }}</h3>
+    </div>
+    <div class="control-group" id="estimation-output" data-bind="visible: loadingPrinters() || remotePrintersReady()">
+        <div class="span5 text-center">
+            <p data-bind="visible: loadingPrinters()" >
+                <span id="loading_printers_loader" class="icon-spinner icon-spin icon-3x" ></span><br />
+                {{ _('Loading Printers, please wait...') }}
+            </p>
+        </div>
+
     </div>
     <div class="modal-body">
         <table id="remote_printers_table" align="center" class="remote-table">
             <!-- Table filled with remote data -->
         </table>
-    </div>
-
-    <div class="control-group" id="estimation-output" data-bind="visible: loadingPrinters() || estimationReady()">
-        <br />
-        <p data-bind="visible: loadingPrinters()" >
-            <span id="loading_printers_loader" class="icon-spinner icon-spin icon-3x" ></span><br />
-            {{ _('Loading Printers, please wait...') }}
-        </p>
-        <div class="controls" data-bind="visible: estimationReady">
-
-            <input type="radio" id="estimatedPrintTime" name="time" value="Estimation Time" disabled="disabled"/>
-                <label class="estimation" for="estimatedPrintTime">
-                   <span class="icon printicon"></span>
-                    <div data-bind="text: estimatedPrintTime"></div>
-                </label>
-            <input type="radio" id="estimatedFilament" name="time" value="Estimated Filament" disabled="disabled"/>
-                <label class="estimation" for="estimatedFilament">
-                   <span class="icon filamenticon"></span>
-                    <div data-bind="text: estimatedFilament"></div>
-                </label>
-        </div>
-        <div data-bind="visible: gcodeDownloadLink">
-            <a href="#" class="btn btn-info" data-bind="attr: {href: gcodeDownloadLink}"
-                onclick="BEEwb.showDownloadFileFeedback();" download>
-                <span class="m-icon downloadwicon"></span>
-                {{ _('Download GCode') }}
-            </a>
-            <br /><br />
-        </div>
     </div>
     <div class="modal-footer">
         <a href="#" class="btn modal-footer-btn" data-dismiss="modal" aria-hidden="true" data-bind="click: closeSlicing">{{ _('Cancel') }}</a>

@@ -296,11 +296,11 @@ def getRemotePrinters():
              'A120 - Pearl Gold':{'material':'PLA','color':'806442'},
              'A121 - Pearl Light Grey':{'material':'PLA','color':'8D9295'}}
 
-    modelImgs = {'BEETHEFIRST':'BEETHEFIRST black background.png',
-                 'BEETHEFIRST+':'BEETHEFIRST+ black background.png',
-                 'BEETHEFIRST+A': 'BEETHEFIRST+A black background.png',
-                 'BEEINSCHOOL': 'BEEINSCHOOL black background.png',
-                 'BEEINSCHOOL A': 'BEEINSCHOOL A black background.png'}
+    modelImgs = {'BEETHEFIRST':'BEETHEFIRST white background.png',
+                 'BEETHEFIRST+':'BEETHEFIRST+ white background.png',
+                 'BEETHEFIRST+A': 'BEETHEFIRST+A white background.png',
+                 'BEEINSCHOOL': 'BEEINSCHOOL white background.png',
+                 'BEEINSCHOOL A': 'BEEINSCHOOL A white background.png'}
 
     prod_api = ProdsmartAPIMethods()
 
@@ -373,34 +373,31 @@ def getRemotePrinters():
                 if due_date > Info['Printers'][machine['code']]['available_at']:
                     Info['Printers'][machine['code']]['available_at'] = due_date
 
-    for printer in Info['Printers']:
-        Info['Printers'][printer]['Ready'] = Info['Printers'][printer]['on_hold'] == 0
-
+    for printer in Info['PrintersList']:
+        Info['Printers'][printer['code']]['Ready'] = Info['Printers'][printer['code']]['on_hold'] == 0
 
         remotePrinter = {}
-        remotePrinter['id'] = printer
-        remotePrinter['Filament'] = note['material_code']
-        remotePrinter['Material'] = colors[note['material_code']['material']]
-        remotePrinter['rgb'] = colors[note['material_code']['color']]
-        remotePrinter['model'] = note['model']
-        remotePrinter['serial'] = note['serial']
+        remotePrinter['id'] = printer['code']
+        remotePrinter['Filament'] = printer['material_code']
+        remotePrinter['Material'] = colors[printer['material_code']]['material']
+        remotePrinter['rgb'] = colors[printer['material_code']]['color']
+        remotePrinter['model'] = printer['model']
+        remotePrinter['serial'] = printer['serial']
 
         remotePrinter['imgPath'] = url_for('static', filename='img/' + modelImgs[remotePrinter['model']])
 
-        if Info['Printers'][printer]['Ready'] == 0:
+        if Info['Printers'][printer['code']]['Ready']:
             remotePrinter['state'] = 'READY'
             remotePrinter['Progress'] = '100%'
         else:
             remotePrinter['state'] = 'Printing'
             for j in runningJobs:
-                if j['machines'][0]['code'] == printer:
-                    remotePrinter['Progress'] = j['status']
-
-
+                if j['machines'][0]['code'] == printer['code']:
+                    remotePrinter['Progress'] = str(j['products'][0]['quantity-produced']*100) + '%'
 
         remotePrinters[remotePrinter['id']] = remotePrinter
 
-
+    """
     remotePrinters = {}
 
     remotePrinter = {}
@@ -446,6 +443,7 @@ def getRemotePrinters():
     remotePrinter['Color'] = 'Red'
     remotePrinter['rgb'] = 'red'
     remotePrinters[remotePrinter['id']] = remotePrinter
+    """
 
     return jsonify({
         "response": remotePrinters

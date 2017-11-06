@@ -1328,6 +1328,12 @@ tr:hover td {
     width: 800px;
     margin-left: -487px;
 }
+
+.modal.remote {
+    top: 20% !important;
+    background-color: #555555;
+}
+
 #wizard_dialog .modal-body .full-sized-box { padding: 0px !important; }
 
 /*---------------------SPECIFIC MODAL STRUCTURES ---------------------*/
