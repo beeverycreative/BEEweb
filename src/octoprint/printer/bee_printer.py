@@ -409,7 +409,7 @@ class BeePrinter(Printer):
         except Exception as ex:
             self._logger.exception(ex)
 
-    def extrude(self, amount):
+    def extrude(self, amount,feedrate=None):
         """
         Extrudes the defined amount
         :param amount:
@@ -419,10 +419,13 @@ class BeePrinter(Printer):
             raise ValueError("amount must be a valid number: {amount}".format(amount=amount))
 
         printer_profile = self._printerProfileManager.get_current_or_default()
-        extrusion_speed = printer_profile["axes"]["e"]["speed"]
+        if feedrate is None:
+            extrusion_speed = printer_profile["axes"]["e"]["speed"]
+        else:
+            extrusion_speed = feedrate
 
         bee_commands = self._comm.getCommandsInterface()
-        bee_commands.move(0, 0, 0, amount, extrusion_speed)
+        bee_commands.move(0, 0, 0, amount, extrusion_speed,wait='3')
 
 
     def startHeating(self, selected_filament=None):
@@ -1125,6 +1128,40 @@ class BeePrinter(Printer):
             self._logger.error('Error saving 3D model information statistics: %s' % str(ex))
 
             return False
+
+    def getExtruderStepsMM(self):
+        """
+        Gets extruder steps per mm
+        :return:
+        """
+        try:
+            if self._comm is None:
+                self._logger.info("Cannot get extruder steps: printer not connected or currently busy")
+                return
+
+            return self._comm._getExtruderStepsMM()
+        except Exception as ex:
+            self._logger.error(ex)
+
+        return
+
+    def setExtruderStepsMM(self,steps):
+        """
+        Sets extruder steps per mm
+        :param steps:
+        :return:
+        """
+
+        try:
+            if self._comm is None:
+                self._logger.info("Cannot set extruder steps: printer not connected or currently busy")
+                return
+
+            return self._comm._setExtruderStepsMM(steps)
+        except Exception as ex:
+            self._logger.error(ex)
+
+        return
 
     # # # # # # # # # # # # # # # # # # # # # # #
     ##########  CALLBACK FUNCTIONS  #############

@@ -746,12 +746,43 @@ class BeeCom(MachineCom):
 
         return None
 
+    def _getExtruderStepsMM(self):
+        """
+        Gets Extruder Steps/mm
+        :return: steps/mm
+        """
+        if not self.isOperational():
+            return None
+        try:
+            if self._beeCommands is not None:
+                return self._beeCommands.getExtruderStepsMM()
+        except Exception as ex:
+            self._logger.error(ex)
+
+        return None
+
+    def _setExtruderStepsMM(self,steps):
+        """
+        Sets Extruder Steps/mm
+        :param steps:
+        :return:
+        """
+        if not self.isOperational():
+            return None
+        try:
+            if self._beeCommands is not None:
+                return self._beeCommands.setExtruderStepsMM(steps)
+        except Exception as ex:
+            self._logger.error(ex)
+        return None
+
     def _getResponse(self):
         """
         Auxiliar method to read the command response queue
         :return:
         """
-        if self._beeConn is None:
+        self.none = self._beeConn is None
+        if self.none:
             return None
         try:
             ret = self._responseQueue.get()
@@ -1177,6 +1208,8 @@ class BeeCom(MachineCom):
         _logger.info("Error updating firmware to version %s" % version)
         eventManager().fire(Events.FIRMWARE_UPDATE_FINISHED, {"result": False})
         return False
+
+
 
 class InMemoryFileInformation(PrintingFileInformation):
     """

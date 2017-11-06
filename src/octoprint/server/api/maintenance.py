@@ -12,6 +12,8 @@ from octoprint.server.util.flask import restricted_access, get_json_command_from
 from octoprint.server.api import api
 from octoprint.settings import settings as s
 from octoprint.server.api.slicing import _getSlicingProfilesData as getSlicingProfilesData
+from octoprint.slicing import SlicingManager
+from octoprint.settings import settings
 
 @api.route("/maintenance/start_heating", methods=["POST"])
 @restricted_access
@@ -348,3 +350,50 @@ def finishExtruderMaintenance():
 	printer.finishExtruderMaintenance()
 
 	return NO_CONTENT
+
+@api.route("/maintenance/extrudeCalibrationAmount", methods=["POST"])
+@restricted_access
+def extrudeCalibrationAmount():
+
+	if not printer.is_operational():
+		return make_response("Printer is not operational", 409)
+
+	printer.extrude(150,feedrate=240)
+
+	return NO_CONTENT
+
+
+@api.route("/maintenance/defineExtruderSteps", methods=["POST"])
+@restricted_access
+def defineExtruderSteps():
+
+	if not printer.is_operational():
+		return make_response("Printer is not operational", 409)
+
+	valid_commands = {
+		"defineSteps": []
+	}
+
+	command, data, response = get_json_command_from_request(request, valid_commands)
+	if response is not None:
+		return response
+
+	materialFlow = 100.0
+
+	slicingManager = SlicingManager(settings().getBaseFolder("slicingProfiles"), printerProfileManager)
+	slicingManager.reload_slicers()
+	selected_filament = data['Info'][1]
+	# finds the target temperature based on the selected filament
+	if selected_filament:
+		filamentProfile = slicingManager.load_profile(slicingManager.default_slicer, selected_filament,
+															require_configured=False)
+
+		materialFlow = float(filamentProfile.data['PrinterGroups'][0]['quality']['medium']['material_flow']['default_value'])
+
+	resp = "Invalid Extruded value"
+	if data['Info'][0] and float(data['Info'][0]) >= 0:
+		currSteps = float(printer.getExtruderStepsMM())
+		newSteps = currSteps * float(150)/float(data['Info'][0]) * (materialFlow/100)
+		resp = printer.setExtruderStepsMM('{0:.4f}'.format(newSteps))
+
+	return jsonify({"response": resp})
