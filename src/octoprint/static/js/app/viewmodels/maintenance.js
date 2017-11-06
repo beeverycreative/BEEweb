@@ -1719,7 +1719,7 @@ $(function() {
             self._showMovingMessage();
 
             $.ajax({
-                url: API_BASEURL + "maintenance/ExtrudeCalibrationAmount",
+                url: API_BASEURL + "maintenance/extrudeCalibrationAmount",
                 type: "POST",
                 dataType: "json",
                 contentType: "application/json; charset=UTF-8",
@@ -1748,7 +1748,7 @@ $(function() {
             data['Info'] = [self.measuredFilamentInput(),self.selectedFilament()];
 
             $.ajax({
-                url: API_BASEURL + "maintenance/DefineExtruderSteps",
+                url: API_BASEURL + "maintenance/defineExtruderSteps",
                 type: "POST",
                 dataType: "json",
                 contentType: "application/json; charset=UTF-8",
@@ -1780,7 +1780,7 @@ $(function() {
         };
 
         /***************************************************************************/
-        /*************          end Calibrate Extruder functions           *************/
+        /*************          end Calibrate Extruder functions       *************/
         /***************************************************************************/
     }
 
