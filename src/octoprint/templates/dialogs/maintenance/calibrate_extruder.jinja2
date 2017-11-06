@@ -1,0 +1,209 @@
+<div class="row-fluid">
+    <h3>{{ _('Extruder Calibration')}}</h3>
+</div>
+
+<div id="extCalStep1" >
+    <div class="row-fluid">
+        <div class="span3"></div>
+        <div class="span6 text-center">
+            <img src="{{ url_for('static', filename='img/maintenance/troca_filamento.png') }}" />
+        </div>
+        <div class="span3"></div>
+    </div>
+    <br />
+
+    <div class="row-fluid">
+        <div class="span12">
+            <strong>{{ _('Select type') }}</strong>
+            <br />
+
+            <form class="form-horizontal">
+                <div class="control-group">
+                    <div class="row-fluid">
+                        <div class="span4">
+                            <select data-bind="options: filamentProfiles, value: selectedFilamentExtCalibration, optionsCaption: '{{ _('Select filament type...') }}'"></select>
+                        </div>
+                        <div class="span8">
+                            <p>{{ _('Please select the correct code for the filament. You can find that code on the spool, (e.g: A101 - Transparent).') }}
+                            </p>
+                            <p>{{ _('Please use the internal spool holder for PLA filament and 330g spool only.') }}
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="alert alert-danger text-center" data-bind="visible: filamentResponseError">
+                     <span><i class="icon-exclamation-sign"></i> {{ _('An error occurred while saving. Please make sure a filament code is selected and try again.')}}</span>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<div id="extCalStep2" class="hidden">
+
+    <div class="row-fluid">
+        <div class="span4"></div>
+        <div class="span4">
+            <img src="{{ url_for('static', filename='img/maintenance/bico_extrusao.png') }}" />
+        </div>
+        <div class="span4"></div>
+    </div>
+    <div class="row-fluid">
+        <p>{{ _('Extruder nozzle has to be heated whenever you change the filament. When it reaches the ideal temperature you may move to the next stage.' ) }}
+        </p>
+    </div>
+    <div id="ext-progress-bar-div" class="row-fluid text-center">
+        <div class="row-fluid text-center">
+            <div class="span12 text-center">
+                <strong>{{ _('Heating please wait...') }}</strong>
+            </div>
+        </div>
+        <div id="temperature_progress_calibrate_extruder" class="progress" style="width: 100%;">
+            <div class="bar" style="width: 0%"></div>
+        </div>
+    </div>
+
+    <br /><br /><br />
+    <div class="row-fluid text-center">
+        <span class="span12"><i class="icon-exclamation-sign"></i>
+            <strong>{{ _('WARNING: NEVER TOUCH THE EXTRUDER NOZZLE WHEN THE PRINTER IS ON.') }}</strong>
+        </span>
+    </div>
+    <br />
+</div>
+
+
+<div id="extCalStep3" class="hidden">
+    <div class="row-fluid">
+        <div class="span2"></div>
+        <div class="span4 text-center unload-gifs">
+            <img src="{{ url_for('static', filename='img/maintenance/unload_filament_internal.gif') }}" />
+        </div>
+        <div class="span4 text-center load-gifs" style="display: none;">
+            <img src="{{ url_for('static', filename='img/maintenance/load_filament_internal.gif') }}" />
+        </div>
+        <div class="span3"></div>
+        <div class="span3">
+            <div class="row-fluid">
+                <button id="ext-cal-load-btn" title="Load" class="btn btn-primary btn-block yellow"
+                    data-bind="click: loadFilament, enable: printerState.isOperational()
+                    && printerState.isReady() && !commandLock()
+                    && !printerState.isPrinting() && loginState.isUser()">
+                    <i class="icon-arrow-up"></i> {{ _('Load')}}
+                </button>
+            </div>
+            <br /><br />
+
+            <div class="row-fluid">
+                <button id="ext-cal-unload-btn" title="Unload" class="btn btn-primary btn-block yellow"
+                    data-bind="click: unloadFilament, enable: printerState.isOperational()
+                    && printerState.isReady() && !commandLock()
+                    && !printerState.isPrinting() && loginState.isUser()">
+                    <i class="icon-arrow-down"></i> {{ _('Unload') }}
+                </button>
+            </div>
+        </div>
+    </div>
+    <br /><br />
+    <div class="row-fluid">
+        <p><strong>{{ _('Make sure the filament is correctly LOADED before proceeding' ) }}</strong></p>
+        <br />
+        <p>{{ _('To unload the filament, push the Unload button and pull the filament steadily. To load the filament insert it in the inlet hole and push it until it reaches the end. Then click on the Load button, and push the filament a little more until the printer pulls it and extrudes a little filament.') }}
+        </p>
+    </div>
+    <hr />
+
+</div>
+
+<div id="extCalStep4" class="hidden">
+    <br/>
+    <div class="row-fluid">
+        <div class="span3"></div>
+        <div class="span6 text-center">
+            <img src="{{ url_for('static', filename='img/maintenance/mark_filament.gif') }}" />
+        </div>
+        <div class="span3"></div>
+    </div>
+    <br/>
+    <br/>
+    <div class="row-fluid">
+        <div class="span12">
+            <strong><h4>{{ _('Stretch the filament and mark the first mark') }}</h4></strong>
+            <br />
+            <p>{{ _('Use the filament inlet to draw a line in the filament. Mantain the filament strech while doing this step.') }}
+            </p>
+
+        </div>
+    </div>
+</div>
+
+<div id="extCalStep5" class="hidden">
+    <br />
+    <div class="row-fluid">
+        <div class="span3"></div>
+        <div class="span6 text-center">
+            <img src="{{ url_for('static', filename='img/maintenance/mark_filament.gif') }}" />
+        </div>
+        <div class="span3"></div>
+    </div>
+    <br />
+    <br />
+    <div class="row-fluid">
+        <div class="span12">
+            <strong><h4>{{ _('Stretch the filament and mark the second mark') }}</h4></strong>
+            <br />
+            <p>{{ _('Wait for the filament to stop moving and use the filament inlet to draw a line in the filament. Mantain the filament streched while doing this step.') }}
+            </p>
+
+
+        </div>
+    </div>
+</div>
+
+<div id="extCalStep6" class="hidden">
+    <div class="row-fluid">
+        <div class="span4"></div>
+        <div class="span4 text-center">
+            <img src="/static/img/maintenance/measure_filament.gif">
+        </div>
+        <div class="span2"></div>
+    </div>
+
+    <br>
+    <div class="row-fluid">
+        <div class="span6">
+            <strong>{{ _('Measure Extruded Filament') }}</strong>
+        </div>
+    </div>
+    <div class="row-fluid">
+        <span>
+            <i class="icon-exclamation-sign"></i>
+            <strong>{{ _('Please measure the distance between the two filament marks (in mm).' ) }}</strong>
+        </span>
+        <p>{{ _('Gentely push the filament from the printer inlet. Use a 20+cm ruler to measure the distance between the prviously drawn marks.' ) }}
+        </p>
+        <br />
+        <form class="form-horizontal">
+            <div class="control-group">
+            <strong>{{ _('Measured Distance (mm):' ) }}</strong>
+                <input type="number" data-bind="value: measuredFilamentInput"></input>
+                <button id="submit-extruder-amount" title="Set Extruded Amount" class="btn btn-primary yellow"
+                    data-bind="click: saveExtruderAmount, enable: printerState.isOperational() && !commandLock()
+                    && printerState.isReady() && !printerState.isPrinting() && loginState.isUser()">
+                    <i class="icon-save"></i> {{ _('Save')}}
+                </button>
+                <span class="bee-alert success" data-bind="visible: newStepsSaveSuccess">
+                    <i class="icon-check"></i>
+                    {{ _('Extruder calibration Saved.')}}
+                </span>
+                <br />
+            </div>
+        </form>
+        <div class="alert alert-danger text-center" data-bind="visible: newStepsResponseError">
+            <span><i class="icon-exclamation-sign"></i>
+            {{ _('An error occurred while saving. Please make sure the input value is valid distance in mm.')}}
+            </span>
+        </div>
+    </div>
+</div>

@@ -47,7 +47,7 @@ table {
     border-radius: 0px;
 }
 .alert p {
-    color: #fff !important;
+    color: #000 !important;
 }
 
 .radio input[type="radio"],
@@ -392,7 +392,7 @@ a.brand{
 .usericon  { background: url('../img/icons/profile.svg'); }
 .usersettingsicon  { background: url('../img/icons/profile_grey.svg'); }
 .abouticon  { background: url('../img/icons/aboutgrey.svg'); }
-.helpicon  { background: url('../img/icons/helpgrey.svg'); }
+.helpicon  { background: url('../img/icons/help.svg'); }
 .logouticon  { background: url('../img/icons/logoutgrey.svg'); }
 .shutdownicon { background: url('../img/icons/shutdown.svg'); }
 .addicon { background: url('../img/icons/add.svg'); }
@@ -442,6 +442,7 @@ a.brand{
 .checkgicon { background: url('../img/icons/ok_grey.svg'); }
 .profilegicon { background: url('../img/icons/profile_grey.svg'); }
 .settingsgicon { background: url('../img/icons/settings_grey.svg'); }
+.helpgicon  { background: url('../img/icons/helpgrey.svg'); }
 /*white*/
 .printwicon  { background: url('../img/icons/print_white.svg'); }
 .editwicon  { background: url('../img/icons/edit_white.svg'); }
@@ -451,9 +452,11 @@ a.brand{
 .filterwicon { background: url('../img/icons/filter_white.svg'); }
 .refreshwicon { background: url('../img/icons/refresh_white.svg'); }
 .cubewicon { background: url('../img/icons/cube_white.svg'); }
+.openfoldericon { background: url('../img/icons/open_folder.svg'); }
 .dropdownwicon { background: url('../img/icons/dropdown_white.svg'); }
 .estimatewicon { background: url('../img/icons/medium_white.svg'); }
 .downloadwicon { background: url('../img/icons/download_white.svg'); }
+.addwicon { background: url('../img/icons/add_white.svg'); }
 /* green */
 .checkgreenicon  { background: url('../img/icons/ok_green.svg'); }
 /* dynamic icons - change with media queries */
@@ -469,6 +472,7 @@ a.brand{
 .btn-prepareprint .m-icon,
 .btn-print-from-memory .m-icon,
 .fileinput-button .m-icon { float: left; margin: 0px -10px 0 10px;}
+.createinput-button .m-icon { float: left; margin: 0px -10px 0 10px;}
 .btn-print .m-icon {float: left; }
 .modal-header h3 span.m-icon {
     margin-right: 15px;
@@ -613,17 +617,17 @@ a.brand{
     width: 100%;
 }
 #state.expanded {
-    height: 245px !important;
+    height: 300px !important;
 }
 #state_wrapper {
     position: absolute;
     bottom: 0px;
-    height: 150px;
+    height: 195px;
     width: 100%;
     z-index: 10;
 }
 #state_wrapper.expanded {
-    height: 300px !important;
+    height: 350px !important;
 }
 #state > .accordion-inner{
     background: #32312b !important;
@@ -636,7 +640,7 @@ a.brand{
     width: 100%;
 }
 #state_wrapper.expanded .accordion-heading {
-    bottom: 245px;
+    bottom: 300px;
 }
 #state_wrapper .accordion-heading > .accordion-toggle:first-of-type{
     display: none;
@@ -954,9 +958,12 @@ input + span.add-on{
 .btn-cancel{
     width: 35%;
     padding: 10px 10px !important;
-    font: 200 18px "din-light", sans-serif;
+    font: 200 13px "din-light", sans-serif;
     background: #676356 !important;
     color: #fff !important;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
 }
 
 .btn-stop{
@@ -1022,6 +1029,17 @@ input + span.add-on{
     z-index: 8;
 }
 
+#files .gcode_files .entry.folder:before {
+    content: url('../img/icons/open_folder.svg');
+    position: absolute;
+    top: -4px;
+    right: 40px;
+    padding: 0 7px;
+    width: 12px;
+    z-index: 8;
+    background-color: #000;
+}
+
 #files .gcode_files .entry:before {
     content: url('../img/icons/gcode_white.svg');
     position: absolute;
@@ -1031,6 +1049,20 @@ input + span.add-on{
     width: 12px;
     z-index: 8;
 }
+
+/*----------------FOLDER---------------*/
+#files .gcode_files .entry.folder{
+	border: solid 2px #000 !important;
+}
+#files .gcode_files .entry.folder:after{
+    content: '';
+    background: #000 !important;
+    top: -5px;
+    right: -2px;
+    padding: 0 10px;
+
+}
+
 /*----------------STL---------------*/
 #files .gcode_files .entry.stl{
 	border: solid 2px #000 !important;
@@ -1116,6 +1148,18 @@ input + span.add-on{
 }
 .fileinput-button:hover{
     background: #aeab9d;
+}
+.createinput-button{
+    font: 200 15px "din-light", sans-serif;
+    text-align: center;
+    color: #fff;
+    text-shadow: none;
+    padding: 9px;
+    margin: 0 !important;
+    transition: all 0.2s ease;
+}
+.createinput-button:hover{
+    background: #0d0d0d;
 }
 .progress{
     height: 22px !important;
@@ -1246,6 +1290,7 @@ input + span.add-on{
     width: 800px;
     margin-left: -487px;
 }
+#wizard_dialog .modal-body .full-sized-box { padding: 0px !important; }
 
 /*---------------------SPECIFIC MODAL STRUCTURES ---------------------*/
 #settings_dialog .modal-body .full-sized-box,
@@ -1360,6 +1405,7 @@ td.settings_users_actions .m-icon {
 }
 .modal-footer-btn {
     padding: 20px 10px !important;
+    min-width: 100px;
 }
 #usersettings_dialog .input-append input {
     width: 375px;
@@ -1547,12 +1593,14 @@ td.settings_users_actions .m-icon {
 #slice_button,
 #settings_dialog .modal-footer .btn-primary,
 #settings_printerProfiles_editDialog .modal-footer .btn-primary,
+#wizard_dialog .modal-footer .btn-primary,
 #usersettings_dialog .modal-footer .btn-primary,
 #settings-usersDialogAddUser .modal-footer .btn-primary,
 #settings-usersDialogEditUser .modal-footer .btn-primary,
 #settings-usersDialogChangePassword .modal-footer .btn-primary,
 #settings_plugin_softwareupdate_configurationdialog .modal-footer .btn-primary,
-#save_scene_dialog .modal-footer .btn-primary{
+#save_scene_dialog .modal-footer .btn-primary,
+#user_feedback_dialog .modal-footer .btn-primary {
     padding: 20px 0;
     width: 175px;
     text-transform: uppercase;
@@ -1569,16 +1617,22 @@ td.settings_users_actions .m-icon {
     background: #fc0;
     display: inline-block;
 }
-#maintenance_dialog .modal-footer .btn-primary {
+#add_folder_dialog .modal-footer .btn-primary {
     padding: 20px 0;
+    width: 150px;
     text-transform: uppercase;
     color: #fff;
     background: #518359;
+    display: inline-block;
 }
-#maintenanceCloseButton,
-#login_dialog .modal-footer .btn,
-#cancelMaintenance,
-#aboutbee_dialog .modal-footer .btn {
+#maintenance_dialog .modal-footer .btn-primary {
+    padding: 20px 0 !important;
+    text-transform: uppercase;
+    color: #fff !important;
+    background: #518359 !important;
+}
+#maintenanceCloseButton, #maintenance_dialog .modal-footer .btn,
+#wizard_dialog .modal-footer .button-previous,#login_dialog .modal-footer .btn, #cancelMaintenance, #aboutbee_dialog .modal-footer .btn{
     padding: 20px;
     background: transparent;
     color: #898989;
@@ -1588,13 +1642,14 @@ td.settings_users_actions .m-icon {
     text-shadow: none;
 }
 
-#maintenanceNextButton {
-    padding: 20px;
-    background: #ffcc00;
-    color: #000;
-    border: none;
-    box-shadow: none;
-    text-shadow: none;
+#maintenanceNextButton,
+#wizard_dialog .modal-footer .button-next {
+    padding: 20px !important;
+    background: #ffcc00 !important;
+    color: #000 !important;
+    border: none !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
 }
 
 .slider .slider-selection{
@@ -1938,6 +1993,9 @@ label:hover:before {
         right: auto !important;
         border-left: solid 1px #000;
     }
+    .octoprint-container .accordion-heading .accordion-heading-button a {
+        padding: 8px 12px !important;
+    }
 
     .scale-x, .scale-y, .scale-z {
         display: block;
@@ -2060,4 +2118,37 @@ label:hover:before {
 
 @media (max-width: 320px){
 
+}
+
+/* Language specific CSS hacks */
+body:lang(de) {
+    font-size: 14px !important;
+}
+body:lang(de) .fileinput-button {
+    font-size: 16px !important;
+}
+body:lang(de) .addplatform {
+    font-size: 11px !important;
+}
+body:lang(de) #workbench-controls-container button + .tooltip .tooltip-inner{
+    font-size: 11px !important;
+}
+body:lang(de) #job_shutdown {
+    font-size: 11px !important;
+}
+
+body:lang(pt) {
+    font-size: 14px !important;
+}
+body:lang(pt) .fileinput-button {
+    font-size: 16px !important;
+}
+body:lang(pt) .addplatform {
+    font-size: 12px !important;
+}
+body:lang(pt) .btn-software-update {
+    font-size: 12px !important;
+}
+body:lang(pt) .print-button-msg {
+    font-size: 13px !important;
 }

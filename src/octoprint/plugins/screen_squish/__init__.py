@@ -32,7 +32,7 @@ class ScreenSquishPlugin(octoprint.plugin.AssetPlugin, octoprint.plugin.Template
 				return dict(js=["js/squishsettings.js"])
 		else:
 			return dict(js=["js/squishsettings.js"])
-		
+
 		return dict(
 			js=["js/squish.js"],
 			css=["css/squish.css"]

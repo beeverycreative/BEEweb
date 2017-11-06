@@ -1,21 +1,19 @@
-# This file is for unifying the coding style for different editors and IDEs
-# editorconfig.org
-
-root = true
-
 [*]
-end_of_line = lf
-charset = utf-8
-insert_final_newline = true
-trim_trailing_whitespace = true
+charset=utf-8
+end_of_line=lf
+insert_final_newline=false
+indent_style=space
+indent_size=4
 
-[**.py]
-indent_style = tab
+[{.eslintrc,.babelrc,.stylelintrc,jest.config,*.json,*.jsb3,*.jsb2,*.bowerrc}]
+indent_style=space
+indent_size=2
 
-[src/octoprint/static/js/app/**.js]
-indent_style = space
-indent_size = 4
+[*.less]
+indent_style=space
+indent_size=2
 
-[.travis.yml]
-indent_style = space
-indent_size = 2
+[{*.yml,*.yaml}]
+indent_style=space
+indent_size=2
+

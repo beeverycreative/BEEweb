@@ -5,6 +5,9 @@ from __future__ import absolute_import
 import math
 import time
 import logging
+
+import datetime
+from octoprint.util import deprecated
 from octoprint.util.bee_comm import BeeCom
 import os
 from octoprint.printer.standard import Printer
@@ -16,6 +19,7 @@ from octoprint.events import eventManager, Events
 from octoprint.slicing import SlicingManager
 from octoprint.filemanager import FileDestinations
 from octoprint.util.comm import PrintingFileInformation
+from octoprint.printer.statistics import BaseStatistics, PrintEventStatistics, PrinterStatistics
 
 __author__ = "BEEVC - Electronic Systems "
 __license__ = "GNU Affero General Public License http://www.gnu.org/licenses/agpl.html"
@@ -42,6 +46,11 @@ class BeePrinter(Printer):
         self._bvc_status_thread = None
         self._current_temperature = 0.0
         self._lastJogTime = None
+        self._calibration_step_counter = 0
+        self._stats = BaseStatistics()
+        self._printerStats = None
+        self._currentPrintStatistics = None
+        self._currentFileAnalysis = None  # Kept for simple access to send estimations to the printer
 
         # Initializes the slicing manager for filament profile information
         self._slicingManager = SlicingManager(settings().getBaseFolder("slicingProfiles"), printerProfileManager)
@@ -67,6 +76,9 @@ class BeePrinter(Printer):
         eventManager().subscribe(Events.FIRMWARE_UPDATE_AVAILABLE, self.on_firmware_update_available)
 
         # subscribes print event handlers
+        eventManager().subscribe(Events.PRINT_STARTED, self.on_print_started)
+        eventManager().subscribe(Events.PRINT_PAUSED, self.on_print_paused)
+        eventManager().subscribe(Events.PRINT_RESUMED, self.on_print_resumed)
         eventManager().subscribe(Events.PRINT_CANCELLED, self.on_print_cancelled)
         eventManager().subscribe(Events.PRINT_CANCELLED_DELETE_FILE, self.on_print_cancelled_delete_file)
         eventManager().subscribe(Events.PRINT_DONE, self.on_print_finished)
@@ -144,19 +156,28 @@ class BeePrinter(Printer):
             # and starts the progress monitor
             lastFile = settings().get(['lastPrintJobFile'])
             if lastFile is not None and (self.is_shutdown() or self.is_printing() or self.is_paused()):
-                # Calls the select_file with the real previous PrintFileInformation object to recover the print status
-                if self._currentPrintJobFile is not None:
-                    self.select_file(self._currentPrintJobFile, False)
-                else:
-                    self.select_file(lastFile, False)
+                # Gets the name of the file currently being printed from the printer's memory
+                currentPrinterFile = self._comm.getCurrentFileNameFromPrinter()
 
-                # starts the progress monitor if a print is on going
-                if self.is_printing():
-                    self._comm.startPrintStatusProgressMonitor()
+                if currentPrinterFile is not None and lastFile != currentPrinterFile:
+                    # This means the the connection was established with a different printer than before or
+                    # the file is missing so we must create a generic (empty) file information with just
+                    # the name returned by the printer
+                    self.select_file(PrintingFileInformation(currentPrinterFile), False)
+                else:
+                    # Calls the select_file with the real previous PrintFileInformation object to recover the print status
+                    if self._currentPrintJobFile is not None:
+                        self.select_file(self._currentPrintJobFile, False)
+                    else:
+                        self.select_file(lastFile, False)
 
             elif lastFile is not None and (not self.is_printing() and not self.is_shutdown() and not self.is_paused()):
                 # if a connection is established with a printer that is not printing, unselects any previous file
                 self._comm.unselectFile()
+
+            # starts the progress monitor if a print is on going
+            if self.is_printing():
+                self._comm.startPrintStatusProgressMonitor()
 
             # gets current Filament profile data
             self._currentFilamentProfile = self.getSelectedFilamentProfile()
@@ -171,9 +192,14 @@ class BeePrinter(Printer):
                 self._bvc_conn_thread.stop_connection_monitor()
                 self._bvc_conn_thread = None
 
+            # instantiates the printer statistics object
+            if self._printerStats is None:
+                self._printerStats = PrinterStatistics(self.get_printer_serial())
+
             if self._comm is not None and self._comm.isOperational():
                 self._logger.info("Connected to %s!" % printer_name)
                 return True
+
         except Exception as ex:
             self._handleConnectionException(ex)
 
@@ -196,7 +222,15 @@ class BeePrinter(Printer):
             self._bvc_status_thread = None
 
     def select_file(self, path, sd, printAfterSelect=False, pos=None):
+        """
+        Selects a file in the selected filesystem and loads it before printing
 
+        :param path: Absolute path to the file
+        :param sd: storage system: SD or LOCAL
+        :param printAfterSelect: Flag to signal if the print should start after the selection
+        :param pos: currently unused. kept for interface purposes
+        :return:
+        """
         if self._comm is None:
             self._logger.info("Cannot load file: printer not connected or currently busy")
             return
@@ -206,22 +240,16 @@ class BeePrinter(Printer):
             return
 
         # special case where we want to recover the file information after a disconnect/connect during a print job
-        if path is None or not os.path.exists(path) or not os.path.isfile(path):
-            self._comm._currentFile = PrintingFileInformation('shutdown_recover_file')
-            return # In case the server was restarted during connection break-up and path variable is passed empty from the connect method
-
-        recovery_data = self._fileManager.get_recovery_data()
-        if recovery_data:
-            # clean up recovery data if we just selected a different file than is logged in that
-            expected_origin = FileDestinations.SDCARD if sd else FileDestinations.LOCAL
-            actual_origin = recovery_data.get("origin", None)
-            actual_path = recovery_data.get("path", None)
-
-            if actual_origin is None or actual_path is None or actual_origin != expected_origin or actual_path != path:
-                self._fileManager.delete_recovery_data()
+        # if path is None or not os.path.exists(path) or not os.path.isfile(path):
+        #     self._comm._currentFile = PrintingFileInformation('shutdown_recover_file')
+        #     return # In case the server was restarted during connection break-up and path variable is passed empty from the connect method
 
         self._printAfterSelect = printAfterSelect
-        self._posAfterSelect = pos
+
+        # saves the selected file analysis info to be later passed to the printer in the communications layer
+        if self._fileManager.has_analysis(FileDestinations.LOCAL, path):
+            self._currentFileAnalysis = self._fileManager.get_metadata(FileDestinations.LOCAL, path)['analysis']
+
         self._comm.selectFile("/" + path if sd and not settings().getBoolean(["feature", "sdRelativePath"]) else path, sd)
 
         if not self._comm.isPrinting() and not self._comm.isShutdown():
@@ -239,16 +267,17 @@ class BeePrinter(Printer):
     def start_print(self, pos=None):
         """
         Starts a new print job
-        :param pos:
+        :param pos: Kept for interface purposes (Used in BVC implementation for extra info: in_memory file or gcode analysis data)
         :return:
         """
+        # Uses the pos parameter to pass the analysis of the file to be printed
+        if self._currentFileAnalysis is not None:
+            pos = self._currentFileAnalysis
+
         super(BeePrinter, self).start_print(pos)
 
         # saves the current PrintFileInformation object so we can later recover it if the printer is disconnected
         self._currentPrintJobFile = self._comm.getCurrentFile()
-
-        # sends usage statistics
-        self._sendUsageStatistics('start')
 
 
     def cancel_print(self):
@@ -288,23 +317,44 @@ class BeePrinter(Printer):
                 eventManager().fire(Events.PRINT_FAILED, payload)
         except Exception as ex:
             self._logger.error("Error canceling print job: %s" % str(ex))
+            eventManager().fire(Events.PRINT_CANCELLED, None)
 
-    def jog(self, axis, amount):
+    def jog(self, axes, relative=True, speed=None, *args, **kwargs):
         """
-        Jogs the tool a selected amount in the axis chosen
-
-        :param axis:
-        :param amount:
+        Jogs the tool a selected amount in the choosen axis
+        :param axes:
+        :param relative:
+        :param speed:
+        :param args:
+        :param kwargs:
         :return:
         """
-        if not isinstance(axis, (str, unicode)):
-            raise ValueError("axis must be a string: {axis}".format(axis=axis))
+        if isinstance(axes, basestring):
+            # legacy parameter format, there should be an amount as first anonymous positional arguments too
+            axis = axes
+
+            if not len(args) >= 1:
+                raise ValueError("amount not set")
+            amount = args[0]
+            if not isinstance(amount, (int, long, float)):
+                raise ValueError("amount must be a valid number: {amount}".format(amount=amount))
+
+            axes = dict()
+            axes[axis] = amount
+
+        if not axes:
+            raise ValueError("At least one axis to jog must be provided")
+
+        for axis in axes:
+            if not axis in PrinterInterface.valid_axes:
+                raise ValueError(
+                    "Invalid axis {}, valid axes are {}".format(axis, ", ".join(PrinterInterface.valid_axes)))
 
         axis = axis.lower()
         if not axis in PrinterInterface.valid_axes:
             raise ValueError("axis must be any of {axes}: {axis}".format(axes=", ".join(PrinterInterface.valid_axes), axis=axis))
-        if not isinstance(amount, (int, long, float)):
-            raise ValueError("amount must be a valid number: {amount}".format(amount=amount))
+        if not isinstance(axes[axis], (int, long, float)):
+            raise ValueError("amount must be a valid number: {amount}".format(amount=axes[axis]))
 
         printer_profile = self._printerProfileManager.get_current_or_default()
 
@@ -323,11 +373,11 @@ class BeePrinter(Printer):
                 time.sleep(0.25)
         try:
             if axis == 'x':
-                bee_commands.move(amount, 0, 0, None, movement_speed)
+                bee_commands.move(axes[axis], 0, 0, None, movement_speed)
             elif axis == 'y':
-                bee_commands.move(0, amount, 0, None, movement_speed)
+                bee_commands.move(0, axes[axis], 0, None, movement_speed)
             elif axis == 'z':
-                bee_commands.move(0, 0, amount, None, movement_speed)
+                bee_commands.move(0, 0, axes[axis], None, movement_speed)
         except Exception as ex:
             self._logger.exception(ex)
 
@@ -359,7 +409,7 @@ class BeePrinter(Printer):
         except Exception as ex:
             self._logger.exception(ex)
 
-    def extrude(self, amount):
+    def extrude(self, amount,feedrate=None):
         """
         Extrudes the defined amount
         :param amount:
@@ -369,25 +419,32 @@ class BeePrinter(Printer):
             raise ValueError("amount must be a valid number: {amount}".format(amount=amount))
 
         printer_profile = self._printerProfileManager.get_current_or_default()
-        extrusion_speed = printer_profile["axes"]["e"]["speed"]
+        if feedrate is None:
+            extrusion_speed = printer_profile["axes"]["e"]["speed"]
+        else:
+            extrusion_speed = feedrate
 
         bee_commands = self._comm.getCommandsInterface()
-        bee_commands.move(0, 0, 0, amount, extrusion_speed)
+        bee_commands.move(0, 0, 0, amount, extrusion_speed,wait='3')
 
 
-    def startHeating(self, targetTemperature=210):
+    def startHeating(self, selected_filament=None):
         """
         Starts the heating procedure
-        :param targetTemperature:
+        :param selected_filament:
         :return:
         """
         try:
-            # defines the target temperature based on the selected filament
-            profile_name = self.getSelectedFilamentProfile().display_name
-            if "petg" in profile_name.lower() or "nylon" in profile_name.lower():
-                targetTemperature = 230
-            elif "tpu" in profile_name.lower():
-                targetTemperature = 225
+            # finds the target temperature based on the selected filament
+            if selected_filament:
+                filamentProfile = self._slicingManager.load_profile(self._slicingManager.default_slicer, selected_filament,
+                                                                    require_configured=False)
+            else:
+                filamentProfile = self.getSelectedFilamentProfile()
+
+            targetTemperature = 210  # default target temperature
+            if filamentProfile is not None and 'unload_temperature' in filamentProfile.data:
+                targetTemperature = filamentProfile.data['unload_temperature']
 
             # resets the current temperature
             self._current_temperature = self._comm.getCommandsInterface().getNozzleTemperature()
@@ -477,6 +534,11 @@ class BeePrinter(Printer):
             self.set_nozzle_temperature(temperature_profile_printer)
             resp = self._comm.getCommandsInterface().setFilamentString(filamentStr)
 
+            # registers the filament change statistics
+            self._stats.register_filament_change()
+            self._printerStats.register_filament_change()
+            self._save_usage_statistics()
+
             return resp, temperature_profile_printer
         except Exception as ex:
             self._logger.error('Error saving filament string in printer: %s' % str(ex))
@@ -493,19 +555,23 @@ class BeePrinter(Printer):
             if not filamentStr:
                 return None
 
-            filamentNormalizedName = filamentStr.lower().replace(' ', '_') + '_' + self.getPrinterNameNormalized()
-            profiles = self._slicingManager.all_profiles_list(self._slicingManager.default_slicer)
+            #filamentNormalizedName = filamentStr.lower().replace(' ', '_') + '_' + self.getPrinterNameNormalized()
+            profiles = self._slicingManager.all_profiles_list_json(self._slicingManager.default_slicer,
+                                                    require_configured=False,
+                                                    nozzle_size=self.getNozzleTypeString().replace("nz", ""),
+                                                    from_current_printer=True)
 
             if len(profiles) > 0:
                 for key,value in profiles.items():
-                    if filamentNormalizedName in key:
-                        filamentProfile = self._slicingManager.load_profile(self._slicingManager.default_slicer, key, require_configured=False)
+                    if filamentStr in key:
+                        filamentProfile = self._slicingManager.load_profile(self._slicingManager.default_slicer, key,require_configured=False)
+
                         return filamentProfile
 
-            return None
         except Exception as ex:
-            self._logger.error('Error when starting the heating operation: %s' % str(ex))
+            self._logger.error('Error getting the current selected filament profile: %s' % str(ex))
 
+        return None
 
     def getFilamentString(self):
         """
@@ -589,6 +655,17 @@ class BeePrinter(Printer):
             self._logger.error('Error setting amount of filament in spool: %s' % str(ex))
 
 
+    def finishExtruderMaintenance(self):
+        """
+        This function is only used at the moment for statistics logging because the extruder maintenance operation
+        has no need for a final operation
+        :return:
+        """
+        self._stats.register_extruder_maintenance()
+        self._printerStats.register_extruder_maintenance()
+        self._save_usage_statistics()
+
+
     def setNozzleSize(self, nozzleSize):
         """
         Saves the selected nozzle size
@@ -596,7 +673,14 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().setNozzleSize(nozzleSize)
+            res = self._comm.getCommandsInterface().setNozzleSize(nozzleSize)
+
+            # registers the nozzle change statistics
+            self._stats.register_nozzle_change()
+            self._printerStats.register_nozzle_change()
+            self._save_usage_statistics()
+
+            return res
         except Exception as ex:
             self._logger.error(ex)
 
@@ -646,6 +730,7 @@ class BeePrinter(Printer):
         :return:
         """
         try:
+            self._calibration_step_counter = 0
             return self._comm.getCommandsInterface().startCalibration(repeat=repeat)
         except Exception as ex:
             self._logger.error(ex)
@@ -657,7 +742,15 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.getCommandsInterface().goToNextCalibrationPoint()
+            res = self._comm.getCommandsInterface().goToNextCalibrationPoint()
+            self._calibration_step_counter += 1
+            # registers the calibration statistics
+            if self._calibration_step_counter == 2:
+                self._stats.register_calibration()
+                self._printerStats.register_calibration()
+                self._save_usage_statistics()
+
+            return res
         except Exception as ex:
             self._logger.error(ex)
 
@@ -683,10 +776,15 @@ class BeePrinter(Printer):
                 calibtest_file.write(line + '\n')
             calibtest_file.close()
 
+            self._runningCalibrationTest = True
             self.select_file(file_path, False)
             self.start_print()
 
-            self._runningCalibrationTest = True
+            # registers the calibration statistics
+            self._stats.register_calibration_test()
+            self._printerStats.register_calibration_test()
+            self._save_usage_statistics()
+
         except Exception as ex:
             self._logger.error('Error printing calibration test : %s' % str(ex))
 
@@ -910,7 +1008,7 @@ class BeePrinter(Printer):
     def is_connecting(self):
         return self._isConnecting
 
-    def get_state_string(self):
+    def get_state_string(self, state=None):
         """
          Returns a human readable string corresponding to the current communication state.
         """
@@ -987,6 +1085,98 @@ class BeePrinter(Printer):
         except Exception as ex:
             self._logger.error(ex)
 
+    def saveUserFeedback(self, print_success=True, print_rating=0, observations=None):
+        """
+        Saves the user feedback sent from the API through the user interface
+        :param print_success:
+        :param print_rating:
+        :param observations:
+        :return:
+        """
+        try:
+            if self._currentPrintStatistics is not None:
+                self._currentPrintStatistics.set_user_feedback(print_success, print_rating, observations)
+                self._save_usage_statistics()
+
+                # we must "close" the statistics for this print operation since after the user feedback there is no more info to collect
+                self._currentPrintStatistics = None
+
+            return True, "feedback saved"
+        except Exception as ex:
+            self._logger.error('Error saving user feedback after print finished: %s' % str(ex))
+
+            return False, str(ex)
+
+    def saveModelsInformation(self, models_info):
+        """
+        Saves the information about the 3D models currently being printed
+        :param models_info:
+        :return:
+        """
+        try:
+            if self._currentPrintStatistics is not None:
+                self._currentPrintStatistics.set_model_information(len(models_info), models_info)
+                self._save_usage_statistics()
+            else:
+                self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(),
+                                                                    self._stats.get_software_id())
+
+                self._currentPrintStatistics.set_model_information(len(models_info), models_info)
+
+            return True
+        except Exception as ex:
+            self._logger.error('Error saving 3D model information statistics: %s' % str(ex))
+
+            return False
+
+    def getExtruderStepsMM(self):
+        """
+        Gets extruder steps per mm
+        :return:
+        """
+        try:
+            if self._comm is None:
+                self._logger.info("Cannot get extruder steps: printer not connected or currently busy")
+                return
+
+            return self._comm.getExtruderStepsMM()
+        except Exception as ex:
+            self._logger.error(ex)
+
+        return
+
+    def setExtruderStepsMM(self, selected_filament, measuredFilamentInput):
+        """
+        Sets extruder steps per mm
+        :param selected_filament: Selected filament string identifier
+        :param measuredFilamentInput:
+        :return:
+        """
+        try:
+            if self._comm is None:
+                self._logger.info("Cannot set extruder steps: printer not connected or currently busy")
+                return
+
+            materialFlow = 100.0
+
+            # finds the target temperature based on the selected filament
+            if selected_filament:
+                filamentProfile = self._slicingManager.load_profile(self._slicingManager.default_slicer, selected_filament,
+                                                              require_configured=False)
+                materialFlow = float(
+                    filamentProfile.data['PrinterGroups'][0]['quality']['medium']['material_flow']['default_value'])
+
+            if measuredFilamentInput and measuredFilamentInput >= 0:
+                currSteps = float(self.getExtruderStepsMM())
+                newSteps = currSteps * float(150) / float(measuredFilamentInput) * (materialFlow / 100)
+
+                return self._comm.setExtruderStepsMM('{0:.4f}'.format(newSteps))
+            else:
+                raise Exception('Invalid Extruder value input')
+        except Exception as ex:
+            self._logger.error(ex)
+
+        return
 
     # # # # # # # # # # # # # # # # # # # # # # #
     ##########  CALLBACK FUNCTIONS  #############
@@ -1058,6 +1248,46 @@ class BeePrinter(Printer):
             self._printAfterSelect = False
             self.start_print(pos=self._posAfterSelect)
 
+    def on_print_started(self, event, payload):
+        """
+        Print paused callback for the EventManager.
+        """
+        # logs a new print statistics
+        if not self.isRunningCalibrationTest():
+            self._stats.register_print() # logs software statistics
+            self._printerStats.register_print() # logs printer specific statistics
+
+            self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(), self._stats.get_software_id())
+
+            self._currentPrintStatistics.set_print_start(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+            self._register_filament_statistics()
+
+            self._currentPrintStatistics.set_firmware_version(self.getCurrentFirmware())
+            from octoprint import  __display_version__
+            self._currentPrintStatistics.set_software_version(__display_version__)
+
+            self._save_usage_statistics()
+
+    def on_print_paused(self, event, payload):
+        """
+        Print paused callback for the EventManager.
+        """
+        if self._currentPrintStatistics is not None:
+            self._currentPrintStatistics.set_print_paused(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+            # removes redundant information
+            self._currentPrintStatistics.remove_redundant_information()
+
+            self._save_usage_statistics()
+
+    def on_print_resumed(self, event, payload):
+        """
+        Print resume callback for the EventManager.
+        """
+        if self._currentPrintStatistics is not None:
+            self._currentPrintStatistics.set_print_resumed(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+            self._register_filament_statistics()
+
+            self._save_usage_statistics()
 
     def on_print_cancelled(self, event, payload):
         """
@@ -1065,8 +1295,14 @@ class BeePrinter(Printer):
         """
         super(BeePrinter, self).unselect_file()
 
-        # sends usage statistics to remote server
-        self._sendUsageStatistics('cancel')
+        if self._currentPrintStatistics is not None:
+            self._currentPrintStatistics.set_print_cancelled(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+            # removes redundant information
+            self._currentPrintStatistics.remove_redundant_information()
+            self._save_usage_statistics()
+
+            # we can close the current print job statistics
+            self._currentPrintStatistics = None
 
 
     def on_print_cancelled_delete_file(self, event, payload):
@@ -1086,16 +1322,7 @@ class BeePrinter(Printer):
         """
         Callback method for the comm object, called if the connection state changes.
         """
-        oldState = self._state
-
-        # forward relevant state changes to gcode manager
-        if oldState == BeeCom.STATE_PRINTING:
-            self._analysisQueue.resume()  # printing done, put those cpu cycles to good use
-
-        elif state == BeeCom.STATE_PRINTING:
-            self._analysisQueue.pause()  # do not analyse files while printing
-
-        elif state == BeeCom.STATE_CLOSED or state == BeeCom.STATE_CLOSED_WITH_ERROR:
+        if state == BeeCom.STATE_CLOSED or state == BeeCom.STATE_CLOSED_WITH_ERROR:
             if self._comm is not None:
                 self._comm = None
 
@@ -1107,7 +1334,20 @@ class BeePrinter(Printer):
         Event listener to when a print job finishes
         :return:
         """
-        # unselects the current file
+        # log print statistics
+        if not self.isRunningCalibrationTest() and self._currentPrintStatistics is not None:
+            # total print time in seconds
+            total_print_time = self._comm.getCleanedPrintTime()
+            if total_print_time is None or total_print_time <= 0:
+                #this means that probably the printer was disconnected during the print the actual print job lost it's information
+                total_print_time = self._elapsedTime
+            self._currentPrintStatistics.set_total_print_time(round(total_print_time, 1))
+
+            self._currentPrintStatistics.set_print_finished(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
+            # removes redundant information
+            self._currentPrintStatistics.remove_redundant_information()
+
+        # un-selects the current file
         super(BeePrinter, self).unselect_file()
         self._currentPrintJobFile = None
 
@@ -1119,8 +1359,6 @@ class BeePrinter(Printer):
             except Exception as e:
                 self._logger.exception('Error deleting temporary GCode file: %s' % str(e))
 
-        # sends usage statistics
-        self._sendUsageStatistics('stop')
 
     def on_client_connected(self, event, payload):
         """
@@ -1192,6 +1430,20 @@ class BeePrinter(Printer):
 
         self._checkSufficientFilamentForPrint()
 
+    def _printJobFilamentLength(self):
+        """
+        Returns the amount of filament (mm) that will be used for the current print job. If no data is found return None
+        """
+        # Gets the current print job data
+        state_data = self._stateMonitor.get_current_data()
+
+        if state_data['job']['filament'] is not None:
+            # gets the filament information for the filament weight to be used in the print job
+            filament_extruder = state_data['job']['filament']["tool0"]
+
+            return filament_extruder['length']
+
+        return None
 
     def _checkSufficientFilamentForPrint(self):
         """
@@ -1199,18 +1451,20 @@ class BeePrinter(Printer):
         job setting, it will automatically update the interface through the web socket
         :return:
         """
-        # Gets the current print job data
-        state_data = self._stateMonitor.get_current_data()
-
         if not self.is_printing():
-            # gets the current amount of filament left in printer
-            current_filament_length = self.getFilamentInSpool()
-
             try:
-                if state_data['job']['filament'] is not None:
-                    # gets the filament information for the filament weight to be used in the print job
+                # Gets the current print job data
+                state_data = self._stateMonitor.get_current_data()
+
+                # gets the current amount of filament left in printer
+                current_filament_length = self.getFilamentInSpool()
+                print_job_filament = self._printJobFilamentLength()
+
+                if print_job_filament is not None:
+                    # gets the filament information for the current print job
                     filament_extruder = state_data['job']['filament']["tool0"]
-                    if filament_extruder['length'] > current_filament_length:
+
+                    if print_job_filament > current_filament_length:
                         filament_extruder['insufficient'] = True
                         self._insufficientFilamentForCurrent = True
                     else:
@@ -1226,32 +1480,25 @@ class BeePrinter(Printer):
         :param completion:
         :param filepos:
         :param printTime:
-        :param printTimeLeft:
+        :param printTimeLeft: Kept for interface purposes
         :return:
         """
         try:
-            estimatedTotalPrintTime = self._estimateTotalPrintTime(completion, printTimeLeft)
-            totalPrintTime = estimatedTotalPrintTime
-
             if self._selectedFile and "estimatedPrintTime" in self._selectedFile \
                     and self._selectedFile["estimatedPrintTime"]:
-
-                statisticalTotalPrintTime = self._selectedFile["estimatedPrintTime"]
-                if completion and printTimeLeft:
-                    if estimatedTotalPrintTime is None:
-                        totalPrintTime = statisticalTotalPrintTime
-                    else:
-                        if completion < 0.5:
-                            sub_progress = completion * 2
-                        else:
-                            sub_progress = 1.0
-                        totalPrintTime = (1 - sub_progress) * statisticalTotalPrintTime + sub_progress * estimatedTotalPrintTime
+                totalPrintTime = self._selectedFile["estimatedPrintTime"]
+            else:
+                totalPrintTime = self._estimatedTime # This information comes from the progress update from the printer
 
             self._progress = completion
-            self._printTime = printTime
-            self._printTimeLeft = totalPrintTime - printTimeLeft if (totalPrintTime is not None and printTimeLeft is not None) else None
+
+            # if the printTime information is null, probably the current file object being used by the comm layer
+            # does not contain this information either because the printer changed computer, could be a print from a
+            # previous file in memory or a recovery from shutdown
             if printTime is None:
-                self._elapsedTime = 0
+                printTime = self._elapsedTime
+
+            self._printTimeLeft = totalPrintTime - printTime if (totalPrintTime is not None and printTime is not None) else None
 
         except Exception as ex:
             self._logger.error('Error setting print progress data: %s' % str(ex))
@@ -1333,11 +1580,33 @@ class BeePrinter(Printer):
             self._bvc_status_thread = None
 
 
-    def _sendUsageStatistics(self, operation):
+    def _register_filament_statistics(self):
+        filament = self.getSelectedFilamentProfile()
+        if filament is not None:
+            filament_amount = self._printJobFilamentLength()  # amount in mm
+            self._currentPrintStatistics.set_filament_used(filament.display_name, 'PLA', filament.name,
+                                                           "Beeverycreative", filament_amount)
+
+    def _save_usage_statistics(self):
+        """
+        Logs the print statistics after a print has finished
+        :return:
+        """
+        # saves the base software statistics
+        self._stats.save()
+
+        # saves the printer specific statistics
+        self._printerStats.save()
+
+        # saves the print statistics details
+        if self._currentPrintStatistics is not None:
+            self._currentPrintStatistics.save()
+
+    def _sendAzureUsageStatistics(self, operation):
         """
         Calls and external executable to send usage statistics to a remote cloud server
         :param operation: Supports 'start' (Start Print), 'cancel' (Cancel Print), 'stop' (Print finished) operations
-        :return: true in case the operation was successfull or false if not
+        :return: true in case the operation was successful or false if not
         """
         import sys
         if not sys.platform == "darwin" and not sys.platform == "win32":

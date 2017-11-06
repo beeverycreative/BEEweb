@@ -1,6 +1,5 @@
 <div id="slicing_configuration_dialog" class="modal hide fade">
     <div class="modal-header">
-        <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
         <h3><span class="m-icon printgicon"></span>{{ _('Print Setup') }}</h3>
     </div>
     <div class="modal-body">
@@ -17,6 +16,13 @@
                     </div>
                 </div>
                  <div class="control-group">
+                    <label class="control-label">{{ _('Runs locally') }}</label>
+                    <div class="controls">
+                        <strong data-bind="text: slicerSameDevice() ? gettext('Yes') : gettext('No')"></strong>
+                        <span class="help-block"><small>{{ _('For performance reasons locally run slicers are disabled while printing') }}</small></span>
+                    </div>
+                </div>
+                <div class="control-group">
                     <label class="control-label">{{ _('Slicing Profile') }}</label>
                     <div class="controls">
                         <select data-bind="options: profiles, optionsText: 'name', optionsValue: 'key', optionsCaption: '{{ _('Select a slicing profile...') }}', value: profile, valueAllowUnset: true"></select>
@@ -186,9 +192,11 @@
                             </label>
                     </div>
                     <div data-bind="visible: gcodeDownloadLink">
-                        <a href="#" class="btn btn-info" data-bind="attr: {href: gcodeDownloadLink}">
+                        <a href="#" class="btn btn-info" data-bind="attr: {href: gcodeDownloadLink}"
+                            onclick="BEEwb.showDownloadFileFeedback();" download>
                             <span class="m-icon downloadwicon"></span>
-                            {{ _('Download GCode') }}</a>
+                            {{ _('Download GCode') }}
+                        </a>
                         <br /><br />
                     </div>
                 </div>
@@ -215,7 +223,7 @@
 
         </button>
         <button id="slice_button" href="#" class="btn btn-primary modal-footer-btn"
-            data-bind="click: $root.printOrSlice(), enable: enableSliceButton, css: {disabled: !$root.enableSliceButton()}">
+            data-bind="click: $root.printOrSlice(), enable: enableSliceButton, css: {disabled: !$root.enableSliceButton()}, attr: {title: $root.sliceButtonTooltip}">
             <span class="m-icon printwicon"></span>
             <span>{{ _('Print') }} </span>
             <i id="slice_button_loader" class="icon-spinner icon-spin" data-bind="visible: !sliceButtonControl()" ></i>

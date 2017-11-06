@@ -1,5 +1,5 @@
 # coding=utf-8
-from __future__ import absolute_import
+from __future__ import absolute_import, division, print_function
 
 __author__ = "Gina Häußge <osd@foosel.net>"
 __license__ = 'GNU Affero General Public License http://www.gnu.org/licenses/agpl.html'
@@ -15,7 +15,7 @@ BRANCH_HEAD_URL = "https://api.github.com/repos/{user}/{repo}/git/refs/heads/{br
 logger = logging.getLogger("octoprint.plugins.softwareupdate.version_checks.github_commit")
 
 def _get_latest_commit(user, repo, branch):
-	r = requests.get(BRANCH_HEAD_URL.format(user=user, repo=repo, branch=branch))
+	r = requests.get(BRANCH_HEAD_URL.format(user=user, repo=repo, branch=branch), timeout=30)
 
 	from . import log_github_ratelimit
 	log_github_ratelimit(logger, r)
@@ -31,11 +31,14 @@ def _get_latest_commit(user, repo, branch):
 
 
 def get_latest(target, check):
-	if "user" not in check or "repo" not in check:
-		raise ConfigurationInvalid("Update configuration for %s of type github_commit needs all of user and repo" % target)
+	user = check.get("user")
+	repo = check.get("repo")
+
+	if user is None or repo is None:
+		raise ConfigurationInvalid("Update configuration for {} of type github_commit needs user and repo set and not None".format(target))
 
 	branch = "master"
-	if "branch" in check:
+	if "branch" in check and check["branch"] is not None:
 		branch = check["branch"]
 
 	current = None

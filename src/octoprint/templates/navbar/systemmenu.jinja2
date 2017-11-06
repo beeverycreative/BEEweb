@@ -1,12 +1,16 @@
-<a href="#" class="dropdown-toggle" data-toggle="dropdown" data-bind="visible: systemActions().length > 0">
-    <span class="m-icon shutdownicon-xs"></span> {{ _('System') }}
+<a href="javascript:void(0)" title="{{ _('Help') }}" class="dropdown-toggle" data-toggle="dropdown"
+data-bind="visible: system.systemActions().length > 0">
+    <span class="m-icon helpicon"></span> {{ _('Help') }}
     <b class="caret"></b>
 </a>
-<ul class="dropdown-menu" data-bind="foreach: systemActions">
+<ul class="dropdown-menu" data-bind="foreach: system.systemActions">
+    <li><a tabindex="-1" href="https://beeverycreative.com/faq/" target="_blank" id="faq_button">{{ _('FAQ') }}</a></li>
+    <li><a href="https://beeverycreative.com/troubleshooting/" target="_blank" id="troubleshooting_button">{{ _('Troubleshooting') }}</a></li>
+    <li><a href="#about_dialog" data-bind="click: function() { $root.showAboutBee(); }" id="about_button" >{{ _('About') }}</a></li>
     <!-- ko if: action == "divider" -->
-    <li class="divider" />
+    <li class="divider"></li>
     <!-- /ko -->
     <!-- ko if: action != "divider" -->
-    <li><a href="#" data-bind="click: $root.triggerAction, text: name"></a></li>
+    <li><a href="javascript:void(0)" data-bind="click: $root.system.triggerCommand, text: name"></a></li>
     <!-- /ko -->
 </ul>

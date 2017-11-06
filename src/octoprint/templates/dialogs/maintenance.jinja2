@@ -81,6 +81,22 @@
                             </button>
                         </div>
                     </div>
+                    <div class="modal-row">
+                        <div class="span1 text-center">
+                            <span class="icon nozzlegicon"></span>
+                        </div>
+                         <div class="span4">
+                             <h3>{{ _('Calibrate Extruder') }}</h3>
+                             <p>{{ _('Once in while it is recommended to calibrate the extruder to ensure a perfect print every single time.')}}
+                             </p>
+                        </div>
+                        <div class="span7 text-right">
+                            <button class="btn btn-maintenance yellow"
+                                data-bind="click: showCalibrateExtruder, enable: !printerState.isBusy() && !printerState.isErrorOrClosed()">
+                                <span class="m-icon nozzleicon"></span>{{ _('Calibrate extruder now') }}
+                            </button>
+                        </div>
+                    </div>
                 </div>
 
                 <div id="maintenance_dialog_content">
@@ -96,6 +112,9 @@
                     <div id="maintenance_replaceNozzle" class="hidden">
                         {% include 'dialogs/maintenance/replace_nozzle.jinja2' ignore missing %}
                     </div>
+                    <div id="maintenance_calibrateExtruder" class="hidden">
+                        {% include 'dialogs/maintenance/calibrate_extruder.jinja2' ignore missing %}
+                    </div>
                 </div>
             </div>
         </div>
@@ -107,14 +126,14 @@
                     {{ _('Cancel') }}
                 </button>
             </div>
-            <div class="span8"></div>
-            <div class="span2">
+            <div class="span7"></div>
+            <div class="span3">
                 <button id="maintenanceCloseButton" class="btn btn-block" data-dismiss="modal" aria-hidden="true"
                     data-bind="click: cancelOperations, visible: !printerState.isBusy()">
                     <i class="icon-remove"></i> {{ _('Close') }}
                 </button>
                 <button id="maintenanceOkButton" class="btn btn-block btn-primary hidden" data-dismiss="modal"
-                        aria-hidden="true" data-bind="click: finishOperations">
+                        aria-hidden="true" data-bind="click: finishOperations, enable: okButtonEnable()">
                         {{ _('OK') }}
                 </button>
                 <button id="maintenanceNextButton" class="btn btn-block yellow hidden"

@@ -156,7 +156,6 @@ def install_source(python_executable, folder, user=False, sudo=False):
     # folder where the installation settings files are located
     settings_folder = settings(init=True).getBaseFolder('base')
     try:
-        # copies the files in the /etc directory
         copy_tree(folder + '/firmware', settings_folder + '/firmware')
     except Exception as ex:
         raise RuntimeError(
@@ -165,36 +164,17 @@ def install_source(python_executable, folder, user=False, sudo=False):
         print("Firmware files installed.")
 
 
-    print(">>> Removing client cache files...")
+    # Copies the CuraEngine files to the settings directory
+    print(">>> Copying CuraX files to settings directory...")
+    # folder where the installation settings files are located
     try:
-        import os
-        from glob import glob
-        from shutil import rmtree
-
-        # If the update is running on Windows tries to remove cache files from the client app
-        if sys.platform == "win32":
-            app_data_folder = os.getenv('APPDATA')
-            pattern = app_data_folder + '\\beesoft-*\\Cache\\*'
-        elif sys.platform == "darwin":
-            from AppKit import NSSearchPathForDirectoriesInDomains
-            # http://developer.apple.com/DOCUMENTATION/Cocoa/Reference/Foundation/Miscellaneous/Foundation_Functions/Reference/reference.html#//apple_ref/c/func/NSSearchPathForDirectoriesInDomains
-            # NSApplicationSupportDirectory = 14
-            # NSUserDomainMask = 1
-            # True for expanding the tilde into a fully qualified path
-            app_data_folder = NSSearchPathForDirectoriesInDomains(14, 1, True)[0]
-            pattern = app_data_folder + '/beesoft-*/Cache/*'
-        else:
-            pattern = os.path.expanduser(os.path.join("~", "." + '/beesoft-*/Cache/*'))
-
-        for item in glob(pattern):
-            if os.path.exists(item):
-                try:
-                    os.remove(item)
-                except Exception:
-                    continue
-
+        # copies the files in the /etc directory
+        copy_tree(folder + '/src/octoprint/plugins/curaX/profiles', settings_folder + '/slicingProfiles/curaX')
     except Exception as ex:
-        raise RuntimeError('Could not remove the cache files from client app: %s' % ex.strerror)
+        raise RuntimeError(
+            "Could not update, copying the CuraEngine files to respective settings directory failed with error: %s" % ex.message)
+    finally:
+        print("CuraEngine files installed.")
 
 
 def parse_arguments():
