@@ -160,8 +160,11 @@ $(function() {
             self.switchNozzle (false);
             self.processStage(0);
             self.heatingAchiveTargetTemperature(false);
-            // Cancels any heating process
-            self.cancelHeating();
+
+            if (!self.printerState.isBusy()) {
+                // Cancels any heating process
+                self.cancelHeating();
+            }
 
             // Returns the operations to the initial step screens
             self.changeFilamentStep0();
@@ -534,7 +537,7 @@ $(function() {
                 success: function(data) {
                     var response = data['response'];
 
-                    if (response.indexOf('ok') > -1) {
+                    if (response !== null && response.indexOf('ok') > -1) {
                         self.filamentWeightSaveSuccess(true);
 
 
