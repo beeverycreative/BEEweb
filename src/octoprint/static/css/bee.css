@@ -1203,12 +1203,9 @@ input + span.add-on{
     height: 100px;
 }
 
-tr:hover {
-    background-color: #ddd !important;
-}
 
-tr:hover td {
-    background-color: transparent !important;
+#remote_printers_table .remote-table-row-selected {
+    background-color: #ddd !important;
 }
 
 
@@ -1635,6 +1632,7 @@ td.settings_users_actions .m-icon {
 }
 
 #slice_button,
+#remote_print_button,
 #settings_dialog .modal-footer .btn-primary,
 #settings_printerProfiles_editDialog .modal-footer .btn-primary,
 #wizard_dialog .modal-footer .btn-primary,

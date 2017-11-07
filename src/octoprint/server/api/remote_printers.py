@@ -9,7 +9,8 @@ from flask import request, jsonify, make_response, url_for
 from werkzeug.exceptions import BadRequest
 
 from octoprint.server import slicingManager, printer
-from octoprint.server.util.flask import restricted_access, with_revalidation_checking
+from octoprint.server.util.flask import restricted_access, with_revalidation_checking, get_json_command_from_request
+
 from octoprint.server.api import api, NO_CONTENT
 
 from octoprint.settings import settings as s, valid_boolean_trues
@@ -275,26 +276,26 @@ class ProdsmartAPIMethods(object):
 @restricted_access
 def getRemotePrinters():
 
-    colors= {'A101 - Transparent':{'material':'PLA','color':'ECECE7'},
-             'A102 - Blanc Gris':{'material':'PLA','color':'ECECE7'},
-             'A103 - Zinc Yellow':{'material':'PLA','color':'FBCA44'},
-             'A104 - Signal Yellow':{'material':'PLA','color':'FBCA44'},
-             'A105 - Bright Red Orange':{'material':'PLA','color':'EE6B2A'},
-             'A106 - Traffic Red':{'material':'PLA','color':'BC1B13'},
-             'A107 - Tomato Red':{'material':'PLA','color':'BC1B13'},
-             'A108 - Light Pink':{'material':'PLA','color':'BC84BA'},
-             'A109 - Traffic Purple':{'material':'PLA','color':'913071'},
-             'A110 - Violet':{'material':'PLA','color':'8C0091'},
-             'A111 - Sky Blue':{'material':'PLA','color':'007BAE'},
-             'A112 - Traffic Blue':{'material':'PLA','color':'005A8A'},
-             'A114 - Yellow Green':{'material':'PLA','color':'868A00'},
-             'A115 - Pure Green':{'material':'PLA','color':'008C33'},
-             'A116 - Chrome Green':{'material':'PLA','color':'008C33'},
-             'A117 - Chocolate Brown':{'material':'PLA','color':'8C3A09'},
-             'A118 - Telegrey':{'material':'PLA','color':'858583'},
+    colors= {'A101 - Transparent':{'material':'PLA','color':'#ECECE7'},
+             'A102 - Blanc Gris':{'material':'PLA','color':'#ECECE7'},
+             'A103 - Zinc Yellow':{'material':'PLA','color':'#FBCA44'},
+             'A104 - Signal Yellow':{'material':'PLA','color':'#FBCA44'},
+             'A105 - Bright Red Orange':{'material':'PLA','color':'#EE6B2A'},
+             'A106 - Traffic Red':{'material':'PLA','color':'#BC1B13'},
+             'A107 - Tomato Red':{'material':'PLA','color':'#BC1B13'},
+             'A108 - Light Pink':{'material':'PLA','color':'#BC84BA'},
+             'A109 - Traffic Purple':{'material':'PLA','color':'#913071'},
+             'A110 - Violet':{'material':'PLA','color':'#8C0091'},
+             'A111 - Sky Blue':{'material':'PLA','color':'#007BAE'},
+             'A112 - Traffic Blue':{'material':'PLA','color':'#005A8A'},
+             'A114 - Yellow Green':{'material':'PLA','color':'#868A00'},
+             'A115 - Pure Green':{'material':'PLA','color':'#008C33'},
+             'A116 - Chrome Green':{'material':'PLA','color':'#008C33'},
+             'A117 - Chocolate Brown':{'material':'PLA','color':'#8C3A09'},
+             'A118 - Telegrey':{'material':'PLA','color':'#858583'},
              'A119 - Signal Black':{'material':'PLA','color':'#000000'},
-             'A120 - Pearl Gold':{'material':'PLA','color':'806442'},
-             'A121 - Pearl Light Grey':{'material':'PLA','color':'8D9295'}}
+             'A120 - Pearl Gold':{'material':'PLA','color':'#806442'},
+             'A121 - Pearl Light Grey':{'material':'PLA','color':'#8D9295'}}
 
     modelImgs = {'BEETHEFIRST':'BEETHEFIRST white background.png',
                  'BEETHEFIRST+':'BEETHEFIRST+ white background.png',
@@ -448,3 +449,23 @@ def getRemotePrinters():
     return jsonify({
         "response": remotePrinters
     })
+
+@api.route("/remote/createPrintingOrders", methods=["POST"])
+@restricted_access
+def createPrintingOrders():
+
+	valid_commands = {
+		"createOrders": []
+	}
+
+	command, data, response = get_json_command_from_request(request, valid_commands)
+	if response is not None:
+		return response
+
+	printers = data['Info'][0]
+	file = data['Info'][1]
+
+	for printer in printers:
+		pass
+
+	return

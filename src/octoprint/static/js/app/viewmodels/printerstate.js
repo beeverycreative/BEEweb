@@ -718,7 +718,7 @@ $(function() {
          */
         self.estimatePrint = function () {
             //self.slicing.show('local', BEEwb.helpers.generateSceneName(), true, true);
-            self.remoteprinters.show('local', BEEwb.helpers.generateSceneName(), true, true);
+            self.remoteprinters.show('local', BEEwb.main.lastLoadedModel, true, true);
 		};
 
 		self.resizeSidebar = function () {
