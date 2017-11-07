@@ -1177,7 +1177,7 @@ input + span.add-on{
 }
 
 .remote-print-progress {
-    margin: 0px 10px 0px 10px;
+    margin: 0px 10px 10px 10px;
 }
 
 .bar.heating-remote-bar {
@@ -1189,7 +1189,7 @@ input + span.add-on{
 }
 
 .remote-color {
-	margin: 0px 0px 0px 0px !important;
+	margin: 0px 0px 10px 0px !important;
 }
 
 .remote-table {
@@ -1203,8 +1203,19 @@ input + span.add-on{
     height: 100px;
 }
 
+.remote-job-row {
+    border-bottom: 1px solid #000000;
+    background-color: #aaa !important;
+    padding: 10px;
+    height: 40px;
+    display: none;
+}
 
 #remote_printers_table .remote-table-row-selected {
+    background-color: #aaa !important;
+}
+
+#remote_printers_table .remote-table-job-selected {
     background-color: #ddd !important;
 }
 
@@ -1328,6 +1339,8 @@ input + span.add-on{
 
 .modal.remote {
     top: 20% !important;
+    width: 70%;
+    left: 30%;
     background-color: #555555;
 }
 
@@ -1659,6 +1672,17 @@ td.settings_users_actions .m-icon {
     background: #fc0;
     display: inline-block;
 }
+
+#remote_Cancel_button {
+    padding: 20px 0;
+    width: 160px !important;
+    margin-right: -9px !important;
+    text-transform: uppercase;
+    color: #000;
+    background: red;
+    display: inline-block;
+}
+
 #add_folder_dialog .modal-footer .btn-primary {
     padding: 20px 0;
     width: 150px;

@@ -25,6 +25,35 @@ import datetime, dateutil.parser
 
 
 class ProdsmartAPIMethods(object):
+    colors = {'A101 - Transparent': {'material': 'PLA', 'color': '#ECECE7'},
+              'A102 - Blanc Gris': {'material': 'PLA', 'color': '#ECECE7'},
+              'A103 - Zinc Yellow': {'material': 'PLA', 'color': '#FBCA44'},
+              'A104 - Signal Yellow': {'material': 'PLA', 'color': '#FBCA44'},
+              'A105 - Bright Red Orange': {'material': 'PLA', 'color': '#EE6B2A'},
+              'A106 - Traffic Red': {'material': 'PLA', 'color': '#BC1B13'},
+              'A107 - Tomato Red': {'material': 'PLA', 'color': '#BC1B13'},
+              'A108 - Light Pink': {'material': 'PLA', 'color': '#BC84BA'},
+              'A109 - Traffic Purple': {'material': 'PLA', 'color': '#913071'},
+              'A110 - Violet': {'material': 'PLA', 'color': '#8C0091'},
+              'A111 - Sky Blue': {'material': 'PLA', 'color': '#007BAE'},
+              'A112 - Traffic Blue': {'material': 'PLA', 'color': '#005A8A'},
+              'A114 - Yellow Green': {'material': 'PLA', 'color': '#868A00'},
+              'A115 - Pure Green': {'material': 'PLA', 'color': '#008C33'},
+              'A116 - Chrome Green': {'material': 'PLA', 'color': '#008C33'},
+              'A117 - Chocolate Brown': {'material': 'PLA', 'color': '#8C3A09'},
+              'A118 - Telegrey': {'material': 'PLA', 'color': '#858583'},
+              'A119 - Signal Black': {'material': 'PLA', 'color': '#000000'},
+              'A120 - Pearl Gold': {'material': 'PLA', 'color': '#806442'},
+              'A121 - Pearl Light Grey': {'material': 'PLA', 'color': '#8D9295'}}
+
+    modelImgs = {'BEETHEFIRST': 'BEETHEFIRST white background.png',
+                 'BEETHEFIRST+': 'BEETHEFIRST+ white background.png',
+                 'BEETHEFIRST+A': 'BEETHEFIRST+A white background.png',
+                 'BEEINSCHOOL': 'BEEINSCHOOL white background.png',
+                 'BEEINSCHOOL A': 'BEEINSCHOOL A white background.png'}
+
+    Info = {}
+
     url = "http://app.prodsmart.com/"
     apiKey = "8fm7ahh0ukrju";
     apiSecret = "confukbj95htvkf7m85l8pbper";
@@ -272,36 +301,90 @@ class ProdsmartAPIMethods(object):
             print(myResponse.reason)
 
 
+    def getSystemInfo(self):
+
+        """
+                GET PRINTER LIST
+        """
+
+        printerList = json.loads(self.getPrinters().content)
+
+        self.Info = {}
+        self.Info['Printers'] = {}
+        self.Info['PrintersList'] = printerList
+
+        for printer in printerList:
+            # prod_api.updatePrinterNotes(printer['code'],notes)
+
+            self.Info['Printers'][printer['code']] = {}
+            self.Info['Printers'][printer['code']]['on_hold'] = 0
+
+            notes = json.loads(printer['notes'])
+            for note in notes:
+                printer[note] = notes[note]
+
+        """
+                        READ AND LIST PRODUCTION ORDERS
+        """
+        jobsNotStarted = json.loads(self.getJobs(notstarted=True).content)
+        jobsStarted = json.loads(self.getJobs(notstarted=False).content)
+
+        runningJobs = []
+
+        for j in jobsStarted:
+            if j['status'] != 'completed':
+                runningJobs.append(j)
+
+        """
+                        CREATE DICT WITH PRINTER AND JOBS
+        """
+
+        self.Info['pendent_jobs'] = jobsNotStarted
+        self.Info['running_jobs'] = runningJobs
+
+        for job in jobsNotStarted:
+            due_date = dateutil.parser.parse(job['due-date'])
+            for machine in job['machines']:
+                self.Info['Printers'][machine['code']]['on_hold'] += 1
+
+                if 'queue' not in self.Info['Printers'][machine['code']].keys():
+                    self.Info['Printers'][machine['code']]['queue'] = []
+
+                order = {}
+                order['name'] = job['products'][0]['product']
+                order['start'] = dateutil.parser.parse(job['start-date']).strftime("%Y-%m-%d %H:%M:%S")
+                order['end'] = dateutil.parser.parse(job['due-date']).strftime("%Y-%m-%d %H:%M:%S")
+                order['id'] = job['id']
+
+                self.Info['Printers'][machine['code']]['queue'].append(order)
+
+                if not 'available_at' in self.Info['Printers'][machine['code']].keys():
+                    self.Info['Printers'][machine['code']]['available_at'] = due_date
+                else:
+                    if due_date > self.Info['Printers'][machine['code']]['available_at']:
+                        self.Info['Printers'][machine['code']]['available_at'] = due_date
+
+        for job in runningJobs:
+            due_date = dateutil.parser.parse(job['due-date'])
+            for machine in job['machines']:
+                self.Info['Printers'][machine['code']]['on_hold'] += 1
+                if not 'available_at' in self.Info['Printers'][machine['code']].keys():
+                    self.Info['Printers'][machine['code']]['available_at'] = due_date
+                else:
+                    if due_date > self.Info['Printers'][machine['code']]['available_at']:
+                        self.Info['Printers'][machine['code']]['available_at'] = due_date
+
+        for printer in self.Info['PrintersList']:
+            self.Info['Printers'][printer['code']]['Ready'] = self.Info['Printers'][printer['code']]['on_hold'] == 0
+
+        return self.Info
+
+
+Info = {}
+
 @api.route("/remote/getRemotePrinters", methods=["POST"])
 @restricted_access
 def getRemotePrinters():
-
-    colors= {'A101 - Transparent':{'material':'PLA','color':'#ECECE7'},
-             'A102 - Blanc Gris':{'material':'PLA','color':'#ECECE7'},
-             'A103 - Zinc Yellow':{'material':'PLA','color':'#FBCA44'},
-             'A104 - Signal Yellow':{'material':'PLA','color':'#FBCA44'},
-             'A105 - Bright Red Orange':{'material':'PLA','color':'#EE6B2A'},
-             'A106 - Traffic Red':{'material':'PLA','color':'#BC1B13'},
-             'A107 - Tomato Red':{'material':'PLA','color':'#BC1B13'},
-             'A108 - Light Pink':{'material':'PLA','color':'#BC84BA'},
-             'A109 - Traffic Purple':{'material':'PLA','color':'#913071'},
-             'A110 - Violet':{'material':'PLA','color':'#8C0091'},
-             'A111 - Sky Blue':{'material':'PLA','color':'#007BAE'},
-             'A112 - Traffic Blue':{'material':'PLA','color':'#005A8A'},
-             'A114 - Yellow Green':{'material':'PLA','color':'#868A00'},
-             'A115 - Pure Green':{'material':'PLA','color':'#008C33'},
-             'A116 - Chrome Green':{'material':'PLA','color':'#008C33'},
-             'A117 - Chocolate Brown':{'material':'PLA','color':'#8C3A09'},
-             'A118 - Telegrey':{'material':'PLA','color':'#858583'},
-             'A119 - Signal Black':{'material':'PLA','color':'#000000'},
-             'A120 - Pearl Gold':{'material':'PLA','color':'#806442'},
-             'A121 - Pearl Light Grey':{'material':'PLA','color':'#8D9295'}}
-
-    modelImgs = {'BEETHEFIRST':'BEETHEFIRST white background.png',
-                 'BEETHEFIRST+':'BEETHEFIRST+ white background.png',
-                 'BEETHEFIRST+A': 'BEETHEFIRST+A white background.png',
-                 'BEEINSCHOOL': 'BEEINSCHOOL white background.png',
-                 'BEEINSCHOOL A': 'BEEINSCHOOL A white background.png'}
 
     prod_api = ProdsmartAPIMethods()
 
@@ -311,68 +394,8 @@ def getRemotePrinters():
     except Exception:
         return True
 
-    """
-                    GET PRINTER LIST
-    """
-
-    printerList = json.loads(prod_api.getPrinters().content)
-
-    Info = {}
-    Info['Printers'] = {}
-    Info['PrintersList'] = printerList
-
     remotePrinters = {}
-
-    for printer in printerList:
-        # prod_api.updatePrinterNotes(printer['code'],notes)
-
-        Info['Printers'][printer['code']] = {}
-        Info['Printers'][printer['code']]['on_hold'] = 0
-
-        notes = json.loads(printer['notes'])
-        for note in notes:
-            printer[note] = notes[note]
-
-
-    """
-                    READ AND LIST PRODUCTION ORDERS
-    """
-    jobsNotStarted = json.loads(prod_api.getJobs(notstarted=True).content)
-    jobsStarted = json.loads(prod_api.getJobs(notstarted=False).content)
-
-    runningJobs = []
-
-    for j in jobsStarted:
-        if j['status'] != 'completed':
-            runningJobs.append(j)
-
-    """
-                    CREATE DICT WITH PRINTER AND JOBS
-    """
-
-
-    Info['pendent_jobs'] = jobsNotStarted
-    Info['running_jobs'] = runningJobs
-
-    for job in jobsNotStarted:
-        due_date = dateutil.parser.parse(job['due-date'])
-        for machine in job['machines']:
-            Info['Printers'][machine['code']]['on_hold'] += 1
-            if not 'available_at' in Info['Printers'][machine['code']].keys():
-                Info['Printers'][machine['code']]['available_at'] = due_date
-            else:
-                if due_date > Info['Printers'][machine['code']]['available_at']:
-                    Info['Printers'][machine['code']]['available_at'] = due_date
-
-    for job in runningJobs:
-        due_date = dateutil.parser.parse(job['due-date'])
-        for machine in job['machines']:
-            Info['Printers'][machine['code']]['on_hold'] += 1
-            if not 'available_at' in Info['Printers'][machine['code']].keys():
-                Info['Printers'][machine['code']]['available_at'] = due_date
-            else:
-                if due_date > Info['Printers'][machine['code']]['available_at']:
-                    Info['Printers'][machine['code']]['available_at'] = due_date
+    Info = prod_api.getSystemInfo()
 
     for printer in Info['PrintersList']:
         Info['Printers'][printer['code']]['Ready'] = Info['Printers'][printer['code']]['on_hold'] == 0
@@ -380,71 +403,26 @@ def getRemotePrinters():
         remotePrinter = {}
         remotePrinter['id'] = printer['code']
         remotePrinter['Filament'] = printer['material_code']
-        remotePrinter['Material'] = colors[printer['material_code']]['material']
-        remotePrinter['rgb'] = colors[printer['material_code']]['color']
+        remotePrinter['Material'] = prod_api.colors[printer['material_code']]['material']
+        remotePrinter['rgb'] = prod_api.colors[printer['material_code']]['color']
         remotePrinter['model'] = printer['model']
         remotePrinter['serial'] = printer['serial']
 
-        remotePrinter['imgPath'] = url_for('static', filename='img/' + modelImgs[remotePrinter['model']])
+        remotePrinter['imgPath'] = url_for('static', filename='img/' + prod_api.modelImgs[remotePrinter['model']])
 
         if Info['Printers'][printer['code']]['Ready']:
             remotePrinter['state'] = 'READY'
             remotePrinter['Progress'] = '100%'
         else:
             remotePrinter['state'] = 'Printing'
-            for j in runningJobs:
+            for j in Info['running_jobs']:
                 if j['machines'][0]['code'] == printer['code']:
                     remotePrinter['Progress'] = str(j['products'][0]['quantity-produced']*100) + '%'
+            remotePrinter['orders'] = Info['Printers'][printer['code']]['queue']
+            if 'Progress' not in remotePrinter.keys():
+                remotePrinter['Progress'] = '0%'
 
         remotePrinters[remotePrinter['id']] = remotePrinter
-
-    """
-    remotePrinters = {}
-
-    remotePrinter = {}
-    remotePrinter['id'] = 1
-    remotePrinter['model'] = 'BEETHEFIRST+'
-    remotePrinter['imgPath'] = url_for('static', filename='img/logo_beethefirstplus.png')
-    remotePrinter['state'] = 'Printing'
-    remotePrinter['Progress'] = '60%'
-    remotePrinter['Material'] = 'PLA'
-    remotePrinter['Color'] = 'Black'
-    remotePrinter['rgb'] = '#000000'
-    remotePrinters[remotePrinter['id']] = remotePrinter
-
-    remotePrinter = {}
-    remotePrinter['id'] = 2
-    remotePrinter['model'] = 'BEETHEFIRST+'
-    remotePrinter['imgPath'] = url_for('static', filename='img/logo_beethefirstplus.png')
-    remotePrinter['state'] = 'READY'
-    remotePrinter['Progress'] = '100%'
-    remotePrinter['Material'] = 'PETG'
-    remotePrinter['Color'] = 'Transparent'
-    remotePrinter['rgb'] = 'snow'
-    remotePrinters[remotePrinter['id']] = remotePrinter
-
-    remotePrinter = {}
-    remotePrinter['id'] = 3
-    remotePrinter['model'] = 'BEETHEFIRST+'
-    remotePrinter['imgPath'] = url_for('static', filename='img/logo_beethefirstplus.png')
-    remotePrinter['state'] = 'Heating'
-    remotePrinter['Progress'] = '80%'
-    remotePrinter['Material'] = 'Nylon'
-    remotePrinter['Color'] = 'Red'
-    remotePrinter['rgb'] = 'red'
-    remotePrinters[remotePrinter['id']] = remotePrinter
-
-    remotePrinter = {}
-    remotePrinter['id'] = 4
-    remotePrinter['model'] = 'BEETHEFIRST+'
-    remotePrinter['imgPath'] = url_for('static', filename='img/logo_beethefirstplus.png')
-    remotePrinter['state'] = 'Heating'
-    remotePrinter['Progress'] = '80%'
-    remotePrinter['Material'] = 'Nylon'
-    remotePrinter['Color'] = 'Red'
-    remotePrinter['rgb'] = 'red'
-    remotePrinters[remotePrinter['id']] = remotePrinter
-    """
 
     return jsonify({
         "response": remotePrinters
@@ -454,18 +432,55 @@ def getRemotePrinters():
 @restricted_access
 def createPrintingOrders():
 
-	valid_commands = {
-		"createOrders": []
-	}
+    prod_api = ProdsmartAPIMethods()
 
-	command, data, response = get_json_command_from_request(request, valid_commands)
-	if response is not None:
-		return response
+    try:
+        while prod_api.autentication():
+            pass
+    except Exception:
+        return True
 
-	printers = data['Info'][0]
-	file = data['Info'][1]
+    Info = prod_api.getSystemInfo()
 
-	for printer in printers:
-		pass
+    valid_commands = {
+        "createOrders": []
+    }
 
-	return
+    command, data, response = get_json_command_from_request(request, valid_commands)
+    if response is not None:
+        return response
+
+    printers = data['Info'][0]
+    file = data['Info'][1]
+
+
+    for printer in printers:
+
+        machines = []
+        machines.append({'code':printer})
+        products = [{'product': file, 'quantity-ordered': 1}]
+        workers = [{'number': 1}, {'number': 2}, {'number': 3}, {'number': 18}]
+
+        start = datetime.datetime.now()
+
+        if Info['Printers'][printer]['on_hold'] > 0:
+            start = Info['Printers'][printer]['available_at']
+            if start.replace(tzinfo=None) < datetime.datetime.now().replace(tzinfo=None):
+                start = datetime.datetime.now()
+
+        end = start + datetime.timedelta(minutes=10)
+
+        new_order = prod_api.createProductionOrder(machines=machines,
+                                                   products=products,
+                                                   workers=workers,
+                                                   start_time=start.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                                                   end_time=end.strftime("%Y-%m-%dT%H:%M:%SZ"),
+                                                   code="{} - BEESOFT".format(file))
+
+
+
+
+
+
+
+    return

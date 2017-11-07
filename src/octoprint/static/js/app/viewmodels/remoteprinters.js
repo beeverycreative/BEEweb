@@ -17,8 +17,11 @@ $(function() {
         self.destinationFilename = ko.observable();
 
         self.remotePrintButtonControl = ko.observable(true); // Controls the button enabled state
+        self.remoteCancelButtonControl = ko.observable(false); // Controls the button enabled state
 
         self.selectedRows = [];
+        self.selectedJobs = [];
+
 
         self.show = function(target, file, force, workbench, path) {
 
@@ -45,6 +48,39 @@ $(function() {
 
             self.selectedRows = [];
             $("#remote_printers_table tr.remote-table-row-selected").each(function(){
+                debugger;
+                self.selectedRows.push(this.id);
+            });
+
+            if (self.selectedRows.length > 0) {
+                var data = {
+                "command": "createOrders"
+            };
+            data['Info'] = [self.selectedRows, self.file];
+
+            $.ajax({
+                url: API_BASEURL + "remote/createPrintingOrders",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                data: JSON.stringify(data),
+                success: function(data) {
+
+
+                },
+                error: function() {
+
+                }
+            });
+            }
+        };
+
+        self.remoteCancelClick = function () {
+            console.log("Remote Print...");
+
+            self.selectedRows = [];
+            $("#remote_printers_table tr.remote-table-row-selected").each(function(){
+                debugger;
                 self.selectedRows.push(this.id);
             });
 
@@ -85,6 +121,20 @@ $(function() {
                 //&&( !(self.printerState.isPrinting() || self.printerState.isPaused()) || !self.slicerSameDevice());
         });
 
+        self.remoreCancelButtonTooltip = ko.pureComputed(function() {
+            if (!self.enableRemotePrintButton()) {
+                    return gettext("Cannot slice, not all parameters specified");
+            } else {
+                return gettext("Start the remote print process");
+            }
+        });
+
+        self.enableRemoteCancelButton = ko.pureComputed(function() {
+            return self.selectedJobs>0;
+                //&& self.profile() != undefined
+                //&&( !(self.printerState.isPrinting() || self.printerState.isPaused()) || !self.slicerSameDevice());
+        });
+
 
         /**
          * Connects to remote server and retrieves connected printer information
@@ -111,8 +161,11 @@ $(function() {
 
                         tableRow.click(function(){
                            $(this).toggleClass('remote-table-row-selected');
-                           //var value=$(this).find('td:first').html();
-                           //alert(value);
+
+                            $(this).nextUntil('tr.remote-table-row').css('display', function(i,v){
+                                return this.style.display === 'table-row' ? 'none' : 'table-row';
+                            });
+
                         });
 
                         //Left row space
@@ -121,6 +174,7 @@ $(function() {
                         //Printer logo
                         var imageCol = $('<td colspan="2"/>');
                         var img = $('<img src="' + item.imgPath + '">');
+                        img.css("max-width","200px")
                         imageCol.append(img);
                         tableRow.append(imageCol);
 
@@ -160,25 +214,53 @@ $(function() {
                         var rgbDiv = $('<div/>');
                         rgbDiv.addClass("bar");
                         //rgbDiv.css("width","100%")
-                        rgbDiv.attr('style','width: 100%;background-color: ' + item.rgb + ' !important;')
+                        rgbDiv.attr('style','width: 100%;background-color: ' + item.rgb + ' !important;');
 
                         colorDiv.append(rgbDiv);
-                        colorCol.append(colorDiv)
+                        colorCol.append(colorDiv);
                         tableRow.append(colorCol);
-                        /*<td colspan="1">
-                            <div class="progress remote-color" style="text-align: center">
-                                <div class="bar" style="width: 100%;background-color: #0aaaf1 !important;"></div>
-                            </div>
-                        </td>*/
 
                         //Right row space
                         tableRow.append('<td width="5%"></td>');
 
                         table.append(tableRow);
 
-                        self.loadingPrinters(false);
-                        self.remotePrintersReady(true);
+                        if (item.state=="Printing") {
+
+                            $.each(item.orders, function (j, job)
+                            {
+                                var jobRow = $('<tr class="remote-job-row" id="' + item.id + '"/>');
+                                //Left row space
+                                jobRow.append('<td width="5%"></td>');
+
+                                //Name col
+                                var nameCol = $('<td colspan="3" ">Filename: <strong>' + job.name + '</strong></td>');
+                                jobRow.append(nameCol)
+
+                                //Start col
+                                var startCol = $('<td colspan="3" ">Start: <strong>' + job.start + '</strong></td>');
+                                jobRow.append(startCol)
+
+                                //End col
+                                var endCol = $('<td colspan="3" ">End: <strong>' + job.end + '</strong></td>');
+                                jobRow.append(endCol)
+
+                                jobRow.click(function(){
+                                   $(this).toggleClass('remote-table-job-selected');
+                                   $("#remote_printers_table tr.remote-job-row").each(function(){
+                                       debugger;
+                                        self.selectedJobs.push(this.id);
+                                    });
+                                });
+
+                                table.append(jobRow)
+                            });
+                        };
+
                     });
+
+                    self.loadingPrinters(false);
+                    self.remotePrintersReady(true);
                 },
                 error: function() {
                     console.log("Error GetRemotePrinters\n");
