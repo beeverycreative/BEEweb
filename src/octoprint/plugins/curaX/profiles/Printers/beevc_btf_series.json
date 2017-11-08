@@ -53,7 +53,7 @@
             "infill_angles": { "default_value": [30]},
             "infill_overlap": { "default_value": 0},
             "infill_overlap_mm": { "default_value": 0},
-            "skin_overlap": { "default_value": 10,
+            "skin_overlap": { "default_value": 10},
             "skin_overlap_mm": { "default_value": 0.04},
             "infill_wipe_dist": { "default_value": 0},
             "infill_before_walls": { "default_value": false },
