@@ -3,7 +3,7 @@
     "name": "BEETHEFIRST",
     "version": 2,
     "inherits": "beevc_btf_series",
-    "nozzles_supported": [0.4, 0.6],
+    "nozzles_supported": [0.4],
     "machine_cost": 1,
     "electric_consumption": 0.2,
     "metadata": {
@@ -19,7 +19,7 @@
      "overrides": {
         "machine_settings":
         {       
-            "machine_name": { "default_value": "BEE" }
+            "machine_name": { "default_value": "BEETHEFIRST" }
         }
      }
 }

@@ -22,6 +22,8 @@
                     "material_print_temperature": { "default_value": 205 },
                     "material_print_temperature_layer_0": { "default_value": 205 },
                     "default_material_print_temperature": { "default_value": 205 },
+                    "material_initial_print_temperature": { "default_value": 205 },
+                    "material_final_print_temperature": { "default_value": 205 },
                     "material_flow": { "default_value": 96.5 }
                 },
 
@@ -34,6 +36,8 @@
                     "material_print_temperature": { "default_value": 200 },
                     "material_print_temperature_layer_0": { "default_value": 200 },
                     "default_material_print_temperature": { "default_value": 200 },
+                    "material_initial_print_temperature": { "default_value": 200 },
+                    "material_final_print_temperature": { "default_value": 200 },
                     "material_flow": { "default_value": 95.5 }
                 },
 
@@ -46,6 +50,8 @@
                     "material_print_temperature": { "default_value": 200 },
                     "material_print_temperature_layer_0": { "default_value": 200 },
                     "default_material_print_temperature": { "default_value": 200 },
+                    "material_initial_print_temperature": { "default_value": 200 },
+                    "material_final_print_temperature": { "default_value": 200 },
                     "material_flow": { "default_value": 95.5 }
                 },
 
@@ -58,6 +64,8 @@
                     "material_print_temperature": { "default_value": 200 },
                     "material_print_temperature_layer_0": { "default_value": 200 },
                     "default_material_print_temperature": { "default_value": 200 },
+                    "material_initial_print_temperature": { "default_value": 200 },
+                    "material_final_print_temperature": { "default_value": 200 },
                     "material_flow": { "default_value": 95.5 }
                 }
             }
