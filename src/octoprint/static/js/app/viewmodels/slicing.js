@@ -351,15 +351,9 @@ $(function() {
                     name: name
                 });
 
-                // Parses the list and filters for BVC colors
-                // Assumes the '_' nomenclature separation for the profile names
-                var profile_parts = name.split('_');
-                if (profile_parts[0] != null) {
-                    var color = profile_parts[0].trim();
-                    if (!_.findWhere(self.colors(), color)) {
-                        self.colors.push(color);
-                    }
-                }
+                // Fills the colors = filaments list
+                self.colors.push(name);
+
             });
 
             if (selectedProfile != undefined) {

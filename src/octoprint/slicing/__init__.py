@@ -706,14 +706,8 @@ class SlicingManager(object):
 		slicer_profile_path = self.get_slicer_profile_path(slicer)
 
 		if from_current_printer:
-			# adds an '_' to the end to avoid false positive string lookups for the printer names
 			printer_name = self._printer_profile_manager.get_current_or_default()['name']
-			printer_id = printer_name.replace(' ', '')
-			# removes the A suffix of some models for filament lookup matching
-			if printer_id.endswith('A'):
-				printer_id = printer_id[:-1]
-
-			printer_id = printer_id.upper()
+			printer_id = self._printer_profile_manager.normalize_printer_name(printer_name)
 
 		slicer_object_curaX = self.get_slicer(slicer)
 		for folder in os.listdir(slicer_profile_path):
@@ -729,7 +723,7 @@ class SlicingManager(object):
 
 					#path = os.path.join(slicer_profile_path, entry)
 					profile_name = entry[:-len(".json")]
-					brand= slicer_object_curaX.getFilamentHeader("brand", entry, slicer_profile_path + "/")
+					brand = slicer_object_curaX.getFilamentHeader("brand", entry, slicer_profile_path + "/")
 					# creates a shallow slicing profile
 					temp_profile = self._create_shallow_profile(profile_name, slicer, "json", require_configured, brand)
 					profiles[profile_name] = temp_profile

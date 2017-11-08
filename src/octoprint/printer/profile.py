@@ -171,7 +171,7 @@ class PrinterProfileManager(object):
 
 	default = dict(
 		id = "_default",
-		name = "BEETHEFIRST",
+		name = "BEETHEFIRST PLUS",
 		model = "Generic BEEVERYCREATIVE Printer",
 		color = "default",
 		volume=dict(
@@ -610,3 +610,18 @@ class PrinterProfileManager(object):
 			            y_max=volume["depth"],
 			            z_min=0.0,
 			            z_max=volume["height"])
+
+
+	@staticmethod
+	def normalize_printer_name(printer_name):
+		"""
+		Transforms a printer name like 'BEETHEFIRST PLUS' into a normalized id like 'beethefirstplus'
+		:param printer_name:
+		:return:
+		"""
+		printer_id = printer_name.replace('_', ' ')
+		printer_id = printer_id.replace(' ', '')
+
+		printer_id = printer_id.lower()
+
+		return printer_id

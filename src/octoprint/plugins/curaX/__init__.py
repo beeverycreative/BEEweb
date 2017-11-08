@@ -241,7 +241,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 				self._cura_logger.info(u"### Slicing %s to %s using profile stored at %s" % (model_path, machinecode_path, profile_path))
 				from octoprint.server import slicingManager
 				profile_default_printer_path = slicingManager.get_slicer_profile_path("curaX") + '/Printers/fdmprinter.def.json'
-				engine_settings, extruder_settings = ProfileReader.getSettingsToSlice(printer_profile["id"], str(nozzle_size), profile_path, resolution, overrides)
+				engine_settings, extruder_settings = ProfileReader.getSettingsToSlice(printer_profile["name"], str(nozzle_size), profile_path, resolution, overrides)
 
 				executable = normalize_path(self._settings.get(["cura_engine"]))
 				if not executable:

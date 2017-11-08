@@ -10,6 +10,8 @@ import os
 import logging
 import copy
 
+from octoprint.printer.profile import PrinterProfileManager
+
 class ProfileReader(object):
 
 	# Profile in "Variants" override default profiles with the same name (in folder "Quality") "
@@ -79,6 +81,7 @@ class ProfileReader(object):
 		extruder_settings = None
 		from octoprint.server import slicingManager
 		profile_path = slicingManager.get_slicer_profile_path("curaX")+'/'
+		printer_id = PrinterProfileManager.normalize_printer_name(printer)
 
 		#LOAD MACHINE DEFINITIONS
 		machine_json = cls.getPrinterJsonByFileName(name=printer, slicer_profile_path=profile_path)
@@ -115,14 +118,14 @@ class ProfileReader(object):
 			#for each extruder
 			for count in range(0, len(filament)):
 				# get filament and parent overrides
-				extruder_settings[count] = cls.getFilamentOverrides(filament[count], printer, nozzle[count], profile_path, quality)
+				extruder_settings[count] = cls.getFilamentOverrides(filament[count], printer_id, nozzle[count], profile_path, quality)
 				# get nozzle overrides
 				extruder_settings[count] = cls.merge_dicts(extruder_settings[count], cls.getNozzleOverrides(nozzle[count], profile_path))
 
 		# if single extruder
 		else:
 			# get filament and parent overrides
-			filament_Overrides = cls.getFilamentOverrides(filament, printer, nozzle, profile_path, quality)
+			filament_Overrides = cls.getFilamentOverrides(filament, printer_id, nozzle, profile_path, quality)
 			# get nozzle overrides
 			nozzle_Overrides = cls.getNozzleOverrides(nozzle, profile_path)
 
@@ -211,7 +214,7 @@ class ProfileReader(object):
 				# we are only interested in profiles and no hidden files
 				continue
 
-			if name.lower().replace(" ", "") != entry.lower().replace(" ", "")[:-len(".json")]:
+			if name != entry[:-len(".json")]:
 				continue
 
 			with open(slicer_profile_path + 'Printers/' + entry) as data_file:
@@ -252,7 +255,7 @@ class ProfileReader(object):
 				# we are only interested in profiles and no hidden files
 				continue
 
-			if printer_id.lower().replace(" ", "") != entry.lower().replace(" ", "")[:-len(".json")] :
+			if printer_id != entry[:-len(".json")] :
 				continue
 
 			with open(slicer_profile_path +'Printers/' + entry) as data_file:
@@ -346,7 +349,7 @@ class ProfileReader(object):
 	# Get parent overrides
 	# all parents are in materials folder
 	@classmethod
-	def getParentOverrides(cls, filament_id, nozzle_id,slicer_profile_path):
+	def getParentOverrides(cls, filament_id, nozzle_id, slicer_profile_path):
 		overrides_Values = {}
 		with open(slicer_profile_path +'Materials/' + filament_id + ".json") as data_file:
 			filament_json = json.load(data_file)
@@ -373,7 +376,7 @@ class ProfileReader(object):
 				# we are only interested in profiles and no hidden files
 				continue
 
-			if printer_id.lower().replace(" ", "") != entry.lower().replace(" ", "")[:-len(".json")]:
+			if printer_id != entry[:-len(".json")]:
 				continue
 
 			with open(slicer_profile_path +'Printers/' + entry) as data_file:
@@ -480,7 +483,7 @@ class ProfileReader(object):
 					# we are only interested in profiles and no hidden files
 					continue
 
-				if printer_id.lower().replace(" ", "") != entry.lower().replace(" ", "")[:-len(".json")]:
+				if printer_id != entry[:-len(".json")]:
 					continue
 
 				with open(slicer_profile_path + "Printers/" + entry) as data_file:
