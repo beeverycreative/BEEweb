@@ -17,6 +17,7 @@ $(function() {
         self.destinationFilename = ko.observable();
 
         self.remotePrintButtonControl = ko.observable(true); // Controls the button enabled state
+        self.remotePrintButtonControl = ko.observable(true); // Controls the button enabled state
         self.remoteCancelButtonControl = ko.observable(false); // Controls the button enabled state
 
         self.selectedRows = [];
@@ -44,7 +45,6 @@ $(function() {
 
 
         self.remotePrintClick = function () {
-            console.log("Remote Print...");
 
             self.selectedRows = [];
             $("#remote_printers_table tr.remote-table-row-selected").each(function(){
@@ -53,37 +53,69 @@ $(function() {
             });
 
             if (self.selectedRows.length > 0) {
+                console.log("Remote Print... to " + self.selectedRows.length + " printers.");
                 var data = {
                 "command": "createOrders"
-            };
-            data['Info'] = [self.selectedRows, self.file];
+                };
+                data['Info'] = [self.selectedRows, self.file];
 
-            $.ajax({
-                url: API_BASEURL + "remote/createPrintingOrders",
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json; charset=UTF-8",
-                data: JSON.stringify(data),
-                success: function(data) {
+                $.ajax({
+                    url: API_BASEURL + "remote/createPrintingOrders",
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json; charset=UTF-8",
+                    data: JSON.stringify(data),
+                    success: function(data) {
+
+                        $("#remote_printers_dialog").modal("hide");
 
 
-                },
-                error: function() {
+                    },
+                    error: function() {
 
-                }
-            });
+                    }
+                });
+            } else {
+                console.log("No Printers selected...");
             }
         };
 
         self.remoteCancelClick = function () {
-            console.log("Remote Print...");
 
-            self.selectedRows = [];
-            $("#remote_printers_table tr.remote-table-row-selected").each(function(){
-                debugger;
-                self.selectedRows.push(this.id);
+            self.selectedJobs = []
+            $("#remote_printers_table tr.remote-table-job-selected").each(function(){
+               debugger;
+                self.selectedJobs.push(this.id);
             });
 
+            if (self.selectedJobs.length > 0) {
+                console.log("Deleting " + self.selectedJobs.length + " jobs.");
+                var data = {
+                "command": "cancelOrders"
+                };
+                data['Info'] = [self.selectedJobs];
+
+                $.ajax({
+                    url: API_BASEURL + "remote/cancelPrintingOrders",
+                    type: "POST",
+                    dataType: "json",
+                    contentType: "application/json; charset=UTF-8",
+                    data: JSON.stringify(data),
+                    success: function(data) {
+
+                        self.show()
+
+                    },
+                    error: function() {
+
+                    }
+                });
+            } else {
+                console.log("No Jobs selected...");
+            }
+
+
+/*
             if (self.selectedRows.length > 0) {
                 var data = {
                 "command": "createOrders"
@@ -105,6 +137,7 @@ $(function() {
                 }
             });
             }
+            */
         };
 
         self.remorePrintButtonTooltip = ko.pureComputed(function() {
@@ -122,7 +155,7 @@ $(function() {
         });
 
         self.remoreCancelButtonTooltip = ko.pureComputed(function() {
-            if (!self.enableRemotePrintButton()) {
+            if (!self.enableRemoteCancelButton()) {
                     return gettext("Cannot slice, not all parameters specified");
             } else {
                 return gettext("Start the remote print process");
@@ -130,7 +163,7 @@ $(function() {
         });
 
         self.enableRemoteCancelButton = ko.pureComputed(function() {
-            return self.selectedJobs>0;
+            return true;
                 //&& self.profile() != undefined
                 //&&( !(self.printerState.isPrinting() || self.printerState.isPaused()) || !self.slicerSameDevice());
         });
@@ -229,7 +262,8 @@ $(function() {
 
                             $.each(item.orders, function (j, job)
                             {
-                                var jobRow = $('<tr class="remote-job-row" id="' + item.id + '"/>');
+                                debugger;
+                                var jobRow = $('<tr class="remote-job-row" id="' + job.id + '"/>');
                                 //Left row space
                                 jobRow.append('<td width="5%"></td>');
 
@@ -247,10 +281,6 @@ $(function() {
 
                                 jobRow.click(function(){
                                    $(this).toggleClass('remote-table-job-selected');
-                                   $("#remote_printers_table tr.remote-job-row").each(function(){
-                                       debugger;
-                                        self.selectedJobs.push(this.id);
-                                    });
                                 });
 
                                 table.append(jobRow)

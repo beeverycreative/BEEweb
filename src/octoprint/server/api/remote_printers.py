@@ -63,6 +63,10 @@ class ProdsmartAPIMethods(object):
     encoding = base64.b64encode(b)
     token = ""
 
+    """############################################################################
+                                autentication
+        ############################################################################"""
+
     def autentication(self):
 
         headers = {'Authorization': "Basic " + self.encoding, "Content-Type": "application/json"}
@@ -83,10 +87,18 @@ class ProdsmartAPIMethods(object):
         else:
             # If response code is not ok (200), print the resulting http error code with description
             # myResponse.raise_for_status()
-            print(myResponse.reason)
+            print
+            myResponse.reason
             return True
-        print("Token: " + self.token)
+
+        print
+        "Token: " + self.token
+
         return False
+
+    """############################################################################
+                                autentication
+    ############################################################################"""
 
     def getJobs(self, urlToCall="api/production-orders/?", all=False, notstarted=False):
         headers = {"Content-Type": "application/json"}
@@ -98,25 +110,21 @@ class ProdsmartAPIMethods(object):
             else:
                 link = self.url + urlToCall + "access_token=" + self.token + "&running-status=started"
         myResponse = requests.get(link, headers=headers)
-        if (myResponse.ok):
-
-            # Loading the response data into a dict variable
-            # json.loads takes in only binary or string variables so using content to fetch binary content
-            # Loads (Load String) takes a Json file and converts into python data structure (dict or list, depending on JSON)
-            if (myResponse.content != ""):
-                jData = json.loads(myResponse.content)
-                for key in jData:
-                    x = json.dumps(key)
-
-        else:
+        if not (myResponse.ok):
             if myResponse.status_code == 401:
                 self.autentication()
                 myResponse = self.getJobs()
             else:
                 # If response code is not ok (200), print the resulting http error code with description
                 # myResponse.raise_for_status()
-                print(myResponse.reason)
+                print
+                myResponse.reason
+
         return myResponse
+
+    """############################################################################
+                                updateOrder
+    ############################################################################"""
 
     def updateOrder(self, machine, id, status=0):
         headers = {"Content-Type": "application/json"}
@@ -126,23 +134,17 @@ class ProdsmartAPIMethods(object):
 
         myResponse = requests.post(link, data=json.dumps(data), headers=headers)
         # print myResponse.request.url
-        if (myResponse.ok):
-
-            # Loading the response data into a dict variable
-            # json.loads takes in only binary or string variables so using content to fetch binary content
-            # Loads (Load String) takes a Json file and converts into python data structure (dict or list, depending on JSON)
-            if (myResponse.content != ""):
-                jData = json.loads(myResponse.content)
-                print("The response contains {0} properties".format(len(jData)))
-                for key in jData:
-                    x = json.dumps(key)
-                    print(key)
-                    print(key["status"])
-
-        else:
+        if not (myResponse.ok):
             # If response code is not ok (200), print the resulting http error code with description
             # myResponse.raise_for_status()
-            print(myResponse.reason)
+            print
+            myResponse.reason
+
+        return myResponse
+
+    """############################################################################
+                                getProductionOrder
+    ############################################################################"""
 
     def getProductionOrder(self, id, urlToCall="api/production-orders/"):
 
@@ -150,24 +152,18 @@ class ProdsmartAPIMethods(object):
 
         link = self.url + urlToCall + id + "?access_token=" + self.token
         myResponse = requests.get(link, headers=headers)
-        print(myResponse.status_code)
-        if (myResponse.ok):
 
-            # Loading the response data into a dict variable
-            # json.loads takes in only binary or string variables so using content to fetch binary content
-            # Loads (Load String) takes a Json file and converts into python data structure (dict or list, depending on JSON)
-            if (myResponse.content != ""):
-                jData = json.loads(myResponse.content)
-                print("The response contains {0} properties".format(len(jData)))
-                for key in jData:
-                    x = json.dumps(key)
-                    print(key)
-                    print(key["status"])
-
-        else:
+        if not (myResponse.ok):
             # If response code is not ok (200), print the resulting http error code with description
             # myResponse.raise_for_status()
-            print(myResponse.reason)
+            print
+            myResponse.reason
+
+        return json.loads(myResponse.content)
+
+    """############################################################################
+                                createProductionOrder
+    ############################################################################"""
 
     def createProductionOrder(self, machines, products, start_time, end_time, workers, code, status=0):
         headers = {"Content-Type": "application/json"}
@@ -183,20 +179,17 @@ class ProdsmartAPIMethods(object):
 
         myResponse = requests.post(link, data=json.dumps(data), headers=headers)
         # print myResponse.request.url
-        if (myResponse.ok):
-
-            # Loading the response data into a dict variable
-            # json.loads takes in only binary or string variables so using content to fetch binary content
-            # Loads (Load String) takes a Json file and converts into python data structure (dict or list, depending on JSON)
-            if (myResponse.content != ""):
-                return json.loads(myResponse.content)
-
-        else:
+        if not (myResponse.ok):
             # If response code is not ok (200), print the resulting http error code with description
             # myResponse.raise_for_status()
-            print(myResponse.reason)
+            print
+            myResponse.reason
 
-            return None
+        return json.loads(myResponse.content)
+
+    """############################################################################
+                                    getPrinters
+    ############################################################################"""
 
     def getPrinters(self, urlToCall="api/machines?", all=False, notstarted=False):
         headers = {"Content-Type": "application/json"}
@@ -208,25 +201,17 @@ class ProdsmartAPIMethods(object):
             else:
                 link = self.url + urlToCall + "access_token=" + self.token + "&running-status=started"
         myResponse = requests.get(link, headers=headers)
-        if (myResponse.ok):
+        if not (myResponse.ok):
+            # If response code is not ok (200), print the resulting http error code with description
+            # myResponse.raise_for_status()
+            print
+            myResponse.reason
 
-            # Loading the response data into a dict variable
-            # json.loads takes in only binary or string variables so using content to fetch binary content
-            # Loads (Load String) takes a Json file and converts into python data structure (dict or list, depending on JSON)
-            if (myResponse.content != ""):
-                jData = json.loads(myResponse.content)
-                for key in jData:
-                    x = json.dumps(key)
-
-        else:
-            if myResponse.status_code == 401:
-                self.autentication()
-                myResponse = self.getPrinters()
-            else:
-                # If response code is not ok (200), print the resulting http error code with description
-                # myResponse.raise_for_status()
-                print(myResponse.reason)
         return myResponse
+
+    """############################################################################
+                                updatePrinterNotes
+    ############################################################################"""
 
     def updatePrinterNotes(self, machine, notes):
 
@@ -239,22 +224,17 @@ class ProdsmartAPIMethods(object):
         data = {"notes": notes_str}
 
         myResponse = requests.post(link, data=json.dumps(data), headers=headers)
-        # print myResponse.request.url
-        if (myResponse.ok):
-
-            # Loading the response data into a dict variable
-            # json.loads takes in only binary or string variables so using content to fetch binary content
-            # Loads (Load String) takes a Json file and converts into python data structure (dict or list, depending on JSON)
-            if (myResponse.content != ""):
-                jData = json.loads(myResponse.content)
-                print("The response contains {0} properties".format(len(jData)))
-
-        else:
+        if not (myResponse.ok):
             # If response code is not ok (200), print the resulting http error code with description
             # myResponse.raise_for_status()
-            print(myResponse.reason)
+            print
+            myResponse.reason
 
-        return
+        return myResponse
+
+    """############################################################################
+                                activateProductionOrder
+    ############################################################################"""
 
     def activateProductionOrder(self, id):
 
@@ -270,9 +250,14 @@ class ProdsmartAPIMethods(object):
         else:
             # If response code is not ok (200), print the resulting http error code with description
             # myResponse.raise_for_status()
-            print(myResponse.reason)
+            print
+            myResponse.reason
 
             return None
+
+    """############################################################################
+                                updateProductionOrder
+    ############################################################################"""
 
     def updateProductionOrder(self, id, status=0):
         headers = {"Content-Type": "application/json"}
@@ -281,24 +266,59 @@ class ProdsmartAPIMethods(object):
         data = {"status": status}
 
         myResponse = requests.post(link, data=json.dumps(data), headers=headers)
-        # print myResponse.request.url
-        if (myResponse.ok):
 
-            # Loading the response data into a dict variable
-            # json.loads takes in only binary or string variables so using content to fetch binary content
-            # Loads (Load String) takes a Json file and converts into python data structure (dict or list, depending on JSON)
-            if (myResponse.content != ""):
-                jData = json.loads(myResponse.content)
-                print("The response contains {0} properties".format(len(jData)))
-                for key in jData:
-                    x = json.dumps(key)
-                    print(key)
-                    print(key["status"])
-
-        else:
+        if not (myResponse.ok):
             # If response code is not ok (200), print the resulting http error code with description
             # myResponse.raise_for_status()
-            print(myResponse.reason)
+            print
+            myResponse.reason
+
+        return myResponse
+
+    """"############################################################################
+                                    deleteProductionOrder
+    ############################################################################"""
+
+    def deleteProductionOrder(self, id, urlToCall="api/production-orders/"):
+
+        headers = {"Content-Type": "application/json"}
+
+        link = self.url + urlToCall + id + "?access_token=" + self.token
+        myResponse = requests.delete(link, headers=headers)
+
+        if not (myResponse.ok):
+            # If response code is not ok (200), print the resulting http error code with description
+            # myResponse.raise_for_status()
+            print
+            myResponse.reason
+
+        return myResponse
+
+    """"############################################################################
+                                        notifyOrderProblem
+    ############################################################################"""
+
+    def notifyOrderProblem(self, id, shortMsg, Msg, urlToCall="api/production-orders/"):
+
+        headers = {"Content-Type": "application/json"}
+
+        link = self.url + urlToCall + id + "/notify?access_token=" + self.token
+        data = {"short-message": shortMsg,
+                "message": Msg}
+
+        myResponse = requests.post(link, data=json.dumps(data), headers=headers)
+
+        if not (myResponse.ok):
+            # If response code is not ok (200), print the resulting http error code with description
+            # myResponse.raise_for_status()
+            print
+            myResponse.reason
+
+        return myResponse
+
+    """"############################################################################
+                                            getSystemInfo
+    ############################################################################"""
 
 
     def getSystemInfo(self):
@@ -453,6 +473,8 @@ def createPrintingOrders():
     printers = data['Info'][0]
     file = data['Info'][1]
 
+    new_orders = []
+
 
     for printer in printers:
 
@@ -476,11 +498,52 @@ def createPrintingOrders():
                                                    start_time=start.strftime("%Y-%m-%dT%H:%M:%SZ"),
                                                    end_time=end.strftime("%Y-%m-%dT%H:%M:%SZ"),
                                                    code="{} - BEESOFT".format(file))
+        new_orders.append(new_order)
 
-
-
+    return jsonify({
+        "response": new_orders
+    })
 
 
 
 
     return
+
+@api.route("/remote/cancelPrintingOrders", methods=["POST"])
+@restricted_access
+def cancelPrintingOrders():
+    prod_api = ProdsmartAPIMethods()
+
+    try:
+        while prod_api.autentication():
+            pass
+    except Exception:
+        return True
+
+    Info = prod_api.getSystemInfo()
+
+    valid_commands = {
+        "cancelOrders": []
+    }
+
+    command, data, response = get_json_command_from_request(request, valid_commands)
+    if response is not None:
+        return response
+
+    orderIDs = data['Info'][0]
+
+    for id in orderIDs:
+        #Get order
+        order = prod_api.getProductionOrder(id)
+        if order['running-status'] == 'notstarted':
+            prod_api.notifyOrderProblem(id,"Cancel","Cancel")
+            prod_api.deleteProductionOrder(id)
+        else:
+            prod_api.notifyOrderProblem(id, "Cancel", "Cancel")
+            prod_api.updateOrder(order['machines'][0]['code'],id,100)
+
+
+
+    return jsonify({
+            "response": ''
+        })
