@@ -388,6 +388,18 @@ class ProdsmartAPIMethods(object):
             due_date = dateutil.parser.parse(job['due-date'])
             for machine in job['machines']:
                 self.Info['Printers'][machine['code']]['on_hold'] += 1
+
+                if 'queue' not in self.Info['Printers'][machine['code']].keys():
+                    self.Info['Printers'][machine['code']]['queue'] = []
+
+                order = {}
+                order['name'] = job['products'][0]['product']
+                order['start'] = dateutil.parser.parse(job['start-date']).strftime("%Y-%m-%d %H:%M:%S")
+                order['end'] = dateutil.parser.parse(job['due-date']).strftime("%Y-%m-%d %H:%M:%S")
+                order['id'] = job['id']
+
+                self.Info['Printers'][machine['code']]['queue'].append(order)
+
                 if not 'available_at' in self.Info['Printers'][machine['code']].keys():
                     self.Info['Printers'][machine['code']]['available_at'] = due_date
                 else:
@@ -540,7 +552,7 @@ def cancelPrintingOrders():
             prod_api.deleteProductionOrder(id)
         else:
             prod_api.notifyOrderProblem(id, "Cancel", "Cancel")
-            prod_api.updateOrder(order['machines'][0]['code'],id,100)
+            #prod_api.updateOrder(order['machines'][0]['code'],id,100)
 
 
 
