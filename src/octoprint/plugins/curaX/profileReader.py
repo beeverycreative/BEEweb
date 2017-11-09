@@ -255,11 +255,10 @@ class ProfileReader(object):
 				# we are only interested in profiles and no hidden files
 				continue
 
-			if printer_id != entry[:-len(".json")] :
-				continue
-
-			with open(slicer_profile_path +'Printers/' + entry) as data_file:
-				printer_json = json.load(data_file)
+			if printer_id == entry[:-len(".json")]:
+				with open(slicer_profile_path +'Printers/' + entry) as data_file:
+					printer_json = json.load(data_file)
+				break
 
 		if printer_json is None:
 			with open(slicer_profile_path + 'Printers/_default.json') as data_file:
@@ -276,17 +275,13 @@ class ProfileReader(object):
 				# we are only interested in profiles and no hidden files
 				continue
 
-			if nozzle_id.lower() not in entry.lower():
-				continue
-
-			# creates a shallow slicing profile
-			with open(slicer_profile_path +'Nozzles/' + entry) as data_file:
-				nozzle_json = json.load(data_file)
-				overrides = {}
-				for key in nozzle_json['overrides']:
-					overrides.update(nozzle_json['overrides'][key])
-
-
+			if nozzle_id.lower() == entry.lower()[:-len(".json")]:
+				with open(slicer_profile_path +'Nozzles/' + entry) as data_file:
+					nozzle_json = json.load(data_file)
+					overrides = {}
+					for key in nozzle_json['overrides']:
+						overrides.update(nozzle_json['overrides'][key])
+				break
 
 		return overrides
 
@@ -294,7 +289,7 @@ class ProfileReader(object):
 	# Must check in Quality folder for default profiles and Variants for user profiles
 	@classmethod
 	def getFilamentOverrides(cls, filament_id, printer_id, nozzle_id, slicer_profile_path, quality=None):
-		overrides_Values = {}
+		overrides_values = {}
 		custom = False
 		logger = logging.getLogger("octoprint.plugin.curaX.profileReader")
 		filament_json = dict()
@@ -304,13 +299,11 @@ class ProfileReader(object):
 				# we are only interested in profiles and no hidden files
 				continue
 
-			if filament_id.lower() not in entry.lower():
-				continue
-
-			# creates a shallow slicing profile
-			with open(slicer_profile_path + 'Variants/' + entry) as data_file:
-				filament_json = json.load(data_file)
-				custom = True
+			if filament_id.lower() == entry.lower()[:-len(".json")]:
+				with open(slicer_profile_path + 'Variants/' + entry) as data_file:
+					filament_json = json.load(data_file)
+					custom = True
+				break
 
 		if not custom:
 			for entry in os.listdir(slicer_profile_path + "Quality/"):
@@ -318,51 +311,50 @@ class ProfileReader(object):
 					# we are only interested in profiles and no hidden files
 					continue
 
-				if filament_id.lower() not in entry.lower():
-					continue
-
-				# creates a shallow slicing profile
-				with open(slicer_profile_path + 'Quality/' + entry) as data_file:
-					filament_json = json.load(data_file)
+				if filament_id.lower() == entry.lower()[:-len(".json")]:
+					with open(slicer_profile_path + 'Quality/' + entry) as data_file:
+						filament_json = json.load(data_file)
+					break
 
 		# check if printer is compatible
 		if 'PrinterGroups' in filament_json:
-			for list in filament_json['PrinterGroups']:
-				if printer_id.lower() in map(lambda x:x.lower(),list['group_printers']):
-					if quality.lower() in list['quality']:
-						overrides_Values = list['quality'][quality.lower()]
+			for printer_list in filament_json['PrinterGroups']:
+				if printer_id in map(lambda x:x.lower(), printer_list['group_printers']):
+					if quality.lower() in printer_list['quality']:
+						overrides_values = printer_list['quality'][quality.lower()]
 
 		# check for overrides that do not depend on quality
 		if 'overrides' in filament_json:
-			overrides_Values = cls.merge_dicts(filament_json['overrides'], overrides_Values)
+			overrides_values = cls.merge_dicts(filament_json['overrides'], overrides_values)
 
 		# check if nozzle in printer is compatible
 		if 'nozzles_supported' in filament_json:
 			if nozzle_id not in str(filament_json['nozzles_supported']):
-				logger.warning("Nozzle not supported")
+				logger.warning("Nozzle not supported for filament: " + filament_id)
 
 		# check if it was parent, if so, get overrides
 		if 'inherits' in filament_json:
-			overrides_Values = cls.merge_dicts(cls.getParentOverrides(filament_json['inherits'], nozzle_id, slicer_profile_path), overrides_Values)
-		return overrides_Values
+			overrides_values = cls.merge_dicts(cls.getParentOverrides(filament_json['inherits'], nozzle_id, slicer_profile_path), overrides_values)
+
+		return overrides_values
 
 	# Get parent overrides
 	# all parents are in materials folder
 	@classmethod
 	def getParentOverrides(cls, filament_id, nozzle_id, slicer_profile_path):
-		overrides_Values = {}
+		overrides_values = {}
 		with open(slicer_profile_path +'Materials/' + filament_id + ".json") as data_file:
 			filament_json = json.load(data_file)
 
 		# check for overrides
 		if 'overrides' in filament_json:
 			for key in filament_json['overrides'].keys():
-				overrides_Values.update(filament_json['overrides'][key])
-			#overrides_Values = cls.merge_dicts(filament_json['overrides'], overrides_Values)
-		# check if it was parent, if so, get overrides
+				overrides_values.update(filament_json['overrides'][key])
+		# check if has parent, if so, gets overrides
 		if 'inherits' in filament_json:
-			overrides_Values = cls.merge_dicts(cls.getParentOverrides(filament_json['inherits'], nozzle_id, slicer_profile_path), overrides_Values)
-		return overrides_Values
+			overrides_values = cls.merge_dicts(cls.getParentOverrides(filament_json['inherits'], nozzle_id, slicer_profile_path), overrides_values)
+
+		return overrides_values
 
 
 	# get values in header
@@ -376,11 +368,10 @@ class ProfileReader(object):
 				# we are only interested in profiles and no hidden files
 				continue
 
-			if printer_id != entry[:-len(".json")]:
-				continue
-
-			with open(slicer_profile_path +'Printers/' + entry) as data_file:
-				printer_json = json.load(data_file)
+			if printer_id == entry.lower()[:-len(".json")]:
+				with open(slicer_profile_path +'Printers/' + entry) as data_file:
+					printer_json = json.load(data_file)
+				break
 
 		if header_id in printer_json:
 			header_value = printer_json[header_id]
@@ -400,13 +391,11 @@ class ProfileReader(object):
 				# we are only interested in profiles and no hidden files
 				continue
 
-			if filament_id.lower() not in entry.lower():
-				continue
-
-			# creates a shallow slicing profile
-			with open(slicer_profile_path + 'Variants/' + entry) as data_file:
-				filament_json = json.load(data_file)
-				custom = True
+			if filament_id.lower() == entry.lower()[:-len(".json")]:
+				with open(slicer_profile_path + 'Variants/' + entry) as data_file:
+					filament_json = json.load(data_file)
+					custom = True
+				break
 
 		if not custom:
 			for entry in os.listdir(slicer_profile_path + "Quality/"):
@@ -414,18 +403,17 @@ class ProfileReader(object):
 					# we are only interested in profiles and no hidden files
 					continue
 
-				if filament_id.lower() not in entry.lower():
-					continue
-
-				# creates a shallow slicing profile
-				with open(slicer_profile_path + 'Quality/' + entry) as data_file:
-					filament_json = json.load(data_file)
+				if filament_id.lower() == entry.lower()[:-len(".json")]:
+					with open(slicer_profile_path + 'Quality/' + entry) as data_file:
+						filament_json = json.load(data_file)
+					break
 
 		if header_id in filament_json:
 			header_value = filament_json[header_id]
 
 		if header_value is None and 'inherits' in filament_json:
 			header_value = cls.getParentHeader(header_id, filament_json['inherits'], slicer_profile_path)
+
 		return header_value
 
 	@classmethod
@@ -438,6 +426,7 @@ class ProfileReader(object):
 			header_value = filament_json[header_id]
 		if header_value is None and 'inherits' in filament_json:
 			header_value = cls.getParentHeader(header_id, filament_json['inherits'], slicer_profile_path)
+
 		return header_value
 
 	#Get local path to filament
@@ -451,21 +440,17 @@ class ProfileReader(object):
 				# we are only interested in profiles and no hidden files
 				continue
 
-			if filament_id.lower() not in entry.lower():
-				continue
-
-			# creates a shallow slicing profile
-			return slicer_profile_path + "Variants/" + entry
+			if filament_id.lower() == entry.lower()[:-len(".json")]:
+				return slicer_profile_path + "Variants/" + entry
 
 		for entry in os.listdir(slicer_profile_path + "Quality/"):
 			if not entry.endswith(".json"):
 				# we are only interested in profiles and no hidden files
 				continue
 
-			if filament_id.lower() not in entry.lower():
-				continue
+			if filament_id.lower() == entry.lower()[:-len(".json")]:
+				return slicer_profile_path + "Quality/" + entry
 
-			return slicer_profile_path + "Quality/" + entry
 		return None
 
 	#check if printer(printer_id) with a nozzle size (nozzle_id) on extruder can use a especific filament(filament_id)
@@ -483,31 +468,28 @@ class ProfileReader(object):
 					# we are only interested in profiles and no hidden files
 					continue
 
-				if printer_id != entry[:-len(".json")]:
-					continue
+				if printer_id == entry.lower()[:-len(".json")]:
+					with open(slicer_profile_path + "Printers/" + entry) as data_file:
+						printer_json = json.load(data_file)
 
-				with open(slicer_profile_path + "Printers/" + entry) as data_file:
-					printer_json = json.load(data_file)
-
-					if 'nozzles_supported' in printer_json and printer_json is not None:
-						if str(float(nozzle_id) / 1000) not in str(printer_json['nozzles_supported']):
-							return False
+						if 'nozzles_supported' in printer_json and printer_json is not None:
+							if str(float(nozzle_id) / 1000) not in str(printer_json['nozzles_supported']):
+								return False
+					break
 
 			#Check filament with nozzle
 			custom = False
-
+			filament_json = dict()
 			for entry in os.listdir(slicer_profile_path + "Variants/"):
 				if not entry.endswith(".json"):
 					# we are only interested in profiles and no hidden files
 					continue
 
-				if filament_id.lower() not in entry.lower():
-					continue
-
-				# creates a shallow slicing profile
-				with open(slicer_profile_path + 'Variants/' + entry) as data_file:
-					filament_json = json.load(data_file)
-					custom = True
+				if filament_id.lower() == entry.lower()[:-len(".json")]:
+					with open(slicer_profile_path + 'Variants/' + entry) as data_file:
+						filament_json = json.load(data_file)
+						custom = True
+					break
 
 			if not custom:
 				for entry in os.listdir(slicer_profile_path + "Quality/"):
@@ -515,12 +497,10 @@ class ProfileReader(object):
 						# we are only interested in profiles and no hidden files
 						continue
 
-					if filament_id.lower() not in entry.lower():
-						continue
-
-					# creates a shallow slicing profile
-					with open(slicer_profile_path + 'Quality/' + entry) as data_file:
-						filament_json = json.load(data_file)
+					if filament_id.lower() == entry.lower()[:-len(".json")]:
+						with open(slicer_profile_path + 'Quality/' + entry) as data_file:
+							filament_json = json.load(data_file)
+						break
 
 			#Check if nozzle is supported
 			if 'nozzles_supported' in filament_json:
@@ -529,11 +509,11 @@ class ProfileReader(object):
 
 			# Check if printer is supported
 			if 'PrinterGroups' in filament_json:
-				for list in filament_json['PrinterGroups']:
-					if printer_id.lower() in list['group_printers']:
+				for printer_list in filament_json['PrinterGroups']:
+					if printer_id.lower() in printer_list['group_printers']:
 						return True
-		except:
-			logger.exception("Error while getting Values from profile ")
+		except Exception as ex:
+			logger.error("Error while getting Values from profile: " + ex.message)
 
 		return False
 

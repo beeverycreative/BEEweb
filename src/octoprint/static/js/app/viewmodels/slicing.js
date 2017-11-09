@@ -148,7 +148,7 @@ $(function() {
             self.requestData(function() {
                 if (!self.enableSlicingDialog() && !self.estimationDialog()) {
                     html = _.sprintf(gettext("Could not estimate the print operation. Please make sure the slicer is configured, or contact the support for help."));
-                    new PNotify({title: gettext("No slicer configured"), text: html, type: "error", hide: false});
+                    new PNotify({title: gettext("No slicer configured"), text: html, type: "error", hide: true});
                     return;
                 }
                 self._nozzleFilamentUpdate();

@@ -717,16 +717,17 @@ class SlicingManager(object):
 						# we are only interested in profiles and no hidden files
 						continue
 
+					filament_name = entry[:-len(".json")]
+
 					if from_current_printer:
-						if not slicer_object_curaX.isPrinterAndNozzleCompatible(entry, printer_id, nozzle_size):
+						if not slicer_object_curaX.isPrinterAndNozzleCompatible(filament_name, printer_id, nozzle_size):
 							continue
 
-					#path = os.path.join(slicer_profile_path, entry)
-					profile_name = entry[:-len(".json")]
-					brand = slicer_object_curaX.getFilamentHeader("brand", entry, slicer_profile_path + "/")
 					# creates a shallow slicing profile
-					temp_profile = self._create_shallow_profile(profile_name, slicer, "json", require_configured, brand)
-					profiles[profile_name] = temp_profile
+					brand = slicer_object_curaX.getFilamentHeader("brand", filament_name, slicer_profile_path + "/")
+					temp_profile = self._create_shallow_profile(filament_name, slicer, "json", require_configured, brand)
+					profiles[filament_name] = temp_profile
+
 		return profiles
 
 	def profiles_last_modified(self, slicer):
