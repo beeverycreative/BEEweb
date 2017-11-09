@@ -122,15 +122,17 @@
         <p>{{ _('To unload the filament, push the Unload button and pull the filament steadily. To load the filament insert it in the inlet hole and push it until it reaches the end. Then click on the Load button, and push the filament a little more until the printer pulls it and extrudes a little filament.') }}
         </p>
     </div>
-    <hr />
-    <div class="row-fluid">
-        <strong>{{ _('Filament left in spool' ) }}:</strong>
-        <span data-bind="text: filamentInSpool"></span> (g)
-        <br /><br />
-        <span>
-            <i class="icon-exclamation-sign"></i>
-            <small>{{ _('Please take note of the amount of filament in spool, so you can re-use the spool later on.' ) }}</small>
-        </span>
+    <div data-bind="visible: filamentInSpool">
+		<hr />
+		<div class="row-fluid">
+			<strong>{{ _('Filament left in spool' ) }}:</strong>
+			<span data-bind="text: filamentInSpool"></span> (g)
+			<br /><br />
+			<span>
+				<i class="icon-exclamation-sign"></i>
+				<small>{{ _('Please take note of the amount of filament in spool, so you can re-use the spool later on.' ) }}</small>
+			</span>
+		</div>
     </div>
 
 </div>

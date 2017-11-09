@@ -239,11 +239,6 @@ class BeePrinter(Printer):
             self._comm._currentFile = path
             return
 
-        # special case where we want to recover the file information after a disconnect/connect during a print job
-        # if path is None or not os.path.exists(path) or not os.path.isfile(path):
-        #     self._comm._currentFile = PrintingFileInformation('shutdown_recover_file')
-        #     return # In case the server was restarted during connection break-up and path variable is passed empty from the connect method
-
         self._printAfterSelect = printAfterSelect
 
         # saves the selected file analysis info to be later passed to the printer in the communications layer
@@ -606,6 +601,11 @@ class BeePrinter(Printer):
         Gets the current amount of filament left in spool
         :return: float filament amount in grams
         """
+        # if the setting is disabled, returns null in order to signal the frontend to disable
+		# the frontend related UI
+        if not settings().get(['feature', 'checkSufficientFilament']):
+            return None
+
         try:
             filament_mm = self._comm.getCommandsInterface().getFilamentInSpool()
 
@@ -1428,7 +1428,8 @@ class BeePrinter(Printer):
     def _setJobData(self, filename, filesize, sd):
         super(BeePrinter, self)._setJobData(filename, filesize, sd)
 
-        self._checkSufficientFilamentForPrint()
+        if settings().get(['features', 'checkSufficientFilament']):
+            self._checkSufficientFilamentForPrint()
 
     def _printJobFilamentLength(self):
         """

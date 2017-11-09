@@ -261,10 +261,10 @@ $(function() {
 
                     self.selNozzle(data.nozzle);
 
-                    if (data.filament != null) {
+                    if (data.filament !== null) {
                         self.colors().forEach(function(elem) {
 
-                            if (elem == data.filament) {
+                            if (elem === data.filament) {
                                 self.selColor(elem);
                             }
                         });
@@ -275,7 +275,11 @@ $(function() {
                         }
                     }
 
-                    self.filamentInSpool(Math.round(data.filamentInSpool))
+					if (data.filamentInSpool === null) {
+						self.filamentInSpool(null);
+					} else {
+						self.filamentInSpool(Math.round(data.filamentInSpool));
+					}
                 }
             });
         };

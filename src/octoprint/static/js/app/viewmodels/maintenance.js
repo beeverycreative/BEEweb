@@ -324,6 +324,11 @@ $(function() {
             $('#step4').addClass('hidden');
             $('#step2').addClass('hidden');
             $('#step1').addClass('hidden');
+
+            if (self.filamentInSpool() === null) {
+				$('#maintenanceNextButton').addClass('hidden');
+            	$('#maintenanceOkButton').removeClass('hidden');
+            }
         };
 
         self.nextStep4 = function() {
@@ -602,7 +607,11 @@ $(function() {
                 type: "GET",
                 dataType: "json",
                 success: function(data) {
-                    self.filamentInSpool(Math.round(data.filament));
+					if (data.filament === null) {
+						self.filamentInSpool(null);
+					} else {
+						self.filamentInSpool(Math.round(data.filament));
+					}
                 }
             });
         };
@@ -1651,7 +1660,7 @@ $(function() {
                 {
                     self.nextStep3();
                 }
-                if(self.processStage() == 3)
+                if(self.processStage() == 3 && self.filamentInSpool() !== null)
                 {
                     self.nextStep4();
                 }

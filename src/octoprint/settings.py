@@ -220,7 +220,8 @@ default_settings = {
 		"firmwareDetection": True,
 		"printCancelConfirmation": True,
 		"blockWhileDwelling": False,
-		"g90InfluencesExtruder": False
+		"g90InfluencesExtruder": False,
+		"checkSufficientFilament": False
 	},
 	"folder": {
 		"uploads": None,

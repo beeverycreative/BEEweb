@@ -563,9 +563,9 @@ class SlicingManager(object):
 		profile.slicer = slicer
 		profile.name = name
 		slicerPath = self.get_slicer_profile_path(slicer)
-		destinationPath = None
+
 		tempPath = self.get_slicer_profile_path(slicer) + "/Variants/" + "{name}.json".format(name=name)
-		count=0;
+		count = 0
 
 		while True:
 			count = count + 1
