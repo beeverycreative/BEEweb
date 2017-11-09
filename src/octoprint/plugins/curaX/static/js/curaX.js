@@ -324,8 +324,6 @@ $(function() {
 
         self.fromResponse = function(data) {
 
-            console.log(data)
-
             var dataFilter = self.getRadiosData();
 
             // $("#brands_tab").collapse("hide");

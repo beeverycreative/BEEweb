@@ -748,6 +748,7 @@ class SlicingManager(object):
 			~octoprint.slicing.exceptions.SlicerNotConfigured: The slicer ``slicer`` is not configured and ``require_configured`` was True.
 		"""
 
+
 		if not slicer in self.registered_slicers:
 			raise UnknownSlicer(slicer)
 		if require_configured and not slicer in self.configured_slicers:
@@ -781,14 +782,14 @@ class SlicingManager(object):
 					profile_name = entry[:-len(".json")]
 					brand= slicer_object_curaX.getFilamentHeader("brand", entry, slicer_profile_path + "/")
 
-					# filament_id  = slicer_object_curaX.getFilamentHeader("inherits", entry, slicer_profile_path + "/")
+					filament_id  = slicer_object_curaX.getFilamentHeader("inherits", entry, slicer_profile_path + "/")
 
-					# filament_name = slicer_object_curaX.getFilamentHeaderName("name", filament_id, slicer_profile_path + "/")
+					filament_name = slicer_object_curaX.getFilamentHeaderName("name", filament_id, slicer_profile_path + "/")
 
 					# creates a shallow slicing profile
-					temp_profile = self._create_shallow_profile(profile_name, slicer, "json", require_configured, brand)
+					# temp_profile = self._create_shallow_profile(profile_name, slicer, "json", require_configured, brand)
 
-					# temp_profile = self._create_shallow_profile(filament_name, slicer, "json", require_configured, brand)
+					temp_profile = self._create_shallow_profile(filament_name, slicer, "json", require_configured, brand)
 					profiles[profile_name] = temp_profile
 		return profiles
 
