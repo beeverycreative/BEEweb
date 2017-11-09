@@ -1186,6 +1186,8 @@ input + span.add-on{
 
 .bar.printing-remote-bar {
     background: #feca2f !important;
+    color: #0d0d0d;
+    text-align: center;
 }
 
 .remote-color {
@@ -1341,7 +1343,7 @@ input + span.add-on{
     top: 20% !important;
     width: 70%;
     left: 30%;
-    background-color: #555555;
+    /*background-color: #555555;*/
 }
 
 #wizard_dialog .modal-body .full-sized-box { padding: 0px !important; }
