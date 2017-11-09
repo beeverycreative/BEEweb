@@ -19,7 +19,16 @@ def startHeating():
 	if not printer.is_operational():
 		return make_response("Printer is not operational", 409)
 
-	target_temp = printer.startHeating()  # In the future we might pass the extruder identifier here in case of more than 1 extruder
+	selected_filament = None
+	data = request.json
+	if 'selected_filament' in data:
+		selected_filament = data['selected_filament']
+
+	if selected_filament is None:
+		target_temp = printer.startHeating()
+	else:
+		# In the future we might pass the extruder identifier here in case of more than 1 extruder
+		target_temp = printer.startHeating(selected_filament)
 
 	return jsonify({
 		"target_temperature": target_temp

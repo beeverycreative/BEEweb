@@ -187,18 +187,18 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 		display_name = None
 		description = None
+		brand = "unknown"
 		if "name" in profile_dict:
 			display_name = profile_dict["name"]
 			del profile_dict["name"]
 		if "description" in profile_dict:
 			description = profile_dict["description"]
 			del profile_dict["description"]
-		if "id" in profile_dict:
-			id = profile_dict["id"]
-			del profile_dict["id"]
+		if "inherits" in profile_dict and "brand" in profile_dict["inherits"]:
+			brand = profile_dict["inherits"]["brand"]
 
 		properties = self.get_slicer_properties()
-		return octoprint.slicing.SlicingProfile(properties["type"], "unknown", profile_dict, display_name=display_name, description=description)
+		return octoprint.slicing.SlicingProfile(properties["type"], display_name, profile_dict, display_name=display_name, description=description, brand=brand)
 
 	def save_slicer_profile(self, path, profile, allow_overwrite=True, overrides=None):
 		new_profile = profile.data
@@ -212,6 +212,9 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 			new_profile["description"] = profile.description
 
 		self._save_profile(path, new_profile, allow_overwrite=allow_overwrite)
+
+	def save_edit_profile(self, path, profile, allow_overwrite=True, overrides=None):
+		self._save_profile(path, profile, allow_overwrite=allow_overwrite)
 
 	def do_slice(self, model_path, printer_profile, model_path1=None, machinecode_path=None, profile_path=None, position=None, overrides=None, resolution=None, nozzle_size=None, on_progress=None, on_progress_args=None, on_progress_kwargs=None):
 		try:
@@ -416,6 +419,15 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 				profile_dict = json.load(f)
 			except:
 				raise IOError("Couldn't read profile from {path}".format(path=path))
+
+		# loads any important information from parent profile
+		if 'inherits' in profile_dict:
+			from octoprint.server import slicingManager
+			parent_path = slicingManager.get_slicer_profile_path("curaX") + '/Materials/' + profile_dict['inherits'] + '.json'
+			if os.path.exists(parent_path):
+				parent_profile = self._load_profile(parent_path)
+				profile_dict['inherits'] = parent_profile
+
 		return profile_dict
 
 	def _save_profile(self, path, profile, allow_overwrite=True):
@@ -475,6 +487,9 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 	def getProfileTeste(self, filament_id,slicer_profile_path, quality):
 		return ProfileReader.getFilamentOverridesTeste(filament_id, slicer_profile_path, quality)
+
+	def getSavedEditionFilament(self,filament_id, slicer_profile_path):
+		return ProfileReader.getSaveEditionFilament(filament_id, slicer_profile_path)
 
 __plugin_name__ = "CuraEngineX (>= 2.7)"
 __plugin_author__ = "Bruno Andrade"

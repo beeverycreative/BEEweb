@@ -653,6 +653,28 @@ class SlicingManager(object):
 
 		return slicer_object_curaX.getProfileTeste(name, path, quality)
 
+
+	def edit_profile(self, slicer, name , data , quality):
+		profile = self.get_slicer(slicer).getSavedEditionFilament(name, self.get_slicer_profile_path(slicer))
+		override_profile = self.get_slicer(slicer).getProfileTeste(name, self.get_slicer_profile_path(slicer), quality)
+
+		for current in data:
+			if float(data[current]) != float(override_profile[current]['default_value']):
+				cnt = 0
+				for list in profile['PrinterGroups']:
+					if quality in list['quality']:
+								profile['PrinterGroups'][cnt]['quality'][quality][current] = {'default_value':data[current]}
+					cnt += 1
+
+		path = self.get_slicer_profile_path(slicer) + "/Variants/" + "{name}.json".format(name=name)
+		self._save_edit_profile_to_path(slicer, path, profile)
+
+
+	def _save_edit_profile_to_path(self, slicer, path, profile, allow_overwrite=True, overrides=None,require_configured=False):
+		self.get_slicer(slicer, require_configured=require_configured).save_edit_profile(path, profile,
+																						 allow_overwrite=allow_overwrite,
+																						 overrides=overrides)
+
 	def all_profiles_list(self, slicer, require_configured=False, from_current_printer=True):
 		"""
 		Retrieves all profiles for slicer ``slicer`` but avoiding to parse every single profile file for better performance
@@ -759,12 +781,14 @@ class SlicingManager(object):
 					profile_name = entry[:-len(".json")]
 					brand= slicer_object_curaX.getFilamentHeader("brand", entry, slicer_profile_path + "/")
 
-					filament_id  = slicer_object_curaX.getFilamentHeader("inherits", entry, slicer_profile_path + "/")
+					# filament_id  = slicer_object_curaX.getFilamentHeader("inherits", entry, slicer_profile_path + "/")
 
-					filament_name = slicer_object_curaX.getFilamentHeaderName("name", filament_id, slicer_profile_path + "/")
+					# filament_name = slicer_object_curaX.getFilamentHeaderName("name", filament_id, slicer_profile_path + "/")
 
 					# creates a shallow slicing profile
-					temp_profile = self._create_shallow_profile(filament_name, slicer, "json", require_configured, brand)
+					temp_profile = self._create_shallow_profile(profile_name, slicer, "json", require_configured, brand)
+
+					# temp_profile = self._create_shallow_profile(filament_name, slicer, "json", require_configured, brand)
 					profiles[profile_name] = temp_profile
 		return profiles
 

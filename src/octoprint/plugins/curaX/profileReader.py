@@ -486,7 +486,7 @@ class ProfileReader(object):
 
 	#check if printer(printer_id) with a nozzle size (nozzle_id) on extruder can use a especific filament(filament_id)
 	@classmethod
-	def isPrinterAndNozzleCompatible(cls, filament_id, printer_id, nozzle_id):
+	def isPrinterAndNozzleCompatible(cls, filament_id, printer_id, nozzle_id='400'):
 		# check if printer is can use this filament profile
 		from octoprint.server import slicingManager
 		logger = logging.getLogger("octoprint.plugin.curaX.profileReader")
@@ -614,6 +614,48 @@ class ProfileReader(object):
 			filament_json = json.load(data_file)
 
 		return filament_json
+
+	@classmethod
+	def getOptions(cls, slicer_profile_path):
+		with open(slicer_profile_path + "/optionsAvailable.json") as data_file:
+			filament_json = json.load(data_file)
+
+		return filament_json
+
+	@classmethod
+	def getSaveEditionFilament(cls,filament_id, slicer_profile_path):
+
+		overrides_Values = {}
+		custom = False
+
+		for entry in os.listdir(slicer_profile_path + "/Variants/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			if filament_id.lower() not in entry.lower():
+				continue
+
+			# creates a shallow slicing profile
+			with open(slicer_profile_path + '/Variants/' + entry) as data_file:
+				filament_json = json.load(data_file)
+				custom = True
+
+		if not custom:
+			for entry in os.listdir(slicer_profile_path + "/Quality/"):
+				if not entry.endswith(".json"):
+					# we are only interested in profiles and no hidden files
+					continue
+
+				if filament_id.lower() not in entry.lower():
+					continue
+
+				# creates a shallow slicing profile
+				with open(slicer_profile_path + '/Quality/' + entry) as data_file:
+					filament_json = json.load(data_file)
+
+		return  filament_json
+
 
 	@classmethod
 	def getFilamentOverridesTeste(cls, filament_id, slicer_profile_path, quality):

@@ -95,44 +95,47 @@
 {#                        </li>#}
 {##}
 {#                    </div>#}
+
+<h4>{{ _('Filament Profiles') }}</h4>
+
 <div id = "settings_plugin_curaX_brands_interface">
-     <a class="" href="#">
-         <span class="lbl">BRANDS</span>
-         <span data-toggle="collapse" href="#brands_tab" class="sign"><i class="icon-plus-sign-alt"></i></span>
+     <a class="panel_accordion" href="#">
+         <span class="lbl">BRANDS:</span>
+         <span class="lbl" id = "brandDisplay"></span>
+         <span data-toggle="collapse" href="#brands_tab" class="sign"><i class="icon-chevron-down"></i></span>
      </a>
-    <div id="brands_tab">
-       <li><a class="" href="#">
+    <div id="brands_tab" class = "collapse">
+       <li style="list-style: none"> <a class="" href="#">
             <input type="radio" name="brand" value="BEEVERYCREATIVE"  data-bind="event: {change : $root.onInputChange('brand')}" checked="checked">
             <span class="lbl">BEEVERYCREATIVE</span>
         </a></li>
-        <li><a class="" href="#">
+        <li style="list-style: none"><a class="" href="#">
             <input type="radio" name="brand" value="BQ" data-bind="event: {change : $root.onInputChange('brand')}" >
             <span class="lbl">BQ</span>
         </a></li>
     </div>
-</div>
 
-<div id = "settings_plugin_curaX_material_interface">
-    <a class="" href="#">
+    <a class="panel_accordion" href="#">
         <span class="lbl">MATERIALS</span>
-        <span data-toggle="collapse"  href="#material_tab" class="sign"><i class=" icon-plus-sign-alt"></i></span>
+        <span data-toggle="collapse"  href="#material_tab" class="sign"><i class="icon-chevron-down"></i></span>
     </a>
-    <div id="material_tab">
+    <div id="material_tab" class = "collapse">
         <div data-bind="foreach: materials.paginatedItems">
-            <li class="item-9 deeper parent">
-            <a class="" href="#">
-                <span data-toggle="collapse" data-bind="attr: {'data-target': '#row' + $index()}" class="sign"><i class="icon-plus-sign-alt"></i></span>
+            <li style="list-style: none" class="item deeper parent">
+            <a class="sub_panel_accordion" href="#">
                 <span class= "lbl" data-bind = "text: description"></span>
+                <span class="" data-bind="click: function() { $root.editProfile($data); }" ><i class="icon-file-text"></i></span>
+                <span data-toggle="collapse" data-bind="attr: {'data-target': '#row' + $index()}" class="sign"><i class="icon-chevron-down"></i></span>
             </a>
             <ul data-bind="attr: {id: 'row' + $index()}" class="collapse">
                 <ul data-bind ="foreach: $parent.profiles.paginatedItems">
                     <ul  data-bind="if: $data.description() == $parent.description">
-                        <li><a class="" href="#">
-                                <span class="sign"><i class="icon-play"></i></span>
+                        <li style="list-style: none"><a class="" href="#">
+{#                                <span class="sign"><i class="icon-play"></i></span>#}
                                 <span data-bind = "text:key"></span>
-                                <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">
+                                <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.duplicateProfileDefault($data); } }">
                                     <i class="icon-copy"></i></span>
-                                <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">
+                                <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.removeProfile($data); } }">
                                     <i class="icon-trash"></i></span>
                                 <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">
                                     <i class="icon-edit"></i></span>
@@ -144,6 +147,21 @@
             </li>
         </div>
     </div>
+    <a class="panel_accordion" href="#">
+         <span class="lbl">INFORMATION:</span>
+         <span data-toggle="collapse" href="#information_tab" class="sign"><i class="icon-chevron-down"></i></span>
+     </a>
+    <div id="information_tab" class = "collapse">
+{#       <li style="list-style: none"> <a class="" href="#">#}
+{#            <input type="radio" name="brand" value="BEEVERYCREATIVE"  data-bind="event: {change : $root.onInputChange('brand')}" checked="checked">#}
+{#            <span class="lbl">BEEVERYCREATIVE</span>#}
+{#        </a></li>#}
+{#        <li style="list-style: none"><a class="" href="#">#}
+{#            <input type="radio" name="brand" value="BQ" data-bind="event: {change : $root.onInputChange('brand')}" >#}
+{#            <span class="lbl">BQ</span>#}
+{#        </a></li>#}
+    </div>
+
 </div>
 {#<div class="row">#}
 {#        <div id="left">#}
@@ -676,7 +694,7 @@
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
         <a class="" href="#">
-          <span class="signa">Edit Profile:</span>
+          <span class="signa">EDIT PROFILE:</span>
           <span class="signa" id = "profileDisplay"></span>
         </a>
     </div>
@@ -685,7 +703,7 @@
              <div class="panel-group" id="accordion_teste">
                  <div class="panel_collapse panel-default">
                      <a class="" href="#">
-                         <span class="signa"><i class="icon-file-text"></i></span>
+{#                         <span class="signa"><i class="icon-file-text"></i></span>#}
                          <span class="lbl">Profile:</span>
                          <select class="form-control" id="comboQuality">
                          </select>
@@ -699,3 +717,5 @@
         <button class="btn btn-primary green" id="settings-cura2-new-edit" data-bind="click: function() { $root.corfirmProfileEdition(); }">{{ _('Confirm') }}</button>
     </div>
 </div>
+
+

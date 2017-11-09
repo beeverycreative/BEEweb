@@ -377,16 +377,6 @@ msgstr "Zugriff"
 msgid "Interface"
 msgstr "Interface"
 
-msgid ""
-"The server appears to be offline, at least I'm not getting any response "
-"from it. I'll try to reconnect automatically <strong>over the next couple"
-" of minutes</strong>, however you are welcome to try a manual reconnect "
-"anytime using the button below."
-msgstr ""
-"BEESOFT ist offline, zumindest reagiert es nicht. "
-"Es<strong>war nicht möglich automatisch wiederverbinden</strong>."
-"Bitte versuchen es manuell wieder zu verbinden, benutzend der Taste unten."
-
 msgid "Server is offline"
 msgstr "BEESOFT ist offline"
 
@@ -1850,3 +1840,145 @@ msgstr "Bytes gedruckt vs gesamt Datei bytes"
 msgid "Cancels the print job"
 msgstr "Druckauftrag abbrechen"
 
+
+
+
+#: src/octoprint/templates/dialogs/files.jinja2:4
+msgid "Create Folder"
+msgstr "Ordner erstellen"
+
+#: src/octoprint/templates/dialogs/files.jinja2:7
+msgid "Please specify the name of the folder to create."
+msgstr "Bitte geben den Namen zu der erstellenden Ordner ein."
+
+#: src/octoprint/templates/dialogs/files.jinja2:10
+msgid "Folder name"
+msgstr "Ordnernamen"
+
+msgid "Create"
+msgstr "Erstellen"
+
+#: src/octoprint/templates/dialogs/tab/worbench.jinja2
+msgid "Object Position (mm)"
+msgstr "Objekt Position (mm)"
+
+msgid "Object Dimensions (mm)"
+msgstr "Objekt Abmessungen (mm)"
+
+msgid "Scale Object"
+msgstr "Objekt skalieren"
+
+msgid "Scale to Max"
+msgstr "Auf Max. skalieren"
+
+msgid "Keep proportions"
+msgstr "Proportionen beibehalten"
+
+msgid "Rotate Object"
+msgstr "Objekt drehen"
+
+msgid "Object Rotation (deg)"
+msgstr "Objektdrehung (deg)"
+
+msgid "45° Left"
+msgstr "45° links"
+
+msgid "45° Right"
+msgstr "45° rechts"
+
+msgid "Place on bed"
+msgstr "Auf der Plattform platzieren"
+
+msgid "Move Object"
+msgstr "Objekt verschieben"
+
+msgid "Center object"
+msgstr "Objekt zentrieren"
+
+msgid "Reset object"
+msgstr "Objekt zurücksetzen"
+
+msgid "Clone object"
+msgstr "Klon objekt"
+
+msgid "Save to STL"
+msgstr "Als STL speichern"
+
+msgid "Reset camera position"
+msgstr "Kamera position zurücksetzen"
+
+msgid "Clear Platform"
+msgstr "Plattform löschen"
+
+msgid "The model is out of the printing area."
+msgstr "Das Modell befindet sich außerhalb des Druckbereich."
+
+msgid "Please specify the name you want for the STL file."
+msgstr "Bitte geben den gewünschten Namen für die STL-Datei an."
+
+msgid "Print finished"
+msgstr "Druck fertig"
+
+msgid "Please give us your feedback about the print..."
+msgstr "Bitte geben uns Feedback über den Druck..."
+
+msgid "How do you rate the print quality?"
+msgstr "Wie beurteilst du die Druckqualität?"
+
+msgid "From 1 to 10, being 10 the best quality."
+msgstr "Von 1 bis 10. 10 ist beste Qualität."
+
+msgid "Was the print successful?"
+msgstr "War der Druck erfolgreich?"
+
+msgid "Observations"
+msgstr "Bemerkungen"
+
+msgid "Send"
+msgstr "Senden"
+
+#: src/octoprint/templates/sidebar/files.jinja2:56
+msgid "Print GCode"
+msgstr "GCode drucken"
+
+msgid "Heating"
+msgstr "Heizung"
+
+msgid "Transferring"
+msgstr "Übertragung"
+
+msgid "Ready"
+msgstr "Bereit"
+
+msgid "Disconnected"
+msgstr "Ausgestöpselt"
+
+msgid "Resuming"
+msgstr "Fortsetzen"
+
+#: src/octoprint/static/js/app/viewmodels/printerstate.js:632
+msgid "This will cancel your print."
+msgstr "Dies wird der Druckauftrag abbrechen."
+
+#: src/octoprint/static/js/app/dataupdater.js:97
+msgid ""
+"The server appears to be offline, at least I'm not getting any response "
+"from it. I'll try to reconnect automatically <strong>over the next couple"
+" of minutes</strong>, however you are welcome to try a manual reconnect "
+"anytime using the button below."
+msgstr ""
+"BEESOFT ist offline, zumindest reagiert es nicht. "
+"Es<strong>war nicht möglich automatisch wiederverbinden</strong>."
+"Bitte versuchen es manuell wieder zu verbinden, benutzend der Taste unten."
+
+#: src/octoprint/static/js/app/dataupdater.js:132
+msgid ""
+"The server appears to be offline, at least I'm not getting any response "
+"from it. I <strong>could not reconnect automatically</strong>, but you "
+"may try a manual reconnect using the button below."
+msgstr "BEESOFT ist offline, zumindest reagiert es nicht."
+"Es<strong>war nicht möglich automatisch wiederverbinden</strong>."
+"Bitte versuchen es manuell wieder zu verbinden, benutzend der Taste unten."
+
+msgid "remaining"
+msgstr "verbleibend"

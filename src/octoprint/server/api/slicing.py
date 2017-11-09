@@ -89,6 +89,18 @@ def slicingListAll():
 
 	return jsonify(result)
 
+@api.route("/slicing/<string:slicer>/confirmEdition/<string:name>/<string:quality>", methods=["PUT"])
+def slicingEditSlicerProfile(slicer, name, quality):
+	if not "application/json" in request.headers["Content-Type"]:
+		return make_response("Expected content-type JSON", 400)
+	try:
+		json_data = request.json
+		# slicingManager.edit_profile(slicer, name, printer_id, quality)
+		slicingManager.edit_profile(slicer, name , json_data , quality)
+		return NO_CONTENT
+	except BadRequest:
+		return make_response("Malformed JSON body in request", 400)
+
 @api.route("/slicing/<string:slicer>/getSingleProfile/<string:name>/<string:quality>", methods=["GET"])
 def slicingGetSingleProfile(slicer, name, quality):
 	try:

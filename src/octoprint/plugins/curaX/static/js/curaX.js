@@ -1,6 +1,7 @@
 $(function() {
     function curaXViewModel(parameters) {
         var self = this;
+         var currentProfileData = null;
 
         self.loginState = parameters[0];
         self.settingsViewModel = parameters[1];
@@ -167,6 +168,8 @@ $(function() {
                     self.slicingViewModel.requestData();
                 }
             });
+
+            self.requestData();
         };
 
         self.makeProfileDefault = function(data) {
@@ -206,7 +209,6 @@ $(function() {
             if (!data.resource) {
                 return;
             }
-
              $.ajax({
                 url: data.resource(),
                 type: "POST",
@@ -215,17 +217,10 @@ $(function() {
                     self.slicingViewModel.requestData();
                 }
             });
-
+            self.requestData();
         };
 
         self.editProfile = function(data) {
-            // if (!data) {
-            //     //New profile
-            //     $("#settings_plugin_curaX_edit").modal("show");
-            // }
-            // //get Profile information before open window
-            // $("#settings_plugin_curaX_edit").modal("show");
-
              $.ajax({
                 url: API_BASEURL + "slicing/curaX/getProfileQuality/" + data["key"] ,
                 type: "GET",
@@ -245,6 +240,12 @@ $(function() {
         self.getProfileToEdit = function(data){
             var quality = $('#comboQuality').find('option:selected').text();
 
+            console.log($('.collapse'));
+
+            currentProfileData = data;
+
+            $('#profileDisplay').text(data["key"]);
+
             $.ajax({
                 url: API_BASEURL + "slicing/curaX/getSingleProfile/" + data["key"] + "/" + quality ,
                 type: "GET",
@@ -263,6 +264,39 @@ $(function() {
                         $("#settings_plugin_curaX_edit_profile").modal("show");
                 }
             });
+        };
+
+        $('#comboQuality').on('change', function (e) {
+            self.getProfileToEdit(currentProfileData);
+        });
+
+
+         self.corfirmProfileEdition = function () {  // call de API function in slicing.py
+
+            var form={};
+            var quality = $('#comboQuality').find('option:selected').text();
+
+            var $current = $('#accordion_teste div').find('input');
+
+            for(var i = 0 ; i < $current.length; i++){
+                var fieldID = $current[i].id;
+                if($current[i].type == 'number')
+                    // form.push(fieldID+ ":" + $('#'+ fieldID).val() );
+                    form[fieldID] = $('#'+ fieldID).val()
+
+            }
+            $.ajax({
+                url: API_BASEURL + "slicing/curaX/confirmEdition/" + currentProfileData["key"] + "/" + quality ,
+                type: "PUT",                //
+                dataType: "json",           // data type
+                data: JSON.stringify(form), // send the data
+                contentType: "application/json; charset=UTF-8",
+                success: function() {
+                    self.requestData();
+                }
+            });
+             $("#settings_plugin_curaX_edit_profile").modal("hide");
+            self.requestData();
         };
         /*********************************************************************************************************/
 
@@ -289,9 +323,13 @@ $(function() {
         };
 
         self.fromResponse = function(data) {
+
             console.log(data)
 
             var dataFilter = self.getRadiosData();
+
+            // $("#brands_tab").collapse("hide");
+            $("#brandDisplay").text(dataFilter[0]);
 
             var profiles  = [];
             var material = [];
@@ -316,9 +354,6 @@ $(function() {
                  }
 
             });
-            console.log(material);
-            console.log(profiles);
-
             self.profiles.updateItems(profiles);
             self.materials.updateItems(material);
 
@@ -326,20 +361,21 @@ $(function() {
 
         self.getRadiosData = function () {
             var brandName;
-
             var radiosBrand =  document.getElementsByName("brand");
-            console.log(radiosBrand);
+
             for(var i = 0, length = radiosBrand.length ; i < length ; i++) {
                 if (radiosBrand[i].checked) {
                         brandName = radiosBrand[i].value;
                 }
             }
+
+
             return [brandName];
         };
 
         self.onInputChange = function (tag) {
-            console.log("change inout");
             self.requestData();
+            // $("#brands_tab").collapse();
         }
 
 
@@ -348,6 +384,21 @@ $(function() {
             self.requestData();
         };
     }
+
+    $(document).on("click","#settings_plugin_curaX_edit_profile a > span.sign ", function(){
+
+          if($(this).find('i:first').attr('class') == 'icon-chevron-down')
+              $(this).find('i:first').removeClass('icon-chevron-down').addClass('icon-chevron-up');
+          else
+              $(this).find('i:first').removeClass('icon-chevron-up').addClass('icon-chevron-down');
+    });
+
+    $(document).on("click","#settings_plugin_curaX_brands_interface a > span.sign ", function(){
+          if($(this).find('i:first').attr('class') == 'icon-chevron-down')
+              $(this).find('i:first').removeClass('icon-chevron-down').addClass('icon-chevron-up');
+          else if($(this).find('i:first').attr('class') == 'icon-chevron-up')
+              $(this).find('i:first').removeClass('icon-chevron-up').addClass('icon-chevron-down');
+    });
 
     $(document).ready(function(){
 
@@ -358,22 +409,23 @@ $(function() {
                 success: function (data) {
                     for (var i = 0; i < data.options.length ; i++) {
                         var counter = data.options[i];
-                        var $input = $('<div class="panel_collapse panel-default"><a class="" href="#"><span class="signa"><i class="'+counter.icon+'"></i></span>' +
-                             '<span class="lbl">' + counter.id +'</span>' + '<span data-toggle="collapse" href="#'+ counter.id +'" class="sign"><i class="icon-chevron-down"></i></span></a>');
+                        var $input = $('<div class="panel_collapse collapsed"><a class="" href="#"><span class="signa"><i class="'+counter.icon+'"></i></span>' +
+                             '<span class="lbl">' + counter.id +'</span>' + '<span data-toggle="collapse"  data-parent="#accordion" href="#'+ counter.id +'" class="sign"><i class="icon-chevron-down"></i></span></a>');
                         $('#accordion_teste').append($input);
 
-                        var $input = $('<div id="'+counter.id+'" class="collapse show"></div> </div>');
+                        var $input = $('<div id="'+counter.id+'" class="panel-collapse collapse"></div> </div>');
                         $('#accordion_teste').append($input);
 
                         for(var j = 0; j < counter.list.length ; j++) {
                             var idcounter = counter.list[j];
-                            var $input = $('<div class="form-group"><a class="" href="#"><span  class="lbl">'+counter.list[j].DisplayName +'</span>' +
+                            var $input = $('<div class="form-group"><a class="" href="#"><span  class="sign">'+counter.list[j].DisplayName +'</span>' +
                                  '<input class="inpt" id = "' + idcounter.id + '" type="number"  step="0.01"></a></div>');
                             $('#'+ counter.id ).append($input);
                         }
                     }
                 },
             });
+
         });
     // view model class, parameters for constructor, container to bind to
     OCTOPRINT_VIEWMODELS.push([

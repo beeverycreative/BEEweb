@@ -1864,49 +1864,49 @@ msgstr "Cancelar el proceso impresión"
 
 #: src/octoprint/templates/dialogs/files.jinja2:4
 msgid "Create Folder"
-msgstr "Criar Pasta"
+msgstr "Crear carpeta"
 
 #: src/octoprint/templates/dialogs/files.jinja2:7
 msgid "Please specify the name of the folder to create."
-msgstr "Introduza o nome da pasta que pretende criar."
+msgstr "Especifica el nombre de la carpeta para crear."
 
 #: src/octoprint/templates/dialogs/files.jinja2:10
 msgid "Folder name"
-msgstr "Nome da pasta"
+msgstr "Nombre de la carpeta"
 
 msgid "Create"
-msgstr "Criar"
+msgstr "Crear"
 
 #: src/octoprint/templates/dialogs/tab/worbench.jinja2
 msgid "Object Position (mm)"
-msgstr "Posição do objeto (mm)"
+msgstr "Posición del objeto (mm)"
 
 msgid "Object Dimensions (mm)"
-msgstr "Dimensão do objeto (mm)"
+msgstr "Dimensiones del objeto (mm)"
 
 msgid "Scale Object"
-msgstr "Dimensionar Objeto"
+msgstr "escala del objeto"
 
 msgid "Scale to Max"
-msgstr "Dimensionar ao Máximo"
+msgstr "Escalar para el máximo"
 
 msgid "Keep proportions"
-msgstr "Manter proporções"
+msgstr "Mantener proporciones"
 
 msgid "Rotate Object"
-msgstr "Rodar Objeto"
+msgstr "Girar objeto"
 
 msgid "Object Rotation (deg)"
-msgstr "Rotação do Objeto (°)"
+msgstr "Rotación de objetos (deg)"
 
 msgid "45° Left"
-msgstr "45° Esquerda"
+msgstr "45 ° a la izquierda"
 
 msgid "45° Right"
-msgstr "45° Direita"
+msgstr "45 ° a la derecha"
 
 msgid "Place on bed"
-msgstr "Posicionar na plataforma"
+msgstr "Colocar en la plataforma"
 
 msgid "Move Object"
 msgstr "Mover objeto"
@@ -1915,43 +1915,43 @@ msgid "Center object"
 msgstr "Centrar objeto"
 
 msgid "Reset object"
-msgstr "Reverter objeto"
+msgstr "Restablecer objeto"
 
 msgid "Clone object"
-msgstr "Clonar objeto"
+msgstr "duplicar objeto"
 
 msgid "Save to STL"
-msgstr "Gravar para STL"
+msgstr "Guardar STL"
 
 msgid "Reset camera position"
-msgstr "Reverter câmara"
+msgstr "Restablecer la posición de la cámara"
 
 msgid "Clear Platform"
-msgstr "Limpar plataforma"
+msgstr "Limpiar plataforma"
 
 msgid "The model is out of the printing area."
-msgstr "O modelo está fora da área de impressão."
+msgstr "El modelo está fuera del área de impresión."
 
 msgid "Please specify the name you want for the STL file."
-msgstr "Introduz o nome que pretendes para o ficheiro STL."
+msgstr "Especifique el nombre que desea para el archivo STL."
 
 msgid "Print finished"
-msgstr "Impressão terminada"
+msgstr "Impresión terminada"
 
 msgid "Please give us your feedback about the print..."
-msgstr "Por favor dá-nos o teu feedback sobre a impressão..."
+msgstr "Por favor, danos tu opinión sobre la impresión..."
 
 msgid "How do you rate the print quality?"
-msgstr "Como classificas a qualidade da impressão?"
+msgstr "¿Cómo calificas la calidad de impresión?"
 
 msgid "From 1 to 10, being 10 the best quality."
-msgstr "De 1 a 10, sendo 10 a melhor qualidade."
+msgstr "De 1 a 10, siendo 10 la mejor calidad."
 
 msgid "Was the print successful?"
-msgstr "A impressão foi bem sucedida?"
+msgstr "¿La impresión fue exitosa?"
 
 msgid "Observations"
-msgstr "Observações"
+msgstr "Observaciones"
 
 msgid "Send"
 msgstr "Enviar"
@@ -1961,44 +1961,44 @@ msgid "Print GCode"
 msgstr "Imprimir GCode"
 
 msgid "Heating"
-msgstr "A aquecer"
+msgstr "Calentando"
 
 msgid "Transferring"
-msgstr "A transferir"
+msgstr "Transfiriendo"
 
 msgid "Ready"
-msgstr "Operacional"
+msgstr "Listo"
 
 msgid "Disconnected"
-msgstr "Desligada"
+msgstr "Sin conexión"
 
 msgid "Resuming"
-msgstr "Reiniciando"
+msgstr "Reanudar"
 
 #: src/octoprint/static/js/app/viewmodels/printerstate.js:632
 msgid "This will cancel your print."
-msgstr "Isto irá cancelar a impressão."
+msgstr "Esto cancelará su impresión."
 
+#: src/octoprint/static/js/app/dataupdater.js:97
 msgid ""
 "The server appears to be offline, at least I'm not getting any response "
 "from it. I'll try to reconnect automatically <strong>over the next couple"
 " of minutes</strong>, however you are welcome to try a manual reconnect "
 "anytime using the button below."
 msgstr ""
-"O BEESOFT está a reiniciar, até agora não foi possível obter resposta. "
-"Iremos tentar reconectar automaticamente durante os próximos <strong>dois minutos"
-"</strong>, no entanto se pretenderes tentar manualmente podes clicar no botão"
-" abaixo."
+"El BEESOFT parece estar ofline, al menos no está respondiendo."
+"<strong>No fue posible reconectarlo automaticamente</strong>."
+"Por favor prueba reconectarlo manualmente utilizando el boton abajo."
 
+#: src/octoprint/static/js/app/dataupdater.js:132
 msgid ""
 "The server appears to be offline, at least I'm not getting any response "
 "from it. I <strong>could not reconnect automatically</strong>, but you "
 "may try a manual reconnect using the button below."
 msgstr ""
-"O BEESOFT está a reiniciar, até agora não foi possível obter resposta. "
-"<strong>Não foi possível reconectar automaticamente</strong>,"
-"no entanto se pretenderes tentar manualmente podes clicar no botão"
-" abaixo."
+"El BEESOFT parece estar ofline, al menos no está respondiendo."
+"<strong>No fue posible reconectarlo automaticamente</strong>."
+"Por favor prueba reconectarlo manualmente utilizando el boton abajo."
 
 msgid "remaining"
 msgstr "restante"
