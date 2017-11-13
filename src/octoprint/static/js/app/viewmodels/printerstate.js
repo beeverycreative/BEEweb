@@ -54,7 +54,7 @@ $(function() {
                 && !self.isResuming() && !self.slicing.slicingInProgress();
         });
         self.enableEstimatePrint = ko.pureComputed(function() {
-            return self.loginState.isUser() && !self.connection.isConnecting()
+            return !self.connection.isConnecting()
                 && self.connection.isErrorOrClosed() && !self.filename()
                 && !self.isPrinting() && !self.isPaused() && !self.isShutdown() && !self.isHeating()
                 && !self.isResuming() && !self.slicing.slicingInProgress();
