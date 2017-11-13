@@ -25,7 +25,8 @@ import datetime, dateutil.parser
 
 
 class ProdsmartAPIMethods(object):
-    colors = {'A101 - Transparent': {'material': 'PLA', 'color': '#ECECE7'},
+    colors = {'A023 - Black': {'material': 'PLA', 'color': '#000000'},
+			  'A101 - Transparent': {'material': 'PLA', 'color': '#ECECE7'},
               'A102 - Blanc Gris': {'material': 'PLA', 'color': '#ECECE7'},
               'A103 - Zinc Yellow': {'material': 'PLA', 'color': '#FBCA44'},
               'A104 - Signal Yellow': {'material': 'PLA', 'color': '#FBCA44'},
