@@ -207,7 +207,7 @@ $(function() {
                         //Printer logo
                         var imageCol = $('<td colspan="2"/>');
                         var img = $('<img src="' + item.imgPath + '">');
-                        img.css("max-width","200px")
+                        img.css("max-width","150px")
                         imageCol.append(img);
                         tableRow.append(imageCol);
 

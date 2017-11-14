@@ -1202,7 +1202,7 @@ input + span.add-on{
 .remote-table-row {
     border-bottom: 1px solid #ddd;
     padding: 10px;
-    height: 100px;
+    height: 80px;
 }
 
 .remote-job-row {
