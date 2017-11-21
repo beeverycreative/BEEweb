@@ -896,6 +896,7 @@ input + span.add-on{
     background: #518359;
     padding: 15px;
     margin-right: -2px;
+    border-radius: 0px;
 }
 .btn-estimate-print{
     width: 100% !important;
@@ -908,6 +909,7 @@ input + span.add-on{
     background: #999688;
     padding: 15px;
     margin-right: -2px;
+    border-radius: 0px;
 }
 .btn-toggle-print-memory {
     width: 15% !important;
@@ -919,6 +921,7 @@ input + span.add-on{
     color: #fff;
     background: #518359;
     padding: 15px;
+    border-radius: 0px;
 }
 
 .btn-ghost{
