@@ -354,10 +354,11 @@ class BeeCom(MachineCom):
         else:
             return super(BeeCom, self).getStateString()
 
-    def startPrint(self, pos=None):
+    def startPrint(self, pos=None, printTemperature=210):
         """
         Starts the printing operation
         :param pos: if the string 'memory' is passed the printer will print the last file in the printer's memory
+        :param printTemperature: The temperature target for the print job
         """
         if not self.isOperational() or self.isPrinting():
             return
@@ -1085,7 +1086,7 @@ class BeeCom(MachineCom):
         try:
             while self._beeCommands.isHeating():
                 time.sleep(1)
-                currentHeatingProgress = self._beeCommands.getHeatingState()
+                currentHeatingProgress = self._beeCommands.getHeatingProgress()
                 if currentHeatingProgress is None:
                     self._heatingProgress = 0.0
                 elif currentHeatingProgress > self._heatingProgress:

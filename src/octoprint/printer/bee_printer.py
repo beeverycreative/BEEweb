@@ -20,6 +20,7 @@ from octoprint.slicing import SlicingManager
 from octoprint.filemanager import FileDestinations
 from octoprint.util.comm import PrintingFileInformation
 from octoprint.printer.statistics import BaseStatistics, PrintEventStatistics, PrinterStatistics
+from octoprint.printer.estimation import TimeEstimationHelper
 
 __author__ = "BEEVC - Electronic Systems "
 __license__ = "GNU Affero General Public License http://www.gnu.org/licenses/agpl.html"
@@ -51,6 +52,7 @@ class BeePrinter(Printer):
         self._printerStats = None
         self._currentPrintStatistics = None
         self._currentFileAnalysis = None  # Kept for simple access to send estimations to the printer
+        self._targetTemperature = None
 
         # Initializes the slicing manager for filament profile information
         self._slicingManager = SlicingManager(settings().getBaseFolder("slicingProfiles"), printerProfileManager)
@@ -259,17 +261,59 @@ class BeePrinter(Printer):
     # # # # # # # # # # # # # # # # # # # # # # #
     ############# PRINTER ACTIONS ###############
     # # # # # # # # # # # # # # # # # # # # # # #
-    def start_print(self, pos=None):
+    def start_print(self, pos=None, printTemperature=None):
         """
         Starts a new print job
         :param pos: Kept for interface purposes (Used in BVC implementation for extra info: in_memory file or gcode analysis data)
+        :param printTemperature: The temperature target for the print job
         :return:
         """
+        ######## INHERITED CODE FROM STANDARD INTERFACE ########
+        if self._comm is None or not self._comm.isOperational() or self._comm.isPrinting():
+            return
+        with self._selectedFileMutex:
+            if self._selectedFile is None:
+                return
+
+        # we are happy if the average of the estimates stays within 60s of the prior one
+        threshold = settings().getFloat(["estimation", "printTime", "stableThreshold"])
+        rolling_window = None
+        countdown = None
+
+        with self._selectedFileMutex:
+            if self._selectedFile["sd"]:
+                # we are interesting in a rolling window of roughly the last 15s, so the number of entries has to be derived
+                # by that divided by the sd status polling interval
+                rolling_window = 15 / settings().get(["serial", "timeout", "sdStatus"])
+
+                # we are happy when one rolling window has been stable
+                countdown = rolling_window
+        self._timeEstimationData = TimeEstimationHelper(rolling_window=rolling_window,
+                                                        threshold=threshold,
+                                                        countdown=countdown)
+
+        self._fileManager.delete_recovery_data()
+
+        self._lastProgressReport = None
+        self._updateProgressData()
+        self._setCurrentZ(None)
+        ######## END INHERITED CODE FROM STANDARD INTERFACE ########
+
         # Uses the pos parameter to pass the analysis of the file to be printed
         if self._currentFileAnalysis is not None:
             pos = self._currentFileAnalysis
 
-        super(BeePrinter, self).start_print(pos)
+        # determines preheat temperature for filament
+        filamentProfile = self.getSelectedFilamentProfile()
+
+        if printTemperature is None:
+            self._targetTemperature = 210  # default target temperature
+            if filamentProfile is not None and 'preheat_temperature' in filamentProfile.data:
+                self._targetTemperature = filamentProfile.data['preheat_temperature']
+        else:
+            self._targetTemperature = printTemperature
+
+        self._comm.startPrint(pos=pos, printTemperature=self._targetTemperature)
 
         # saves the current PrintFileInformation object so we can later recover it if the printer is disconnected
         self._currentPrintJobFile = self._comm.getCurrentFile()
@@ -444,6 +488,7 @@ class BeePrinter(Printer):
             # resets the current temperature
             self._current_temperature = self._comm.getCommandsInterface().getNozzleTemperature()
 
+            self._targetTemperature = targetTemperature
             self._comm.startHeating(targetTemperature)
 
             return targetTemperature
@@ -602,7 +647,7 @@ class BeePrinter(Printer):
         :return: float filament amount in grams
         """
         # if the setting is disabled, returns null in order to signal the frontend to disable
-		# the frontend related UI
+        # the frontend related UI
         if not settings().get(['feature', 'checkSufficientFilament']):
             return None
 
@@ -1513,17 +1558,13 @@ class BeePrinter(Printer):
             fileSize=None
 
         try:
-            temperatureTarget = self._comm.getCommandsInterface().getTargetTemperature()
-            if temperatureTarget == 0 :
-                temperatureTarget = None
-
             self._stateMonitor.set_progress({
                 "completion": self._progress * 100 if self._progress is not None else None,
                 "filepos": filepos,
                 "printTime": int(self._elapsedTime * 60) if self._elapsedTime is not None else None,
                 "printTimeLeft": int(self._printTimeLeft) if self._printTimeLeft is not None else None,
                 "fileSizeBytes": fileSize,
-                "temperatureTarget": temperatureTarget
+                "temperatureTarget": self._targetTemperature
             })
 
             if completion:
