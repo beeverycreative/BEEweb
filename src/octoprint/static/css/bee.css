@@ -1373,7 +1373,7 @@ td.settings_users_actions .m-icon {
 .modal-row .m-icon{ margin-right: 10px; vertical-align: text-top; }
 
 #maintenance_dialog .modal-body{
-    min-height: 475px !important;
+    min-height: 600px !important;
 }
 #usersettings_dialog .modal-body{
    min-height: 540px;

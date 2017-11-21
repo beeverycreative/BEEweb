@@ -161,7 +161,7 @@ $(function() {
             self.processStage(0);
             self.heatingAchiveTargetTemperature(false);
 
-            if (!self.printerState.isBusy()) {
+            if (!self.printerState.isPrinting()) {
                 // Cancels any heating process
                 self.cancelHeating();
             }
