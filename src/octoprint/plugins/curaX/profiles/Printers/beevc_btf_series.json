@@ -22,7 +22,7 @@
         "machine_settings":
         {       
             "machine_name": { "default_value": "BEETHEFIRST" },
-            "machine_start_gcode": { "default_value": "; -- START GCODE --\nG21 \nG90 \nM107 \nG28 X0 Y0 \nM107 \nG28 \nG92 E \nG1 X-98.0 Y-20.0 Z5.0 F3000 \nG1 Y-70.0 Z0.3 \nG1 X-98.0 Y44.0 F500 E27 \nG92 E\n; -- end of START GCODE --" },
+            "machine_start_gcode": { "default_value": "; -- START GCODE --\nG21 \nG90 \nM107 \nM206 X500 \nG28 X0 Y0 \nM107 \nG28 \nG92 E \nG1 X-98.0 Y-20.0 Z5.0 F3000 \nG1 Y-70.0 Z0.3 \nG1 X-98.0 Y44.0 F500 E27 \nG92 E\n; -- end of START GCODE --" },
             "machine_end_gcode": { "default_value": "; -- END GCODE --\nM104 S0 \nG28 X Z \nG1 Y65 \nG92 E \nM300;\nM84 \n; -- end of END GCODE --" },
             "material_bed_temp_wait": { "default_value": false },
             "material_print_temp_wait": { "default_value": true },
@@ -69,6 +69,8 @@
             "retract_at_layer_change": { "default_value": true },
             "retraction_amount": { "default_value": 1.5},
             "retraction_speed": { "default_value": 50},
+            "retraction_retract_speed": { "default_value": 50},
+            "retraction_prime_speed": { "default_value": 50},
             "retraction_extra_prime_amount": { "default_value": 0},
             "retraction_min_travel": { "default_value": 0.55},
             "retraction_count_max": { "default_value": 25},
@@ -99,11 +101,6 @@
             "skirt_gap": { "default_value": 2},
             "skirt_brim_minimal_length": { "default_value": 5},
             "skirt_brim_line_width": { "default_value": 0.6}
-        },
-
-        "meshfix":
-        {
-           
         },
 
         "experimental":
