@@ -228,7 +228,7 @@ class BeePrinter(Printer):
         :param path: Absolute path to the file
         :param sd: storage system: SD or LOCAL
         :param printAfterSelect: Flag to signal if the print should start after the selection
-        :param pos: currently unused. kept for interface purposes
+        :param pos: currently used to signal calibration test
         :return:
         """
         if self._comm is None:
@@ -242,7 +242,7 @@ class BeePrinter(Printer):
         self._printAfterSelect = printAfterSelect
 
         # saves the selected file analysis info to be later passed to the printer in the communications layer
-        if self._fileManager.has_analysis(FileDestinations.LOCAL, path):
+        if pos != 'calibration' and self._fileManager.has_analysis(FileDestinations.LOCAL, path):
             self._currentFileAnalysis = self._fileManager.get_metadata(FileDestinations.LOCAL, path)['analysis']
 
         self._comm.selectFile("/" + path if sd and not settings().getBoolean(["feature", "sdRelativePath"]) else path, sd)
@@ -777,7 +777,7 @@ class BeePrinter(Printer):
             calibtest_file.close()
 
             self._runningCalibrationTest = True
-            self.select_file(file_path, False)
+            self.select_file(file_path, False, pos='calibration')
             self.start_print()
 
             # registers the calibration statistics
@@ -1116,7 +1116,7 @@ class BeePrinter(Printer):
         try:
             if self._currentPrintStatistics is not None:
                 self._currentPrintStatistics.set_model_information(len(models_info), models_info)
-                self._save_usage_statistics()
+                #self._save_usage_statistics()
             else:
                 self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(),
                                                                     self._stats.get_software_id())
@@ -1346,6 +1346,9 @@ class BeePrinter(Printer):
             self._currentPrintStatistics.set_print_finished(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
             # removes redundant information
             self._currentPrintStatistics.remove_redundant_information()
+
+            # This line should be removed after saveUserFeedback is re-activated again
+            self._save_usage_statistics()
 
         # un-selects the current file
         super(BeePrinter, self).unselect_file()
