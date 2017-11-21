@@ -949,7 +949,7 @@ class BeePrinter(Printer):
                 # small verification to prevent temperature update errors coming from the printer due to sensor noise
                 # the temperature is only updated to a new value if it's greater than the previous when the printer is
                 # heating
-                if temp > self._current_temperature:
+                if temp > 0 and temp > self._current_temperature:
                     self._current_temperature = temp
 
             return self._current_temperature
