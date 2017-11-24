@@ -387,7 +387,7 @@ class BVCGcodeAnalysisQueue(AbstractAnalysisQueue):
 				from octoprint.server import printer
 				for i in range(1):  # For now we only have one extruder...
 					# gets the current filament settings from the printer interface
-					filament_diameter, filament_density = printer.getFilamentSettings()
+					filament_diameter, filament_density = printer.getFilamentSettingsForPrinter()
 
 					if filament_diameter is not None:
 						filament_cm = gcoder_result['filament_used'] / 10.0

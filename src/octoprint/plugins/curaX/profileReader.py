@@ -226,9 +226,9 @@ class ProfileReader(object):
 
 		return printer_json
 
-	# get Printer Overrides
+	# get Printer Settings
 	@classmethod
-	def getPrinterJsonFileByid(cls, printer_id = '', slicer_profile_path = ''):
+	def getPrinterJsonFileByid(cls, printer_id = '', slicer_profile_path = '', load_parents_inherits=False):
 		logger = logging.getLogger("octoprint.plugin.curaX.profileReader")
 		if slicer_profile_path == '' or printer_id == '':
 			return None
@@ -239,6 +239,9 @@ class ProfileReader(object):
 				if filePath.endswith('json'):
 					json_file = json.load(open(slicer_profile_path +'Printers/' + entry))
 					if json_file['id'] == printer_id:
+						# loads any important information from parent profile
+						if load_parents_inherits and 'inherits' in json_file:
+							json_file['inherits'] = ProfileReader.getPrinterJsonFileByid(json_file['inherits'], slicer_profile_path)
 						return json_file
 			except Exception as ex:
 				logger.error(ex)

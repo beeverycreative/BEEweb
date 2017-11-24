@@ -21,6 +21,7 @@ from octoprint.filemanager import FileDestinations
 from octoprint.util.comm import PrintingFileInformation
 from octoprint.printer.statistics import BaseStatistics, PrintEventStatistics, PrinterStatistics
 from octoprint.printer.estimation import TimeEstimationHelper
+from octoprint.plugins.curaX import ProfileReader
 
 __author__ = "BEEVC - Electronic Systems "
 __license__ = "GNU Affero General Public License http://www.gnu.org/licenses/agpl.html"
@@ -1083,20 +1084,28 @@ class BeePrinter(Printer):
         else:
             return self._comm.getConnectedPrinterSN()
 
-    def getFilamentSettings(self):
+    def getFilamentSettingsForPrinter(self):
         """
         Gets the necessary filament settings for weight/size conversions
         Returns tuple with (diameter,density)
         """
-        # converts the amount of filament in grams to mm
-        if self._currentFilamentProfile:
-            # Fetches the first position filament_diameter from the filament data and converts to microns
-            filament_diameter = self._currentFilamentProfile.data['filament_diameter'][0] * 1000
-            # TODO: The filament density should also be set based on profile data
-            filament_density = 1.275  # default value
-        else:
+        # Normalizes the printer ID to be found in the CuraX profiles
+        printerId = self.getPrinterName().replace(' ', '').replace('-bootloader', '').lower()
+        printerId = 'BEEVERYCREATIVE-' + printerId
+
+        printerProfileSettings = ProfileReader.getPrinterJsonFileByid(
+        	printerId,
+        	self._slicingManager.get_slicer_profile_path(self._slicingManager.default_slicer) + '/',
+         	load_parents_inherits=True
+        )
+
+        try:
+            filament_diameter = printerProfileSettings['inherits']['overrides']['material']['material_diameter']['default_value'] * 1000
+        except KeyError:
             filament_diameter = 1.75 * 1000  # default value in microns
-            filament_density = 1.275  # default value
+
+        # TODO: The filament density should be set based on profile data
+        filament_density = 1.275  # default value
 
         return filament_diameter, filament_density
 
