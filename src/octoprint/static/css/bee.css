@@ -528,6 +528,11 @@ a.brand{
     text-transform: uppercase ;
 }
 
+.close-printer-options-button {
+	color: #fff !important;
+    text-transform: uppercase ;
+}
+
 #workbench-controls-container button{        /* SIDEBAR BUTTONS */
     height: 50px;
     width: 55px;
@@ -2167,7 +2172,7 @@ body:lang(pt) .btn-software-update {
 body:lang(pt) .print-button-msg {
     font-size: 12px !important;
 }
-body:lang(pt) ul.dropdown-menu li a {
+body:lang(pt) .settings-trigger ul.dropdown-menu li a {
 	font-size: 11px !important;
 }
 
@@ -2187,6 +2192,6 @@ body:lang(es) .btn-software-update {
 body:lang(es) .print-button-msg {
     font-size: 12px !important;
 }
-body:lang(es) ul.dropdown-menu li a {
+body:lang(es) .settings-trigger ul.dropdown-menu li a {
 	font-size: 11px !important;
 }
