@@ -2124,6 +2124,7 @@ label:hover:before {
 }
 
 /* Language specific CSS hacks */
+/* German */
 body:lang(de) {
     font-size: 14px !important;
 }
@@ -2139,7 +2140,18 @@ body:lang(de) #workbench-controls-container button + .tooltip .tooltip-inner{
 body:lang(de) #job_shutdown {
     font-size: 11px !important;
 }
+body:lang(de) .print-button-msg {
+    font-size: 12px !important;
+}
+body:lang(de) ul.dropdown-menu li a {
+	font-size: 12px !important;
+}
+body:lang(de) #state-header-link strong {
+	font-size: 12px !important;
+}
 
+
+/* Portuguese */
 body:lang(pt) {
     font-size: 14px !important;
 }
@@ -2153,5 +2165,28 @@ body:lang(pt) .btn-software-update {
     font-size: 12px !important;
 }
 body:lang(pt) .print-button-msg {
-    font-size: 13px !important;
+    font-size: 12px !important;
+}
+body:lang(pt) ul.dropdown-menu li a {
+	font-size: 11px !important;
+}
+
+/* Spanish */
+body:lang(es) {
+    font-size: 14px !important;
+}
+body:lang(es) .fileinput-button {
+    font-size: 16px !important;
+}
+body:lang(es) .addplatform {
+    font-size: 12px !important;
+}
+body:lang(es) .btn-software-update {
+    font-size: 12px !important;
+}
+body:lang(es) .print-button-msg {
+    font-size: 12px !important;
+}
+body:lang(es) ul.dropdown-menu li a {
+	font-size: 11px !important;
 }

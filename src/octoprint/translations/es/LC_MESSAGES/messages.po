@@ -2011,7 +2011,37 @@ msgstr ""
 msgid "remaining"
 msgstr "restante"
 
+msgid "There is no model on the platform. First import a model to print or estimate the print time."
+msgstr "No hay un modelo en la plataforma. Primero importe un modelo para imprimir o estimar el tiempo de impresión."
+
+msgid "No model on the platform"
+msgstr "Ningún modelo en la plataforma"
+
 #: src/octoprint/server/api/system.py:154
 #: src/octoprint/templates/snippets/settings/server/serverCommandServerRestart.jinja2:2
 msgid "Restart BEESOFT"
 msgstr "Reiniciar BEESOFT"
+
+
+msgid "Sort by file type"
+msgstr "Ordenar por tipo de archivo"
+
+#: src/octoprint/templates/sidebar/files_header.jinja2:24
+msgid "Only show machine code files"
+msgstr "Mostrar solo archivos GCODE"
+
+#: src/octoprint/templates/sidebar/files_header.jinja2:25
+msgid "Only show model files"
+msgstr "Mostrar solo archivos STL"
+
+#: src/octoprint/templates/sidebar/files_header.jinja2:18
+msgid "Sort by Folders, Files"
+msgstr "Ordernar por Carpetas, Archivos"
+
+#: src/octoprint/templates/sidebar/files_header.jinja2:19
+msgid "Sort by Files, Folders"
+msgstr "Ordenar por Archivos, Carpetas"
+
+#: src/octoprint/templates/sidebar/files_header.jinja2:20
+msgid "Mixed"
+msgstr "Mezclado"
