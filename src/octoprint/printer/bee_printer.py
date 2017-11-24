@@ -748,9 +748,10 @@ class BeePrinter(Printer):
                 default_nozzle_size = 400
 
                 if self._comm and self._comm.getCommandsInterface():
+                    valid_nozzle_sizes = [400, 600]
                     current_nozzle = self._comm.getCommandsInterface().getNozzleSize()
 
-                    if current_nozzle is not None:
+                    if current_nozzle is not None and current_nozzle in valid_nozzle_sizes:
                         self._currentNozzle = nozzle_type_prefix + str(current_nozzle)
 
                 self._currentNozzle = nozzle_type_prefix + str(default_nozzle_size)
@@ -1094,9 +1095,9 @@ class BeePrinter(Printer):
         printerId = 'BEEVERYCREATIVE-' + printerId
 
         printerProfileSettings = ProfileReader.getPrinterJsonFileByid(
-        	printerId,
-        	self._slicingManager.get_slicer_profile_path(self._slicingManager.default_slicer) + '/',
-         	load_parents_inherits=True
+            printerId,
+            self._slicingManager.get_slicer_profile_path(self._slicingManager.default_slicer) + '/',
+            load_parents_inherits=True
         )
 
         try:
