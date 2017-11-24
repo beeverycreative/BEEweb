@@ -371,7 +371,7 @@ class BeeCom(MachineCom):
 
             if pos == 'from_memory':
                 # special case that signals the print from memory operation
-                print_resp = self._beeCommands.repeatLastPrint()
+                print_resp = self._beeCommands.repeatLastPrint(printTemperature=printTemperature)
             else:
                 # standard case where the analysis object is passed in the pos variable
                 estimatedPrintTime = None
@@ -383,6 +383,7 @@ class BeeCom(MachineCom):
 
                 print_resp = self._beeCommands.printFile(
                     self._currentFile.getFilename(),
+					printTemperature=printTemperature,
                     estimatedPrintTime=estimatedPrintTime,
                     gcodeLines=gcodeLines
                 )

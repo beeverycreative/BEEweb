@@ -303,13 +303,8 @@ class BeePrinter(Printer):
         if self._currentFileAnalysis is not None:
             pos = self._currentFileAnalysis
 
-        # determines preheat temperature for filament
-        filamentProfile = self.getSelectedFilamentProfile()
-
         if printTemperature is None:
-            self._targetTemperature = 210  # default target temperature
-            if filamentProfile is not None and 'preheat_temperature' in filamentProfile.data:
-                self._targetTemperature = filamentProfile.data['preheat_temperature']
+            self._targetTemperature = self._get_preheat_temperature_from_filament()
         else:
             self._targetTemperature = printTemperature
 
@@ -489,7 +484,7 @@ class BeePrinter(Printer):
             self._current_temperature = self._comm.getCommandsInterface().getNozzleTemperature()
 
             self._targetTemperature = targetTemperature
-            self._comm.startHeating(targetTemperature)
+            self._comm.startHeating(self._targetTemperature)
 
             return targetTemperature
         except Exception as ex:
@@ -1125,8 +1120,11 @@ class BeePrinter(Printer):
             self._comm.selectFile('Memory File', False)
 
             self._setProgressData(completion=0)
-            self._setCurrentZ(None)
-            return self._comm.startPrint('from_memory')
+            self._setCurrentZ(None)  # determines preheat temperature for filament
+
+            self._targetTemperature = self._get_preheat_temperature_from_filament()
+
+            return self._comm.startPrint('from_memory', self._targetTemperature)
         except Exception as ex:
             self._logger.error(ex)
 
@@ -1285,9 +1283,13 @@ class BeePrinter(Printer):
         self._setJobData(filename, filesize, sd)
         self._stateMonitor.set_state({"text": self.get_state_string(), "flags": self._getStateFlags()})
 
-        # checks if the insufficient filament flag is true and halts the print process
-        if self._insufficientFilamentForCurrent:
-            self._printAfterSelect = False
+        # If the checkSufficientFilament flag is set in the settings, checks for sufficient filament for the print job
+        if settings().get(['features', 'checkSufficientFilament']):
+            self._checkSufficientFilamentForPrint()
+
+            # checks if the insufficient filament flag is true and halts the print process
+            if self._insufficientFilamentForCurrent:
+                self._printAfterSelect = False
 
         if self._printAfterSelect:
             self._printAfterSelect = False
@@ -1474,10 +1476,95 @@ class BeePrinter(Printer):
     # # # # # # # # # # # # # # # # # # # # # # #
 
     def _setJobData(self, filename, filesize, sd):
-        super(BeePrinter, self)._setJobData(filename, filesize, sd)
+        with self._selectedFileMutex:
+            if filename is not None:
+                if sd:
+                    name_in_storage = filename
+                    if name_in_storage.startswith("/"):
+                        name_in_storage = name_in_storage[1:]
+                    path_in_storage = name_in_storage
+                    path_on_disk = None
+                else:
+                    path_in_storage = self._fileManager.path_in_storage(FileDestinations.LOCAL, filename)
+                    path_on_disk = self._fileManager.path_on_disk(FileDestinations.LOCAL, filename)
+                    _, name_in_storage = self._fileManager.split_path(FileDestinations.LOCAL, path_in_storage)
 
-        if settings().get(['features', 'checkSufficientFilament']):
-            self._checkSufficientFilamentForPrint()
+                self._selectedFile = {
+                    "filename": path_in_storage,
+                    "filesize": filesize,
+                    "sd": sd,
+                    "estimatedPrintTime": None
+                }
+            else:
+                self._selectedFile = None
+                self._stateMonitor.set_job_data({
+                    "file": {
+                        "name": None,
+                        "path": None,
+                        "origin": None,
+                        "size": None,
+                        "date": None
+                    },
+                    "estimatedPrintTime": None,
+                    "averagePrintTime": None,
+                    "lastPrintTime": None,
+                    "filament": None,
+                })
+                return
+
+            estimatedPrintTime = None
+            lastPrintTime = None
+            averagePrintTime = None
+            date = None
+            filament = None
+            if path_on_disk and os.path.exists(path_on_disk):
+                # Use a string for mtime because it could be float and the
+                # javascript needs to exact match
+                if not sd:
+                    date = int(os.stat(path_on_disk).st_mtime)
+
+                try:
+                    fileData = self._fileManager.get_metadata(FileDestinations.SDCARD if sd else FileDestinations.LOCAL,
+                                                              path_on_disk)
+                except:
+                    fileData = None
+                if fileData is not None:
+                    if "analysis" in fileData:
+                        if estimatedPrintTime is None and "estimatedPrintTime" in fileData["analysis"]:
+                            estimatedPrintTime = fileData["analysis"]["estimatedPrintTime"]
+                        if "filament" in fileData["analysis"].keys():
+                            filament = fileData["analysis"]["filament"]
+                    if "statistics" in fileData:
+                        printer_profile = self._printerProfileManager.get_current_or_default()["id"]
+                        if "averagePrintTime" in fileData["statistics"] and printer_profile in fileData["statistics"][
+                            "averagePrintTime"]:
+                            averagePrintTime = fileData["statistics"]["averagePrintTime"][printer_profile]
+                        if "lastPrintTime" in fileData["statistics"] and printer_profile in fileData["statistics"][
+                            "lastPrintTime"]:
+                            lastPrintTime = fileData["statistics"]["lastPrintTime"][printer_profile]
+
+                    if averagePrintTime is not None:
+                        self._selectedFile["estimatedPrintTime"] = averagePrintTime
+                        self._selectedFile["estimatedPrintTimeType"] = "average"
+                    elif estimatedPrintTime is not None:
+                        # TODO apply factor which first needs to be tracked!
+                        self._selectedFile["estimatedPrintTime"] = estimatedPrintTime
+                        self._selectedFile["estimatedPrintTimeType"] = "analysis"
+
+            self._stateMonitor.set_job_data({
+                "file": {
+                    "name": name_in_storage,
+                    "path": path_in_storage,
+                    "origin": FileDestinations.SDCARD if sd else FileDestinations.LOCAL,
+                    "size": filesize,
+                    "date": date
+                },
+                "estimatedPrintTime": estimatedPrintTime,
+                "averagePrintTime": averagePrintTime,
+                "lastPrintTime": lastPrintTime,
+                "filament": filament,
+            })
+
 
     def _printJobFilamentLength(self):
         """
@@ -1647,6 +1734,17 @@ class BeePrinter(Printer):
         if self._currentPrintStatistics is not None:
             self._currentPrintStatistics.save()
 
+    def _get_preheat_temperature_from_filament(self):
+        filamentProfile = self.getSelectedFilamentProfile()
+
+        defaultPreheatTemperature = 210  # default target temperature
+
+        if filamentProfile is not None and 'preheat_temperature' in filamentProfile.data:
+            return filamentProfile.data['preheat_temperature']
+        else:
+            return defaultPreheatTemperature
+
+    @deprecated
     def _sendAzureUsageStatistics(self, operation):
         """
         Calls and external executable to send usage statistics to a remote cloud server
