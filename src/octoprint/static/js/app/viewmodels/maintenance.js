@@ -502,7 +502,6 @@ $(function() {
                 data: JSON.stringify(data),
                 success: function(data) {
                     var response = data['response'];
-                    TARGET_TEMPERATURE = data['target_temperature'];
 
                     if (response.indexOf('ok') > -1) {
                         self.filamentSelected(true);
@@ -1293,46 +1292,6 @@ $(function() {
                 error: function() {
                     self.commandLock(false);
                     self._hideMovingMessage();
-                }
-            });
-        };
-
-        self.saveFilamentReplaceNozzle = function() {
-            self.commandLock(true);
-
-            self.filamentSelected(false);
-            self.filamentResponseError(false);
-
-            var data = {
-                command: "filament",
-                filamentStr: self.selectedFilament()
-            };
-
-            $.ajax({
-                url: API_BASEURL + "maintenance/save_filament",
-                type: "POST",
-                dataType: "json",
-                contentType: "application/json; charset=UTF-8",
-                data: JSON.stringify(data),
-                success: function(data) {
-                    var response = data['response'];
-                    TARGET_TEMPERATURE = data['target_temperature'];
-
-                    if (response.indexOf('ok') > -1) {
-                        self.filamentSelected(true);
-
-                        self.finishOperations();
-                    } else {
-                        self.filamentResponseError(true);
-                    }
-
-                    self.commandLock(false);
-                    self.operationLock(false);
-                },
-                error: function() {
-                    self.commandLock(false);
-                    self.operationLock(false);
-                    self.filamentResponseError(true);
                 }
             });
         };

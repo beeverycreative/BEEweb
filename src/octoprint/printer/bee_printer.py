@@ -58,6 +58,7 @@ class BeePrinter(Printer):
         self._slicingManager = SlicingManager(settings().getBaseFolder("slicingProfiles"), printerProfileManager)
         self._slicingManager.reload_slicers()
         self._currentFilamentProfile = None
+        self._currentNozzle = None
 
         # We must keep a copy of the _currentFile variable (from the comm layer) to allow the situation of
         # disconnecting the printer and maintaining any selected file information after a reconnect is done
@@ -182,7 +183,12 @@ class BeePrinter(Printer):
                 self._comm.startPrintStatusProgressMonitor()
 
             # gets current Filament profile data
+            self._currentFilamentProfile = None
             self._currentFilamentProfile = self.getSelectedFilamentProfile()
+
+            # gets the printer nozzle size
+            self._currentNozzle = None
+            self._currentNozzle = self.getNozzleTypeString()
 
             # Starts the printer status monitor thread
             if self._bvc_status_thread is None:
@@ -542,39 +548,18 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            # Get temperature of filament in printer
-            temperature_profile_printer = 210
-
-            try:
-                profile_name_printer = self.getSelectedFilamentProfile().display_name
-
-                if "petg" in profile_name_printer.lower() or "nylon" in profile_name_printer.lower():
-                    temperature_profile_printer = 230
-                elif "tpu" in profile_name_printer.lower():
-                    temperature_profile_printer = 225
-            except Exception as ex:
-                pass
-
-            # Get temperature of filament being loaded
-            temperature_new_filament = 210
-            if "petg" in filamentStr.lower() or "nylon" in filamentStr.lower():
-                temperature_new_filament = 230
-            elif "tpu" in filamentStr.lower():
-                temperature_new_filament = 225
-
-            # compare temperatures
-            if temperature_new_filament > temperature_profile_printer:
-                temperature_profile_printer = temperature_new_filament
-
-            self.set_nozzle_temperature(temperature_profile_printer)
             resp = self._comm.getCommandsInterface().setFilamentString(filamentStr)
+
+            # updates the current filament profile selected in memory
+            self._currentFilamentProfile = None
+            self.getSelectedFilamentProfile()
 
             # registers the filament change statistics
             self._stats.register_filament_change()
             self._printerStats.register_filament_change()
             self._save_usage_statistics()
 
-            return resp, temperature_profile_printer
+            return resp
         except Exception as ex:
             self._logger.error('Error saving filament string in printer: %s' % str(ex))
 
@@ -586,27 +571,29 @@ class BeePrinter(Printer):
         :return: Profile or None
         """
         try:
-            filamentStr = self._comm.getCommandsInterface().getFilamentString()
-            if not filamentStr:
-                return None
+            if self._currentFilamentProfile is None:
+                filamentStr = self._comm.getCommandsInterface().getFilamentString()
+                if not filamentStr:
+                    return None
 
-            #filamentNormalizedName = filamentStr.lower().replace(' ', '_') + '_' + self.getPrinterNameNormalized()
-            profiles = self._slicingManager.all_profiles_list_json(self._slicingManager.default_slicer,
-                                                    require_configured=False,
-                                                    nozzle_size=self.getNozzleTypeString().replace("nz", ""),
-                                                    from_current_printer=True)
+                #filamentNormalizedName = filamentStr.lower().replace(' ', '_') + '_' + self.getPrinterNameNormalized()
+                profiles = self._slicingManager.all_profiles_list_json(self._slicingManager.default_slicer,
+                                                        require_configured=False,
+                                                        nozzle_size=self.getNozzleTypeString().replace("nz", ""),
+                                                        from_current_printer=True)
 
-            if len(profiles) > 0:
-                for key,value in profiles.items():
-                    if filamentStr in key:
-                        filamentProfile = self._slicingManager.load_profile(self._slicingManager.default_slicer, key,require_configured=False)
+                if len(profiles) > 0:
+                    for key,value in profiles.items():
+                        if filamentStr in key:
+                            filamentProfile = self._slicingManager.load_profile(self._slicingManager.default_slicer, key,require_configured=False)
 
-                        return filamentProfile
+                            self._currentFilamentProfile = filamentProfile
+                            break
 
         except Exception as ex:
             self._logger.error('Error getting the current selected filament profile: %s' % str(ex))
 
-        return None
+        return self._currentFilamentProfile
 
     def getFilamentString(self):
         """
@@ -715,6 +702,10 @@ class BeePrinter(Printer):
         try:
             res = self._comm.getCommandsInterface().setNozzleSize(nozzleSize)
 
+            # updates the current nozzle size saved in memory
+            self._currentNozzle = None
+            self.getNozzleTypeString()
+
             # registers the nozzle change statistics
             self._stats.register_nozzle_change()
             self._printerStats.register_nozzle_change()
@@ -751,17 +742,21 @@ class BeePrinter(Printer):
         :return: string
         """
         try:
-            nozzle_type_prefix = 'nz'
-            default_nozzle_size = 400
-            if self._comm and self._comm.getCommandsInterface():
-                current_nozzle = self._comm.getCommandsInterface().getNozzleSize()
+            if self._currentNozzle is None:
+                nozzle_type_prefix = 'nz'
+                default_nozzle_size = 400
 
-                if current_nozzle is not None:
-                    return nozzle_type_prefix + str(current_nozzle)
+                if self._comm and self._comm.getCommandsInterface():
+                    current_nozzle = self._comm.getCommandsInterface().getNozzleSize()
 
-            return nozzle_type_prefix + str(default_nozzle_size)
+                    if current_nozzle is not None:
+                        self._currentNozzle = nozzle_type_prefix + str(current_nozzle)
+
+                self._currentNozzle = nozzle_type_prefix + str(default_nozzle_size)
         except Exception as ex:
             self._logger.error(ex)
+
+        return self._currentNozzle
 
     def startCalibration(self, repeat=False):
         """

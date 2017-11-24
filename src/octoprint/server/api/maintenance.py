@@ -191,11 +191,10 @@ def saveFilament():
 
     filamentStr = data['filamentStr']
 
-    resp, target_temp = printer.setFilamentString(filamentStr)
+    resp = printer.setFilamentString(filamentStr)
 
     return jsonify({
-        "response": resp,
-        "target_temperature": target_temp
+        "response": resp
     })
 
 @api.route("/maintenance/get_filament", methods=["GET"])

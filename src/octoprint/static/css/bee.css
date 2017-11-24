@@ -2154,7 +2154,12 @@ body:lang(de) ul.dropdown-menu li a {
 body:lang(de) #state-header-link strong {
 	font-size: 12px !important;
 }
-
+body:lang(de) #unload-btn {
+	font-size: 14px !important;
+}
+body:lang(de) #load-btn {
+	font-size: 14px !important;
+}
 
 /* Portuguese */
 body:lang(pt) {
@@ -2175,6 +2180,12 @@ body:lang(pt) .print-button-msg {
 body:lang(pt) .settings-trigger ul.dropdown-menu li a {
 	font-size: 11px !important;
 }
+body:lang(pt) #unload-btn {
+	font-size: 14px !important;
+}
+body:lang(pt) #load-btn {
+	font-size: 14px !important;
+}
 
 /* Spanish */
 body:lang(es) {
@@ -2194,4 +2205,10 @@ body:lang(es) .print-button-msg {
 }
 body:lang(es) .settings-trigger ul.dropdown-menu li a {
 	font-size: 11px !important;
+}
+body:lang(es) #unload-btn {
+	font-size: 14px !important;
+}
+body:lang(es) #load-btn {
+	font-size: 14px !important;
 }
