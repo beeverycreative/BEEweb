@@ -1260,8 +1260,8 @@ class BeePrinter(Printer):
 
             # If the status from the printer is no longer printing runs the post-print trigger
             try:
-                if progress >= 1 and self._comm.getCommandsInterface().isPreparingOrPrinting() is False:
-
+                if progress >= 1:
+                    # makes sure the thread that is communicating with the print progress is stopped
                     self._comm.getCommandsInterface().stopStatusMonitor()
 
                     # Runs the print finish communications callback
@@ -1399,7 +1399,7 @@ class BeePrinter(Printer):
             # removes redundant information
             self._currentPrintStatistics.remove_redundant_information()
 
-            # This line should be removed after saveUserFeedback is re-activated again
+            # TODO: This line should be removed after saveUserFeedback is re-activated again
             self._save_usage_statistics()
 
         # un-selects the current file

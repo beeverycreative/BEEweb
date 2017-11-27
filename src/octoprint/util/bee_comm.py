@@ -383,7 +383,7 @@ class BeeCom(MachineCom):
 
                 print_resp = self._beeCommands.printFile(
                     self._currentFile.getFilename(),
-					printTemperature=printTemperature,
+                    printTemperature=printTemperature,
                     estimatedPrintTime=estimatedPrintTime,
                     gcodeLines=gcodeLines
                 )
@@ -810,15 +810,16 @@ class BeeCom(MachineCom):
         This method runs the post-print job code
         :return:
         """
+        # Resets SD printing related variables
         self._sdFilePos = 0
-        self._callback.on_comm_print_job_done()
-        self._changeState(self.STATE_OPERATIONAL)
-
         if self._sd_status_timer is not None:
             try:
                 self._sd_status_timer.cancel()
             except:
                 pass
+
+        self._changeState(self.STATE_OPERATIONAL)
+        self._callback.on_comm_print_job_done()
 
 
     def _monitor(self):
