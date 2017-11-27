@@ -488,6 +488,10 @@ msgstr "1 Stunde"
 msgid "a couple of seconds"
 msgstr "einige Sekunden"
 
+#: src/octoprint/static/js/app/helpers.js:508
+msgid "a few seconds"
+msgstr "ein paar Sekunden"
+
 msgid "less than a minute"
 msgstr "weniger als 1 Minute"
 
