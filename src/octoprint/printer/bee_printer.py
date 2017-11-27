@@ -60,6 +60,7 @@ class BeePrinter(Printer):
         self._slicingManager.reload_slicers()
         self._currentFilamentProfile = None
         self._currentNozzle = None
+        self._currentFirmware = None
 
         # We must keep a copy of the _currentFile variable (from the comm layer) to allow the situation of
         # disconnecting the printer and maintaining any selected file information after a reconnect is done
@@ -135,7 +136,7 @@ class BeePrinter(Printer):
                 self._setState(BeeCom.STATE_ERROR)
                 return False
 
-
+            # Stores the object pointer to the main command interface from BEEcom
             bee_commands = self._comm.getCommandsInterface()
 
             # homes all axis
@@ -190,6 +191,9 @@ class BeePrinter(Printer):
             # gets the printer nozzle size
             self._currentNozzle = None
             self._currentNozzle = self.getNozzleTypeString()
+
+            # gets the firmware version from the printer
+            self._currentFirmware = self.getCurrentFirmware()
 
             # Starts the printer status monitor thread
             if self._bvc_status_thread is None:
@@ -1314,7 +1318,7 @@ class BeePrinter(Printer):
             self._currentPrintStatistics.set_print_start(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
             self._register_filament_statistics()
 
-            self._currentPrintStatistics.set_firmware_version(self.getCurrentFirmware())
+            self._currentPrintStatistics.set_firmware_version(self._currentFirmware)
             from octoprint import  __display_version__
             self._currentPrintStatistics.set_software_version(__display_version__)
 
