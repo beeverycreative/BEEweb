@@ -727,9 +727,15 @@ class BeePrinter(Printer):
         :return: float
         """
         try:
-            return self._comm.getCommandsInterface().getNozzleSize()
+            default_nozzle = 400
+
+            printer_nozzle = self._comm.getCommandsInterface().getNozzleSize()
+            if printer_nozzle is not None:
+                return printer_nozzle
         except Exception as ex:
             self._logger.error(ex)
+
+        return default_nozzle
 
     def getNozzleTypes(self):
         """
