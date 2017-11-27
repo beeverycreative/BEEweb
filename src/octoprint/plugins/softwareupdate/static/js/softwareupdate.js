@@ -542,7 +542,8 @@ $(function() {
 
             self.loglines.removeAll();
             self.loglines.push({line: line, stream: stream});
-            self._showWorkingDialog(title);
+
+			//self._showWorkingDialog(title);
         };
 
         self._markDone = function(line, stream) {
@@ -624,7 +625,7 @@ $(function() {
                     break;
                 }
                 case "updating": {
-                    console.log(JSON.stringify(messageData));
+                    //console.log(JSON.stringify(messageData));
 
                     if (!self.working()) {
                         self._markWorking(gettext("Updating..."), gettext("Updating, please wait."));

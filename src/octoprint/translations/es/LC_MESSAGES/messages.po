@@ -50,7 +50,7 @@ msgid "Software Update"
 msgstr "Actualización de Software"
 
 msgid "BEEweb"
-msgstr "BEESOFT"
+msgstr "BEEweb"
 
 msgid "Release"
 msgstr "Lanzamiento"
@@ -116,8 +116,8 @@ msgid ""
 msgstr "Un trabajo de impresión está en curso. Se evitará la actualización hasta que"
 "este listo."
 
-msgid "Now updating to %(version)s"
-msgstr "Actualizando para %(version)s"
+msgid "Now updating %(name)s to %(version)s"
+msgstr "Actualizando %(name)s a la versión %(version)s"
 
 msgid "Update successful, restarting!"
 msgstr "Actualizado correctamente, reiniciando!"

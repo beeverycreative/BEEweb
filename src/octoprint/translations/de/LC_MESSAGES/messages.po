@@ -49,7 +49,7 @@ msgid "Software Update"
 msgstr "Software-Update"
 
 msgid "BEEweb"
-msgstr "BEESOFT"
+msgstr "BEEweb"
 
 msgid "Release"
 msgstr "Freigabe"
@@ -117,8 +117,8 @@ msgid ""
 msgstr "Ein Druckauftrag ist jetzt im Gang. Das Update wird verhindert"
 "bis es fertig ist."
 
-msgid "Now updating to %(version)s"
-msgstr "Jetzt aktualisieren nach %(version)s"
+msgid "Now updating %(name)s to %(version)s"
+msgstr "Aktualisieren von %(name)s auf Version %(version)s"
 
 msgid "Update successful, restarting!"
 msgstr "Update erfolgreich, jetzt neu starten!"

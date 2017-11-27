@@ -50,7 +50,7 @@ msgid "Software Update"
 msgstr "Atualização de Software"
 
 msgid "BEEweb"
-msgstr "BEESOFT"
+msgstr "BEEweb"
 
 msgid "Release"
 msgstr "Lançamento"
@@ -122,8 +122,8 @@ msgid ""
 msgstr ""
 "Uma impressão está em curso. A atualização será impedida até que termine."
 
-msgid "Now updating to %(version)s"
-msgstr "A atualizar agora para to %(version)s"
+msgid "Now updating %(name)s to %(version)s"
+msgstr "A atualizar o módulo %(name)s para a versão %(version)s"
 
 msgid "Update successful, restarting!"
 msgstr "Atualização bem sucedida, a reiniciar!"
