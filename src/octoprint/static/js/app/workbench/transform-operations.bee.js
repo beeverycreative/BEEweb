@@ -166,16 +166,15 @@ BEEwb.transformOps.scaleToMax = function() {
         var scale = Math.min(xScale, Math.min (yScale, zScale));
         // Small adjustment to avoid false positive out of bounds message due to precision errors
         scale -= 0.01;
-        if (scale > 1) {
-            BEEwb.main.selectedObject.scale.set(scale, scale ,scale);
-            BEEwb.main.transformControls.update();
 
-            if ($('#scaleby-per').is(':checked')) {
-                BEEwb.transformOps.updateScaleSizeInputsByPercentage();
-            } else {
-                BEEwb.transformOps.updateScaleSizeInputs();
-            }
-        }
+		BEEwb.main.selectedObject.scale.set(scale, scale ,scale);
+		BEEwb.main.transformControls.update();
+
+		if ($('#scaleby-per').is(':checked')) {
+			BEEwb.transformOps.updateScaleSizeInputsByPercentage();
+		} else {
+			BEEwb.transformOps.updateScaleSizeInputs();
+		}
 
         BEEwb.main.selectedObject.position.set( 0, 0, 0 );
 
