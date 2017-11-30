@@ -160,6 +160,9 @@ table {
 .nav i{
     padding-right: 10px;
 }
+.nav #navbar_show_announcements > i {
+	padding-right: 0px;
+}
 
 .navbar-inner{
     height: 70px;
@@ -1310,6 +1313,10 @@ input + span.add-on{
     padding: 0 0 !important;
     /*margin: 0 -23px !important;*/
 }
+#plugin_announcements_dialog .modal-body .full-sized-box {
+    padding: 0 0 0 23px !important;
+    margin: 0 0 0 -23px !important;
+}
 /*-----------------------------------*/
 
 #settingsTabs .nav-header {
@@ -1510,17 +1517,16 @@ td.settings_users_actions .m-icon {
     box-shadow: none;
     background-color: #32312b;
 }
-.modal .modal-footer > a:first-of-type, .modal .modal-footer > button:first-of-type{
+.modal .modal-footer > a, .modal .modal-footer > button{
     background: transparent;
     color: #777;
     text-shadow: none;
     text-transform: uppercase;
     border: none;
     box-shadow: none;
-}
-.modal .modal-footer > a:first-of-type, .modal .modal-footer > button:first-of-type {
     padding: 20px;
 }
+
 #slicing_configuration_dialog .modal-body{
     padding: 0  !important;
 }
@@ -1608,6 +1614,7 @@ td.settings_users_actions .m-icon {
 #settings-usersDialogChangePassword .modal-footer .btn-primary,
 #settings_plugin_softwareupdate_configurationdialog .modal-footer .btn-primary,
 #save_scene_dialog .modal-footer .btn-primary,
+#plugin_announcements_dialog .modal-footer .btn-primary,
 #user_feedback_dialog .modal-footer .btn-primary {
     padding: 20px 0;
     width: 175px;

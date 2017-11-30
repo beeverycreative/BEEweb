@@ -323,7 +323,7 @@ default_settings = {
 		{ "name": "Suppress wait responses", "regex": "Recv: wait"}
 	],
 	"plugins": {
-		"_disabled": ['announcements', 'cura', 'virtual_printer']
+		"_disabled": [ 'cura', 'virtual_printer']
 	},
 	"scripts": {
 		"gcode": {
