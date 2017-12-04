@@ -130,6 +130,7 @@ default_settings = {
 		"host": "0.0.0.0",
 		"port": 5000,
 		"firstRun": True,
+		"firstRunMaintenance": False,
 		"startOnceInSafeMode": False,
 		"seenWizards": {},
 		"secretKey": None,

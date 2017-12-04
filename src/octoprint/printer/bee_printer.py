@@ -1236,6 +1236,9 @@ class BeePrinter(Printer):
 
         return
 
+    def isExtruderCalibrationRequired(self):
+        return True
+
     # # # # # # # # # # # # # # # # # # # # # # #
     ##########  CALLBACK FUNCTIONS  #############
     # # # # # # # # # # # # # # # # # # # # # # #

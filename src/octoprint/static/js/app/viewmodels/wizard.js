@@ -17,25 +17,33 @@ $(function() {
             return self.wizardDialog.is(":visible");
         };
 
+		self.forceShowDialog = function() {
+			self._showWizardDialog();
+		};
+
         self.showDialog = function() {
             if (!CONFIG_WIZARD || !((CONFIG_FIRST_RUN && !CONFIG_ACCESS_CONTROL_ACTIVE) || self.loginState.isAdmin())) return;
 
-            self.getWizardDetails()
-                .done(function(response) {
-                    callViewModels(self.allViewModels, "onWizardDetails", [response]);
-
-                    if (!self.isDialogActive()) {
-                        self.wizardDialog.modal({
-                            minHeight: function() { return Math.max($.fn.modal.defaults.maxHeight() - 80, 250); }
-                        }).css({
-                            width: 'auto',
-                            'margin-left': function() { return -($(this).width() /2); }
-                        });
-                    }
-
-                    callViewModels(self.allViewModels, "onWizardShow");
-                });
+			self._showWizardDialog();
         };
+
+        self._showWizardDialog = function () {
+            self.getWizardDetails()
+				.done(function(response) {
+					callViewModels(self.allViewModels, "onWizardDetails", [response]);
+
+					if (!self.isDialogActive()) {
+						self.wizardDialog.modal({
+							minHeight: function() { return Math.max($.fn.modal.defaults.maxHeight() - 80, 250); }
+						}).css({
+							width: 'auto',
+							'margin-left': function() { return -($(this).width() /2); }
+						});
+					}
+
+					callViewModels(self.allViewModels, "onWizardShow");
+				});
+		};
 
         self.closeDialog = function() {
             self.wizardDialog.modal("hide");
@@ -54,7 +62,12 @@ $(function() {
         };
 
         self.onUserLoggedIn = function() {
-            self.showDialog();
+            // Only shows the First run wizard automatically on startup, when the server -> firstRunMaintenance
+            // is also set to True in the settings.
+            // This is to allow a printer to be connected first in order to show the wizard only after connect.
+        	if (CONFIG_MAINTENANCE_WIZARD) {
+            	self.showDialog();
+            }
         };
 
         self.onAllBound = function(allViewModels) {
@@ -155,7 +168,12 @@ $(function() {
                     }
                 }
             });
-            self.showDialog();
+            // Only shows the First run wizard automatically on startup, when the server -> firstRunMaintenance
+            // is also set to True in the settings.
+            // This is to allow a printer to be connected first in order to show the wizard only after connect.
+            if (CONFIG_MAINTENANCE_WIZARD) {
+            	self.showDialog();
+            }
         };
 
         self.getWizardDetails = function() {

@@ -361,6 +361,7 @@ def index():
 			gcodeMobileThreshold=settings().get(["gcodeViewer", "mobileSizeThreshold"]),
 			gcodeThreshold=settings().get(["gcodeViewer", "sizeThreshold"]),
 			wizard=wizard,
+			maintenanceWizard=settings().get(["server", "firstRunMaintenance"]),
 			now=now,
 		))
 

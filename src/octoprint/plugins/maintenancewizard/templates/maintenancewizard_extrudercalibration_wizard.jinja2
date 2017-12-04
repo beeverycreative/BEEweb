@@ -1,0 +1,23 @@
+<h3>{{ _('Set up your printer extruder') }}</h3>
+
+<div class="scrollable">
+
+    <div class="tab-content scrollable">
+
+        <div id="wizard_plugin_maintenancewizard_extrudercalibration" class="tab-pane active">
+			<p>{% trans %}Please make sure you calibrate your printer's extruder to ensure a perfect print every single time.{% endtrans %}</p>
+			<br /><br />
+        	<div class="span12 text-center">
+				<span class="icon nozzlegicon"></span>
+			</div>
+			<br /><br />
+			<div class="span12 text-center">
+				<button class="btn btn-maintenance yellow" data-bind="click: showCalibrateExtruder">
+					{{ _('Calibrate extruder now') }}
+				</button>
+			</div>
+        </div>
+
+    </div>
+</div>
+

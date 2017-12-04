@@ -116,6 +116,12 @@ $(function() {
             return false;
         };
 
+        // Shows the modal and goes to the extruder calibration operation directly
+        self.showMaintenanceCalibrateExtruder = function() {
+            self.show();
+            self.showCalibrateExtruder();
+        };
+
         self.hide = function() {
             self.maintenanceDialog.modal("hide");
         };

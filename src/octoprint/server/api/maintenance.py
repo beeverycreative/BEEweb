@@ -350,6 +350,18 @@ def finishExtruderMaintenance():
 
     return NO_CONTENT
 
+
+@api.route("/maintenance/is_extruder_calibration_required", methods=["GET"])
+@restricted_access
+def isExtruderCalibrationRequired():
+    if not printer.is_operational():
+        return make_response("Printer is not operational", 409)
+
+    resp = printer.isExtruderCalibrationRequired()
+
+    return jsonify({"response": resp})
+
+
 @api.route("/maintenance/extrudeCalibrationAmount", methods=["POST"])
 @restricted_access
 def extrudeCalibrationAmount():
