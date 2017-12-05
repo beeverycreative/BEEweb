@@ -1215,18 +1215,9 @@ class BeePrinter(Printer):
                 self._logger.info("Cannot set extruder steps: printer not connected or currently busy")
                 return
 
-            materialFlow = 100.0
-
-            # finds the target temperature based on the selected filament
-            if selected_filament:
-                filamentProfile = self._slicingManager.load_profile(self._slicingManager.default_slicer, selected_filament,
-                                                              require_configured=False)
-                materialFlow = float(
-                    filamentProfile.data['PrinterGroups'][0]['quality']['medium']['material_flow']['default_value'])
-
             if measuredFilamentInput and measuredFilamentInput >= 0:
                 currSteps = float(self.getExtruderStepsMM())
-                newSteps = currSteps * float(250) / float(measuredFilamentInput) * (materialFlow / 100)
+                newSteps = currSteps * float(250) / float(measuredFilamentInput)
 
                 return self._comm.setExtruderStepsMM('{0:.4f}'.format(newSteps))
             else:
