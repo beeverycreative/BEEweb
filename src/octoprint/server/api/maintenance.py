@@ -357,7 +357,7 @@ def extrudeCalibrationAmount():
     if not printer.is_operational():
         return make_response("Printer is not operational", 409)
 
-    printer.extrude(150, feedrate=240)
+    printer.extrude(250, feedrate=240)
 
     return NO_CONTENT
 

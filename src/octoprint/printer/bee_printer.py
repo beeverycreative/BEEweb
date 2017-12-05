@@ -1226,7 +1226,7 @@ class BeePrinter(Printer):
 
             if measuredFilamentInput and measuredFilamentInput >= 0:
                 currSteps = float(self.getExtruderStepsMM())
-                newSteps = currSteps * float(150) / float(measuredFilamentInput) * (materialFlow / 100)
+                newSteps = currSteps * float(250) / float(measuredFilamentInput) * (materialFlow / 100)
 
                 return self._comm.setExtruderStepsMM('{0:.4f}'.format(newSteps))
             else:
