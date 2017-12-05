@@ -1219,7 +1219,7 @@ class BeePrinter(Printer):
                 currSteps = float(self.getExtruderStepsMM())
                 newSteps = currSteps * float(250) / float(measuredFilamentInput)
 
-                return self._comm.setExtruderStepsMM('{0:.4f}'.format(newSteps))
+                return self._comm.setExtruderStepsMM('{0:.2f}'.format(newSteps))
             else:
                 raise Exception('Invalid Extruder value input')
         except Exception as ex:
