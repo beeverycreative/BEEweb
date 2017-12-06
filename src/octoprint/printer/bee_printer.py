@@ -1203,10 +1203,10 @@ class BeePrinter(Printer):
 
         return
 
-    def setExtruderStepsMM(self, selected_filament, measuredFilamentInput):
+    def setExtruderStepsMM(self, measuredFilamentInput=None,extrudedAmmount=250):
         """
         Sets extruder steps per mm
-        :param selected_filament: Selected filament string identifier
+        :param extrudedAmmount: expected extruded ammount
         :param measuredFilamentInput:
         :return:
         """
@@ -1215,11 +1215,12 @@ class BeePrinter(Printer):
                 self._logger.info("Cannot set extruder steps: printer not connected or currently busy")
                 return
 
-            if measuredFilamentInput and measuredFilamentInput >= 0:
+            if measuredFilamentInput and measuredFilamentInput >= 100:
                 currSteps = float(self.getExtruderStepsMM())
-                newSteps = currSteps * float(250) / float(measuredFilamentInput)
-
+                newSteps = currSteps * float(extrudedAmmount) / float(measuredFilamentInput)
                 return self._comm.setExtruderStepsMM('{0:.2f}'.format(newSteps))
+            elif measuredFilamentInput is None:
+                return self._comm.setExtruderStepsMM('{0:.4f}'.format('441.3897'))
             else:
                 raise Exception('Invalid Extruder value input')
         except Exception as ex:

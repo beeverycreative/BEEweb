@@ -1508,6 +1508,22 @@ $(function() {
             self._showMovingMessage();
 
             $.ajax({
+                url: API_BASEURL + "maintenance/resetExtruderSteps",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                data: JSON.stringify({}),
+                success: function() {
+                    self._hideMovingMessage();
+                    self.commandLock(false)
+                },
+                error: function() {
+                    self._hideMovingMessage();
+                    self.commandLock(false)
+                }
+            });
+
+            $.ajax({
                 url: API_BASEURL + "maintenance/extrudeCalibrationAmount",
                 type: "POST",
                 dataType: "json",
@@ -1529,6 +1545,14 @@ $(function() {
 
             self.newStepsSaveSuccess(false);
             self.newStepsResponseError(false);
+
+            var mmInput = parseInt(self.measuredFilamentInput());
+            if (isNaN(mmInput) || mmInput < 125 || mmInput > 375) {
+                self.newStepsResponseError(true);
+                self.commandLock(false);
+
+                return;
+            }
 
             var data = {
                 "command": "defineSteps"
