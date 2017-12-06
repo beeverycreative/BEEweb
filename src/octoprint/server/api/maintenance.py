@@ -357,10 +357,20 @@ def extrudeCalibrationAmount():
     if not printer.is_operational():
         return make_response("Printer is not operational", 409)
 
-    printer.extrude(150, feedrate=240)
+    printer.extrude(250, feedrate=240)
 
     return NO_CONTENT
 
+@api.route("/maintenance/resetExtruderSteps", methods=["POST"])
+@restricted_access
+def resetExtruderSteps():
+
+    if not printer.is_operational():
+        return make_response("Printer is not operational", 409)
+
+    resp = printer.setExtruderStepsMM(measuredFilamentInput=None)
+
+    return jsonify({"response": resp})
 
 @api.route("/maintenance/defineExtruderSteps", methods=["POST"])
 @restricted_access
@@ -381,7 +391,7 @@ def defineExtruderSteps():
         selected_filament = data['Info'][1]
         measuredFilamentInput = data['Info'][0]
 
-        resp = printer.setExtruderStepsMM(selected_filament, measuredFilamentInput)
+        resp = printer.setExtruderStepsMM(measuredFilamentInput=measuredFilamentInput,extrudedAmmount=250)
     else:
         resp = "Invalid input arguments."
 
