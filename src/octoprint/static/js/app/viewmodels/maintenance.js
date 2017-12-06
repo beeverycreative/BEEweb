@@ -164,6 +164,7 @@ $(function() {
             self.calibrating (false);
             self.extruderMaintenance (false);
             self.switchNozzle (false);
+            self.calibrateExtruder(false);
             self.processStage(0);
             self.heatingAchiveTargetTemperature(false);
 
