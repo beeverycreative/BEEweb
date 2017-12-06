@@ -71,7 +71,7 @@ class MaintenanceWizardPlugin(octoprint.plugin.AssetPlugin,
 	#~~ Extruder calibration subwizard
 
 	def _is_extrudercalibration_wizard_required(self):
-		return self._printer.isExtruderCalibrationRequired()
+		return self._settings.global_get(["server", "firstRunMaintenance"])
 
 	def _get_extrudercalibration_wizard_details(self):
 		return dict()

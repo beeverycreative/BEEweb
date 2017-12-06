@@ -63,9 +63,9 @@ $(function() {
 
         self.onUserLoggedIn = function() {
             // Only shows the First run wizard automatically on startup, when the server -> firstRunMaintenance
-            // is also set to True in the settings.
+            // is set to False in the settings.
             // This is to allow a printer to be connected first in order to show the wizard only after connect.
-        	if (CONFIG_MAINTENANCE_WIZARD) {
+        	if (!CONFIG_MAINTENANCE_WIZARD) {
             	self.showDialog();
             }
         };
@@ -169,9 +169,9 @@ $(function() {
                 }
             });
             // Only shows the First run wizard automatically on startup, when the server -> firstRunMaintenance
-            // is also set to True in the settings.
+            // is set to False in the settings.
             // This is to allow a printer to be connected first in order to show the wizard only after connect.
-            if (CONFIG_MAINTENANCE_WIZARD) {
+            if (!CONFIG_MAINTENANCE_WIZARD) {
             	self.showDialog();
             }
         };

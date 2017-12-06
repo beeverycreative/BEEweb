@@ -1237,7 +1237,17 @@ class BeePrinter(Printer):
         return
 
     def isExtruderCalibrationRequired(self):
-        return True
+        try:
+            if self._comm is None:
+                self._logger.info("Cannot get extruder calibration status: printer not connected or currently busy")
+                return False
+
+            return self._comm.isExtruderCalibrationRequired()
+
+        except Exception as ex:
+            self._logger.error(ex)
+
+        return False
 
     # # # # # # # # # # # # # # # # # # # # # # #
     ##########  CALLBACK FUNCTIONS  #############

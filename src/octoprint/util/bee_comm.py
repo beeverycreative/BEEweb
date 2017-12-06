@@ -778,6 +778,15 @@ class BeeCom(MachineCom):
             self._logger.error(ex)
         return None
 
+    def isExtruderCalibrationRequired(self):
+        if not self.isOperational():
+            return False
+
+        if self._beeCommands.isExtruderCalibrated():
+            return False
+
+        return True
+
     def _getResponse(self):
         """
         Auxiliar method to read the command response queue
