@@ -7,6 +7,7 @@ $(function() {
         self.slicing = parameters[2];
         self.connection = parameters[3];
         self.settings = parameters[4];
+        self.wizard = parameters[5];
 
         self.stateString = ko.observable(undefined);
         self.isErrorOrClosed = ko.observable(undefined);
@@ -461,6 +462,12 @@ $(function() {
             // in the PrinterProfilesViewModel which would cause the printer label to always show the default printer
             if (prevClosed === true && self.isErrorOrClosed() === false && self.isReady() === true) {
                 self.printerProfiles.requestData();
+
+				// Checks the necessary API endpoints to know if the maintenance wizard should be shown
+				self._isMaintenanceRequired(function () {
+					self.wizard.forceShowDialog();
+				});
+
             }
 
             // detects if the state changed from ready to closed
@@ -678,6 +685,23 @@ $(function() {
             });
         };
 
+        self._isMaintenanceRequired = function(successCallback) {
+            $.ajax({
+                url: API_BASEURL + "maintenance/is_extruder_calibration_required",
+                type: "GET",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                success: function(data) {
+                    if (data['response'] === true) {
+                    	successCallback();
+                    }
+                },
+                error: function(error) {
+                    console.log(error);
+                }
+            });
+		};
+
         /**
          * Returns true if a the Cancel button should be enabled
          *
@@ -747,7 +771,7 @@ $(function() {
 
     OCTOPRINT_VIEWMODELS.push([
         PrinterStateViewModel,
-        ["loginStateViewModel", "printerProfilesViewModel", "slicingViewModel", "connectionViewModel", "settingsViewModel"],
+        ["loginStateViewModel", "printerProfilesViewModel", "slicingViewModel", "connectionViewModel", "settingsViewModel", "wizardViewModel"],
         ["#state_wrapper", "#drop_overlay"]
     ]);
 });
