@@ -249,8 +249,8 @@ default_settings = {
 		],
 		"cutoff": 30
 	},
-	"printerProfiles": {
-		"default": None
+	"printerProfile": {
+		"default": "beethefirst"
 	},
 	"printerParameters": {
 		"pauseTriggers": [],
