@@ -1564,7 +1564,7 @@ $(function() {
             var data = {
                 "command": "defineSteps"
             };
-            data['Info'] = [self.measuredFilamentInput(), self.selectedFilamentExtCalibration()];
+            data['Info'] = [self.measuredFilamentInput()];
 
             $.ajax({
                 url: API_BASEURL + "maintenance/defineExtruderSteps",

@@ -399,11 +399,10 @@ def defineExtruderSteps():
     if response is not None:
         return response
 
-    if 'Info' in data and len(data['Info']) == 2:
-        selected_filament = data['Info'][1]
+    if 'Info' in data:
         measuredFilamentInput = data['Info'][0]
 
-        resp = printer.setExtruderStepsMM(measuredFilamentInput=measuredFilamentInput,extrudedAmmount=250)
+        resp = printer.setExtruderStepsMM(measuredFilamentInput=measuredFilamentInput, extrudedAmmount=250)
     else:
         resp = "Invalid input arguments."
 

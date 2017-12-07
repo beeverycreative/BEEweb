@@ -1203,7 +1203,7 @@ class BeePrinter(Printer):
 
         return
 
-    def setExtruderStepsMM(self, measuredFilamentInput=None,extrudedAmmount=250):
+    def setExtruderStepsMM(self, measuredFilamentInput=None, extrudedAmmount=250):
         """
         Sets extruder steps per mm
         :param extrudedAmmount: expected extruded ammount
@@ -1220,7 +1220,7 @@ class BeePrinter(Printer):
                 newSteps = currSteps * float(extrudedAmmount) / float(measuredFilamentInput)
                 return self._comm.setExtruderStepsMM('{0:.2f}'.format(newSteps))
             elif measuredFilamentInput is None:
-                return self._comm.setExtruderStepsMM('{0:.4f}'.format('441.3897'))
+                return self._comm.setExtruderStepsMM('{0:.4f}'.format(441.3897))
             else:
                 raise Exception('Invalid Extruder value input')
         except Exception as ex:
