@@ -591,7 +591,7 @@ BEEwb.main = {
                 // Calculates model dimensions
                 var bbox = new THREE.Box3().setFromObject( obj );
                 var size = bbox.getSize();
-                models_info.push({"name": obj.name, "dimensions": size});
+                models_info.push({"name": obj.name, "dimension_x": size.x, "dimension_y": size.y, "dimension_z": size.z });
             }
         }
 

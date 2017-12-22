@@ -1173,13 +1173,13 @@ class BeePrinter(Printer):
         """
         try:
             if self._currentPrintStatistics is not None:
-                self._currentPrintStatistics.set_model_information(len(models_info), models_info)
+                self._currentPrintStatistics.set_model_information(models_info)
                 #self._save_usage_statistics()
             else:
                 self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(),
                                                                     self._stats.get_software_id())
 
-                self._currentPrintStatistics.set_model_information(len(models_info), models_info)
+                self._currentPrintStatistics.set_model_information(models_info)
 
             return True
         except Exception as ex:

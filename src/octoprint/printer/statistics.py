@@ -229,7 +229,6 @@ class PrintEventStatistics:
 		},
 		"filament_used": {"name": None, "type": None, "color": None, "brand": None, "quantity": 0.0},
 		"print_options": {"layer_height": 0, "heat_temperature": 210, "infill": None},
-		"model_file_origin": "stl",
 		"user_feedback": {"print_success": False, "print_rating": 0, "obs": None}
 	}
 	"""
@@ -318,20 +317,16 @@ class PrintEventStatistics:
 			del self._stats["model_information"]
 			self._dirty = True
 
-	def set_model_information(self, number_of_pieces=0, models=None):
+	def set_model_information(self, models=None):
 		if self._stats is not None:
-			self._stats["model_information"] = {
-				"number_of_pieces": number_of_pieces,
-				"models": models
-			}
-
 			# validates the models information
 			valid_models = []
 			if models is not None and len(models) > 0:
 				for m in models:
-					if "name" in m and "dimensions" in m:
+					if "name" in m and "dimension_x" in m and "dimension_y" in m and "dimension_z" in m:
 						valid_models.append(m)
 
+			self._stats["models"] = valid_models
 			self._dirty = True
 
 	def set_user_feedback(self, print_success=True, print_rating=5, obs=None):
