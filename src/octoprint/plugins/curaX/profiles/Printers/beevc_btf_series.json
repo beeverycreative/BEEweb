@@ -58,7 +58,11 @@
             "infill_wipe_dist": { "default_value": 0},
             "infill_before_walls": { "default_value": false },
             "skin_preshrink": { "default_value": 0.8},
+            "top_skin_preshrink": { "default_value": 0.8},
+            "bottom_skin_preshrink": { "default_value": 0.8},
             "expand_skins_expand_distance": { "default_value": 0.8},
+            "top_skin_expand_distance": { "default_value": 0.8},
+            "bottom_skin_expand_distance": { "default_value": 0.8},
             "max_skin_angle_for_expansion": { "default_value": 90},
             "min_skin_width_for_expansion": { "default_value": 0}
          },
@@ -90,7 +94,7 @@
 
         "travel":
         {
-        	"travel_retract_before_outer_wall": { "default_value": false },
+        	"travel_retract_before_outer_wall": { "default_value": true },
             "travel_avoid_distance": { "default_value": 1}
         },
 
@@ -107,6 +111,12 @@
         {
         	"coasting_enable": { "default_value": false },
             "support_skip_some_zags": { "default_value": false }
+        },
+
+        "experimental":
+        {
+            "carve_multiple_volumes": { "default_value": false },
+            "alternate_carve_order": { "default_value": false }
         }
     }
 }
