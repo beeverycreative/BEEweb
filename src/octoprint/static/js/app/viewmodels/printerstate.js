@@ -464,9 +464,9 @@ $(function() {
                 self.printerProfiles.requestData();
 
 				// Checks the necessary API endpoints to know if the maintenance wizard should be shown
-				self._isMaintenanceRequired(function () {
-					self.wizard.forceShowDialog();
-				});
+				//self._isMaintenanceRequired(function () {
+				//	self.wizard.forceShowDialog();
+				//});
 
             }
 
