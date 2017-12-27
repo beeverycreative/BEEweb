@@ -54,6 +54,7 @@ class BeePrinter(Printer):
         self._currentPrintStatistics = None
         self._currentFileAnalysis = None  # Kept for simple access to send estimations to the printer
         self._targetTemperature = None
+        self._printAfterSelect = False
 
         # Initializes the slicing manager for filament profile information
         self._slicingManager = SlicingManager(settings().getBaseFolder("slicingProfiles"), printerProfileManager)
@@ -1276,9 +1277,6 @@ class BeePrinter(Printer):
             # If the status from the printer is no longer printing runs the post-print trigger
             try:
                 if progress >= 1:
-                    # makes sure the thread that is communicating with the print progress is stopped
-                    self._comm.getCommandsInterface().stopStatusMonitor()
-
                     # Runs the print finish communications callback
                     self._comm.triggerPrintFinished()
 
@@ -1287,6 +1285,9 @@ class BeePrinter(Printer):
 
                     self._setProgressData()
                     self._resetPrintProgress()
+
+                    # makes sure the thread that is communicating with the print progress is stopped
+                    self._comm.getCommandsInterface().stopStatusMonitor()
 
             except Exception as ex:
                 self._logger.error(ex)
