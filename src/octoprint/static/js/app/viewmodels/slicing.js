@@ -668,6 +668,11 @@ $(function() {
             self.allViewModels = allViewModels;
         };
 
+		// This function is used to force the custom density radio button to be checked when the input box is clicked
+		self.setCustomDensityChecked = function () {
+			self.selDensity('Custom');
+		};
+
         /**
          * Collects and sends for statistics logging the current 3D models in the scene ready to be printed
          * @private
