@@ -1287,7 +1287,7 @@ class BeePrinter(Printer):
                     self._resetPrintProgress()
 
                     # makes sure the thread that is communicating with the print progress is stopped
-                    self._comm.getCommandsInterface().stopStatusMonitor()
+                    self._comm.getCommandsInterface().stopPrintStatusMonitor()
 
             except Exception as ex:
                 self._logger.error(ex)

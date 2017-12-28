@@ -239,7 +239,7 @@ class BeeCom(MachineCom):
         :return:
         """
         if self._beeCommands is not None:
-            self._beeCommands.stopStatusMonitor()
+            self._beeCommands.stopPrintStatusMonitor()
 
         if self._beeConn is not None:
             try:
@@ -669,7 +669,7 @@ class BeeCom(MachineCom):
         """
         if self._beeCommands is not None:
             # starts the progress status thread
-            self._beeCommands.startStatusMonitor(self._statusProgressQueueCallback)
+            self._beeCommands.startPrintStatusMonitor(self._statusProgressQueueCallback)
 
     def selectFile(self, filename, sd):
         """
@@ -1069,7 +1069,7 @@ class BeeCom(MachineCom):
         Function to be called by the BVC driver to shutdown the connection
         :return:
         """
-        self._callback.on_comm_force_disconnect()
+        self._callback.disconnect()
 
 
     def _preparePrintThread(self):
