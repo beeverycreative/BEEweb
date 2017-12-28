@@ -2065,3 +2065,6 @@ msgstr "Ordenar por Ficheiros, Pastas"
 #: src/octoprint/templates/sidebar/files_header.jinja2:20
 msgid "Mixed"
 msgstr "Misturar"
+
+msgid "NOTE: The platform adhesion options are disabled because the models on the platform are close to the edge of the print bed, therefore these options are not supported."
+msgstr "NOTA: As opções de adesão à plataforma estão desativadas porque os modelos na plataforma estão muito próximo do limite de impressão, e por isso estas opções não são suportadas."

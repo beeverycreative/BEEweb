@@ -45,6 +45,7 @@ $(function() {
         self.slicingDoneEstimationCallback = undefined; // Callback function to be called after the slicing event has finished
         self.estimatedPrintTime = ko.observable();
         self.estimatedFilament = ko.observable();
+        self.showAdhesionOptions = ko.observable(true);
 
         self.gcodeDownloadLink = ko.observable();
 
@@ -133,6 +134,14 @@ $(function() {
                 html = _.sprintf(gettext("There is no model on the platform. First import a model to print or estimate the print time."));
                 new PNotify({title: gettext("No model on the platform"), text: html, type: "warning", hide: false});
                 return;
+            }
+
+            if (BEEwb.helpers.isSceneOverAdhesionThreshold()) {
+            	self.showAdhesionOptions(false);
+            	self.platformAdhesion('disabled');
+            } else {
+            	self.showAdhesionOptions(true);
+            	self.platformAdhesion('None');
             }
 
             if (force === true) {

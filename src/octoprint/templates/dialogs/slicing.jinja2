@@ -96,21 +96,24 @@
                 <label class="control-label slice-option">{{ _('Platform Adhesion') }}</label>
                     <div class="control-group">
                         <div class="controls">
-                            <input type="radio" name="platform" id="plat1" data-bind="checked: platformAdhesion" value="None" checked/>
+                            <input type="radio" name="platform" id="plat1" data-bind="checked: platformAdhesion, disable: !showAdhesionOptions()"
+                            value="None" checked/>
                                 <label class="radio " for="plat1">
                                     <span class="icon plat1icon"></span>
                                     <div>{{ _('NONE') }}</div>
                                     <p></p>
                                 </label>
 
-                            <input type="radio" name="platform" id="plat3" data-bind="checked: platformAdhesion" value="Brim"/>
+                            <input type="radio" name="platform" id="plat3" data-bind="checked: platformAdhesion, disable: !showAdhesionOptions()"
+                            value="Brim"/>
                                  <label class="radio" for="plat3">
                                    <span class="icon plat3icon"></span>
                                     <div>{{ _('BRIM') }}</div>
                                     <p></p>
                                     <!--<small>{{ _('This option creates a base that will allow the model to adhere to the table and help avoid warping. The raft may be hard to remove from the model, so only use when needed.') }}</small>-->
                                 </label>
-                            <input type="radio" name="platform" id="plat2" data-bind="checked: platformAdhesion" value="Raft"/>
+                            <input type="radio" name="platform" id="plat2" data-bind="checked: platformAdhesion, disable: !showAdhesionOptions()"
+                            value="Raft"/>
                                  <label class="radio" for="plat2">
                                     <span class="icon plat2icon"></span>
                                     <div>{{ _('RAFT') }}</div>
@@ -118,6 +121,10 @@
                                     <!--<small>{{ _('This option creates a base that will allow the model to adhere to the table and help avoid warping. The raft may be hard to remove from the model, so only use when needed.') }}</small>-->
                                 </label>
                         </div>
+
+						<div data-bind="visible: !showAdhesionOptions()">
+							<span>{{ _('NOTE: The platform adhesion options are disabled because the models on the platform are close to the edge of the print bed, therefore these options are not supported.') }}</span>
+						</div>
                     </div>
                 <label class="control-label slice-option"> {{ _('Support') }}</label>
                     <div class="control-group">

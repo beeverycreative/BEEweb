@@ -583,6 +583,11 @@ BEEwb.main = {
         window.removeEventListener('keyup', BEEwb.events.onKeyUp);
     },
 
+	/**
+	 * Gets the models information of the current models on the print bed
+	 *
+	 * @returns {Array}
+	 */
     getSceneModelsInformation: function () {
         var models_info = [];
         for (var i=0; i < this.objects.children.length; i++) {
@@ -596,5 +601,51 @@ BEEwb.main = {
         }
 
         return models_info;
-    }
+    },
+
+	/**
+	 * Gets the current scene bounding box maximum and minimum dimensions in the x,y,z axis
+	 * @returns {*}
+	 */
+    getSceneBoundingBox: function () {
+    	var result = null;
+
+    	for (var i=0; i < this.objects.children.length; i++) {
+            var obj = this.objects.children[i];
+            if (obj !== null) {
+                // Calculates model bounding box
+				var bbox = new THREE.Box3().setFromObject( obj );
+
+				if (result === null) {
+					result = {
+						"max_x": bbox.max.x, "min_x": bbox.min.x,
+						"max_y": bbox.max.y, "min_y": bbox.min.y,
+						"max_z": bbox.max.z, "min_z": bbox.min.z
+					}
+				} else {
+					if (bbox.max.x > result["max_x"]) {
+                		result["max_x"] = bbox.max.x;
+					}
+					if (bbox.max.y > result["max_y"]) {
+						result["max_y"] = bbox.max.y;
+					}
+					if (bbox.max.z > result["max_z"]) {
+						result["max_z"] = bbox.max.z;
+					}
+
+					if (bbox.min.x < result["min_x"]) {
+						result["min_x"] = bbox.min.x;
+					}
+					if (bbox.min.y < result["min_y"]) {
+						result["min_y"] = bbox.min.y;
+					}
+					if (bbox.min.z < result["min_z"]) {
+						result["min_z"] = bbox.min.z;
+					}
+				}
+            }
+        }
+
+        return result;
+	}
 };

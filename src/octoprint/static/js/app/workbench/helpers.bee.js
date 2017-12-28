@@ -129,6 +129,31 @@ BEEwb.helpers.objectOutOfBounds = function( obj, bboxSize ) {
 };
 
 /**
+ * Calculates if the total bounding box created by all the objects in the print bed
+ * are over a pre defined adhesion threshold, after which the adhesion print options
+ * cannot be used.
+ *
+ * @returns {boolean}
+ */
+BEEwb.helpers.isSceneOverAdhesionThreshold = function( ) {
+    var sceneBoundingBox = BEEwb.main.getSceneBoundingBox();
+    var printingSpace = [BEEwb.main.bedWidth, BEEwb.main.bedDepth, BEEwb.main.bedHeight];
+    var ADHESION_THRESHOLD = 5;
+
+    if ( sceneBoundingBox["max_x"] > ((printingSpace[0] / 2) - ADHESION_THRESHOLD)
+    	|| sceneBoundingBox["min_x"] < -((printingSpace[0] / 2) - ADHESION_THRESHOLD)) {
+        return true;
+    }
+
+    if ( sceneBoundingBox["max_y"] > ((printingSpace[1] / 2) - ADHESION_THRESHOLD)
+    	|| sceneBoundingBox["min_y"] < -((printingSpace[1] / 2) - ADHESION_THRESHOLD)) {
+        return true;
+    }
+
+    return false;
+};
+
+/**
  * Converts radians to degrees
  *
  * param radians: Angle in radians value
