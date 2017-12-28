@@ -463,6 +463,7 @@ $(function() {
             if (prevClosed === true && self.isErrorOrClosed() === false && self.isReady() === true) {
                 self.printerProfiles.requestData();
 
+				// TODO: Remove comment to reactivate maintenance alerts on connect
 				// Checks the necessary API endpoints to know if the maintenance wizard should be shown
 				//self._isMaintenanceRequired(function () {
 				//	self.wizard.forceShowDialog();

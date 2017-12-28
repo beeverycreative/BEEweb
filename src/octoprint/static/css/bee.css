@@ -356,8 +356,8 @@ a.brand{
 }
 .xl-icon{
     background-size: 100% 100% !important;
-    width: 256px;
-    height: 256px;
+    width: 128px;
+    height: 128px;
     display: inline-block;
     vertical-align: middle;
 }
@@ -1306,7 +1306,10 @@ input + span.add-on{
     margin-left: -487px;
 }
 #wizard_dialog .modal-body .full-sized-box { padding: 0px !important; }
-
+#wizard_dialog {
+    width: 800px !important;
+    margin-left: -487px !important;
+}
 /*---------------------SPECIFIC MODAL STRUCTURES ---------------------*/
 #settings_dialog .modal-body .full-sized-box,
 #usersettings_dialog .modal-body .full-sized-box {
@@ -1665,6 +1668,10 @@ td.settings_users_actions .m-icon {
     border: none !important;
     box-shadow: none !important;
     text-shadow: none !important;
+}
+
+#wizard_plugin_maintenancewizard_extrudercalibration {
+	margin-left: -23px !important;
 }
 
 .slider .slider-selection{
