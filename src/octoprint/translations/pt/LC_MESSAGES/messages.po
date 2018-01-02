@@ -2068,3 +2068,12 @@ msgstr "Misturar"
 
 msgid "NOTE: The platform adhesion options are disabled because the models on the platform are close to the edge of the print bed, therefore these options are not supported."
 msgstr "NOTA: As opções de adesão à plataforma estão desativadas porque os modelos na plataforma estão muito próximo do limite de impressão, e por isso estas opções não são suportadas."
+
+msgid "Reset Printer Configurations"
+msgstr "Redefinir Configurações da Impressora"
+
+msgid "You are about to reset your printer configurations to the factory settings. By doing so, the filament information and the calibration settings for the nozzle and the table will be erased. After this you will have to run the respective maintenance operations again."
+msgstr "Estás prestes a redefinir as configurações da impressora para as definições de fábrica. Depois disto, a informação do filamento e as definições de calibração da mesa e do extrusor serão apagadas, sendo necessário voltar a executar as respectivas operações de manutenção."
+
+msgid "Printer configurations set to factory defaults!"
+msgstr "Configurações da impressora alteradas para as definições iniciais de fábrica!"

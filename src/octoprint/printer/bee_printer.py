@@ -1242,6 +1242,19 @@ class BeePrinter(Printer):
 
         return False
 
+    def resetPrinterSettings(self):
+        try:
+            if self._comm is None:
+                self._logger.info("Cannot reset printer configuration settings: printer not connected or currently busy")
+                return False
+
+            return self._comm.reset_printer_settings()
+
+        except Exception as ex:
+            self._logger.error(ex)
+
+        return False
+
     # # # # # # # # # # # # # # # # # # # # # # #
     ##########  CALLBACK FUNCTIONS  #############
     # # # # # # # # # # # # # # # # # # # # # # #

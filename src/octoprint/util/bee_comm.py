@@ -182,6 +182,24 @@ class BeeCom(MachineCom):
                 _logger.error("No firmware file matching the configuration for printer %s found" % conn_printer)
 
 
+    def reset_printer_settings(self):
+        """
+        Resets the printer configuration settings to the factory default
+
+        :return: True if the command succeeded or False if not
+        """
+        if not self.isOperational():
+            return None
+        try:
+            if self._beeCommands is not None:
+                self._beeCommands.resetPrinterConfig()
+                return True
+        except Exception as ex:
+            self._logger.error(ex)
+
+        return False
+
+
     def sendCommand(self, cmd, cmd_type=None, processed=False, force=False, on_sent=None):
         """
         Sends a custom command through the open connection

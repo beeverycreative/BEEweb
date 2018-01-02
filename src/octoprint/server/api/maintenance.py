@@ -407,3 +407,15 @@ def defineExtruderSteps():
         resp = "Invalid input arguments."
 
     return jsonify({"response": resp})
+
+
+@api.route("/maintenance/reset_printer_configs", methods=["POST"])
+@restricted_access
+def resetPrinterConfigurations():
+
+    if not printer.is_operational():
+        return make_response("Printer is not operational", 409)
+
+    resp = printer.resetPrinterSettings()
+
+    return jsonify({"response": resp})

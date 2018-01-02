@@ -2033,3 +2033,12 @@ msgstr "Gemischt"
 
 msgid "NOTE: The platform adhesion options are disabled because the models on the platform are close to the edge of the print bed, therefore these options are not supported."
 msgstr "HINWEIS: Die Optionen für die Plattform Haftung sind deaktiviert, da sich die Modelle auf der Plattform nahe am Rand des Druckbettes befinden. Daher werden diese Optionen nicht unterstützt."
+
+msgid "Reset Printer Configurations"
+msgstr "Druckerkonfigurationen zurücksetzen"
+
+msgid "You are about to reset your printer configurations to the factory settings. By doing so, the filament information and the calibration settings for the nozzle and the table will be erased. After this you will have to run the respective maintenance operations again."
+msgstr "Sie sind dabei, Ihre Druckerkonfigurationen auf die Werkseinstellungen zurückzusetzen. Auf diese Weise werden die Filamentinformationen und die Kalibrierungseinstellungen für die Düse und die Tabelle gelöscht. Danach müssen Sie die entsprechenden Wartungsarbeiten erneut durchführen."
+
+msgid "Printer configurations set to factory defaults!"
+msgstr "Druckerkonfigurationen auf Werkseinstellungen gesetzt!"

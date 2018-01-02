@@ -79,6 +79,34 @@ $(function() {
             return deferred.promise();
         };
 
+        self.resetPrinterSettings = function () {
+			var deferred = $.Deferred();
+
+			var confirmationCallback = function() {
+				$.ajax({
+					url: API_BASEURL + "maintenance/reset_printer_configs",
+					type: "POST",
+					dataType: "json",
+					success: function() {
+						showMessageDialog(gettext("Printer configurations set to factory defaults!"))
+					},
+					error: function() {
+					}
+				});
+            };
+
+			showConfirmationDialog({
+				message: gettext("You are about to reset your printer configurations to the factory settings. By doing so, the filament information and the calibration settings for the nozzle and the table will be erased. After this you will have to run the respective maintenance operations again."),
+				onproceed: function() {
+					confirmationCallback();
+				},
+				oncancel: function() {
+					deferred.reject("cancelled", arguments);
+				}
+			});
+
+		};
+
         self.onUserLoggedIn = function(user) {
             if (user.admin) {
                 self.requestData();
