@@ -110,13 +110,9 @@
         "experimental":
         {
         	"coasting_enable": { "default_value": false },
-            "support_skip_some_zags": { "default_value": false }
-        },
-
-        "experimental":
-        {
-            "carve_multiple_volumes": { "default_value": false },
+            "support_skip_some_zags": { "default_value": false },
+		    "carve_multiple_volumes": { "default_value": false },
             "alternate_carve_order": { "default_value": false }
-        }
-    }
+   		 }		
+	}
 }
