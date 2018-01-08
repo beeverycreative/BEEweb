@@ -77,6 +77,15 @@ Install the tool lessc using npm, and compile the main less file using the follo
 
 $ lessc -x octoprint.less ../css/octoprint.css
 
+
+Translations
+------------
+
+If you to generate the base .pot file with all the translations, run the following command in the root of the project:
+
+$ pybabel extract -F babel.cfg -k lazy_gettext -o translations/messages.pot .
+
+
 If you want to generate the translation binary files from the .po files run the following command:
 
 $ msgfmt messages.po --output-file messages.mo
