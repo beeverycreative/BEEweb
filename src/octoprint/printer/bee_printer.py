@@ -1173,14 +1173,11 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            if self._currentPrintStatistics is not None:
-                self._currentPrintStatistics.set_model_information(models_info)
-                #self._save_usage_statistics()
-            else:
+            if self._currentPrintStatistics is None:
                 self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(),
                                                                     self._stats.get_software_id())
 
-                self._currentPrintStatistics.set_model_information(models_info)
+            self._currentPrintStatistics.set_model_information(models_info)
 
             return True
         except Exception as ex:
@@ -1199,9 +1196,12 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            if self._currentPrintStatistics is not None:
-                self._currentPrintStatistics.set_print_options(resolution, density, platform_adhesion, support, advanced_options)
-                return True
+            if self._currentPrintStatistics is None:
+                self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(),
+                                                                    self._stats.get_software_id())
+            self._currentPrintStatistics.set_print_options(resolution, density, platform_adhesion, support, advanced_options)
+
+            return True
 
         except Exception as ex:
             self._logger.error('Error saving Print options information for statistics: %s' % str(ex))
@@ -1770,8 +1770,17 @@ class BeePrinter(Printer):
         filament = self.getSelectedFilamentProfile()
         if filament is not None:
             filament_amount = self._printJobFilamentLength()  # amount in mm
-            self._currentPrintStatistics.set_filament_used(filament.display_name, 'PLA', filament.name,
-                                                           "Beeverycreative", filament_amount)
+
+            display_name = filament.display_name
+            material = 'PLA'
+            if 'inherits' in filament.data:
+                material = filament.data['inherits']['name']
+
+            brand = 'Undefined'
+            if filament.brand:
+                brand = filament.brand
+
+            self._currentPrintStatistics.set_filament_used(display_name, material, filament.name, brand, filament_amount)
 
     def _save_usage_statistics(self):
         """
