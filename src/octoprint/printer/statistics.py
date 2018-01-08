@@ -229,7 +229,7 @@ class PrintEventStatistics:
 		},
 		"filament_used": {"name": None, "type": None, "color": None, "brand": None, "quantity": 0.0},
 		"print_options": {"layer_height": 0, "heat_temperature": 210, "infill": None},
-		"user_feedback": {"print_success": False, "print_rating": 0, "obs": None}
+		"user_feedback": {"print_success": False, "print_rating": 0, "observations": None}
 	}
 	"""
 	PRINT_BASE_STATS = {
@@ -299,10 +299,12 @@ class PrintEventStatistics:
 	def set_filament_used(self, name, filament_type=None, color=None, brand=None, quantity=0.0):
 		if self._stats is not None:
 			self._stats["filament_used"] = {
-				"name": name,
-				"type": filament_type,
-				"color": color,
-				"brand": brand,
+				"filament": {
+					"name": name,
+					"type": filament_type,
+					"color": color,
+					"brand": brand,
+				},
 				"quantity": quantity
 			}
 			self._dirty = True
@@ -334,7 +336,7 @@ class PrintEventStatistics:
 			self._stats["user_feedback"] = {
 				"print_success": print_success,
 				"print_rating": print_rating,
-				"obs": obs
+				"observations": obs
 			}
 			self._dirty = True
 
