@@ -157,11 +157,10 @@ def install_source(python_executable, folder, user=False, sudo=False):
     settings_folder = settings(init=True).getBaseFolder('base')
     try:
         copy_tree(folder + '/firmware', settings_folder + '/firmware')
+        print("Firmware files installed.")
     except Exception as ex:
         raise RuntimeError(
             "Could not update, copying the firmware files to respective settings directory failed with error: %s" % ex.message)
-    finally:
-        print("Firmware files installed.")
 
 
     # Copies the CuraEngine files to the settings directory
@@ -170,12 +169,22 @@ def install_source(python_executable, folder, user=False, sudo=False):
     try:
         # copies the files in the /etc directory
         copy_tree(folder + '/src/octoprint/plugins/curaX/profiles', settings_folder + '/slicingProfiles/curaX')
+        print("CuraEngine files installed.")
     except Exception as ex:
         raise RuntimeError(
             "Could not update, copying the CuraEngine files to respective settings directory failed with error: %s" % ex.message)
-    finally:
-        print("CuraEngine files installed.")
 
+
+    # Removes print statistics files in order to ensure valid data
+    print(">>> Resetting print statistics files...")
+    try:
+        import os
+        print_stats_path = settings_folder + '/statistics/print_stats.json'
+        if os.path.exists(print_stats_path):
+            os.remove(print_stats_path)
+        print("Print statistics removed.")
+    except Exception as ex:
+        print('Error while resetting statistics files: ' + ex.message)
 
 def parse_arguments():
     import argparse
