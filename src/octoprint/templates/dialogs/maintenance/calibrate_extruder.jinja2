@@ -26,7 +26,7 @@
                         <div class="span8">
                             <p>{{ _('Please select the correct code for the filament. You can find that code on the spool, (e.g: A101 - Transparent).') }}
                             </p>
-                            <p><h4><strong>{{ _('Please note that you will need bright color PLA for this procedure.') }}</strong></h4>
+                            <p><h5><strong>{{ _('Please note that you will need bright color PLA for this procedure.') }}</strong></h5>
                             </p>
                         </div>
                     </div>
@@ -118,15 +118,23 @@
 
 <div id="extCalStep4" class="hidden">
     <br/>
+    <div class="span2"></div>
+    <div class="span4">
+        <p><strong>{{ _('Internal spool holder:') }}</strong></p>
+    </div>
+    <div class="span1"></div>
+    <div class="span4">
+        <p><strong>{{ _('External spool holder:') }}</strong></p>
+    </div>
+    <div class="span1"></div>
+    <br/>
     <div class="row-fluid">
-        <div class="span1"></div>
         <div class="span5 text-center">
             <img src="{{ url_for('static', filename='img/maintenance/mark_filament.gif') }}" />
         </div>
         <div class="span5 text-center">
             <img src="{{ url_for('static', filename='img/maintenance/mark_filament_external.gif') }}" />
         </div>
-        <div class="span1"></div>
     </div>
     <br/>
     <br/>
@@ -136,13 +144,11 @@
             <div class="span1"></div>
             <div class="span4">
                 <br>
-                <p><strong>{{ _('Internal spool holder:') }}</strong></p>
                 <p>{{ _('Use the filament inlet to draw a line in the filament. Mantain the filament strech while doing this step.') }}</p>
             </div>
             <div class="span1"></div>
             <div class="span4">
                 <br>
-                <p><strong>{{ _('External spool holder:') }}</strong></p>
                 <p>{{ _('Stretch the filament loaded and use a 30cm+ ruler to draw a mark at 25cm.') }}</p>
             </div>
             <div class="span1"></div>
@@ -152,15 +158,24 @@
 
 <div id="extCalStep5" class="hidden">
     <br />
+    <div class="span2"></div>
+    <div class="span4">
+        <p><strong>{{ _('Internal spool holder:') }}</strong></p>
+    </div>
+    <div class="span1"></div>
+    <div class="span4">
+        <p><strong>{{ _('External spool holder:') }}</strong></p>
+    </div>
+    <div class="span1"></div>
+
+    <br />
     <div class="row-fluid">
-        <div class="span1"></div>
         <div class="span5 text-center">
             <img src="{{ url_for('static', filename='img/maintenance/mark_filament.gif') }}" />
         </div>
         <div class="span5 text-center">
             <img src="{{ url_for('static', filename='img/maintenance/mark_filament_external.gif') }}" />
         </div>
-        <div class="span1"></div>
     </div>
     <br />
     <br />
@@ -171,12 +186,10 @@
         <br>
         <div class="span1"></div>
         <div class="span4">
-            <p><strong>{{ _('Internal spool holder:') }}</strong></p>
             <p>{{ _('Use the filament inlet to draw a line in the filament. Mantain the filament streched while doing this step.') }}</p>
         </div>
         <div class="span1"></div>
         <div class="span4">
-            <p><strong>{{ _('External spool holder:') }}</strong></p>
             <p>{{ _('Stretch the filament loaded and use a 30cm+ ruler to draw a mark at 25cm.') }}</p>
         </div>
         <div class="span1"></div>
