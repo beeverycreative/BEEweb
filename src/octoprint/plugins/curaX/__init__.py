@@ -154,7 +154,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		return dict(
 			cura_engine=None,
 			default_profile=None,
-			debug_logging=False
+			debug_logging=True
 		)
 
 	##~~ SlicerPlugin API
