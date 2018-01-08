@@ -1188,6 +1188,26 @@ class BeePrinter(Printer):
 
             return False
 
+    def savePrintOptions(self, resolution, density, platform_adhesion, support, advanced_options=None):
+        """
+        Saves the print options information about the print/slicing job
+        :param resolution:
+        :param density:
+        :param platform_adhesion:
+        :param support:
+        :param advanced_options:
+        :return:
+        """
+        try:
+            if self._currentPrintStatistics is not None:
+                self._currentPrintStatistics.set_print_options(resolution, density, platform_adhesion, support, advanced_options)
+                return True
+
+        except Exception as ex:
+            self._logger.error('Error saving Print options information for statistics: %s' % str(ex))
+
+        return False
+
     def getExtruderStepsMM(self):
         """
         Gets extruder steps per mm

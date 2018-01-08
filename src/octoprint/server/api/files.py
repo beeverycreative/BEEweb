@@ -548,6 +548,9 @@ def gcodeFileCommand(filename, target):
 		if currentFilename == full_path and currentOrigin == target and (printer.is_printing() or printer.is_paused()):
 			make_response("Trying to slice into file that is currently being printed: %s" % full_path, 409)
 
+		# registers print/slicing options for statistics before any changes to the data variable
+		printer.savePrintOptions(data["resolution"], data["profile.fill_density"], data["profile.platform_adhesion"], data["profile.support"])
+
 		if "profile" in data.keys() and data["profile"]:
 			profile = data["profile"]
 			del data["profile"]

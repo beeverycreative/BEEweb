@@ -309,6 +309,32 @@ class PrintEventStatistics:
 			}
 			self._dirty = True
 
+	def set_print_options(self, resolution, density, platform_adhesion, support, advanced_options=None):
+		"""
+		Saves the options used for the print
+		:param resolution:
+		:param density:
+		:param platform_adhesion:
+		:param support:
+		:param advanced_options: dict object ready to be json serialized into a string
+		:return:
+		"""
+		import json
+		if self._stats is not None:
+			self._stats["print_options"] = {
+				"resolution": resolution,
+				"density": density,
+				"platform_adhesion": platform_adhesion,
+				"support": support,
+				"advanced_options": json.dumps(advanced_options)
+			}
+			self._dirty = True
+
+	def remove_print_options(self):
+		if self._stats is not None and "print_options" in self._stats:
+			del self._stats["print_options"]
+			self._dirty = True
+
 	def remove_filament_used(self):
 		if self._stats is not None and "filament_used" in self._stats:
 			del self._stats["filament_used"]
