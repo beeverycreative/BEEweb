@@ -118,8 +118,20 @@ BEEwb.events.onKeyDown = function( event ) {
         }
     } else {
         if (event.keyCode == 46){
+        	// checks if any of the axis input boxes has focus and prevents the deletiong of the model in that case
+			var inputBoxActive = false;
+			var axisInputBoxes = $('.axis-input-box');
+			axisInputBoxes.each(function () {
+				if ($(this).is(':focus')) {
+					inputBoxActive = true;
+					return;
+				}
+			});
+
             // Delete model
-            BEEwb.transformOps.removeSelected();
+            if (!inputBoxActive) {
+            	BEEwb.transformOps.removeSelected();
+            }
         }
     }
 };
