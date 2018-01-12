@@ -345,6 +345,11 @@ class PrintEventStatistics:
 			del self._stats["models"]
 			self._dirty = True
 
+	def remove_total_print_time(self):
+		if self._stats is not None and "total_print_time" in self._stats:
+			del self._stats["total_print_time"]
+			self._dirty = True
+
 	def set_model_information(self, models=None):
 		if self._stats is not None:
 			# validates the models information

@@ -62,7 +62,6 @@ class BeePrinter(Printer):
         self._currentFilamentProfile = None
         self._currentNozzle = None
         self._currentFirmware = None
-        self._currentPrintOptions = None
 
         # We must keep a copy of the _currentFile variable (from the comm layer) to allow the situation of
         # disconnecting the printer and maintaining any selected file information after a reconnect is done
@@ -1406,7 +1405,6 @@ class BeePrinter(Printer):
 
             # we can close the current print job statistics
             self._currentPrintStatistics = None
-            self._currentPrintOptions = None
 
 
     def on_print_cancelled_delete_file(self, event, payload):
@@ -1441,10 +1439,10 @@ class BeePrinter(Printer):
         # log print statistics
         if not self.isRunningCalibrationTest() and self._currentPrintStatistics is not None:
             # total print time in seconds
-            total_print_time = self._comm.getCleanedPrintTime()
+            total_print_time = round(self._comm.getCleanedPrintTime(), 0)
             if total_print_time is None or total_print_time <= 0:
                 #this means that probably the printer was disconnected during the print the actual print job lost it's information
-                total_print_time = self._elapsedTime
+                total_print_time = round(self._elapsedTime, 0)
             self._currentPrintStatistics.set_total_print_time(round(total_print_time, 1))
 
             self._currentPrintStatistics.set_print_finished(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
@@ -1453,7 +1451,7 @@ class BeePrinter(Printer):
 
             # TODO: This line should be removed after saveUserFeedback is re-activated again
             self._save_usage_statistics()
-            self._currentPrintOptions = None
+            self._currentPrintStatistics.remove_total_print_time()
 
         # un-selects the current file
         super(BeePrinter, self).unselect_file()
