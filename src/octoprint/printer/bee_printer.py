@@ -62,6 +62,7 @@ class BeePrinter(Printer):
         self._currentFilamentProfile = None
         self._currentNozzle = None
         self._currentFirmware = None
+        self._currentPrintOptions = None
 
         # We must keep a copy of the _currentFile variable (from the comm layer) to allow the situation of
         # disconnecting the printer and maintaining any selected file information after a reconnect is done
@@ -1358,7 +1359,8 @@ class BeePrinter(Printer):
             self._stats.register_print() # logs software statistics
             self._printerStats.register_print() # logs printer specific statistics
 
-            self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(), self._stats.get_software_id())
+            if self._currentPrintStatistics is None:
+                self._currentPrintStatistics = PrintEventStatistics(self.get_printer_serial(), self._stats.get_software_id())
 
             self._currentPrintStatistics.set_print_start(datetime.datetime.now().strftime('%d-%m-%Y %H:%M'))
             self._register_filament_statistics()
@@ -1404,6 +1406,7 @@ class BeePrinter(Printer):
 
             # we can close the current print job statistics
             self._currentPrintStatistics = None
+            self._currentPrintOptions = None
 
 
     def on_print_cancelled_delete_file(self, event, payload):
@@ -1450,6 +1453,7 @@ class BeePrinter(Printer):
 
             # TODO: This line should be removed after saveUserFeedback is re-activated again
             self._save_usage_statistics()
+            self._currentPrintOptions = None
 
         # un-selects the current file
         super(BeePrinter, self).unselect_file()

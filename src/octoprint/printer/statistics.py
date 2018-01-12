@@ -341,8 +341,8 @@ class PrintEventStatistics:
 			self._dirty = True
 
 	def remove_model_information(self):
-		if self._stats is not None and "model_information" in self._stats:
-			del self._stats["model_information"]
+		if self._stats is not None and "models" in self._stats:
+			del self._stats["models"]
 			self._dirty = True
 
 	def set_model_information(self, models=None):
@@ -386,6 +386,11 @@ class PrintEventStatistics:
 			del self._stats["firmware_version"]
 			self._dirty = True
 
+	def remove_print_options(self):
+		if self._stats is not None and "print_options" in self._stats:
+			del self._stats["print_options"]
+			self._dirty = True
+
 	def remove_redundant_information(self):
 		"""
 		This method is used to remove unnecessary information that is stored during the 'start' event
@@ -394,8 +399,7 @@ class PrintEventStatistics:
 		"""
 		self.remove_filament_used()
 		self.remove_model_information()
-		self.remove_software_version()
-		self.remove_firmware_version()
+		self.remove_print_options()
 
 	def save(self, force=False):
 		if not self._dirty and not force:
