@@ -19,7 +19,7 @@ from octoprint.events import eventManager, Events
 from octoprint.slicing import SlicingManager
 from octoprint.filemanager import FileDestinations
 from octoprint.util.comm import PrintingFileInformation
-from octoprint.printer.statistics import BaseStatistics, PrintEventStatistics, PrinterStatistics
+from octoprint.printer.statistics import BaseStatistics, PrintEventStatistics, PrinterStatistics, StatisticsServerClient
 from octoprint.printer.estimation import TimeEstimationHelper
 from octoprint.plugins.curaX import ProfileReader
 
@@ -1482,6 +1482,11 @@ class BeePrinter(Printer):
             if self._bvc_conn_thread is None and (self._comm is None or (self._comm is not None and not self._comm.isOperational())):
                 self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
                 self._bvc_conn_thread.start()
+
+        # Sends statistics to the server
+        stats_client = StatisticsServerClient()
+        #stats_client.send_base_statistics()
+        stats_client.send_printer_statistics()
 
 
     def on_client_disconnected(self, event, payload):

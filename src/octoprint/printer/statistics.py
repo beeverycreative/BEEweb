@@ -8,6 +8,7 @@ import os
 import json
 import logging
 import uuid
+import requests
 from octoprint.settings import settings
 
 class BaseStatistics:
@@ -430,3 +431,58 @@ class PrintEventStatistics:
 			raise
 		else:
 			return True
+
+
+class StatisticsServerClient:
+	"""
+	Class used as communication interface with the statistics server
+	"""
+	STATS_HOST = 'http://localhost'
+	STATS_PORT = 8000
+	STATS_AUTH = '9d0c438f972d8812231ee1098d26b172b98335c7'
+
+	_conn = None
+
+	def __init__(self):
+		self._logger = logging.getLogger(__name__)
+
+
+	def send_base_statistics(self):
+		try:
+			base_stats_file = os.path.join(settings().getBaseFolder('statistics'), "base_stats.json")
+
+			url = self.STATS_HOST + ':' + str(self.STATS_PORT) + '/api/general_stats'
+			request_headers = {'Content-type': 'application/json','Authorization': 'Token ' + self.STATS_AUTH}
+			with open(base_stats_file) as json_data:
+				payload = json.load(json_data)
+
+				resp = requests.post(url, json=payload, headers=request_headers)
+
+				if resp.status_code != requests.codes.created:
+					self._logger.error('Error uploading general usage statistics. Server response code: %s' % resp.status_code)
+					return
+
+				self._logger.info('General usage statistics uploaded with success')
+		except Exception as ex:
+			self._logger.error(ex)
+
+	def send_printer_statistics(self):
+		try:
+			import glob
+			url = self.STATS_HOST + ':' + str(self.STATS_PORT) + '/api/printer_stats'
+			request_headers = {'Content-type': 'application/json', 'Authorization': 'Token ' + self.STATS_AUTH}
+
+			path = os.path.join(settings().getBaseFolder('statistics'), "printer_stats_*.json")
+			for printer_stats_file in glob.glob(path):
+				with open(printer_stats_file) as json_data:
+					payload = json.load(json_data)
+
+					resp = requests.post(url, json=payload, headers=request_headers)
+
+					if resp.status_code != requests.codes.created:
+						self._logger.error('Error uploading printer (%s) usage statistics. Server response code: %s' %
+						(printer_stats_file, resp.status_code))
+					else:
+						self._logger.info('Printer (%s) usage statistics uploaded with success' % printer_stats_file)
+		except Exception as ex:
+			self._logger.error(ex)
