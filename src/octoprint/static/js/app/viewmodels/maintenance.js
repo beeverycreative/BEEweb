@@ -1419,7 +1419,6 @@ $(function() {
             $('#extCalStep2').addClass('hidden');
             $('#extCalStep1').addClass('hidden');
 
-            $('#maintenanceNextButton').removeClass('hidden');
         };
 
         //Insert Extruded filament
@@ -1521,12 +1520,8 @@ $(function() {
                 contentType: "application/json; charset=UTF-8",
                 data: JSON.stringify({}),
                 success: function() {
-                    self._hideMovingMessage();
-                    self.commandLock(false)
                 },
                 error: function() {
-                    self._hideMovingMessage();
-                    self.commandLock(false)
                 }
             });
 
@@ -1538,11 +1533,11 @@ $(function() {
                 data: JSON.stringify({}),
                 success: function() {
                     self._hideMovingMessage();
-                    self.commandLock(false)
+                    self.commandLock(false);
                 },
                 error: function() {
                     self._hideMovingMessage();
-                    self.commandLock(false)
+                    self.commandLock(false);
                 }
             });
         };
@@ -1573,7 +1568,6 @@ $(function() {
                 contentType: "application/json; charset=UTF-8",
                 data: JSON.stringify(data),
                 success: function(data) {
-
                     var response = data['response'];
 
                     if (response.indexOf('ok') > -1) {
@@ -1582,18 +1576,18 @@ $(function() {
                         self.commandLock(false);
                         self.operationLock(false);
 
+						self.okButtonEnable(true);
                     } else {
                         self.newStepsResponseError(true);
                         self.commandLock(false);
                     }
                 },
                 error: function() {
+                	self.newStepsResponseError(true);
                     self.commandLock(false);
                     self.operationLock(false);
                 }
             });
-
-            self.okButtonEnable(true);
         };
 
         /***************************************************************************/
@@ -1712,14 +1706,16 @@ $(function() {
                 if(self.processStage()==5)
                 {
                     return self.printerState.isOperational() && !self.commandLock()
-                        && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser() && self.selectedNozzle;
+                        && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser()
+                        && self.selectedNozzle;
                 }
             }
             if (self.changeFilament()) {
                 if(self.processStage() == 0 || self.processStage() == 1)
                 {
                     return  self.printerState.isOperational() && !self.commandLock()
-                        && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser() && self.selectedFilament;
+                        && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser()
+						&& self.selectedFilament;
                 }
                 if(self.processStage() == 2)
                 {
@@ -1738,7 +1734,8 @@ $(function() {
             if (self.calibrateExtruder()) {
                 if (self.processStage() == 0 || self.processStage() == 1) {
                     return self.printerState.isOperational() && !self.commandLock()
-                        && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser() && self.selectedFilamentExtCalibration;
+                        && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser()
+						&& self.selectedFilamentExtCalibration;
                 }
                 if(self.processStage() == 2 || self.processStage() == 3 || self.processStage() == 4)
                 {
