@@ -6,10 +6,10 @@
 	"options":
 	[
 		{
-			"id": "Geral",
+			"id": "Quality",
 			"list":
 			[		
-				{"id": "layer_height","DisplayName": "Layer Height","Type": "integer" }
+				{"id": "layer_height", 	"DisplayName": "Layer Height", 	"Type": "integer"}
 			]
 		},
 		{
@@ -17,7 +17,29 @@
 			"list":
 			[	
 				
-				{"id": "material_print_temperature", "DisplayName": "Material Print Temperature", "Type": "integer" }
+				{"id": "material_print_temperature", "DisplayName": "Material Print Temperature", "Type": "integer" },
+				{"id": "default_material_print_temperature", "DisplayName": "Deafult Printing Temperature", "Type": "integer" },
+				{"id": "material_print_temperature_layer_0", "DisplayName": "Printing Temperature Initial Layer", "Type": "integer" },
+				{"id": "retraction_amount", "DisplayName": "Retraction Distance", "Type": "integer" },
+				{"id": "retraction_speed", "DisplayName": "Retraction Speed", "Type": "integer" },
+				{"id": "retraction_extra_prime_amount", "DisplayName": "Retration Extra Prime Amout", "Type": "integer" }
+			]
+		},
+		{
+			"id": "Speed",
+			"list":
+			[		
+				{"id": "speed_infill", 	"DisplayName": "Infill Speed"    , "Type": "integer" },
+				{"id": "speed_wall_0", 	"DisplayName": "Outer Wall Speed", "Type": "integer" },
+				{"id": "speed_wall_x", 	"DisplayName": "Inner Wall Speed", "Type": "integer" },
+				{"id": "speed_layer_0", "DisplayName": "Initial Layer Speed", "Type": "integer" }
+			]
+		},
+		{
+			"id": "Cooling",
+			"list":
+			[		
+				{"id": "cool_fan_speed", 	"DisplayName": "Fan Speed", "Type": "integer" }
 			]
 		}
 	]

@@ -467,6 +467,227 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		sanitized_name = sanitized_name.replace(" ", "_")
 		return sanitized_name
 
+	def changeInheritsProfile(self,path , name, oldname):
+
+		for entry in os.listdir(path + "/Variants/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			# creates a shallow slicing profile
+			with open(path + '/Variants/' + entry) as data_file:
+				filament_json = json.load(data_file)
+
+			if 'inherits' in filament_json:
+				if filament_json['inherits'] == oldname:
+					filament_json['inherits'] = name
+					profilePath =path + "/Variants/" + "{name}".format(name=entry)
+					self._save_profile(profilePath,filament_json, allow_overwrite=True)
+
+		for entry in os.listdir(path + "/Quality/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			# creates a shallow slicing profile
+			with open(path + '/Quality/' + entry) as data_file:
+				filament_json = json.load(data_file)
+
+			if 'inherits' in filament_json:
+				if filament_json['inherits'] == oldname:
+					filament_json['inherits'] = name
+					profilePath =path + "/Variants/" + "{name}".format(name=entry)
+					self._save_profile(profilePath,filament_json, allow_overwrite=True)
+
+	def removeInheritsProfile(self,path,name):
+		for entry in os.listdir(path + "/Variants/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			# creates a shallow slicing profile
+			with open(path + '/Variants/' + entry) as data_file:
+				filament_json = json.load(data_file)
+
+			if 'inherits' in filament_json:
+				if filament_json['inherits'] == name:
+					profilePath = path + "/Variants/" + "{name}".format(name=entry)
+					os.remove(profilePath)
+
+		for entry in os.listdir(path + "/Quality/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			# creates a shallow slicing profile
+			with open(path + '/Quality/' + entry) as data_file:
+				filament_json = json.load(data_file)
+
+			if 'inherits' in filament_json:
+				if filament_json['inherits'] == name:
+					profilePath =path + "/Variants/" + "{name}".format(name=entry)
+					os.remove(profilePath)
+
+	def copy_quality_name(self, path,filament_id,quality,name):
+		overrides_values = {}
+		overrides_data ={}
+		filament_json = dict()
+		custom = False
+		for entry in os.listdir(path + "/Variants/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+			if filament_id.lower() not in entry.lower():
+				continue
+			# creates a shallow slicing profile
+			with open(path + '/Variants/' + entry) as data_file:
+				filament_json = json.load(data_file)
+				custom = True
+
+		if not custom:
+			for entry in os.listdir(path + "/Quality/"):
+				if not entry.endswith(".json"):
+					# we are only interested in profiles and no hidden files
+					continue
+				if filament_id.lower() not in entry.lower():
+					continue
+				# creates a shallow slicing profile
+				with open(path + '/Quality/' + entry) as data_file:
+					filament_json = json.load(data_file)
+
+		cnt = 0
+
+		for list in filament_json['PrinterGroups']:
+			for key in filament_json['PrinterGroups'][cnt]:
+				if 'quality' == key:
+					overrides_values = filament_json['PrinterGroups'][cnt][key]
+		cnt += 1
+
+		overrides_data[name] = overrides_values[quality]
+
+		filament_json['PrinterGroups'][0]['quality'].update(overrides_data)
+
+		profile_path = path + "/Variants/" + "{name}.json".format(name=filament_id)
+
+		self.save_edit_profile(profile_path, filament_json, allow_overwrite=True)
+
+
+	def change_quality_name(self, path,filament_id,quality,name):
+		filament_json = dict()
+		custom = False
+		for entry in os.listdir(path + "/Variants/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+			if filament_id.lower() not in entry.lower():
+				continue
+			# creates a shallow slicing profile
+			with open(path + '/Variants/' + entry) as data_file:
+				filament_json = json.load(data_file)
+				custom = True
+
+		if not custom:
+			for entry in os.listdir(path + "/Quality/"):
+				if not entry.endswith(".json"):
+					# we are only interested in profiles and no hidden files
+					continue
+				if filament_id.lower() not in entry.lower():
+					continue
+				# creates a shallow slicing profile
+				with open(path + '/Quality/' + entry) as data_file:
+					filament_json = json.load(data_file)
+
+		profile_path = path + "/Variants/" + "{name}.json".format(name=filament_id)
+		filament_json['PrinterGroups'][0]['quality'][name] = filament_json['PrinterGroups'][0]['quality'].pop(quality)
+		self.save_edit_profile(profile_path,filament_json,allow_overwrite=True)
+
+
+	def delete_quality_material(self,path,quality, name):
+		overrides_Values = {}
+		filament_json = dict()
+		custom = False
+
+		for entry in os.listdir(path + "/Variants/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			if name.lower() not in entry.lower():
+				continue
+
+			# creates a shallow slicing profile
+			with open(path + '/Variants/' + entry) as data_file:
+				filament_json = json.load(data_file)
+				custom = True
+
+		if not custom:
+			for entry in os.listdir(path + "/Quality/"):
+				if not entry.endswith(".json"):
+					# we are only interestedmost beautiful music ever  in profiles and no hidden files
+					continue
+
+				if name.lower() not in entry.lower():
+					continue
+
+				# creates a shallow slicing profile
+				with open(path + '/Quality/' + entry) as data_file:
+					filament_json = json.load(data_file)
+
+
+		del(filament_json['PrinterGroups'][0]['quality'][quality])
+		profile_path = path + "/Variants/" + "{name}.json".format(name=name)
+		self.save_edit_profile(profile_path,filament_json,allow_overwrite=True)
+
+
+	def new_quality(self,path,filament_id,quality):
+		overrides_values = {}
+		filament_json = dict()
+		filament_data = dict()
+		custom = False
+
+		with open(path + "/generic_profile.json") as data_file:
+				filament_json = json.load(data_file)
+				cnt = 0
+				for list in filament_json['PrinterGroups']:
+					for key in filament_json['PrinterGroups'][cnt]:
+						if 'quality' == key:
+							overrides_values = filament_json['PrinterGroups'][cnt][key]
+					cnt  += 1
+
+		overrides_values[quality] = overrides_values.pop('normal')
+
+		for entry in os.listdir(path + "/Variants/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			if filament_id.lower() not in entry.lower():
+				continue
+
+			# creates a shallow slicing profile
+			with open(path + '/Variants/' + entry) as data_file:
+				filament_data = json.load(data_file)
+				custom = True
+
+		if not custom:
+			for entry in os.listdir(path + "/Quality/"):
+				if not entry.endswith(".json"):
+					# we are only interestedmost beautiful music ever  in profiles and no hidden files
+					continue
+
+				if filament_id.lower() not in entry.lower():
+					continue
+
+				# creates a shallow slicing profile
+				with open(path + '/Quality/' + entry) as data_file:
+					filament_data = json.load(data_file)
+
+		filament_data['PrinterGroups'][0]['quality'].update(overrides_values)
+
+		profile_path = path + "/Variants/" + "{name}.json".format(name=filament_id)
+		self.save_edit_profile(profile_path, filament_data, allow_overwrite=True)
+
+
 	def isPrinterAndNozzleCompatible(self, filament_id, printer_id, nozzle_size):
 		return ProfileReader.isPrinterAndNozzleCompatible(filament_id, printer_id, nozzle_size)
 
@@ -485,11 +706,33 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 	def getOptionSettings(self, slicer_profile_path):
 		return ProfileReader.getOptions(slicer_profile_path)
 
-	def getProfileTeste(self, filament_id,slicer_profile_path, quality):
-		return ProfileReader.getFilamentOverridesTeste(filament_id, slicer_profile_path, quality)
+	def getProfileTeste(self, filament_id,slicer_profile_path, quality , nozzle):
+		return ProfileReader.getFilamentOverridesTeste(filament_id, slicer_profile_path, quality,nozzle)
 
 	def getSavedEditionFilament(self,filament_id, slicer_profile_path):
 		return ProfileReader.getSaveEditionFilament(filament_id, slicer_profile_path)
+
+	def getMaterialHeader (self,header_id, filament_id, slicer_profile_path):
+		return ProfileReader.getMaterialHeader(header_id,filament_id,slicer_profile_path)
+
+	def getRawMaterial(self,path):
+		return  ProfileReader.getRawMaterial(path)
+
+	def getRawProfile(self,path,material):
+		return  ProfileReader.getRawProfile(path,material)
+
+	def getMaterial(self,path,name):
+		return ProfileReader.getMaterial(path,name)
+
+	def getRawCopyMaterial(self,path, data):
+		return ProfileReader.getRawCopyMaterial(path,data)
+
+	def getRawCopyProfile(self,path, data):
+		return ProfileReader.getRawCopyProfile(path,data)
+
+
+
+
 
 __plugin_name__ = "CuraEngineX (>= 2.7)"
 __plugin_author__ = "Bruno Andrade"

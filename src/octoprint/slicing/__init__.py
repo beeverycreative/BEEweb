@@ -269,6 +269,8 @@ class SlicingManager(object):
 		    ~octoprint.slicing.exceptions.SlicerNotConfigured: The slice specified via ``slicer_name`` is not configured yet.
 		"""
 
+		print(resolution);
+
 		if callback_args is None:
 			callback_args = ()
 		if callback_kwargs is None:
@@ -472,6 +474,39 @@ class SlicingManager(object):
 
 		return TemporaryProfile(self.get_slicer(slicer).save_slicer_profile, profile, overrides=overrides)
 
+	def delete_material(self, slicer, name):
+
+		slicer_object_curaX = self.get_slicer(slicer)
+		slicer_object_curaX.removeInheritsProfile(self.get_slicer_profile_path(slicer),name)
+
+		try:
+			path = self.get_profile_path(slicer, name, must_exist=True)
+		except UnknownProfile:
+			return
+		os.remove(path)
+
+	def delete_quality_material(self,slicer,quality,name):
+		slicer_object_curaX = self.get_slicer(slicer)
+
+		slicer_object_curaX.delete_quality_material(self.get_slicer_profile_path(slicer),quality, name)
+
+
+
+	def change_quality_name(self,slicer,filament_id,quality,name):
+		slicer_object_curaX = self.get_slicer(slicer)
+		slicer_object_curaX.change_quality_name(self.get_slicer_profile_path(slicer),filament_id,quality,name)
+
+
+	def copy_quality_name(self,slicer,filament_id,quality,name):
+		slicer_object_curaX = self.get_slicer(slicer)
+		slicer_object_curaX.copy_quality_name(self.get_slicer_profile_path(slicer),filament_id,quality,name)
+
+
+	def new_quality(self,slicer, filament_id,quality):
+		slicer_object_curaX = self.get_slicer(slicer)
+		slicer_object_curaX.new_quality(self.get_slicer_profile_path(slicer),filament_id,quality)
+
+
 	def delete_profile(self, slicer, name):
 		"""
 		Deletes the profile ``name`` for the specified ``slicer``.
@@ -644,31 +679,155 @@ class SlicingManager(object):
 
 		return slicer_object_curaX.getOptionSettings(path)
 
-	def load_single_profile(self, slicer, name, quality):
+
+	def load_single_profile(self, slicer, name, quality , nozzle):
 		slicer_object_curaX = self.get_slicer(slicer)
 		try:
-			path = self.get_slicer_profile_path(slicer);
+			path = self.get_slicer_profile_path(slicer)
 		except IOError:
 			return None
 
-		return slicer_object_curaX.getProfileTeste(name, path, quality)
+		return slicer_object_curaX.getProfileTeste(name, path, quality, nozzle)
+
+	def load_raw_material(self,slicer):
+		slicer_object_curaX = self.get_slicer(slicer)
+		try:
+			path = self.get_slicer_profile_path(slicer)
+		except IOError:
+			return None
+
+		return slicer_object_curaX.getRawMaterial(path)
 
 
-	def edit_profile(self, slicer, name , data , quality):
+	def load_raw_profile(self,slicer, material):
+		slicer_object_curaX = self.get_slicer(slicer)
+		try:
+			path = self.get_slicer_profile_path(slicer)
+		except IOError:
+			return None
+
+		return slicer_object_curaX.getRawProfile(path,material)
+
+
+	def load_material(self, slicer, name):
+		slicer_object_curaX = self.get_slicer(slicer)
+		try:
+			path = self.get_slicer_profile_path(slicer)
+		except IOError:
+			return None
+
+		return slicer_object_curaX.getMaterial(path, name)
+
+
+	def edit_profile(self, slicer, name , data , quality, nozzle):
 		profile = self.get_slicer(slicer).getSavedEditionFilament(name, self.get_slicer_profile_path(slicer))
-		override_profile = self.get_slicer(slicer).getProfileTeste(name, self.get_slicer_profile_path(slicer), quality)
+		override_profile = self.get_slicer(slicer).getProfileTeste(name, self.get_slicer_profile_path(slicer), quality , nozzle)
 
 		for current in data:
-			if float(data[current]) != float(override_profile[current]['default_value']):
+			if current in override_profile:
+				if data[current] != override_profile[current]['default_value']:
+					cnt = 0
+					for list in profile['PrinterGroups']:
+						if quality in list['quality']:
+									profile['PrinterGroups'][cnt]['quality'][quality][current] = {'default_value':data[current]}
+						cnt += 1
+			else:
 				cnt = 0
 				for list in profile['PrinterGroups']:
 					if quality in list['quality']:
-								profile['PrinterGroups'][cnt]['quality'][quality][current] = {'default_value':data[current]}
+						profile['PrinterGroups'][cnt]['quality'][quality][current] = {'default_value': data[current]}
 					cnt += 1
 
 		path = self.get_slicer_profile_path(slicer) + "/Variants/" + "{name}.json".format(name=name)
 		self._save_edit_profile_to_path(slicer, path, profile)
 
+
+	def saveNewMaterial(self, slicer, data):
+
+		slicer_object_curaX = self.get_slicer(slicer)
+		slicerPath = self.get_slicer_profile_path(slicer)
+
+		profile = slicer_object_curaX.getRawCopyMaterial(slicerPath, data)
+
+		tempPath = self.get_slicer_profile_path(slicer) + "/Materials/" + "{name}.json".format(name=profile['id'])
+		count = 0;
+
+		while True:
+			count = count + 1
+			is_overwrite = os.path.exists(tempPath)
+
+			if is_overwrite:
+				tempPath = slicerPath + "/Materials/" + "{name} (copy {number} ).json".format(name=profile['id'], number=count)
+			else:
+				break
+
+		self._save_edit_profile_to_path(slicer, tempPath, profile)
+
+
+	def saveNewProfile(self,slicer,data):
+		slicer_object_curaX = self.get_slicer(slicer);
+		slicerPath = self.get_slicer_profile_path(slicer);
+
+		profile =slicer_object_curaX.getRawCopyProfile(slicerPath,data)
+
+		tempPath = self.get_slicer_profile_path(slicer) + "/Variants/" + "{name}.json".format(name=data['name'])
+
+		count = 0;
+
+		while True:
+			count = count + 1
+			is_overwrite = os.path.exists(tempPath)
+
+			if is_overwrite:
+				tempPath = slicerPath + "/Variants/" + "{name} (copy {number} ).json".format(name=profile['id'],
+																							  number=count)
+			else:
+				break
+
+
+		self._save_edit_profile_to_path(slicer, tempPath, profile)
+
+
+
+	def saveNewMaterialEdition(self,slicer, data,name):
+
+		slicer_object_curaX = self.get_slicer(slicer)
+		slicerPath = self.get_slicer_profile_path(slicer)
+
+
+		profile = slicer_object_curaX.getRawCopyMaterial(slicerPath, data)
+
+		if name != data['display_name']:
+
+			path = self.get_slicer_profile_path(slicer)+ "/Materials/" + "{name}.json".format(name=name)
+			os.remove(path)
+
+			if data['display_name'] == "":
+				tempPath = self.get_slicer_profile_path(slicer) + "/Materials/" + "{name}.json".format(name='Unknown')
+				slicer_object_curaX.changeInheritsProfile(self.get_slicer_profile_path(slicer),'Unknown',name)
+			else:
+				tempPath = self.get_slicer_profile_path(slicer) + "/Materials/" + "{name}.json".format(name=data['display_name'])
+				slicer_object_curaX.changeInheritsProfile(self.get_slicer_profile_path(slicer),data['display_name'],name)
+
+			count = 0;
+
+			while True:
+				count = count + 1
+				is_overwrite = os.path.exists(tempPath)
+
+				if is_overwrite:
+					if data['display_name'] == "":
+						tempPath = slicerPath + "/Materials/" + "{name} (copy {number} ).json".format(name='Unknown', number=count)
+					else:
+						tempPath = slicerPath + "/Materials/" + "{name} (copy {number} ).json".format(name=data['display_name'],number=count)
+
+				else:
+					break
+		else:
+			tempPath = self.get_slicer_profile_path(slicer) + "/Materials/" + "{name}.json".format(name=profile['id'])
+
+
+		self._save_edit_profile_to_path(slicer, tempPath, profile)
 
 	def _save_edit_profile_to_path(self, slicer, path, profile, allow_overwrite=True, overrides=None,require_configured=False):
 		self.get_slicer(slicer, require_configured=require_configured).save_edit_profile(path, profile,
@@ -782,16 +941,130 @@ class SlicingManager(object):
 					profile_name = entry[:-len(".json")]
 					brand= slicer_object_curaX.getFilamentHeader("brand", entry, slicer_profile_path + "/")
 
-					filament_id  = slicer_object_curaX.getFilamentHeader("inherits", entry, slicer_profile_path + "/")
+					# filament_id  = slicer_object_curaX.getFilamentHeader("inherits", entry, slicer_profile_path + "/")
 
-					filament_name = slicer_object_curaX.getFilamentHeaderName("name", filament_id, slicer_profile_path + "/")
+					# filament_name = slicer_object_curaX.getFilamentHeaderName("name", filament_id, slicer_profile_path + "/")
 
 					# creates a shallow slicing profile
-					# temp_profile = self._create_shallow_profile(profile_name, slicer, "json", require_configured, brand)
+					temp_profile = self._create_shallow_profile(profile_name, slicer, "json", require_configured, brand)
 
-					temp_profile = self._create_shallow_profile(filament_name, slicer, "json", require_configured, brand)
+					# temp_profile = self._create_shallow_profile(filament_name, slicer, "json", require_configured, brand)
 					profiles[profile_name] = temp_profile
 		return profiles
+
+	def all_materials_list_json(self, slicer, require_configured=False, from_current_printer=True, nozzle_size=None):
+		"""
+		Retrieves all profiles for slicer ``slicer`` but avoiding to parse every single profile file for better performance
+		If ``require_configured`` is set to True (default is False), only will return the profiles if the ``slicer``
+		is already configured, otherwise a :class:`SlicerNotConfigured` exception will be raised.
+		Arguments:
+			slicer (str): Identifier of the slicer for which to retrieve all slicer profiles
+			require_configured (boolean): Whether to require the slicer ``slicer`` to be already configured (True)
+				or not (False, default). If False and the slicer is not yet configured, a :class:`~octoprint.slicing.exceptions.SlicerNotConfigured`
+				exception will be raised.
+			from_current_printer (boolean): Whether to select only profiles from the current or default printer
+			nozzle_size (string) : value of nozzle size (ex: 400 )
+		Returns:
+			list of SlicingProfile: A list of all :class:`SlicingProfile` instances available for the slicer ``slicer``.
+		Raises:
+			~octoprint.slicing.exceptions.UnknownSlicer: The slicer ``slicer`` is unknown.
+			~octoprint.slicing.exceptions.SlicerNotConfigured: The slicer ``slicer`` is not configured and ``require_configured`` was True.
+		"""
+
+		if not slicer in self.registered_slicers:
+			raise UnknownSlicer(slicer)
+		if require_configured and not slicer in self.configured_slicers:
+			raise SlicerNotConfigured(slicer)
+		profiles = dict()
+		slicer_profile_path = self.get_slicer_profile_path(slicer)
+
+		if from_current_printer:
+			# adds an '_' to the end to avoid false positive string lookups for the printer names
+			printer_name = self._printer_profile_manager.get_current_or_default()['name']
+			printer_id = printer_name.replace(' ', '')
+			# removes the A suffix of some models for filament lookup matching
+			if printer_id.endswith('A'):
+				printer_id = printer_id[:-1]
+
+			printer_id = printer_id.upper()
+
+		slicer_object_curaX = self.get_slicer(slicer)
+		for folder in os.listdir(slicer_profile_path):
+			if folder == "Materials":
+				for entry in os.listdir(slicer_profile_path + "/" + folder):
+					if not entry.endswith(".json") or octoprint.util.is_hidden_path(entry):
+						# we are only interested in profiles and no hidden files
+						continue
+
+					# if from_current_printer:
+					# 	if not slicer_object_curaX.isPrinterAndNozzleCompatible(entry, printer_id, nozzle_size):
+					# 		continue
+
+					# path = os.path.join(slicer_profile_path, entry)
+					print(entry);
+					profile_name = entry[:-len(".json")]
+					brand = slicer_object_curaX.getMaterialHeader("brand", entry, slicer_profile_path + "/")
+					print(brand);
+					# filament_id  = slicer_object_curaX.getFilamentHeader("inherits", entry, slicer_profile_path + "/")
+
+					# filament_name = slicer_object_curaX.getFilamentHeaderName("name", filament_id, slicer_profile_path + "/")
+
+					# creates a shallow slicing profile
+					temp_profile = self._create_shallow_profile(profile_name, slicer, "json", require_configured, brand)
+
+					# temp_profile = self._create_shallow_profile(filament_name, slicer, "json", require_configured, brand)
+					profiles[profile_name] = temp_profile
+		return profiles
+
+
+	def all_Inherits_materials_list_json(self, slicer, material_id, require_configured=False, from_current_printer=True, nozzle_size=None):
+
+		if not slicer in self.registered_slicers:
+			raise UnknownSlicer(slicer)
+		if require_configured and not slicer in self.configured_slicers:
+			raise SlicerNotConfigured(slicer)
+		profiles = dict()
+		slicer_profile_path = self.get_slicer_profile_path(slicer)
+
+		if from_current_printer:
+			# adds an '_' to the end to avoid false positive string lookups for the printer names
+			printer_name = self._printer_profile_manager.get_current_or_default()['name']
+			printer_id = printer_name.replace(' ', '')
+			# removes the A suffix of some models for filament lookup matching
+			if printer_id.endswith('A'):
+				printer_id = printer_id[:-1]
+
+			printer_id = printer_id.upper()
+
+		slicer_object_curaX = self.get_slicer(slicer)
+		for folder in os.listdir(slicer_profile_path):
+			if folder == "Quality" or folder == "Variants":
+				for entry in os.listdir(slicer_profile_path + "/" + folder):
+					if not entry.endswith(".json") or octoprint.util.is_hidden_path(entry):
+						# we are only interested in profiles and no hidden files
+						continue
+
+					# if from_current_printer:
+					# 	if not slicer_object_curaX.isPrinterAndNozzleCompatible(entry, printer_id, nozzle_size):
+					# 		continue
+
+					# path = os.path.join(slicer_profile_path, entry)
+					profile_name = entry[:-len(".json")]
+					inherit = slicer_object_curaX.getFilamentHeader("inherits", entry, slicer_profile_path + "/")
+					if inherit == material_id :
+						brand   = slicer_object_curaX.getFilamentHeader("brand", entry, slicer_profile_path + "/")
+
+						# filament_id  = slicer_object_curaX.getFilamentHeader("inherits", entry, slicer_profile_path + "/")
+
+						# filament_name = slicer_object_curaX.getFilamentHeaderName("name", filament_id, slicer_profile_path + "/")
+
+						# creates a shallow slicing profile
+						temp_profile = self._create_shallow_profile(profile_name, slicer, "json", require_configured, brand)
+
+						# temp_profile = self._create_shallow_profile(filament_name, slicer, "json", require_configured, brand)
+						profiles[profile_name] = temp_profile
+		return profiles
+
 
 	def profiles_last_modified(self, slicer):
 		"""

@@ -24,6 +24,11 @@ $(function() {
         self.profiles = ko.observableArray();
         self.printerProfile = ko.observable();
 
+        self.qualityProfiles = ko.observableArray();
+        self.selQuality = ko.observable();
+
+        // self.selQual = ko.observableArray();
+
         self.colors = ko.observableArray();
         self.selColor = ko.observable();
         self.selDensity = ko.observable("Low");
@@ -53,6 +58,7 @@ $(function() {
         self.allViewModels = undefined;
 
         self.slicingInProgress = ko.observable(false); // this flag is used to control the visibility of the main Print... button
+
 
         self.slicersForFile = function(file) {
             if (file === undefined) {
@@ -119,9 +125,12 @@ $(function() {
             {"value": "select", "text": gettext("Select for printing")},
             {"value": "print", "text": gettext("Start printing")}
         ];
+
         self.afterSlicing = ko.observable("none");
 
         self.show = function(target, file, force, workbench, path) {
+
+
             self.estimationDialog(false);
             self.slicingDoneEstimationCallback = undefined;
             self.estimatedPrintTime(null);
@@ -161,7 +170,16 @@ $(function() {
 
                 // Flag to signal if the slicing window was called by the workbench
                 self.workbenchFile = workbench;
+
+                // self.updateAvailableQuality();
             });
+
+            $('#simple_settings_btn').text('Advanced');
+            $('#slicing_form').removeClass('hidden');
+            $('#slicing_configuration_dialog_advanced_settings').addClass('hidden');
+            $('#dynamic_advanced_options').empty();
+
+            // $(".form-horizontal").append('<label class="control-label slice-option">erg</label>')
         };
 
         self.slicer.subscribe(function(newValue) {
@@ -257,7 +275,6 @@ $(function() {
 
                     if (data.filament != null) {
                         self.colors().forEach(function(elem) {
-
                             if (elem == data.filament) {
                                 self.selColor(elem);
                             }
@@ -486,6 +503,8 @@ $(function() {
 
             self.estimationReady(false);
             self.slicingInProgress(false);
+
+
         };
 
         self.slice = function(modelToRemoveAfterSlice) {
@@ -534,41 +553,55 @@ $(function() {
                 data["delete_model"] = modelToRemoveAfterSlice;
             }
 
-            // Density support
-            if (self.selDensity() == "Low") {
-                data['profile.fill_density'] = 5;
-            } else if (self.selDensity() == "Medium") {
-                data['profile.fill_density'] = 10;
-            } else if (self.selDensity() == "High") {
-                data['profile.fill_density'] = 20;
-            } else if (self.selDensity() == "High+") {
-                data['profile.fill_density'] = 40;
-            } else if (self.selDensity() == "Custom") {
-                if (self.customDensity() > 100)
-                    self.customDensity(100);
-                if (self.customDensity() < 0)
-                    self.customDensity(0);
+            if($('#simple_settings_btn').text() == 'Advanced') {
 
-                data['profile.fill_density'] = self.customDensity();
+                // Density support
+                if (self.selDensity() == "Low") {
+                    data['profile.fill_density'] = 5;
+                } else if (self.selDensity() == "Medium") {
+                    data['profile.fill_density'] = 10;
+                } else if (self.selDensity() == "High") {
+                    data['profile.fill_density'] = 20;
+                } else if (self.selDensity() == "High+") {
+                    data['profile.fill_density'] = 40;
+                } else if (self.selDensity() == "Custom") {
+                    if (self.customDensity() > 100)
+                        self.customDensity(100);
+                    if (self.customDensity() < 0)
+                        self.customDensity(0);
+
+                    data['profile.fill_density'] = self.customDensity();
+                }
+
+                // BVC Raft Support
+                if (self.platformAdhesion() == 'Raft') {
+                    data['profile.platform_adhesion'] = 'raft';
+                } else if (self.platformAdhesion() == 'Brim') {
+                    data['profile.platform_adhesion'] = 'brim';
+                } else {
+                    data['profile.platform_adhesion'] = 'none';
+                }
+
+                // BVC Support
+                if (self.support() == 'Everywhere') {
+                    data['profile.support'] = 'everywhere';
+                } else if (self.support() == 'Touching Platform') {
+                    data['profile.support'] = 'buildplate';
+                } else {
+                    data['profile.support'] = 'none';
+                }
+
+            }else if($('#simple_settings_btn').text() == 'Basic'){
+                var _input = $('#dynamic_advanced_options').find('input , select');
+                _.each(_input,function (info) {
+                      if(info.type == 'checkbox')
+                          data['profile.' + info.id] = $('#' + info.id).is(':checked');
+                      else
+                         data['profile.'+ info.id] = $('#'+ info.id).val();
+                });
             }
 
-            // BVC Raft Support
-            if (self.platformAdhesion() == 'Raft') {
-                data['profile.platform_adhesion'] = 'raft';
-            } else if (self.platformAdhesion() == 'Brim') {
-                data['profile.platform_adhesion'] = 'brim';
-            } else {
-                data['profile.platform_adhesion'] = 'none';
-            }
-
-            // BVC Support
-            if (self.support() == 'Everywhere') {
-                data['profile.support'] = 'everywhere';
-            } else if (self.support() == 'Touching Platform') {
-                data['profile.support'] = 'buildplate';
-            } else {
-                data['profile.support'] = 'none';
-            }
+            console.log(data);
 
             OctoPrint.files.slice( self.target , self.file(),
                 data)
@@ -685,6 +718,148 @@ $(function() {
                 }
             });
         };
+
+
+        self.appendAdvancedOptions = function(){
+
+            $.ajax({
+               url: API_BASEURL+"slicing/curaX/getOptions",
+               type: "GET",
+               dataType:"json",
+               success: function(data){
+                   _.each(data.options,function(dinamic){
+                       $('#dynamic_advanced_options').append('<div data-toggle ="collapse"  data-parent="#accordion" href="#'+ dinamic.id +'" class="panel_collapse_options collapsed">' + '<span class = "sig">' + dinamic.id +'</span></div>' + '<div id="'+ dinamic.id+'" class="panel-collapse collapse"></div>');
+
+                       _.each(dinamic.list,function(din_type){
+                           if(din_type.type == 'integer')
+                               $('#'+ dinamic.id).append('<div class = "accordion_toggle" ><span >'+ din_type.label +'</span>' + '<input  id = "' + din_type.id + '" type="number" value="'+ din_type.default_value +'" step="0.01"></div>');
+
+                           if(din_type.type == 'droplist') {
+                               $('#' + dinamic.id).append('<div class = "accordion_toggle"><span>' + din_type.label + '</span><select id = "' + din_type.id + '" ></select></div>');
+                               if(din_type.options.length > 0) {
+                                   _.each(din_type.options, function (din_options) {
+                                       $('#' + din_type.id).append($('<option>', {
+                                           value: din_options,
+                                           text: din_options
+                                       }));
+                                   });
+                                   $('#' + din_type.id).val(din_type.default_value);
+                               }
+                           }
+
+                           if(din_type.type == 'boolean'){
+                               $('#'+ dinamic.id).append('<div class = "accordion_toggle" ><span >'+ din_type.label +'</span>' + '<input  id = "' + din_type.id + '" type="checkbox" checked></div>');
+                               $('#'+ din_type.id).attr('checked', din_type.default_value);
+                           }
+                       });
+                   });
+               }
+            });
+        };
+
+        self._lookInData = function (name,data) {
+            var _state = false;
+             _.each(data, function(value,item) {
+                 if (name == item)
+                     _state = true;
+            });
+            return _state;
+        };
+
+        self.updateAvailableQuality = function(){
+
+            $.ajax({
+                url: API_BASEURL + "slicing/curaX/getProfileQuality/" + self.selColor() ,
+                type: "GET",
+                dataType: "json",
+                success:function (current) {
+                    self.qualityProfiles.removeAll();
+                    for ( var options in current ) {
+                        self.qualityProfiles.push(options.trim());
+                    }
+                }
+            });
+            self.getProfileToEdit();
+        };
+
+        self.getProfileToEdit = function(){
+            $.ajax({
+                url: API_BASEURL + "slicing/curaX/getSingleProfile/" + self.selColor() + "/" + self.selQuality() + "/" + self.selNozzle(),
+                type: "GET",
+                dataType: "json",
+                success:function(data){
+                    console.log(data);
+                    var _input = $('#advanced_edit_panel div').find('input,select');
+                    _.each(_input,function (info) {
+                        if(self._lookInData(info.id,data)) {
+                            if (info.type == 'checkbox') {
+                                $('#'+ info.id).prop('checked',data[info.id].default_value);
+                            }else {
+                                $('#' + info.id).val(data[info.id].default_value);
+                            }
+                        }
+                    });
+                }
+            });
+        };
+
+        self.saveProfileChanges = function () {
+
+            var form={};
+
+            var input = $('#dynamic_advanced_options').find('input , select');
+            _.each(input, function (_input) {
+                if(_input.type == 'checkbox')
+                    form[_input.id] = $('#'+ _input.id).is(':checked');
+                else
+                    form[_input.id] = $('#'+ _input.id).val();
+            });
+
+            console.log(form);
+
+            $.ajax({
+                url: API_BASEURL + "slicing/curaX/confirmEdition/" + self.selColor() + "/" + self.selQuality() + "/" + self.selNozzle() ,
+                type: "PUT",                //
+                dataType: "json",           // data type
+                data: JSON.stringify(form), // send the data
+                contentType: "application/json; charset=UTF-8",
+                success: function() {
+                }
+            });
+        };
+
+        self.switchToSimple = function() {
+            var $txt = $('#simple_settings_btn').text();
+
+            if($txt == 'Basic') {
+                 $('#simple_settings_btn').text('Advanced');
+                 $('#slicing_form').removeClass('hidden');
+                 $('#slicing_configuration_dialog_advanced_settings').addClass('hidden');
+                 $('#dynamic_advanced_options').empty();
+            }else{
+                 $('#simple_settings_btn').text('Basic');
+                 $('#slicing_form').addClass('hidden');
+                 $('#slicing_configuration_dialog_advanced_settings').removeClass('hidden');
+                 self.appendAdvancedOptions();
+                 self.updateAvailableQuality();
+            }
+        };
+
+        self.permissionChanged = function(){
+            self.getProfileToEdit(self.selColor());
+        };
+
+
+
+        $(document).on("click",".panel_collapse_options", function() {
+            var $this = $(this).attr('href');
+               if($($this).hasClass('collapse in')){
+                   $(this).find('i:first').removeClass('icon-chevron-down').addClass('icon-chevron-up');
+               }else{
+                   $(this).find('i:first').removeClass('icon-chevron-up').addClass('icon-chevron-down');
+               }
+        });
+
     }
 
     OCTOPRINT_VIEWMODELS.push([
