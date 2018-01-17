@@ -1535,10 +1535,12 @@ td.settings_users_actions .m-icon {
     padding: 0  !important;
 }
 /*-------------------------------------LABEL UI----------------------------------------*/
+#slicing_configuration_dialog_advanced_settings .control-label.closed + .control-group > .controls,
 #slicing_configuration_dialog .form-horizontal .control-label.closed + .control-group > .controls {
     height: 0;
     display: none;
 }
+#slicing_configuration_dialog_advanced_settings .control-label:after,
 #slicing_configuration_dialog .form-horizontal .control-label:after {
     content: '\f106';
     right: 23px;
@@ -1548,6 +1550,8 @@ td.settings_users_actions .m-icon {
     color: #bcbcbc;
     transition: all 0.2s ease;
 }
+
+#slicing_configuration_dialog_advanced_settings .form-horizontal .control-label.closed:after,
 #slicing_configuration_dialog .form-horizontal .control-label.closed:after {
     transform: rotate(180deg);
     -webkit-transform: rotate(180deg);
@@ -1555,17 +1559,23 @@ td.settings_users_actions .m-icon {
     -o-transform: rotate(180deg);
     -ms-transform: rotate(180deg);
 }
+
+#slicing_configuration_dialog_advanced_settings .control-group,
 #slicing_configuration_dialog .control-group{
     margin-bottom: 2px;
     text-align: center;
     background: #e1e2e1;
 }
+
+#slicing_configuration_dialog_advanced_settings .controls,
 #slicing_configuration_dialog .form-horizontal .controls{
     margin-left: 0;
     display: flex;
     padding: 0 23px;
     transition: all 0.1s ease;
 }
+
+#slicing_configuration_dialog_advanced_settings .controls label,
 #slicing_configuration_dialog .form-horizontal .controls label {
     width: 20%;
     height: 85px;
@@ -1573,16 +1583,24 @@ td.settings_users_actions .m-icon {
     margin: 0;
     transition: all 0.2s ease;
 }
+
+#slicing_configuration_dialog_advanced_settings .controls label.estimation,
 #slicing_configuration_dialog .form-horizontal .controls label.estimation {
     width: 50% !important;
     cursor: default;
 }
+
+#slicing_configuration_dialog_advanced_settings .controls label > div,
 #slicing_configuration_dialog .form-horizontal .controls label > div {  margin: 10px 0 0; }
+
+#slicing_configuration_dialog_advanced_settings .controls label > p,
 #slicing_configuration_dialog .form-horizontal .controls label > p   {  margin: 0; }
 
 
+#slicing_configuration_dialog_advanced_settings .controls > input,
 #slicing_configuration_dialog .form-horizontal .controls > input{ display: none; }
 
+#slicing_configuration_dialog_advanced_settings .controls > input:checked + label,
 #slicing_configuration_dialog .form-horizontal .controls > input:checked + label{
     background: #fc0;
     color: #000;
@@ -1593,6 +1611,7 @@ td.settings_users_actions .m-icon {
     margin: 0;
 }
 
+#dynamic_advanced_options .lbl,
 #slicing_configuration_dialog .form-horizontal > .control-label{
     width: unset;
     text-align: left;
@@ -1603,11 +1622,91 @@ td.settings_users_actions .m-icon {
     border-bottom: 1px solid #c5c5c5;
     background: #e1e2e1;
 }
+
+#slicing_configuration_dialog_advanced_settings .control-label small,
 #slicing_configuration_dialog .control-label small{
     font-size: 12px;
     display: block;
 }
+/*------------------------------------------------------------------------------*/
+#settings_plugin_curaX_edit .modal-body{
+    padding: 0  !important;
+}
 
+#settings_plugin_curaX_edit .form-horizontal .control-label.closed + .control-group > .controls {
+    height: 0;
+    display: none;
+}
+#settings_plugin_curaX_edit .form-horizontal .control-label:after {
+    content: '\f106';
+    right: 23px;
+    font-size: 20px;
+    position: absolute;
+    font-family: fontAwesome;
+    color: #bcbcbc;
+    transition: all 0.2s ease;
+}
+#settings_plugin_curaX_edit .form-horizontal .control-label.closed:after {
+    transform: rotate(180deg);
+    -webkit-transform: rotate(180deg);
+    -moz-transform: rotate(180deg);
+    -o-transform: rotate(180deg);
+    -ms-transform: rotate(180deg);
+}
+#settings_plugin_curaX_edit .control-group{
+    margin-bottom: 2px;
+    text-align: center;
+    background: #e1e2e1;
+}
+#settings_plugin_curaX_edit .form-horizontal .controls{
+    margin-left: 0;
+    display: flex;
+    padding: 0 23px;
+    transition: all 0.1s ease;
+}
+#settings_plugin_curaX_edit .form-horizontal .controls label {
+    width: 20%;
+    height: 85px;
+    padding: 10px 0 5px;
+    margin: 0;
+    transition: all 0.2s ease;
+}
+#settings_plugin_curaX_edit .form-horizontal .controls label.estimation {
+    width: 50% !important;
+    cursor: default;
+}
+#settings_plugin_curaX_edit .form-horizontal .controls label > div {  margin: 10px 0 0; }
+#settings_plugin_curaX_edit .form-horizontal .controls label > p   {  margin: 0; }
+
+
+#settings_plugin_curaX_edit .form-horizontal .controls > input{ display: none; }
+
+#settings_plugin_curaX_edit .form-horizontal .controls > input:checked + label{
+    background: #fc0;
+    color: #000;
+    box-shadow: inset 0 3px 5px 0 rgba(0, 0, 0, 0.15);
+}
+
+#settings_plugin_curaX_edit .form-horizontal{
+    margin: 0;
+}
+
+#settings_plugin_curaX_edit .form-horizontal > .control-label{
+    width: unset;
+    text-align: left;
+    float: none;
+    text-transform: uppercase;
+    padding: 5px 23px 6px;
+    margin-bottom: 0;
+    border-bottom: 1px solid #c5c5c5;
+    background: #e1e2e1;
+}
+#settings_plugin_curaX_edit .control-label small{
+    font-size: 12px;
+    display: block;
+}
+
+/*----------------------------------------------------------------------------------*/
 #slice_button,
 #settings_dialog .modal-footer .btn-primary,
 #settings_printerProfiles_editDialog .modal-footer .btn-primary,
@@ -2223,6 +2322,349 @@ body:lang(es) .settings-trigger ul.dropdown-menu li a {
 body:lang(es) #unload-btn {
 	font-size: 14px !important;
 }
+
 body:lang(es) #load-btn {
 	font-size: 14px !important;
+}
+
+table.information_table{
+    text-align: left;
+}
+
+table.information_table th{
+   padding:5px 0px 10px 30px;
+
+}
+
+#settings_plugin_curaX_change_name .sign,
+#settings_plugin_curaX_brands_interface .lbl_two,
+#settings_plugin_curaX_brands_interface .lbl_entry,
+#settings_plugin_curaX_brands_interface .lbl_mat,
+#settings_plugin_curaX_brands_interface .sign,
+#settings_plugin_curaX_brands_interface .signa,
+#settings_plugin_curaX_brands_interface .lbl{
+    color: #898989;
+    font-weight: bold;
+}
+
+
+#settings_plugin_curaX_brands_interface .sub_panel_accordion,
+#settings_plugin_curaX_brands_interface .panel_accordion{
+     display: inline-block;
+     width:100%;
+     line-height:50px;
+     vertical-align: middle;
+     background-color: #e1e2e1 !important;
+     margin-bottom: 3px;
+     margin-top: 3px;
+}
+#settings_plugin_curaX_brands_interface .sub_panel_accordion{
+     line-height:30px !important;
+     background-color: #ffffff !important;
+}
+#settings_plugin_curaX_brands_interface .lbl_two{
+    margin-left:10px !important;
+}
+
+#settings_plugin_curaX_brands_interface .lbl{
+    margin-left:10px !important;
+    text-transform: uppercase;
+}
+#settings_plugin_curaX_brands_interface .sign{
+    float:right;
+    margin-right: 5px !important;
+}
+/*!* ---- edit profile -------*!*/
+#settings_plugin_curaX_edit_material .panel_input,
+#settings_plugin_curaX_new_material .panel_input,
+#settings_plugin_curaX_new_profile  .panel_collapse> a,
+#settings_plugin_curaX_edit_profile .panel_collapse> a{
+    display: inline-block;
+    width:100%;
+    line-height:35px;
+    vertical-align: middle;
+    background-color: #e1e2e1 !important;
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+#settings_plugin_curaX_change_name .signa,
+#settings_plugin_curaX_new_material .sign,
+#settings_plugin_curaX_new_material .signa,
+#settings_plugin_curaX_new_material .lbl,
+#settings_plugin_curaX_new_profile  .sign,
+#settings_plugin_curaX_new_profile  .signa,
+#settings_plugin_curaX_new_profile  .lbl,
+#settings_plugin_curaX_edit_profile .sign,
+#settings_plugin_curaX_edit_profile .signa,
+#settings_plugin_curaX_edit_profile .lbl{
+    color: #898989;
+    font-weight: bold;
+}
+
+#settings_plugin_curaX_new_material .lbl,
+#settings_plugin_curaX_new_profile .lbl,
+#settings_plugin_curaX_edit_profile .lbl{
+    text-transform: uppercase;
+}
+
+
+/*#settings_plugin_curaX_new_profile  .panel_collapse> .collapse,*/
+/*#settings_plugin_curaX_edit_profile .panel_collapse> .collapse {*/
+    /*height: auto;*/
+/*}*/
+
+#settings_plugin_curaX_edit_material .panel_input .sign,
+#settings_plugin_curaX_new_material .panel_input .sign,
+#settings_plugin_curaX_new_profile  .panel_collapse >a .sign,
+#settings_plugin_curaX_edit_profile .panel_collapse >a .sign{
+    float:right;
+    margin-right: 15px !important;
+    margin-left: 20px !important;
+}
+
+#settings_plugin_curaX_change_name .panel_collapse .signa,
+#settings_plugin_curaX_edit_material .panel_collapse .signa,
+#settings_plugin_curaX_edit_material .panel_collapse .lbl,
+#settings_plugin_curaX_new_material .panel_collapse .signa,
+#settings_plugin_curaX_new_material .panel_collapse .lbl,
+#settings_plugin_curaX_new_profile  .panel_collapse>a .signa,
+#settings_plugin_curaX_new_profile  .panel_collapse >a .lbl,
+#settings_plugin_curaX_edit_profile .panel_collapse>a .signa,
+#settings_plugin_curaX_edit_profile .panel_collapse >a .lbl{
+    margin-left: 15px !important;
+}
+
+#settings_plugin_curaX_new_material  .material_properties,
+#settings_plugin_curaX_new_profile   .form-group>a,
+#settings_plugin_curaX_edit_profile  .form-group>a{
+    display: inline-block;
+    margin-top: 1px;
+    margin-bottom: 1px;
+    width: 100%;
+}
+
+#settings_plugin_curaX_new_profile .form-group .sign{
+     margin-left: 30px!important;
+}
+
+#settings_plugin_curaX_new_material .form-group .sign{
+     margin-left: 30px!important;
+}
+
+#settings_plugin_curaX_new_material .form-group .lbl,
+#settings_plugin_curaX_new_profile  .form-group >a .lbl,
+#settings_plugin_curaX_edit_profile .form-group >a .lbl{
+    margin-left: 20px!important;
+}
+
+/*#settings_plugin_curaX_new_material .panel_data .inpt,*/
+#settings_plugin_curaX_new_profile  .form-group>a .inpt,
+#settings_plugin_curaX_edit_profile .form-group>a .inpt {
+
+    height:15px !important;
+    display:inline-block;
+    width: 150px;
+    float:right;
+    border: 1px solid #898989;
+    /*margin-right: 20px !important;*/
+
+}
+
+#settings_plugin_curaX_brands_interface .table_head {
+
+     margin-left: 40px!important;
+     color: #898989;
+     font-weight: bold;
+     /*width: 50%;*/
+     /*display: inline-block;*/
+
+}
+
+#settings_plugin_curaX_brands_interface .table_data {
+    color: #898989;
+    /*display: inline-block;*/
+    /*width: 25% !important;*/
+}
+
+#settings_plugin_curaX_brands_interface table {
+    display: inline-block !important;
+    width: 100% !important;
+    background-color: #ffffff !important;
+     /*display: block;*/
+    /*display: tab;*/
+    /*width:100%;*/
+}
+
+#settings_plugin_curaX_edit_material .material_properties,
+#settings_plugin_curaX_new_material .material_properties {
+     vertical-align: middle !important;
+}
+
+#settings_plugin_curaX_edit_material .material_properties .sign,
+#settings_plugin_curaX_new_material .material_properties .sign{
+     margin-left: 20px !important;
+     vertical-align: middle !important;
+     font-weight: bold;
+
+}
+
+#settings_plugin_curaX_change_name .inpt{
+     height:15px !important;
+     width: 150px;
+     border: 1px solid #898989;
+}
+
+#settings_plugin_curaX_edit_material .panel_data .inpt,
+#settings_plugin_curaX_new_material .panel_data .inpt {
+     height:15px !important;
+     width: 150px;
+     border: 1px solid #898989;
+}
+
+
+#settings_plugin_curaX_edit_material .panel_data .unit,
+#settings_plugin_curaX_new_material .panel_data .unit{
+    font-weight: bold;
+    position: absolute !important;
+    display: block !important;
+    top: 3px;
+    right: 5px;
+    text-align: center!important;
+    background-color: white;
+    padding-left: 5px !important;
+    width: 50px !important;
+
+}
+#settings_plugin_curaX_edit_material .panel_data .sign,
+#settings_plugin_curaX_new_material .panel_data .sign{
+    vertical-align: middle !important;
+    margin-right: 20px;
+    float:left;
+
+}
+#settings_plugin_curaX_edit_material .panel_data,
+#settings_plugin_curaX_new_material .panel_data{
+    position: relative !important;
+    margin-right:20px !important;
+    float:right;
+}
+
+#settings_plugin_curaX_new_material input[type = "radio"],
+#settings_plugin_curaX_new_profile  input[type = "radio"],
+#settings_plugin_curaX_edit_profile input[type = "radio"]{
+    display:none;
+    margin:10px;
+}
+
+#settings_plugin_curaX_new_material input[type= "radio"]:checked,
+#settings_plugin_curaX_new_profile  input[type= "radio"]:checked,
+#settings_plugin_curaX_edit_profile input[type= "radio"]:checked {
+   background-image: none !important;
+   background-color:#d0d0d0 !important;
+}
+
+
+/* advanced panel */
+
+/*#dynamic_advanced_options .panel_collapse .signa{*/
+    /*float: right;*/
+/*}*/
+
+/*#dynamic_quality_advanced_options .ewfe select{*/
+    /*vertical-align: middle;*/
+/*}*/
+
+/*#dynamic_quality_advanced_options,*/
+#dynamic_advanced_options .panel_collapse_options{
+    display:block;
+    width: unset;
+    text-transform: uppercase;
+    padding: 5px 23px 6px !important;
+    margin-bottom: 2px !important;
+    margin-top: 0px !important;
+    border-bottom: 1px solid #c5c5c5;
+    background: #e1e2e1;
+
+}
+
+
+/*#dynamic_advanced_options input{*/
+    /*height:20px !important;*/
+    /*width: 190px !important;*/
+    /*margin-right:30px !important;*/
+    /*float: right !important;*/
+/*}*/
+
+/*#dynamic_advanced_options select{*/
+    /*height:30px !important;*/
+    /*width: 200px !important;*/
+    /*margin-right:30px !important;*/
+    /*float: right;*/
+/*}*/
+
+/*#dynamic_advanced_options .accordion_toggle{*/
+    /*display: inline-block !important;*/
+    /*width:unset;*/
+    /*margin-bottom:1px !important;*/
+    /*margin-top: 1px !important;*/
+    /*vertical-align:middle !important;*/
+/*}*/
+
+#dynamic_advanced_options .accordion_toggle > select{
+    margin-right:30px !important;
+    vertical-align:middle !important;
+    float: right !important;
+    margin-bottom: 0px !important;
+    margin-top: 0px !important;
+    vertical-align:middle !important;
+}
+
+#dynamic_advanced_options .accordion_toggle > input[type = "checkbox"]{
+    vertical-align:middle !important;
+    margin-right:30px !important;
+    float: right !important;
+    margin-bottom: 0px !important;
+    margin-top: 0px !important;
+}
+#dynamic_advanced_options .accordion_toggle > input[type = "number"]{
+    height: 20px !important;
+    margin-right:30px !important;
+    margin-bottom: 0px !important;
+    margin-top: 0px !important;
+    vertical-align:middle !important;
+    float: right !important;
+}
+
+#dynamic_advanced_options .accordion_toggle > span{
+    float: left !important;
+    margin-left:40px !important;
+    margin-bottom: 0px !important;
+    margin-top: 0px !important;
+}
+
+#dynamic_advanced_options .accordion_toggle{
+    display: block !important;
+    height: 30px !important;
+    margin-bottom: 2px;
+    vertical-align:middle !important;
+}
+
+/*#dynamic_advanced_options .panel_collapse .signa{*/
+    /*float: right;*/
+/*}*/
+
+
+#slicing_configuration_dialog .modal-header > button {
+     font: 200 16px "din-light", sans-serif;
+     text-transform: uppercase;
+     float:right;
+     color: #898989;
+     background: #e1e2e1;
+     box-shadow: none;
+     height:25px !important;
+     text-align: center;
+     transition: all 0.2s ease;
+     border:none;
+     border-bottom:1px solid #c5c5c5;
+     margin-right: 20px;
 }

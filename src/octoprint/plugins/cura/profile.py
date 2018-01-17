@@ -860,7 +860,6 @@ class Profile(object):
 		return int(self.get_float("machine_depth") / 2.0) if not self.get_boolean("machine_center_is_zero") else 0.0
 
 	def convert_to_engine(self, used_extruders=1):
-
 		edge_width, line_count = self.calculate_edge_width_and_line_count()
 		solid_layer_count = self.calculate_solid_layer_count()
 

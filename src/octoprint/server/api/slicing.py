@@ -89,6 +89,121 @@ def slicingListAll():
 
 	return jsonify(result)
 
+@api.route("/slicing/<string:slicer>/getRawMaterial", methods=["GET"])
+def slicingGetRawMaterial(slicer):
+	try:
+		profile = slicingManager.load_raw_material(slicer)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except UnknownProfile:
+		return make_response("Profile not found", 404)
+
+	return jsonify(profile)
+
+@api.route("/slicing/<string:slicer>/getMaterial/<string:name>", methods=["GET"])
+def slicingGetMaterial(slicer, name):
+	try:
+		profile = slicingManager.load_material(slicer,name)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except UnknownProfile:
+		return make_response("Profile not found", 404)
+
+	return jsonify(profile)
+
+@api.route("/slicing/<string:slicer>/getRawProfile/<string:material>", methods=["GET"])
+def slicingGetRawProfile(slicer, material):
+	try:
+		profile = slicingManager.load_raw_profile(slicer,material)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except UnknownProfile:
+		return make_response("Profile not found", 404)
+
+	return jsonify(profile)
+
+@api.route("/slicing/<string:slicer>/confirmEdition/<string:name>/<string:quality>/<string:nozzle>", methods=["PUT"])
+def slicingEditSlicerProfile(slicer, name, quality, nozzle):
+	if not "application/json" in request.headers["Content-Type"]:
+		return make_response("Expected content-type JSON", 400)
+	try:
+		json_data = request.json
+		# slicingManager.edit_profile(slicer, name, printer_id, quality)
+		slicingManager.edit_profile(slicer, name , json_data , quality,nozzle)
+		return NO_CONTENT
+	except BadRequest:
+		return make_response("Malformed JSON body in request", 400)
+
+@api.route("/slicing/<string:slicer>/saveMaterial", methods=["PUT"])
+def slicingSaveMaterial(slicer):
+	if not "application/json" in request.headers["Content-Type"]:
+		return make_response("Expected content-type JSON", 400)
+	try:
+		json_data = request.json
+		# slicingManager.edit_profile(slicer, name, printer_id, quality)
+		slicingManager.saveNewMaterial(slicer, json_data )
+		return NO_CONTENT
+	except BadRequest:
+		return make_response("Malformed JSON body in request", 400)
+
+
+@api.route("/slicing/<string:slicer>/saveRawProfile", methods=["PUT"])
+def slicingSaveRawProfile(slicer):
+	if not "application/json" in request.headers["Content-Type"]:
+		return make_response("Expected content-type JSON", 400)
+	try:
+		json_data = request.json
+		# slicingManager.edit_profile(slicer, name, printer_id, quality)
+		slicingManager.saveNewProfile(slicer, json_data )
+		return NO_CONTENT
+	except BadRequest:
+		return make_response("Malformed JSON body in request", 400)
+
+
+@api.route("/slicing/<string:slicer>/saveMaterial/<string:name>", methods=["PUT"])
+def slicingSaveMaterialEdition(slicer, name):
+	if not "application/json" in request.headers["Content-Type"]:
+		return make_response("Expected content-type JSON", 400)
+	try:
+		json_data = request.json
+		# slicingManager.edit_profile(slicer, name, printer_id, quality)
+		slicingManager.saveNewMaterialEdition(slicer, json_data,name)
+		return NO_CONTENT
+	except BadRequest:
+		return make_response("Malformed JSON body in request", 400)
+
+
+@api.route("/slicing/<string:slicer>/getSingleProfile/<string:name>/<string:quality>/<string:nozzle>", methods=["GET"])
+def slicingGetSingleProfile(slicer, name, quality,nozzle):
+	try:
+		profile = slicingManager.load_single_profile(slicer, name, quality, nozzle)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except UnknownProfile:
+		return make_response("Profile not found", 404)
+	return jsonify(profile)
+
+@api.route("/slicing/<string:slicer>/getOptions", methods=["GET"])
+def slicingGetOptions(slicer):
+	try:
+		profile = slicingManager.load_options(slicer)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except UnknownProfile:
+		return make_response("Profile not found", 404)
+	return  jsonify(profile)
+
+@api.route("/slicing/<string:slicer>/getProfileQuality/<string:name>", methods=["GET"])
+def slicingGetProfileQuality(slicer, name):
+	try:
+		profile = slicingManager.load_profile_quality( slicer, name)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except UnknownProfile:
+		return make_response("Profile not found", 404)
+	return  jsonify(profile)
+
+
 @api.route("/slicing/<string:slicer>/profiles", methods=["GET"])
 def slicingListSlicerProfiles(slicer):
 	configured = False
@@ -99,6 +214,27 @@ def slicingListSlicerProfiles(slicer):
 		return jsonify(_getSlicingProfilesData(slicer, require_configured=configured))
 	except (UnknownSlicer, SlicerNotConfigured):
 		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+
+@api.route("/slicing/<string:slicer>/materials", methods=["GET"])
+def slicingListSlicerMaterials(slicer):
+	configured = False
+	if "configured" in request.values and request.values["configured"] in valid_boolean_trues:
+	 	configured = True
+	try:
+		return jsonify(_getSlicingMaterialData(slicer, require_configured=configured))
+	except (UnknownSlicer, SlicerNotConfigured):
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+
+@api.route("/slicing/<string:slicer>/InheritsMaterials/<string:material>", methods=["GET"])
+def slicingListInheritsMaterials(slicer,material):
+	configured = False
+	if "configured" in request.values and request.values["configured"] in valid_boolean_trues:
+		configured = True
+	try:
+		return jsonify(_getSlicingInheritsMaterials(slicer, material , require_configured=configured))
+	except (UnknownSlicer, SlicerNotConfigured):
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+
 
 @api.route("/slicing/<string:slicer>/profiles/<string:name>", methods=["GET"])
 def slicingGetSlicerProfile(slicer, name):
@@ -112,6 +248,8 @@ def slicingGetSlicerProfile(slicer, name):
 	result = _getSlicingProfileData(slicer, name, profile)
 	result["data"] = profile.data
 	return jsonify(result)
+
+
 
 @api.route("/slicing/<string:slicer>/profiles/<string:name>", methods=["PUT"])
 @restricted_access
@@ -197,6 +335,72 @@ def slicingDelSlicerProfile(slicer, name):
 
 	return NO_CONTENT
 
+@api.route("/slicing/<string:slicer>/deleteMaterial/<string:name>", methods=["DELETE"])
+@restricted_access
+def slicingDelMaterialProfile(slicer, name):
+	try:
+		slicingManager.delete_material(slicer, name)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except CouldNotDeleteProfile as e:
+		return make_response("Could not delete profile {profile} for slicer {slicer}: {cause}".format(profile=name, slicer=slicer, cause=str(e.cause)), 500)
+
+	return NO_CONTENT
+
+@api.route("/slicing/<string:slicer>/delete_quality/<string:quality>/<string:name>", methods=["DELETE"])
+@restricted_access
+def slicingDelQualityInProfile(slicer,quality,name):
+	try:
+		slicingManager.delete_quality_material(slicer,quality,name)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except CouldNotDeleteProfile as e:
+		return make_response(
+			"Could not delete profile {profile} for slicer {slicer}: {cause}".format(profile=name, slicer=slicer,
+																					 cause=str(e.cause)), 500)
+	return NO_CONTENT
+
+
+@api.route("/slicing/<string:slicer>/change_quality_profile/<string:filament_id>/<string:quality>/<string:name>", methods=["POST"])
+@restricted_access
+def slicingChangeQualityProfile(slicer,filament_id,quality,name):
+	try:
+		slicingManager.change_quality_name(slicer, filament_id,quality, name)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except CouldNotDeleteProfile as e:
+		return make_response(
+			"Could not delete profile {profile} for slicer {slicer}: {cause}".format(profile=name, slicer=slicer,
+																					 cause=str(e.cause)), 500)
+	return NO_CONTENT
+
+
+@api.route("/slicing/<string:slicer>/copy_quality_profile/<string:filament_id>/<string:quality>/<string:name>", methods=["POST"])
+@restricted_access
+def slicingCopyQualityProfile(slicer,filament_id,quality,name):
+	try:
+		slicingManager.copy_quality_name(slicer, filament_id,quality, name)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except CouldNotDeleteProfile as e:
+		return make_response(
+			"Could not delete profile {profile} for slicer {slicer}: {cause}".format(profile=name, slicer=slicer,
+																					 cause=str(e.cause)), 500)
+	return NO_CONTENT
+
+@api.route("/slicing/<string:slicer>/new_quality/<string:filament_id>/<string:quality>", methods=["POST"])
+@restricted_access
+def slicingNewQuality(slicer,filament_id,quality):
+	try:
+		slicingManager.new_quality(slicer, filament_id,quality)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except CouldNotDeleteProfile as e:
+		return make_response(
+			"Could not delete profile {profile} for slicer {slicer}: {cause}".format(profile=name, slicer=slicer,
+																					 cause=str(e.cause)), 500)
+	return NO_CONTENT
+
 @api.route("/slicing/<string:slicer>/profiles/<string:name>", methods=["POST"])
 @restricted_access
 def slicingDuplicateSlicerProfile(slicer, name):
@@ -236,7 +440,31 @@ def _getSlicingProfilesData(slicer, require_configured=False):
 			result[name] = _getSlicingProfileData(slicer, name, profile)
 	return result
 
-def _getSlicingProfileData(slicer, name, profile, brand = None):
+
+def _getSlicingMaterialData(slicer, require_configured = False):
+	result = dict()
+	if slicer == "curaX":
+		profiles = slicingManager.all_materials_list_json(slicer,
+													require_configured=require_configured,
+													nozzle_size=printer.getNozzleTypeString().replace("nz", ""),
+													from_current_printer=True)
+		for name, profile in profiles.items():
+			result[name] = _getSlicingProfileData(slicer, name, profile)
+	return result
+
+def _getSlicingInheritsMaterials(slicer, material_id, require_configured = False):
+	result = dict()
+	if slicer == "curaX":
+		profiles = slicingManager.all_Inherits_materials_list_json(slicer,material_id,
+													require_configured=require_configured,
+													nozzle_size=printer.getNozzleTypeString().replace("nz", ""),
+													from_current_printer=True)
+		for name, profile in profiles.items():
+			result[name] = _getSlicingProfileData(slicer, name, profile)
+	return result
+
+
+def _getSlicingProfileData(slicer, name, profile, brand=None):
 	defaultProfiles = s().get(["slicing", "defaultProfiles"])
 	result = dict(
 		key=name,
