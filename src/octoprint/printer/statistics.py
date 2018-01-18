@@ -464,7 +464,7 @@ class StatisticsServerClient:
 
 				self._logger.info('General usage statistics uploaded with success')
 		except Exception as ex:
-			self._logger.error(ex)
+			self._logger.error('Error sending general usage statistics: '+ str(ex))
 
 	def send_printer_statistics(self):
 		try:
@@ -485,4 +485,41 @@ class StatisticsServerClient:
 					else:
 						self._logger.info('Printer (%s) usage statistics uploaded with success' % printer_stats_file)
 		except Exception as ex:
-			self._logger.error(ex)
+			self._logger.error('Error sending printer usage statistics: ' + str(ex))
+
+	def send_print_events_statistics(self):
+		try:
+			url = self.STATS_HOST + ':' + str(self.STATS_PORT) + '/api/print_events'
+			request_headers = {'Content-type': 'application/json', 'Authorization': 'Token ' + self.STATS_AUTH}
+
+			print_events_filepath = os.path.join(settings().getBaseFolder('statistics'), "print_stats.json")
+			with open(print_events_filepath) as json_data:
+				payload = json.load(json_data)
+
+				resp = requests.post(url, json=payload, headers=request_headers)
+
+				if resp.status_code != requests.codes.created:
+					self._logger.error('Error uploading print events usage statistics. Server response code: %s' %
+					resp.status_code)
+				else:
+					self._logger.info('Print events usage statistics uploaded with success')
+					# if the upload was ok, erases the file contents
+					open(print_events_filepath, 'w').close()
+		except Exception as ex:
+			self._logger.error('Error sending print events usage statistics: '+ str(ex))
+
+
+	def gather_and_send_statistics(self):
+		import datetime
+		lastStatsUploadDate = settings().get(['lastStatisticsUpload'])
+		sendThreshold = datetime.datetime.today() - datetime.timedelta(days=30)  # on month ago
+		# Checks if the send threshold was already reached, and if so sends a new batch of usage statistics
+		if lastStatsUploadDate is None or sendThreshold > lastStatsUploadDate:
+			self.send_base_statistics()
+			self.send_printer_statistics()
+			self.send_print_events_statistics()
+
+			self._logger.error('Usage statistics sent to BVC server!')
+
+			settings().set(['lastStatisticsUpload'], datetime.datetime.today())
+			settings().save()

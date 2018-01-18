@@ -1483,11 +1483,6 @@ class BeePrinter(Printer):
                 self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
                 self._bvc_conn_thread.start()
 
-        # Sends statistics to the server
-        stats_client = StatisticsServerClient()
-        #stats_client.send_base_statistics()
-        stats_client.send_printer_statistics()
-
 
     def on_client_disconnected(self, event, payload):
         """
