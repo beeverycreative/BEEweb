@@ -2336,44 +2336,68 @@ table.information_table th{
 
 }
 
-#settings_plugin_curaX_change_name .sign,
-#settings_plugin_curaX_brands_interface .lbl_two,
-#settings_plugin_curaX_brands_interface .lbl_entry,
-#settings_plugin_curaX_brands_interface .lbl_mat,
-#settings_plugin_curaX_brands_interface .sign,
-#settings_plugin_curaX_brands_interface .signa,
-#settings_plugin_curaX_brands_interface .lbl{
-    color: #898989;
-    font-weight: bold;
+
+#settings_plugin_curaX_brands_interface .lbl_mat{
+	margin-left: 25px !important;
 }
 
-
-#settings_plugin_curaX_brands_interface .sub_panel_accordion,
-#settings_plugin_curaX_brands_interface .panel_accordion{
-     display: inline-block;
-     width:100%;
-     line-height:50px;
-     vertical-align: middle;
-     background-color: #e1e2e1 !important;
-     margin-bottom: 3px;
-     margin-top: 3px;
-}
-#settings_plugin_curaX_brands_interface .sub_panel_accordion{
-     line-height:30px !important;
-     background-color: #ffffff !important;
-}
-#settings_plugin_curaX_brands_interface .lbl_two{
-    margin-left:10px !important;
+#settings_plugin_curaX_new_material .lbl{
+	margin-left: 15px !important;
 }
 
-#settings_plugin_curaX_brands_interface .lbl{
-    margin-left:10px !important;
-    text-transform: uppercase;
-}
 #settings_plugin_curaX_brands_interface .sign{
-    float:right;
-    margin-right: 5px !important;
+	float:right !important;
+	margin-left: 15px !important;
 }
+
+/*#settings_plugin_curaX_brands_interface .sub_panel_accordion,*/
+#settings_plugin_curaX_brands_interface .panel_accordion{
+    display:block;
+    width: unset;
+    text-transform: uppercase;
+    padding: 5px 23px 6px !important;
+    margin-bottom: 0px !important;
+    margin-top: 2px !important;
+    border-bottom: 1px solid #c5c5c5;
+    background: #e1e2e1;
+}
+
+#settings_plugin_curaX_brands_interface .sub_panel_accordion{
+    display:block;
+    width: unset;
+    padding: 5px 23px 6px !important;
+    margin-bottom: 0px !important;
+    margin-top: 4px !important;
+    border-bottom: 1px solid #c5c5c5;
+    background: #ffffff;
+}
+
+#settings_plugin_curaX_brands_interface .material_panel_accordion{
+	display:block;
+    width: unset;
+    padding: 5px 23px 6px !important;
+    margin-bottom: 0px !important;
+    margin-top: 0px !important;
+    border-bottom: 1px solid #c5c5c5;
+    background: #ffffff;
+}
+
+/*#settings_plugin_curaX_brands_interface .sub_panel_accordion{*/
+     /*line-height:30px !important;*/
+     /*!*background-color: #ffffff !important;*!*/
+/*}*/
+/*#settings_plugin_curaX_brands_interface .lbl_two{*/
+    /*margin-left:10px !important;*/
+/*}*/
+
+/*#settings_plugin_curaX_brands_interface .lbl{*/
+    /*margin-left:10px !important;*/
+    /*text-transform: uppercase;*/
+/*}*/
+/*#settings_plugin_curaX_brands_interface .sign{*/
+    /*float:right;*/
+    /*margin-right: 5px !important;*/
+/*}*/
 /*!* ---- edit profile -------*!*/
 #settings_plugin_curaX_edit_material .panel_input,
 #settings_plugin_curaX_new_material .panel_input,
@@ -2564,17 +2588,7 @@ table.information_table th{
 }
 
 
-/* advanced panel */
 
-/*#dynamic_advanced_options .panel_collapse .signa{*/
-    /*float: right;*/
-/*}*/
-
-/*#dynamic_quality_advanced_options .ewfe select{*/
-    /*vertical-align: middle;*/
-/*}*/
-
-/*#dynamic_quality_advanced_options,*/
 #dynamic_advanced_options .panel_collapse_options{
     display:block;
     width: unset;
@@ -2586,29 +2600,6 @@ table.information_table th{
     background: #e1e2e1;
 
 }
-
-
-/*#dynamic_advanced_options input{*/
-    /*height:20px !important;*/
-    /*width: 190px !important;*/
-    /*margin-right:30px !important;*/
-    /*float: right !important;*/
-/*}*/
-
-/*#dynamic_advanced_options select{*/
-    /*height:30px !important;*/
-    /*width: 200px !important;*/
-    /*margin-right:30px !important;*/
-    /*float: right;*/
-/*}*/
-
-/*#dynamic_advanced_options .accordion_toggle{*/
-    /*display: inline-block !important;*/
-    /*width:unset;*/
-    /*margin-bottom:1px !important;*/
-    /*margin-top: 1px !important;*/
-    /*vertical-align:middle !important;*/
-/*}*/
 
 #dynamic_advanced_options .accordion_toggle > select{
     margin-right:30px !important;
@@ -2649,9 +2640,31 @@ table.information_table th{
     vertical-align:middle !important;
 }
 
-/*#dynamic_advanced_options .panel_collapse .signa{*/
-    /*float: right;*/
+#dynamic_quality_advanced_options select{
+	float:right !important;
+}
+
+#dynamic_quality_advanced_options .sign{
+	float:right !important;
+}
+
+#dynamic_quality_advanced_options {
+	display: block !important;
+	width: unset;
+    vertical-align: middle;
+    text-transform: uppercase;
+    padding: 5px 23px 6px !important;
+    margin-bottom: 2px !important;
+    margin-top: 0px !important;
+    border-bottom: 1px solid #c5c5c5;
+    background: #e1e2e1;
+}
+
+/*#dynamic_quality_advanced_options .ewfe span{*/
+	/*float:left !important;*/
 /*}*/
+
+
 
 
 #slicing_configuration_dialog .modal-header > button {

@@ -6,6 +6,9 @@ $(function() {
         var currentMaterialSelected = null;
         var currentBrandSelected = null;
 
+		self.profile_quality_droplist = ko.observableArray();
+		self.selQualityDroplist = ko.observable();
+
         self.selNozzle = undefined;
 
         self.loginState = parameters[0];
@@ -187,7 +190,6 @@ $(function() {
 
          self.removeMaterial = function(data) {
 
-             console.log(data);
 
             if (!data.resource) {
                 return;
@@ -247,15 +249,17 @@ $(function() {
             if (!data.resource) {
                 return;
             }
-             $.ajax({
-                url: data.resource(),
+
+            $.ajax({
+                 url: API_BASEURL + "slicing/curaX/duplicate_profile/" + data["key"] ,
                 type: "POST",
                 success: function() {
-                    self.requestData();
+                    // self.requestData();
                     self.slicingViewModel.requestData();
                 }
             });
-            self.requestData();
+
+            self.getProfilesInheritsMaterials(currentMaterialSelected,currentBrandSelected)
         };
 
 
@@ -272,13 +276,6 @@ $(function() {
 
 
         self.editProfile = function (data) {
-            // $('#edit_content').empty();
-            // $('#edit_content').append('<div class="panel_collapse panel-default"><a class="" href="#"><span class="lbl">Profile:</span>'+
-            //              '<select  id="quality_droplist"></select>'+
-            //              '<span class="sign" data-bind="click: function() {$root.removeQualityInProfile();}"><i class="icon-trash"></i></span>'+
-            //              '<span class="sign" data-bind="click: function() {$root.NewQuality();}"><i class="icon-plus-sign-alt"></i></span>'+
-            //              '<span class="sign" data-bind="click: function() {$root.NewQualityCopy();}"><i class="icon-copy"></i></span>'+
-            //              '<span class="sign" data-bind="click: function() {$root.NewQualityName();}"><i class="icon-edit"></i></span></a></div>');
 
             $.ajax({
                 url: API_BASEURL + "slicing/curaX/getProfileQuality/" + data["key"] ,
@@ -290,35 +287,15 @@ $(function() {
                         $('#quality_droplist').append('<option>' + _value + '</option>');
                     });
 
-                    self.appendToEditMenu();
-                    self.getProfileToEdit(data)
+					 self.appendToEditMenu();
+			 		self.getProfileToEdit(data)
+
                 }
             });
-            // console.log($('#quality_droplist :selected').text());
-            //
-            // self.appendToEditMenu();
-            // self.getProfileToEdit(data)
+
 
         };
 
-
-        // self.editProfile = function(data) {
-        //    console.log(selNozzle);
-        //      $.ajax({
-        //         url: API_BASEURL + "slicing/curaX/getProfileQuality/" + data["key"] ,
-        //         type: "GET",
-        //         dataType: "json",
-        //         success:function (current) {
-        //             console.log(current);
-        //             $('#comboQuality').empty();
-        //             for ( var options in current ) {
-        //               var newOption = $('<option>' + options + '</option>');
-        //               $('#comboQuality').append(newOption);
-        //             }
-        //             self.getProfileToEdit(data)
-        //         }
-        //     });
-        // };
 
          self._lookInData = function (name,data) {
             var _state = false;
@@ -330,68 +307,38 @@ $(function() {
         };
 
         self.getProfileToEdit = function(data){
-            // self.appendToEditMenu();
 
-            // $("#settings_plugin_curaX_teste_profile").modal("show");
-            // var quality = $('#quality_droplist').text();
-            //
-            // console.log(quality)
-            //   $("#settings_plugin_curaX_teste_profile").modal("show");
-            // console.log($('#quality_droplist').find('option:selected').text());
-             // $("#settings_plugin_curaX_teste_profile").modal("show");
 
-              var quality = $('#quality_droplist :selected').text();
-
-            console.log(quality)
+			var quality = $('#quality_droplist :selected').text();
 
             currentProfileData = data;
 
             $('#profileDisplay').text(data["key"]);
-            // + self.selColor() + "/" + self.selQuality() + "/" + self.selNozzle(),
             $.ajax({
                 url: API_BASEURL + "slicing/curaX/getSingleProfile/" + data["key"] + "/" + quality + "/" + selNozzle,
                 type: "GET",
                 dataType: "json",
                 success:function(data){
 
-                    // console.log(data);
-                    // var _input = $('#edit_content div').find('input,select');
-                    // console.log(_input);
+                    var current = $('#edit_content div').find('input');
 
-                    // if(!($('#settings_plugin_curaX_edit_profile').is(':visible')))
-                    //     $("#settings_plugin_curaX_edit_profile").modal("show");
+					$.each(current, function (idx ,value) {
+						if(self._lookInData(value.id.replace('ed',''),data)) {
+							if(value.type == 'checkbox') {
+								$('#' + value.id).prop('checked', data[value.id.replace('ed', '')].default_value);
+							}else
+								$('#' + value.id).val(data[value.id.replace('ed', '')].default_value);
+						 }
+					});
 
-                    // console.log(_input);
-                    // _.each(_input,function (info) {
-                    //     console.log('#' + info.id);
-                    //     if(self._lookInData(info.id,data)) {
-                    //         console.log('#' + info.id);
-                    //         if (info.type == 'checkbox') {
-                    //             $('#' + info.id).prop('checked', data[info.id].default_value);
-                    //         } else{
-                    //             console.log('#' + info.id,data[info.id].default_value)
-                    //             $('#layer_height0').val("60");
-                    //         }
-                    //     }
-                    // });
-                    var $current = $('#edit_content div').find('input');
-                    console.log(data)
-                    for(var i = 0 ; i < $current.length; i++){
-                        var fieldID = $current[i].id;
-                         if(self._lookInData(fieldID.replace('ed',''),data))
-                             $('#'+ fieldID).val(data[fieldID.replace('ed','')].default_value);
-                    }
-                    //
                     if(!($('#settings_plugin_curaX_edit_profile').is(':visible')))
                         $("#settings_plugin_curaX_edit_profile").modal("show");
                 }
             });
 
-             // $("#settings_plugin_curaX_edit_profile").modal("show");
-
         };
 
-        $('#comboQuality').on('change', function (e) {
+        $('#quality_droplist').on('change', function (e) {
             self.getProfileToEdit(currentProfileData);
         });
 
@@ -399,38 +346,30 @@ $(function() {
          self.corfirmProfileEdition = function () {  // call de API function in slicing.py
 
             var form={};
-            var quality = $('#comboQuality').find('option:selected').text();
+            var quality = $('#quality_droplist').find('option:selected').text();
 
-            // var $current = $('#edit_panel div').find('input');
-            //
-            // for(var i = 0 ; i < $current.length; i++){
-            //     var fieldID = $current[i].id;
-            //     if($current[i].type == 'number')
-            //         form[fieldID.replace('edit','')] = $('#'+ fieldID).val()
-            // }
-            console.log(form);
+			 var _input = $('#edit_content').find('input , select');
+             $.each(_input,function (value,info) {
 
-             var _input = $('#edit_content').find('input , select');
-                _.each(_input,function (info) {
                       if(info.type == 'checkbox')
-                          form['profile.' + info.id] = $('#' + info.id).is(':checked');
+                      	 form[info.id.replace('ed','')] = $('#' + info.id).is(':checked');
                       else
-                         form['profile.'+ info.id] = $('#'+ info.id).val();
-                });
+                         form[info.id.replace('ed','')] = $('#'+ info.id).val();
+            });
 
-             console.log(form);
-            // $.ajax({
-            //     url: API_BASEURL + "slicing/curaX/confirmEdition/" + currentProfileData["key"] + "/" + quality ,
-            //     type: "PUT",                //
-            //     dataType: "json",           // data type
-            //     data: JSON.stringify(form), // send the data
-            //     contentType: "application/json; charset=UTF-8",
-            //     success: function() {
-            //         self.requestData();
-            //     }
-            // });
-            //  $("#settings_plugin_curaX_edit_profile").modal("hide");
-            // self.requestData();
+
+            $.ajax({
+                url: API_BASEURL + "slicing/curaX/confirmEdition/" + currentProfileData["key"] + "/" + quality + "/" + selNozzle,
+                type: "PUT",                //
+                dataType: "json",           // data type
+                data: JSON.stringify(form), // send the data
+                contentType: "application/json; charset=UTF-8",
+                success: function() {
+                }
+            });
+
+			$("#settings_plugin_curaX_edit_profile").modal("hide");
+            self.requestData();
         };
         /*********************************************************************************************************/
 
@@ -487,13 +426,8 @@ $(function() {
                          });
                      }
             });
-            // console.log(brand);
-            // console.log(material);
-
             self.materials.updateItems(material);
             self.brands.updateItems(brand);
-
-
         };
 
         self.onBeforeBinding = function () {
@@ -506,7 +440,7 @@ $(function() {
  * @param none
  * @return none
  ******************************************************************************************/
-        self.getProfilesInheritsMaterials = function(data, parent){
+        self.getProfilesInheritsMaterials = function(data,parent){
             $('#profiles_acordion').empty();
 
 
@@ -518,6 +452,7 @@ $(function() {
                 type: "GET",
                 dataType: "json",
                 success:function (current) {
+
                     var profile = [];
                     _.each(_.keys(current), function(key) {
                          profile.push({
@@ -536,7 +471,7 @@ $(function() {
                 }
             });
 
-            $.ajax({
+			$.ajax({
                 url: API_BASEURL + "slicing/curaX/getMaterial/" + data["key"],
                 type: "GET",
                 dataType: "json",
@@ -553,12 +488,13 @@ $(function() {
                 }
             });
 
-
             $('#_profiles_tab_indicator_').text(data['key']);
             $('#_profiles_tab_infomation_indicator_').text(data['key']);
 
             $("#material_tab").collapse("hide");
             $("#profiles_tab").collapse("show");
+
+
 
             var $col = $("#material_tab").find('.collapse');
             for( var i = 0; i < $col.length ; i++){
@@ -582,12 +518,12 @@ $(function() {
         self.saveMaterial =function() {
 
             var form = {};
-            var $current = $('#settings_plugin_curaX_new_material div').find('input');
-            for (var i = 0; i < $current.length; i++) {
-                var fieldID = $current[i].id;
-                if ($current[i].type == 'number' || $current[i].type == 'text')
-                    form[fieldID] = $('#' + fieldID).val()
-            }
+
+            var current = $('#settings_plugin_curaX_new_material div').find('input');
+
+			$.each(current, function (_input,_value) {
+				form[_value.id] = $('#'+ _value.id).val();
+			});
 
 
             if ($('#material_modal_label').text() == "NEW MATERIAL") {
@@ -610,9 +546,6 @@ $(function() {
 
             $("#settings_plugin_curaX_new_material").modal("hide");
 
-            $("#information_panel").collapse("show");
-
-            $("#print_settings_panel").collapse("hide");
 
             self.requestData();
         };
@@ -638,6 +571,7 @@ $(function() {
                     }
                 }
             });
+
             $("#settings_plugin_curaX_new_material").modal("show");
         };
 /******************************************************************************************
@@ -680,7 +614,7 @@ $(function() {
                     type: "GET",
                     dataType: "json",
                     success:function(data){
-                        var $current = $('#newMaterial_panel div').find('input');
+                        var $current = $('#settings_plugin_curaX_new_material div').find('input');
                         for(var i = 0 ; i < $current.length; i++){
                             var fieldID = $current[i].id;
                              if($current[i].type == 'number' || $current[i].type == 'text')
@@ -707,6 +641,7 @@ $(function() {
                 if($current[i].type == 'number')
                     form[fieldID.replace('new','')] = $('#'+ fieldID).val();
             }
+
             form['inherits'] = currentMaterialSelected["key"];
             form['quality'] = $('#_profile_Quality_new_profile_').val();
             form['name'] = $('#_profile_name_new_profile_').val();
@@ -745,7 +680,7 @@ $(function() {
                         self.slicingViewModel.requestData();
                     }
                 });
-                self.getProfilesInheritsMaterials(currentMaterialSelected,currentProfileData)
+                self.getProfilesInheritsMaterials(currentMaterialSelected,currentProfileData);
         };
 
 /******************************************************************************************
@@ -778,15 +713,6 @@ $(function() {
             $quality_to_edit  = $("#comboQuality").val();
             $new_quality_name = $("#_new_quality_name").val();
 
-            console.log($profile_to_edit);
-            console.log($quality_to_edit);
-            console.log("Ok");
-                // if (!data.resource) {
-                //     return;
-                // }
-                // self.profiles.removeItem(function(item) {
-                //     return (item.key == data.key);
-                // });
              if ($('#profileQualityHeader').text() == "CHANGE PROFILE NAME") {
                  $.ajax({
                      url: API_BASEURL + "slicing/curaX/change_quality_profile/" + $profile_to_edit + "/" + $quality_to_edit + "/" + $new_quality_name,
@@ -824,8 +750,6 @@ $(function() {
                 $("#settings_plugin_curaX_edit_profile").modal("hide");
                 self.getProfilesInheritsMaterials(currentMaterialSelected,currentBrandSelected);
 
-
-                // self.getProfilesInheritsMaterials(currentMaterialSelected,currentProfileData)
         };
 
 
@@ -868,7 +792,7 @@ $(function() {
          self.SwitchIcons = function(child){
 
                var $this = $(child).attr('href');
-               console.log($this);
+
                if($($this).hasClass('collapse in')){
                    $(child).parent().find('i:first').removeClass('icon-chevron-down').addClass('icon-chevron-up');
                }else{
@@ -883,7 +807,7 @@ $(function() {
          self.SwitchSecondPanelIcons = function(child){
 
                var $this = $(child).attr('data-target');
-               console.log($this);
+
                if($($this).hasClass('collapse in')){
                    $(child).parent().find('i:first').removeClass('icon-chevron-down').addClass('icon-chevron-up');
                }else{
@@ -905,22 +829,15 @@ $(function() {
                }
            });
 
-           $(document).on("click",".panel_accordion .lbl", function(){
+           $(document).on("click",".panel_accordion", function(){
               self.SwitchIcons(this);
            });
 
-           $(document).on("click",".panel_accordion .sign", function(){
-              self.SwitchIcons(this);
-           });
-
-           $(document).on("click",".sub_panel_accordion .lbl_two", function(){
-               console.log(this)
+           $(document).on("click",".sub_panel_accordion", function(){
               self.SwitchSecondPanelIcons(this);
            });
 
-           $(document).on("click",".sub_panel_accordion .sign", function(){
-              self.SwitchSecondPanelIcons(this);
-           });
+
 
 
            self.appendToEditMenu = function () {
@@ -932,7 +849,7 @@ $(function() {
                    dataType: "json",
                    success: function (data) {
                        $.each(data.options, function (_value, _options) {
-                           $('#edit_content').append('<div class="panel_collapse collapsed"><a class="" href="#">' +
+                           $('#edit_content').append('<div class="panel_collapse collapsed" ><a class="" href="#">' +
                                '<span data-toggle="collapse"  data-parent="#accordion" href="#' + _options.id + '" class="lbl">' + _options.id + '</span>' + '<span data-toggle="collapse"  data-parent="#accordion" href="#edit' + _options.id + '" class="sign"><i class="icon-chevron-down"></i></span></a>' +
                                '<div id="' + _options.id + '" class="panel-collapse collapse"></div> </div>');
 
@@ -947,14 +864,17 @@ $(function() {
                                    $('#' + _options.id).append('<div class="form-group"><a><span  class="sign">' + _list.label + '</span>' +
                                        '<input class="inpt" id = "ed' + _list.id + '" type="checkbox" ></a></div>');
 
-                                   $('#ed' + _list.id).attr('checked', _list.default_value);
+								   if(_list.default_value == 'false')
+									    $('#ed' + _list.id).attr('checked', false);
+								   else
+								    	$('#ed' + _list.id).attr('checked', true);
 
                                }else if (_list.type == 'droplist') {
                                    $('#' + _options.id).append('<div class="form-group"><a><span  class="sign">' + _list.label + '</span>' +
                                        '<select id = "ed' + _list.id + '" ></select></a></div>');
 
                                    if(_list.options.length > 0) {
-                                       _.each(_list.options, function (din_options) {
+                                       $.each(_list.options, function (idx,din_options) {
                                            $('#ed' + _list.id).append($('<option>', {
                                                value: din_options,
                                                text: din_options
@@ -968,13 +888,10 @@ $(function() {
                    }
                });
            };
-
-
-
-
     }
 
     $(document).ready(function(){
+
               $.ajax({
                  url: API_BASEURL + "maintenance/get_nozzles_and_filament",
                  type: "GET",
@@ -983,73 +900,6 @@ $(function() {
                       self.selNozzle = data.nozzle;
                  }
              });
-            // $.ajax({
-            //     url: API_BASEURL + "slicing/curaX/getOptions",
-            //     type: "GET",
-            //     dataType: "json",
-            //     success: function (data) {
-            //         console.log(data);
-            //         $.each(data.options,function (_value,_options) {
-            //             console.log(_options.id)
-            //             $('#newProfile_panel').append('<div class="panel_collapse collapsed"><a class="" href="#">' +
-            //                    '<span data-toggle="collapse"  data-parent="#accordion" href="#edit'+ _options.id +'" class="lbl">' + _options.id +'</span>' + '<span data-toggle="collapse"  data-parent="#accordion" href="#edit'+ _options.id +'" class="sign"><i class="icon-chevron-down"></i></span></a>'+
-            //                    '<div id="edit'+_options.id+'" class="panel-collapse collapse"></div> </div>');
-            //             $('#edit_panel').append('<div class="panel_collapse collapsed"><a class="" href="#">' +
-            //                    '<span data-toggle="collapse"  data-parent="#accordion" href="#new'+ _options.id +'" class="lbl">' + _options.id +'</span>' + '<span data-toggle="collapse"  data-parent="#accordion" href="#new'+ _options.id +'" class="sign"><i class="icon-chevron-down"></i></span></a>' +
-            //                    '<div id="new'+_options.id+'" class="panel-collapse collapse"></div> </div>');
-            //
-            //
-            //             $.each(_options.list, function (_value,_list) {
-            //
-            //                 if(_list.type == 'integer'){
-            //                     $('#edit'+ _options.id ).append('<div class="form-group"><a class="" href="#"><span  class="sign">'+_list.label +'</span>' +
-            //                         '<input class="inpt" id = "edit' + _list.id + '" type="number"  step="0.01"></a></div>');
-            //
-            //                 }else if(_list.type == 'boolean'){
-            //                    $('#edit'+ _options.id ).append('<div class="form-group"><a class="" href="#"><span  class="sign">'+_list.label +'</span>' +
-            //                          '<input class="inpt" id = "edit' + _list.id + '" type="checkbox" ></a></div>');
-            //
-            //                    $('#edit' + _list.id).attr('checked',_list.default_value);
-            //                 }else if(_list.type == 'droplist'){
-            //
-            //                 }
-            //
-            //             })
-            //         });
-            //         for (var i = 0; i < data.options.length ; i++) {
-            //
-            //             var counter = data.options[i];
-            //
-            //             var $input_edit = $('<div class="panel_collapse collapsed"><a class="" href="#"><span class="signa"><i class="'+counter.icon+'"></i></span>' +
-            //                  '<span data-toggle="collapse"  data-parent="#accordion" href="#edit'+ counter.id +'" class="lbl">' + counter.id +'</span>' + '<span data-toggle="collapse"  data-parent="#accordion" href="#edit'+ counter.id +'" class="sign"><i class="icon-chevron-down"></i></span></a>');
-            //             var $input_new  = $('<div class="panel_collapse collapsed"><a class="" href="#"><span class="signa"><i class="'+counter.icon+'"></i></span>' +
-            //                  '<span data-toggle="collapse"  data-parent="#accordion" href="#new'+ counter.id +'" class="lbl">' + counter.id +'</span>' + '<span data-toggle="collapse"  data-parent="#accordion" href="#new'+ counter.id +'" class="sign"><i class="icon-chevron-down"></i></span></a>');
-            //
-            //             $('#newProfile_panel').append($input_new);
-            //             $('#edit_panel').append($input_edit);
-            //
-            //             var $input_edit= $('<div id="edit'+counter.id+'" class="panel-collapse collapse"></div> </div>');
-            //             var $input_new = $('<div id="new'+counter.id+'" class="panel-collapse collapse"></div> </div>');
-            //
-            //             $('#newProfile_panel').append($input_new);
-            //             $('#edit_panel').append($input_edit);
-            //
-            //             for(var j = 0; j < counter.list.length ; j++) {
-            //                 var idcounter = counter.list[j];
-            //                 var $input = $('<div class="form-group"><a class="" href="#"><span  class="sign">'+counter.list[j].DisplayName +'</span>' +
-            //                      '<input class="inpt" id = "edit' + idcounter.id + '" type="number"  step="0.01"></a></div>');
-            //                 $('#edit'+ counter.id ).append($input);
-            //             }
-            //
-            //             for(var j = 0; j < counter.list.length ; j++) {
-            //                 var idcounter = counter.list[j];
-            //                 var $input = $('<div class="form-group"><a class="" href="#"><span  class="sign">'+counter.list[j].DisplayName +'</span>' +
-            //                      '<input class="inpt" id = "new' + idcounter.id + '" type="number"  step="0.01"></a></div>');
-            //                 $('#new'+ counter.id ).append($input);
-            //             }
-            //         }
-            //     },
-            // });
 
             var ids = $('.panel_input').map(function () {
                 return this;

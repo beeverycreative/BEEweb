@@ -155,62 +155,34 @@
                                 </label>
                         </div>
                     </div>
-                <!--<div class="control-group">-->
-                    <!--<label class="control-label"><small>{{ _('Filename') }}</small>{{ _('Output') }}</label>-->
-                    <!--<div class="controls">-->
-                        <!--<div class="input-append">-->
-                            <!--<input type="text" data-bind="value: destinationFilename">-->
-                            <!--<span class="add-on" data-bind="text: '.' + destinationExtension()"></span>-->
-                        <!--</div>-->
-                    <!--</div>-->
-                <!--</div>-->
 
-                <label class="control-label" data-bind="visible: estimating() || estimationReady()">{{ _('Print Estimation') }}</label>
-                <div class="control-group" id="estimation-output" data-bind="visible: estimating() || estimationReady()">
-                    <br />
-                    <p data-bind="visible: estimating()" >
-                        <span id="estimate_button_loader" class="icon-spinner icon-spin icon-3x" ></span><br />
-                        {{ _('Estimating, please wait...') }}
-                    </p>
-                    <div class="controls" data-bind="visible: estimationReady">
 
-                        <input type="radio" id="estimatedPrintTime" name="time" value="Estimation Time" disabled="disabled"/>
-                            <label class="estimation" for="estimatedPrintTime">
-                               <span class="icon printicon"></span>
-                                <div data-bind="text: estimatedPrintTime"></div>
-                            </label>
-                        <input type="radio" id="estimatedFilament" name="time" value="Estimated Filament" disabled="disabled"/>
-                            <label class="estimation" for="estimatedFilament">
-                               <span class="icon filamenticon"></span>
-                                <div data-bind="text: estimatedFilament"></div>
-                            </label>
-                    </div>
-                    <div data-bind="visible: gcodeDownloadLink">
-                        <a href="#" class="btn btn-info" data-bind="attr: {href: gcodeDownloadLink}"
-                            onclick="BEEwb.showDownloadFileFeedback();" download>
-                            <span class="m-icon downloadwicon"></span>
-                            {{ _('Download GCode') }}
-                        </a>
-                        <br /><br />
-                    </div>
-                </div>
-
-{#                <label class="control-label slice-option">{{ _('Dwefls') }}</label>#}
-                <!--<div class="control-group">
-                    <label class="control-label">{{ _('Printer Profile') }}</label>
-                    <div class="controls">
-                        <select data-bind="options: printerProfiles.profiles.items, optionsText: 'name', optionsValue: 'id', value: printerProfile, optionsCaption: '{{ _('Select a printer profile...') }}'"></select>
-                    </div>
-                </div> -->
-                <!--<div class="control-group">-->
-                    <!--<label class="control-label">{{ _('Action') }}</label>-->
-                    <!--<div class="controls">-->
-                        <!--<select data-bind="options: afterSlicingOptions, optionsText: 'text', optionsValue: 'value', value: afterSlicing"></select>-->
-                    <!--</div>-->
-                        <!--</div>-->
             </form>
-            <form class="form-horizontal">
-             <label class="control-label slice-option">{{ _('Details') }}</label>
+
+            <div id="slicing_configuration_dialog_content">
+                <div id="slicing_configuration_dialog_advanced_settings" class="hidden">
+                    <form class="form-horizontal">
+                        <label class="control-label slice-option">{{ _('PROFILE') }}</label>
+                        <div class="control-group">
+                            <div class="controls">
+                                <div class="filament-div">
+                                    <span class="filament" data-bind="text: selColor, visible: !estimationDialog()"></span>
+                                    <select data-bind="options: qualityProfiles ,value: selQuality , valueAllowUnset: false, visible: estimationDialog(), event:{ change: $root.permissionChanged}" ></select>
+                                </div>
+                                <div>
+                                    <button data-bind="click: function() {$root.saveProfileChanges();}"><i class = "icon-save"></i></button>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+
+                    {% include 'dialogs/advancedoptions/advanced.jinja2' ignore missing %}
+
+                </div>
+             </div>
+
+             <form class="form-horizontal">
+                    <label class="control-label slice-option">{{ _('Details') }}</label>
                     <div class="control-group">
                         <div class="controls">
                             <div class="filament-div">
@@ -228,33 +200,6 @@
                             </div>
                         </div>
                     </div>
-</form>
-            <div id="slicing_configuration_dialog_content">
-                <div id="slicing_configuration_dialog_advanced_settings" class="hidden">
-{##}
-{##}
-{#                    <label class="control-label slice-option">{{ _('Details') }}</label>#}
-{#                    <div class="control-group">#}
-{#                        <div class="controls">#}
-{#                            <div class="filament-div">#}
-{#                                <span class="small-label">{{ _('FILAMENT') }}:</span>#}
-{#                                <span class="filament" data-bind="text: selColor, visible: !estimationDialog()"></span>#}
-{#                                <select data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>#}
-{#                                <span class="remaining-filament" data-bind="visible: !estimationDialog()">#}
-{#                                    <div>{{ _('Remaining filament') }}:  <span data-bind="text: filamentInSpool" ></span> (g)</div>#}
-{#                                </span>#}
-{#                            </div>#}
-{#                            <div class="nozzle-div">#}
-{#                                <span class="small-label">{{ _('NOZZLE') }}: </span>#}
-{#                                <span class="nozzle" data-bind="text: selNozzle, visible: !estimationDialog()"></span>#}
-{#                                <select data-bind="options: nozzleTypes, value: selNozzle, valueAllowUnset: false, visible: estimationDialog()" ></select>#}
-{#                            </div>#}
-{#                        </div>#}
-{#                    </div>#}
-
-                    {% include 'dialogs/advancedoptions/advanced.jinja2' ignore missing %}
-
-
 
                     <label class="control-label" data-bind="visible: estimating() || estimationReady()">{{ _('Print Estimation') }}</label>
                     <div class="control-group" id="estimation-output" data-bind="visible: estimating() || estimationReady()">
@@ -285,11 +230,10 @@
                             <br /><br />
                         </div>
                     </div>
-                </div>
-             </div>
+
+            </form>
 
         </div>
-
     </div>
     <div class="modal-footer">
         <a href="#" class="btn modal-footer-btn" data-dismiss="modal" aria-hidden="true" data-bind="click: closeSlicing">{{ _('Cancel') }}</a>

@@ -201,6 +201,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		return octoprint.slicing.SlicingProfile(properties["type"], display_name, profile_dict, display_name=display_name, description=description, brand=brand)
 
 	def save_slicer_profile(self, path, profile, allow_overwrite=True, overrides=None):
+
 		new_profile = profile.data
 
 		tmp=path.split("/")
@@ -708,6 +709,9 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 	def getProfileTeste(self, filament_id,slicer_profile_path, quality , nozzle):
 		return ProfileReader.getFilamentOverridesTeste(filament_id, slicer_profile_path, quality,nozzle)
+
+	def get_inherits_material(self,name,path):
+		return ProfileReader.getInheritsMaterial(name,path);
 
 	def getSavedEditionFilament(self,filament_id, slicer_profile_path):
 		return ProfileReader.getSaveEditionFilament(filament_id, slicer_profile_path)

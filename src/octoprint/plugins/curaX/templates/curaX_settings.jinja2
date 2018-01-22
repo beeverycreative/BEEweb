@@ -2,45 +2,41 @@
 
 {#--------------------- tree list ----------------------#}
 <div id = "settings_plugin_curaX_brands_interface">
-    <a class = "panel_accordion" >
+    <div class = "panel_accordion"  data-toggle = "collapse" href = "#material_tab">
         <span class = "lbl"  data-toggle = "collapse" href = "#material_tab">Materials</span>
         <span class = "sign" data-toggle = "collapse" href = "#material_tab" ><i class="icon-chevron-down"></i></span>
         <span class = "sign" data-bind="click: function() { $root.createNewMaterial(); }" ><i class = "icon-plus-sign-alt"></i></span>
-    </a>
-    <div class = "collapse in" id = "material_tab">
+    </div>
+    <div class = "sub-control collapse in" id = "material_tab">
        <div data-bind="foreach: brands.paginatedItems">
-            <li style="list-style: none" class="item deeper parent">
-            <a class="sub_panel_accordion" href="#">
-                <span class= "lbl_two" data-toggle="collapse" data-bind = "text: key,attr: {'data-target': '#row' + $index()}"></span>
+{#            <li style="list-style: none" class="item deeper parent">#}
+            <div class="sub_panel_accordion" data-toggle="collapse" data-bind = "attr: {'data-target': '#row' + $index()}" >
                 <span class="sign" data-toggle="collapse" data-bind="attr: {'data-target': '#row' + $index()}" ><i class="icon-chevron-down"></i></span>
-            </a>
-            <ul data-bind="attr: {id: 'row' + $index()}" class="collapse">
-                <ul data-bind ="foreach: $parent.materials.paginatedItems">
-                    <ul  data-bind="if: $data.brand() == $parent.key">
-                        <li><a class="" href="#">
-                                <span class = "lbl_mat" data-bind = "text:key, enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }"></span>
-                                <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.removeMaterial($data); } }">
-                                 <i class="icon-trash"></i></span>
-                                <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editMaterial($data); } }">
-                                 <i class="icon-edit"></i></span>
-                        </a></li>
-                    </ul>
-                </ul>
-            </ul>
-            </li>
+                <span class= "lbl_two" data-toggle="collapse" data-bind = "text: key,attr: {'data-target': '#row' + $index()}"></span>
+            </div>
+            <div data-bind="attr: {id: 'row' + $index()}" class="collapse">
+                <div data-bind ="foreach: $parent.materials.paginatedItems">
+                    <div  data-bind="if: $data.brand() == $parent.key">
+                        <div class = "material_panel_accordion" data-bind = "enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }">
+                         <span class = "lbl_mat" data-bind = "text:key, enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }"></span>
+                         <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.removeMaterial($data); } }"><i class="icon-trash"></i></span>
+                         <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editMaterial($data); } }"><i class="icon-edit"></i></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
     <div>
-    <a class = "panel_accordion" >
+    <div class ="panel_accordion" data-toggle = "collapse" href = "#profiles_tab" >
         <span class = "lbl"  data-toggle = "collapse" href = "#profiles_tab">Profiles:</span>
         <span class ="lbl" id = "_profiles_tab_indicator_"></span>
         <span class = "sign" data-toggle = "collapse" href = "#profiles_tab" ><i class="icon-chevron-down"></i></span>
         <span class = "sign" data-bind="click: function() { $root.createNewProfile(); }" ><i class = "icon-plus-sign-alt"></i></span>
-    </a>
+    </div>
     <div class = "collapse" id = "profiles_tab">
         <div data-bind="foreach: profiles.paginatedItems">
-                <li style="list-style: none" >
-                <a class="sub_panel_accordion" href="#">
+                <div class="sub_panel_accordion" href="#">
                     <span class= "lbl" data-bind = "text: key"></span>
                     <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.duplicateProfileDefault($data); } }">
                         <i class="icon-copy"></i></span>
@@ -48,19 +44,18 @@
                         <i class="icon-trash"></i></span>
                     <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">
                         <i class="icon-edit"></i></span>
-               </a>
-                </li>
+               </div>
         </div>
         <span id = "profile_message" class = "lbl" value = ""></span>
       </div>
     </div>
 
-    <a class = "panel_accordion" >
+    <div class = "panel_accordion" >
 {#        <span class = "lbl" data-toggle = "collapse" href = "#information_tab">Information</span>#}
         <span class ="lbl">Information:</span>
         <span class ="lbl" id = "_profiles_tab_infomation_indicator_"></span>
 {#        <span class = "sign" data-toggle = "collapse" href = "#information_tab" ><i class="icon-chevron-down"></i></span>#}
-    </a>
+    </div>
     <div id = "information_tab">
         <div class="" id="">
            <table class = "information_table">
@@ -109,10 +104,7 @@
         </a>
     </div>
     <div class="modal-body parent">
-        <form class="form-horizontal">
-             <div class="panel-group" id="newMaterial_panel">
-                 <div class="panel_collapse panel-default">
-                     <div class="panel_input" href="#">
+                     <div class="panel_input" data-toggle = "collapse" href = "#information_panel">
                           <span  class = "lbl"  data-parent="#accordion"  data-toggle = "collapse" href = "#information_panel">Information</span>
                           <span class = "sign" data-toggle = "collapse" href = "#information_panel" ><i class="icon-chevron-down"></i></span>
                      </div>
@@ -151,7 +143,7 @@
                          </div>
                      </div>
 
-                     <div class="panel_input" href ="">
+                     <div class="panel_input" data-toggle = "collapse" href = "#print_settings_panel">
                         <span class = "lbl"  data-toggle = "collapse" href = "#print_settings_panel">Print Settings</span>
                         <span class = "sign" data-toggle = "collapse" href = "#print_settings_panel" ><i class="icon-chevron-down"></i></span>
 {#                        <span class = "sign" data-bind="click: function() { $root.createNewProfile(); }" ><i class = "icon-plus-sign"></i></span>#}
@@ -186,10 +178,7 @@
                              </div>
                          </div>
                      </div>
-                 </div>
-             </div>
-        </form>
-    </div>
+        </div>
     <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>
         <button class="btn btn-primary green" id="settings-cura2-new-edit" data-bind="click: function() { $root.saveMaterial($data); }">{{ _('Confirm') }}</button>
@@ -336,15 +325,15 @@
     <div class="modal-body parent">
         <form class="form-horizontal">
             <div class="panel_collapse panel-default">
-                     <a class="" href="#">
+                     <div class="" href="#">
                          <span class="lbl">Profile:</span>
                          <select class="form-control" id="quality_droplist"></select>
                          <span class="sign" data-bind="click: function() {$root.removeQualityInProfile();}"><i class="icon-trash"></i></span>
                          <span class="sign" data-bind="click: function() {$root.NewQuality();}"><i class="icon-plus-sign-alt"></i></span>
                          <span class="sign" data-bind="click: function() {$root.NewQualityCopy();}"><i class="icon-copy"></i></span>
                          <span class="sign" data-bind="click: function() {$root.NewQualityName();}"><i class="icon-edit"></i></span>
-                     </a>
-                 </div>
+                     </div>
+            </div>
              <div class="panel-group" id="edit_content">
 
              </div>

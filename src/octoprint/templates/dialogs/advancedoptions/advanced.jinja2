@@ -1,43 +1,13 @@
 <div class="panel-group" id="advanced_edit_panel">
-  <div class="panel_collapse panel-default" id="dynamic_quality_advanced_options">
-  <div class="ewfe" href="#">
-         <span>Profile:</span>
-         <select data-bind="options: qualityProfiles ,value: selQuality , valueAllowUnset: false, visible: estimationDialog(), event:{ change: $root.permissionChanged}"></select>
-{#         <span class="sign" data-bind="click: function() {$root.removeQualityInProfile();}"><i class="icon-trash"></i></span>#}
-{#         <span class="sign" data-bind="click: function() {$root.NewQuality();}"><i class="icon-plus-sign-alt"></i></span>#}
-         <span class="sign" data-bind="click: function() {$root.saveProfileChanges();}"><i class = "icon-save"></i></span>
-{#         <span class="sign" data-bind="click: function() {$root.NewQualityCopy();}"><i class="icon-copy"></i></span>#}
-{#         <span class="sign" data-bind="click: function() {$root.NewQualityName();}"><i class="icon-edit"></i></span>#}
-      </div>
-  </div>
+{#  <div class="panel_collapse panel-default" id="dynamic_quality_advanced_options">#}
+{#         <span>Profile:</span>#}
+{#         <select data-bind="options: qualityProfiles ,value: selQuality , valueAllowUnset: false, visible: estimationDialog(), event:{ change: $root.permissionChanged}"></select>#}
+{#         <span class="sign" data-bind="click: function() {$root.saveProfileChanges();}"><i class = "icon-save"></i></span>#}
+{##}
+{#  </div>#}
   <div class="panel_collapse panel-default" id ="dynamic_advanced_options">
-{#        add advanced options#}
+{#        add advanced options #}
   </div>
 </div>
 
-{#<div class="modal hide fade" id="advanced_edit_message">#}
-{#    <div class="modal-header">#}
-{#        <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>#}
-{#        <a class="" href="#">#}
-{#          <span class="signa" id ="profileQualityHeader"></span>#}
-{#        </a>#}
-{#    </div>#}
-{#    <div class="modal-body parent">#}
-{#        <form class="form-horizontal">#}
-{#             <div class="panel-group" id="edit_panel">#}
-{#                 <div class="panel_collapse panel-default">#}
-{#                     <a class="" href="#">#}
-{#                         <span class ="sign">NEW NAME:</span>#}
-{#                         <input id = "_new_quality_name" class="inpt"  type="text" >#}
-{#                     </a>#}
-{#                 </div>#}
-{#             </div>#}
-{#        </form>#}
-{#    </div>#}
-{#    <div class="modal-footer">#}
-{#        <button class="btn btn-primary green" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>#}
-{#        <button class="btn btn-primary green" id="settings-cura2-new-edit" data-bind="click: function() { $root.changeQualityProfileName(); }">{{ _('Confirm') }}</button>#}
-{#    </div>#}
-{#</div>#}
-{##}
 

@@ -204,6 +204,8 @@ def slicingGetProfileQuality(slicer, name):
 	return  jsonify(profile)
 
 
+
+
 @api.route("/slicing/<string:slicer>/profiles", methods=["GET"])
 def slicingListSlicerProfiles(slicer):
 	configured = False
@@ -234,6 +236,16 @@ def slicingListInheritsMaterials(slicer,material):
 		return jsonify(_getSlicingInheritsMaterials(slicer, material , require_configured=configured))
 	except (UnknownSlicer, SlicerNotConfigured):
 		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+
+@api.route("/slicing/<string:slicer>/getMaterialInherits/<string:material>", methods=["GET"])
+def slicingGetInheritsMaterials(slicer,material):
+	try:
+		profile = slicingManager.load_inherits_material(slicer,material)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except UnknownProfile:
+		return make_response("Profile not found", 404)
+	return jsonify(profile)
 
 
 @api.route("/slicing/<string:slicer>/profiles/<string:name>", methods=["GET"])
@@ -393,6 +405,20 @@ def slicingCopyQualityProfile(slicer,filament_id,quality,name):
 def slicingNewQuality(slicer,filament_id,quality):
 	try:
 		slicingManager.new_quality(slicer, filament_id,quality)
+	except UnknownSlicer:
+		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
+	except CouldNotDeleteProfile as e:
+		return make_response(
+			"Could not delete profile {profile} for slicer {slicer}: {cause}".format(profile=name, slicer=slicer,
+																					 cause=str(e.cause)), 500)
+	return NO_CONTENT
+
+
+@api.route("/slicing/<string:slicer>/duplicate_profile/<string:name>", methods=["POST"])
+@restricted_access
+def pluginDuplicateProfile(slicer,name):
+	try:
+		result = slicingManager.duplicate_plugin_profile(slicer, name)
 	except UnknownSlicer:
 		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
 	except CouldNotDeleteProfile as e:

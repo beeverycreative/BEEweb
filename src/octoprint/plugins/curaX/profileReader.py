@@ -149,7 +149,6 @@ class ProfileReader(object):
 						if 'default_value' in raw_settings[key][k].keys():
 							engine_settings[k] = raw_settings[key][k]
 
-			print engine_settings
 			interface_overrides = cls.overrideCustomValues(engine_settings,overrides)
 
 			# merge interface overrides
@@ -160,9 +159,8 @@ class ProfileReader(object):
 	# Interfaces choices are: fill_density, platform_adhesion and support
 	@classmethod
 	def overrideCustomValues(cls, engine_settings,overrides):
-
 		settings = {}
-		# print engine_settings
+
 		for field in overrides:
 			if field == "fill_density":
 				settings['infill_sparse_density'] = {'default_value' : overrides[field]}
@@ -226,7 +224,6 @@ class ProfileReader(object):
 					settings['retraction_prime_speed']   = {'default_value': overrides[field]};
 
 				if field == "infill_sparse_density":
-					print overrides['infill_pattern']
 
 					infill_line_width = engine_settings['infill_line_width']['default_value']
 
@@ -468,18 +465,10 @@ class ProfileReader(object):
 	@classmethod
 	def getMaterialHeader(cls,header_id, filament_id, slicer_profile_path):
 		header_value = None
-		print(header_id, filament_id)
-		# for entry in os.listdir(slicer_profile_path + "Materials/"):
-		# 	if not entry.endswith(".json"):
-		# 		continue
-        #
-		# 	if filament_id.lower() not in entry.lower():
-		# 		continue
-		print(slicer_profile_path + 'Materials/' + filament_id)
+
 		with open(slicer_profile_path + 'Materials/' + filament_id) as data_file:
 			filament_json = json.load(data_file)
 
-		print(filament_json)
 		if header_id in filament_json:
 			header_value = filament_json[header_id]
 
@@ -496,7 +485,7 @@ class ProfileReader(object):
 				# we are only interested in profiles and no hidden files
 				continue
 
-			if filament_id.lower() == entry.lower()[:-len(".json")]:
+			if filament_id.lower()[:-len(".json")] == entry.lower()[:-len(".json")]:
 				with open(slicer_profile_path + 'Variants/' + entry) as data_file:
 					filament_json = json.load(data_file)
 					custom = True
@@ -508,7 +497,7 @@ class ProfileReader(object):
 					# we are only interested in profiles and no hidden files
 					continue
 
-				if filament_id.lower() == entry.lower()[:-len(".json")]:
+				if filament_id.lower()[:-len(".json")] == entry.lower()[:-len(".json")]:
 					with open(slicer_profile_path + 'Quality/' + entry) as data_file:
 						filament_json = json.load(data_file)
 					break
@@ -525,8 +514,17 @@ class ProfileReader(object):
 	@classmethod
 	def getParentHeader(cls, header_id, filament_id, slicer_profile_path):
 		header_value = None
-		with open(slicer_profile_path +'Materials/' + filament_id + ".json") as data_file:
-			filament_json = json.load(data_file)
+		filament_json = dict()
+
+
+		for entry in os.listdir(slicer_profile_path + "Materials/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			if filament_id == entry.lower()[:-len(".json")]:
+				with open(slicer_profile_path + 'Materials/' + entry) as data_file:
+					filament_json = json.load(data_file)
 
 		if header_id in filament_json:
 			header_value = filament_json[header_id]
@@ -547,7 +545,7 @@ class ProfileReader(object):
 				continue
 
 			if filament_id.lower() == entry.lower()[:-len(".json")]:
-				return slicer_profile_path + "Variants/" + entry
+				return slicer_profile_path + "Variants/" + filament_id +".json"
 
 		for entry in os.listdir(slicer_profile_path + "Quality/"):
 			if not entry.endswith(".json"):
@@ -555,7 +553,7 @@ class ProfileReader(object):
 				continue
 
 			if filament_id.lower() == entry.lower()[:-len(".json")]:
-				return slicer_profile_path + "Quality/" + entry
+				return slicer_profile_path + "Quality/" + filament_id +".json"
 
 		for entry in os.listdir(slicer_profile_path + "Materials/"):
 			if not entry.endswith(".json"):
@@ -739,11 +737,8 @@ class ProfileReader(object):
 			for key in filament_json['overrides'].keys():
 				for info in filament_json['overrides'][key]:
 					if info in data:
-						print "OKO"
-						print data[info]
 						filament_json['overrides'][key][info]['default_value'] = int(data[info])
 
-		print filament_json
 		return filament_json
 
 
@@ -886,7 +881,21 @@ class ProfileReader(object):
     #
 	# 	return filament_json
 
+	@classmethod
+	def getInheritsMaterial(cls,name,path):
 
+		for entry in os.listdir(path + "/Variants/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			if name.lower() not in entry.lower():
+				continue
+
+			# creates a shallow slicing profile
+			with open(path + '/Variants/' + entry) as data_file:
+				filament_json = json.load(data_file)
+				custom = True
 
 
 	@classmethod
@@ -938,8 +947,6 @@ class ProfileReader(object):
 	@classmethod
 	def getRawProfile(cls, path, material):
 
-		print(material);
-		print(path);
 
 		overrides_Values = {}
 		with open(path + "/generic_profile.json") as data_file:
@@ -958,7 +965,6 @@ class ProfileReader(object):
 		overrides_Values = cls.merge_dicts(cls.getParentOverridesTeste(material, path), overrides_Values)
 
 		overrides_Values = cls.merge_dicts(cls.getParentPrinterOverrides(path), overrides_Values)
-		print overrides_Values
 
 		return overrides_Values
 
@@ -1011,7 +1017,7 @@ class ProfileReader(object):
 				continue
 
 			# creates a shallow slicing profile
-			with open(slicer_profile_path + '/Variants/' + entry) as data_file:
+			with open(slicer_profile_path + '/Variants/' + filament_id + ".json") as data_file:
 				filament_json = json.load(data_file)
 				custom = True
 
@@ -1025,7 +1031,7 @@ class ProfileReader(object):
 					continue
 
 				# creates a shallow slicing profile
-				with open(slicer_profile_path + '/Quality/' + entry) as data_file:
+				with open(slicer_profile_path + '/Quality/' + filament_id + ".json") as data_file:
 					filament_json = json.load(data_file)
 
 		if 'PrinterGroups' in filament_json:
@@ -1045,7 +1051,6 @@ class ProfileReader(object):
 
 		overrides_Values = cls.merge_dicts(cls.getParentNozzleOverrides(slicer_profile_path,nozzle),overrides_Values)
 
-		print overrides_Values
 		return overrides_Values
 
 	@classmethod
@@ -1074,7 +1079,10 @@ class ProfileReader(object):
 
 	@classmethod
 	def getParentOverridesTeste(cls, filament_id, slicer_profile_path):
+
 		overrides_Values = {}
+		filament_json = dict()
+
 		with open(slicer_profile_path + '/Materials/' + filament_id + ".json") as data_file:
 			filament_json = json.load(data_file)
 

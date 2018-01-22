@@ -62,6 +62,7 @@ $(function() {
 
         self.slicingDialog = $("#slicing_configuration_dialog");
 
+
         self.slicersForFile = function(file) {
             if (file === undefined) {
                 return [];
@@ -568,52 +569,53 @@ $(function() {
 
             if($('#simple_settings_btn').text() == 'Advanced') {
 
-                // Density support
-                if (self.selDensity() == "Low") {
-                    data['profile.fill_density'] = 5;
-                } else if (self.selDensity() == "Medium") {
-                    data['profile.fill_density'] = 10;
-                } else if (self.selDensity() == "High") {
-                    data['profile.fill_density'] = 20;
-                } else if (self.selDensity() == "High+") {
-                    data['profile.fill_density'] = 40;
-                } else if (self.selDensity() == "Custom") {
-                    if (self.customDensity() > 100)
-                        self.customDensity(100);
-                    if (self.customDensity() < 0)
-                        self.customDensity(0);
+				// Density support
+				if (self.selDensity() == "Low") {
+					data['profile.fill_density'] = 5;
+				} else if (self.selDensity() == "Medium") {
+					data['profile.fill_density'] = 10;
+				} else if (self.selDensity() == "High") {
+					data['profile.fill_density'] = 20;
+				} else if (self.selDensity() == "High+") {
+					data['profile.fill_density'] = 40;
+				} else if (self.selDensity() == "Custom") {
+					if (self.customDensity() > 100)
+						self.customDensity(100);
+					if (self.customDensity() < 0)
+						self.customDensity(0);
 
-                    data['profile.fill_density'] = self.customDensity();
-                }
+					data['profile.fill_density'] = self.customDensity();
+				}
 
-                // BVC Raft Support
-                if (self.platformAdhesion() == 'Raft') {
-                    data['profile.platform_adhesion'] = 'raft';
-                } else if (self.platformAdhesion() == 'Brim') {
-                    data['profile.platform_adhesion'] = 'brim';
-                } else {
-                    data['profile.platform_adhesion'] = 'none';
-                }
+				// BVC Raft Support
+				if (self.platformAdhesion() == 'Raft') {
+					data['profile.platform_adhesion'] = 'raft';
+				} else if (self.platformAdhesion() == 'Brim') {
+					data['profile.platform_adhesion'] = 'brim';
+				} else {
+					data['profile.platform_adhesion'] = 'none';
+				}
 
-                // BVC Support
-                if (self.support() == 'Everywhere') {
-                    data['profile.support'] = 'everywhere';
-                } else if (self.support() == 'Touching Platform') {
-                    data['profile.support'] = 'buildplate';
-                } else {
-                    data['profile.support'] = 'none';
-                }
+				// BVC Support
+				if (self.support() == 'Everywhere') {
+					data['profile.support'] = 'everywhere';
+				} else if (self.support() == 'Touching Platform') {
+					data['profile.support'] = 'buildplate';
+				} else {
+					data['profile.support'] = 'none';
+				}
+			}else {
 
-            }else if($('#simple_settings_btn').text() == 'Basic'){
-                var _input = $('#dynamic_advanced_options').find('input , select');
-                _.each(_input,function (info) {
-                      if(info.type == 'checkbox')
-                          data['profile.' + info.id] = $('#' + info.id).is(':checked');
-                      else
-                         data['profile.'+ info.id] = $('#'+ info.id).val();
-                });
-            }
-
+				if ($('#simple_settings_btn').text() == 'Basic') {
+					var _input = $('#dynamic_advanced_options').find('input , select');
+					_.each(_input, function (info) {
+						if (info.type == 'checkbox')
+							data['profile.' + info.id] = $('#' + info.id).is(':checked');
+						else
+							data['profile.' + info.id] = $('#' + info.id).val();
+					});
+				}
+			}
             console.log(data);
 
             OctoPrint.files.slice( self.target , self.file(),
@@ -836,7 +838,7 @@ $(function() {
             console.log(form);
 
             $.ajax({
-                url: API_BASEURL + "slicing/curaX/confirmEdition/" + self.selColor() + "/" + self.selQuality() + "/" + self.selNozzle() ,
+                url: API_BASEURL + "slicing/curaX/confirmEdition/" + self.selColor() + "/" + self.selQuality() + "/" + self.selNozzle(),
                 type: "PUT",                //
                 dataType: "json",           // data type
                 data: JSON.stringify(form), // send the data

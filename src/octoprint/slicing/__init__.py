@@ -269,7 +269,7 @@ class SlicingManager(object):
 		    ~octoprint.slicing.exceptions.SlicerNotConfigured: The slice specified via ``slicer_name`` is not configured yet.
 		"""
 
-		print(resolution);
+
 
 		if callback_args is None:
 			callback_args = ()
@@ -585,6 +585,32 @@ class SlicingManager(object):
 		settings().set(["slicing", "defaultProfiles"], default_profiles)
 		settings().save(force=True)
 
+
+
+	def duplicate_plugin_profile(self,slicer,name):
+		profile = self.get_slicer(slicer).getSavedEditionFilament(name, self.get_slicer_profile_path(slicer))
+
+		slicerPath = self.get_slicer_profile_path(slicer)
+		tempPath = self.get_slicer_profile_path(slicer) + "/Variants/" + "{name}.json".format(name=name)
+		count = 0
+
+		while True:
+			count = count + 1
+			is_overwrite = os.path.exists(tempPath)
+
+			if is_overwrite:
+				tempPath = slicerPath + "/Variants/" + "{name} (copy {number} ).json".format(name=name, number=count)
+			else:
+				break
+
+		tmp = tempPath.split("/")
+		name = tmp[len(tmp) - 1]
+		profile["name"] = name[:-len(".json")]
+		profile["id"] = self._sanitize(name[:-len(".json")])
+
+		self._save_edit_profile_to_path(slicer, tempPath, profile)
+
+
 	def duplicate_profile(self, slicer, name):
 		if not slicer in self.registered_slicers:
 			raise UnknownSlicer(slicer)
@@ -595,8 +621,10 @@ class SlicingManager(object):
 
 		profile = self.load_profile(slicer, name)
 
+
 		profile.slicer = slicer
 		profile.name = name
+
 		slicerPath = self.get_slicer_profile_path(slicer)
 
 		tempPath = self.get_slicer_profile_path(slicer) + "/Variants/" + "{name}.json".format(name=name)
@@ -689,6 +717,16 @@ class SlicingManager(object):
 
 		return slicer_object_curaX.getProfileTeste(name, path, quality, nozzle)
 
+
+	def load_inherits_material(self,slicer,name):
+		slicer_object_curaX = self.get_slicer(slicer);
+		try:
+			path = self.get_slicer_profile_path(slicer);
+		except IOError:
+			return None
+		return slicer_object_curaX.get_inherits_material(name,path);
+
+
 	def load_raw_material(self,slicer):
 		slicer_object_curaX = self.get_slicer(slicer)
 		try:
@@ -717,6 +755,8 @@ class SlicingManager(object):
 			return None
 
 		return slicer_object_curaX.getMaterial(path, name)
+
+
 
 
 	def edit_profile(self, slicer, name , data , quality, nozzle):
@@ -998,10 +1038,10 @@ class SlicingManager(object):
 					# 		continue
 
 					# path = os.path.join(slicer_profile_path, entry)
-					print(entry);
+
 					profile_name = entry[:-len(".json")]
 					brand = slicer_object_curaX.getMaterialHeader("brand", entry, slicer_profile_path + "/")
-					print(brand);
+
 					# filament_id  = slicer_object_curaX.getFilamentHeader("inherits", entry, slicer_profile_path + "/")
 
 					# filament_name = slicer_object_curaX.getFilamentHeaderName("name", filament_id, slicer_profile_path + "/")
@@ -1048,7 +1088,9 @@ class SlicingManager(object):
 					# path = os.path.join(slicer_profile_path, entry)
 					profile_name = entry[:-len(".json")]
 					inherit = slicer_object_curaX.getFilamentHeader("inherits", entry, slicer_profile_path + "/")
+
 					if inherit == material_id :
+
 						brand   = slicer_object_curaX.getFilamentHeader("brand", entry, slicer_profile_path + "/")
 
 						# filament_id  = slicer_object_curaX.getFilamentHeader("inherits", entry, slicer_profile_path + "/")
