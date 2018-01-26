@@ -1704,7 +1704,7 @@ class BeePrinter(Printer):
             self._stateMonitor.set_progress({
                 "completion": self._progress * 100 if self._progress is not None else None,
                 "filepos": filepos,
-                "printTime": int(self._elapsedTime * 60) if self._elapsedTime is not None else None,
+                "printTime": int(self._elapsedTime) if self._elapsedTime is not None else None,
                 "printTimeLeft": int(self._printTimeLeft) if self._printTimeLeft is not None else None,
                 "fileSizeBytes": fileSize,
                 "temperatureTarget": self._targetTemperature
