@@ -179,7 +179,7 @@
         <div class="span4"></div>
         <div class="span4 text-center">
             <button id="cancel-calib-test" title="Cancel Calibration Test" class="btn btn-danger"
-               data-bind="click: cancelCalibrationTest, enable: printerState.isOperational() && !commandLock()
+               data-bind="click: cancelCalibrationTest, enable: !commandLock()
                 && loginState.isUser()">
                 <i class="icon-stop"></i> {{ _('Cancel Test')}}
             </button>

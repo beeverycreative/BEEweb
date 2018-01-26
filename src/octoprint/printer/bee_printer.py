@@ -859,7 +859,7 @@ class BeePrinter(Printer):
             file_path = os.path.join(settings().getBaseFolder("uploads"), 'BEETHEFIRST_calib_test.gcode')
             self._fileManager.remove_file(FileDestinations.LOCAL, file_path)
         except Exception as ex:
-            self._logger.error('Error finishing calibration test : %s' % str(ex))
+            self._logger.error('Error finishing calibration test : %s' % ex.message)
 
 
     def toggle_pause_print(self):
