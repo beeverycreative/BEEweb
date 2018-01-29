@@ -132,7 +132,6 @@ $(function() {
 
         self.show = function(target, file, force, workbench, path) {
 
-
             self.estimationDialog(false);
             self.slicingDoneEstimationCallback = undefined;
             self.estimatedPrintTime(null);
@@ -804,7 +803,6 @@ $(function() {
                 type: "GET",
                 dataType: "json",
                 success:function(data){
-                    console.log(data);
                     var _input = $('#advanced_edit_panel div').find('input,select');
                     _.each(_input,function (info) {
                         if(self._lookInData(info.id,data)) {
@@ -844,16 +842,16 @@ $(function() {
             });
         };
 
-        self.switchToSimple = function() {
+        self.tooglePrintOptions = function() {
             var $txt = $('#simple_settings_btn').text();
 
             if($txt == 'Basic') {
-                 $('#simple_settings_btn').text('Advanced');
+                 $('#simple_settings_btn').text(gettext('Advanced'));
                  $('#slicing_form').removeClass('hidden');
                  $('#slicing_configuration_dialog_advanced_settings').addClass('hidden');
                  $('#dynamic_advanced_options').empty();
-            }else{
-                 $('#simple_settings_btn').text('Basic');
+            } else {
+                 $('#simple_settings_btn').text(gettext('Basic'));
                  $('#slicing_form').addClass('hidden');
                  $('#slicing_configuration_dialog_advanced_settings').removeClass('hidden');
                  self.appendAdvancedOptions();

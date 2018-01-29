@@ -1,8 +1,7 @@
 <div id="slicing_configuration_dialog" class="modal hide fade">
     <div class="modal-header">
         <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
-        <button type="button"  id ="simple_settings_btn" data-bind="click: function() { $root.switchToSimple(); }">Advanced</button>
-{#        <button type="button"  id ="advanced_settings_btn" data-bind="click: function() { $root.switchToAdvanced(); }">Advanced</button>#}
+        <button type="button"  id ="simple_settings_btn" data-bind="click: function() { $root.tooglePrintOptions(); }">{{ _('Advanced') }}</button>
         <h3><span class="m-icon printgicon"></span>{{ _('Print Setup') }}</h3>
     </div>
     <div class="modal-body">
@@ -166,7 +165,6 @@
                         <div class="control-group">
                             <div class="controls">
                                 <div class="filament-div">
-                                    <span class="filament" data-bind="text: selColor, visible: !estimationDialog()"></span>
                                     <select data-bind="options: qualityProfiles ,value: selQuality , valueAllowUnset: false, visible: estimationDialog(), event:{ change: $root.permissionChanged}" ></select>
                                 </div>
                                 <div>
