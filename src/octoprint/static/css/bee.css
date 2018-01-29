@@ -1388,7 +1388,8 @@ td.settings_users_actions .m-icon {
 .modal-row .m-icon{ margin-right: 10px; vertical-align: text-top; }
 
 #maintenance_dialog .modal-body{
-    min-height: 600px !important;
+    min-height: 500px !important;
+    max-height: 550px !important;
 }
 #usersettings_dialog .modal-body{
    min-height: 540px;
@@ -1398,7 +1399,7 @@ td.settings_users_actions .m-icon {
 #settings_dialog
 {
     top: 0 !important;
-    margin-top: 30px !important;
+    margin-top: 20px !important;
 }
 #maintenanceList .modal-row > .text-right{
     padding: 35px 0 0;
