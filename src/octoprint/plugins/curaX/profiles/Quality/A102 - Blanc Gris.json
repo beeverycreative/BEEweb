@@ -8,13 +8,14 @@
     "nozzles_supported": [0.4, 0.6],
     "unload_temperature": 210,
     "preheat_temperature": 205,
+    "filament_density": 1.24,
     "PrinterGroups":[
         {
             "group_printers": ["beethefirst","beethefirstplus","beethefirstplusa","beeinschool","beeinschoola"],
             "quality":
             {
 
-               "low":
+                "low":
                 {       
                     "layer_height": { "default_value": 0.3 },
                     "layer_height_0": { "default_value": 0.3 },
