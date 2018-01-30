@@ -362,10 +362,22 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 								if not tool_key in analysis["filament"]:
 									analysis["filament"][tool_key] = dict()
 								analysis["filament"][tool_key]["length"] = filament
+
 								if "filamentDiameter" in engine_settings:
-									radius_in_cm = float(int(engine_settings["filamentDiameter"]) / 10000.0) / 2.0
-									filament_in_cm = filament / 10.0
-									analysis["filament"][tool_key]["volume"] = filament_in_cm * math.pi * radius_in_cm * radius_in_cm
+									filament_diameter = engine_settings["filamentDiameter"]
+								else:
+									# Assumes default diameter value of 1.75
+									filament_diameter = 1.75
+
+								# Used filament volume
+								radius_in_cm = (filament_diameter / 10.0) / 2.0
+								filament_in_cm = filament / 10.0
+								analysis["filament"][tool_key]["volume"] = round(filament_in_cm * math.pi * radius_in_cm * radius_in_cm, 2)
+
+								# Used filament weight
+								filament_density = ProfileReader.getFilamentDensity(profile_path)
+								weight = filament_density * analysis["filament"][tool_key]["volume"]
+								analysis["filament"][tool_key]["weight"] = round(weight, 1)
 							except:
 								pass
 			finally:
