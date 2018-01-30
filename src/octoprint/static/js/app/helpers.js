@@ -519,7 +519,7 @@ function formatFilament(filament) {
     if (!filament || !filament["length"]) return "-";
 
     if (filament.hasOwnProperty("weight") && filament.weight) {
-    	var result = "%(weight).02fg";
+    	var result = "%(weight).1fg";
 
     	return _.sprintf(result, {weight: filament["weight"] });
 	} else {
