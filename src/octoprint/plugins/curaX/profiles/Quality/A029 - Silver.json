@@ -7,6 +7,8 @@
     "color": "#ffffff" ,
     "nozzles_supported": [0.4, 0.6],
     "unload_temperature": 210,
+    "preheat_temperature": 205,
+    "filament_density": 1.24,
     "PrinterGroups":[
         {
             "group_printers": ["beethefirst","beethefirstplus","beethefirstplusa","beeinschool","beeinschoola"],

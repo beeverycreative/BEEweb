@@ -401,6 +401,32 @@ class ProfileReader(object):
 
 		return overrides_values
 
+	# get Filament and parents Overrides
+	# Must check in Quality folder for default profiles and Variants for user profiles
+	@classmethod
+	def getFilamentDensity(cls, filament_id):
+		logger = logging.getLogger("octoprint.plugin.curaX.profileReader")
+		from octoprint.server import slicingManager
+		slicer_profile_path = slicingManager.get_slicer_profile_path("curaX") + '/'
+		filament_json = dict()
+		default_value = 1.24
+
+		for entry in os.listdir(slicer_profile_path + "Quality/"):
+			if not entry.endswith(".json"):
+				# we are only interested in profiles and no hidden files
+				continue
+
+			if filament_id.lower() == entry.lower()[:-len(".json")]:
+				with open(slicer_profile_path + 'Quality/' + entry) as data_file:
+					filament_json = json.load(data_file)
+				break
+
+		if 'filament_density' not in filament_json:
+			logger.warning('Filament density setting not present in %s' % filament_id)
+			return default_value
+
+		return filament_json['filament_density']
+
 	# Get parent overrides
 	# all parents are in materials folder
 	@classmethod

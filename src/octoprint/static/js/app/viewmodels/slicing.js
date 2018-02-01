@@ -442,6 +442,7 @@ $(function() {
                                 var filament = data["gcodeAnalysis"]["filament"];
                                 if (_.keys(filament).length == 1) {
                                     self.estimatedFilament(gettext("Filament") + ": " + formatFilament(data["gcodeAnalysis"]["filament"]["tool" + 0]));
+
                                 } else if (_.keys(filament).length > 1) {
                                     for (var toolKey in filament) {
                                         if (!_.startsWith(toolKey, "tool") || !filament[toolKey] || !filament[toolKey].hasOwnProperty("length") || filament[toolKey]["length"] <= 0) continue;
