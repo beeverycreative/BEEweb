@@ -1586,7 +1586,7 @@ class BeePrinter(Printer):
                     fileData = None
                 if fileData is not None:
                     if "analysis" in fileData:
-                        if estimatedPrintTime is None and "estimatedPrintTime" in fileData["analysis"]:
+                        if estimatedPrintTime is None and "estimatedPrintTime" in fileData["analysis"].keys():
                             estimatedPrintTime = fileData["analysis"]["estimatedPrintTime"]
                         if "filament" in fileData["analysis"].keys():
                             filament = fileData["analysis"]["filament"]
