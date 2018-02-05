@@ -859,7 +859,7 @@ class BeePrinter(Printer):
             file_path = os.path.join(settings().getBaseFolder("uploads"), 'BEETHEFIRST_calib_test.gcode')
             self._fileManager.remove_file(FileDestinations.LOCAL, file_path)
         except Exception as ex:
-            self._logger.error('Error finishing calibration test : %s' % str(ex))
+            self._logger.error('Error finishing calibration test : %s' % ex.message)
 
 
     def toggle_pause_print(self):
@@ -1586,7 +1586,7 @@ class BeePrinter(Printer):
                     fileData = None
                 if fileData is not None:
                     if "analysis" in fileData:
-                        if estimatedPrintTime is None and "estimatedPrintTime" in fileData["analysis"]:
+                        if estimatedPrintTime is None and "estimatedPrintTime" in fileData["analysis"].keys():
                             estimatedPrintTime = fileData["analysis"]["estimatedPrintTime"]
                         if "filament" in fileData["analysis"].keys():
                             filament = fileData["analysis"]["filament"]
@@ -1704,7 +1704,7 @@ class BeePrinter(Printer):
             self._stateMonitor.set_progress({
                 "completion": self._progress * 100 if self._progress is not None else None,
                 "filepos": filepos,
-                "printTime": int(self._elapsedTime * 60) if self._elapsedTime is not None else None,
+                "printTime": int(self._elapsedTime) if self._elapsedTime is not None else None,
                 "printTimeLeft": int(self._printTimeLeft) if self._printTimeLeft is not None else None,
                 "fileSizeBytes": fileSize,
                 "temperatureTarget": self._targetTemperature

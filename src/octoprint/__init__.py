@@ -183,7 +183,7 @@ def init_logging(settings, use_logging_file=True, logging_file=None, default_con
 				},
 				"file": {
 					"class": "octoprint.logging.handlers.OctoPrintLogHandler",
-					"level": "DEBUG",
+					"level": "INFO",
 					"formatter": "simple",
 					"when": "D",
 					"backupCount": 6,

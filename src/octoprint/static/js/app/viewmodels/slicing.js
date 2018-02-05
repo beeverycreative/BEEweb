@@ -4,7 +4,6 @@ $(function() {
 
         self.loginState = parameters[0];
         self.printerProfiles = parameters[1];
-        //self.printerState = parameters[2];
 
         self.file = ko.observable(undefined);
         self.target = undefined;
@@ -203,14 +202,11 @@ $(function() {
                 && self.slicer() != undefined
                 && self.sliceButtonControl()
                 && !self.estimationDialog();
-                //&& self.profile() != undefined
-                //&&( !(self.printerState.isPrinting() || self.printerState.isPaused()) || !self.slicerSameDevice());
         });
 
         self.sliceButtonTooltip = ko.pureComputed(function() {
             if (!self.enableSliceButton()) {
-                if (//(self.printerState.isPrinting() || self.printerState.isPaused()) &&
-                    self.slicerSameDevice()) {
+                if (self.slicerSameDevice()) {
                     return gettext("Cannot slice on the same device while printing");
                 } else {
                     return gettext("Cannot slice, not all parameters specified");
@@ -429,6 +425,7 @@ $(function() {
                                 var filament = data["gcodeAnalysis"]["filament"];
                                 if (_.keys(filament).length == 1) {
                                     self.estimatedFilament(gettext("Filament") + ": " + formatFilament(data["gcodeAnalysis"]["filament"]["tool" + 0]));
+
                                 } else if (_.keys(filament).length > 1) {
                                     for (var toolKey in filament) {
                                         if (!_.startsWith(toolKey, "tool") || !filament[toolKey] || !filament[toolKey].hasOwnProperty("length") || filament[toolKey]["length"] <= 0) continue;
@@ -707,7 +704,7 @@ $(function() {
 
     OCTOPRINT_VIEWMODELS.push([
         SlicingViewModel,
-        ["loginStateViewModel", "printerProfilesViewModel", /*"printerStateViewModel"*/],
+        ["loginStateViewModel", "printerProfilesViewModel"],
         "#slicing_configuration_dialog"
     ]);
 });

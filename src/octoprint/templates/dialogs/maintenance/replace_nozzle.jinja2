@@ -4,57 +4,55 @@
 
 <div id="replaceNozzleStep1">
     <div class="row-fluid">
-        <div class="span1 text-center"></div>
-        <div class="span4 text-center">
+        <div class="span2 text-center"></div>
+        <div class="span3 text-center">
             <span>{{ _('1st Series') }}</span>
             <img src="{{ url_for('static', filename='img/maintenance/nozzles_old.png') }}" /><br />
             <span>0.4 mm &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.6 mm</span>
+            &nbsp;&nbsp;&nbsp; 0.6 mm</span>
         </div>
         <div class="span2 text-center"></div>
-        <div class="span4 text-center">
+        <div class="span3 text-center">
             <span>{{ _('2nd Series') }}</span>
             <img src="{{ url_for('static', filename='img/maintenance/nozzles_new.png') }}" /><br />
-            <span>0.4 mm &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-            &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; 0.6 mm</span>
+            <span>0.4 mm &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            &nbsp;&nbsp;&nbsp;&nbsp; 0.6 mm</span>
         </div>
-        <div class="span1 text-center"></div>
+        <div class="span2 text-center"></div>
     </div>
     <br />
+	<div class="span12 text-center">
+		<h4>{{ _('First, verify if your nozzle belongs to the 1st or 2nd series.') }}</h4>
+		<br />
+	</div>
 
     <div class="row-fluid">
-        <div class="span12 text-center">
-            <h4>{{ _('First, verify if your nozzle belongs to the 1st or 2nd series.') }}</h4>
-            <br />
-        </div>
-        <div class="span1"></div>
-        <div class="span4">
+        <div class="span5">
             <p>{{ _('To replace this type of nozzle, you\'ll need:') }}</p>
             <span> - {{ _('Additional nozzle;') }}</span><br />
             <span> - {{ _('6mm wrench;') }}</span><br />
             <span> - {{ _('A surface that can handle the nozzle\'s heat, once you take it off.') }}</span><br />
         </div>
-        <div class="span2"></div>
-        <div class="span4">
+        <div class="span1"></div>
+        <div class="span6">
             <p>{{ _('To replace this type of nozzle, you\'ll need:') }}</p>
             <span> - {{ _('Additional nozzle;') }}</span><br />
             <span> - {{ _('10mm socket wrench;') }}</span><br />
             <span> - {{ _('Ratchet for the socket wrench;') }}</span><br />
             <span> - {{ _('A surface that can handle the nozzle\'s heat, once you take it off.') }}</span><br />
         </div>
-        <div class="span1"></div>
     </div>
     <div class="row-fluid">
-        <div class="row-fluid">
-            <strong>{{ _('NOTICE') }}: </strong>
-            {{ _('the removed nozzle will be at around 200ºC') }}
-        </div>
-        <br /><br />
-        <div class="row-fluid">
-            <span class="span12"><i class="icon-exclamation-sign"></i>
-                <strong>{{ _('WARNING: BE CAREFUL NOT TO TOUCH THE NOZZLE DURING THIS PROCESS.') }}</strong>
-            </span>
-        </div>
+    	<br />
+		<span class="span12"><i class="icon-exclamation-sign"></i>
+			<strong>{{ _('WARNING: BE CAREFUL NOT TO TOUCH THE NOZZLE DURING THIS PROCESS.') }}</strong>
+		</span>
+
+		<br />
+		<span class="span12">
+			<strong>{{ _('NOTICE') }}: </strong>
+			{{ _('the removed nozzle will be at around 200ºC') }}
+		</span>
     </div>
 </div>
 
@@ -188,7 +186,7 @@
     <div class="row-fluid">
         <div class="span3 text-center"></div>
         <div class="span6 text-center">
-            <img src="{{ url_for('static', filename='img/maintenance/nozzles.png') }}" />
+            <img src="{{ url_for('static', filename='img/maintenance/nozzles.png') }}" width="290px"/>
         </div>
         <div class="span3 text-center"></div>
     </div>

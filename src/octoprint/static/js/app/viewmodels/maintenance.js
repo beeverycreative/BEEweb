@@ -754,7 +754,6 @@ $(function() {
         self.cancelCalibrationTest = function() {
 
             self.commandLock(true);
-
             $.ajax({
                 url: API_BASEURL + "maintenance/cancel_calibration_test",
                 type: "POST",
@@ -762,6 +761,13 @@ $(function() {
                 success: function() {
                     self.commandLock(false);
                     self.calibrationTestCancelled = true;
+
+					// If for some reason the calibration test is already stopped but the print status is still
+					// printing show the final calibration step screen
+					if (self.printerState.isPrinting()) {
+						self.calibrationTestStep2();
+						return;
+					}
 
                     $('#calibrationStep4').removeClass('hidden');
                     $('#calibrationTest1').addClass('hidden');
@@ -830,7 +836,7 @@ $(function() {
                     }
                 },
                 error: function() {
-                    setTimeout(function() { self._isRunningCalibrationTest(); }, 5000);
+                    self.calibrationTestStep2();
                 }
             });
         };
