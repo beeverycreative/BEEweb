@@ -563,6 +563,14 @@ BEEwb.main = {
         gridXY2.position.set(+widthHeightDiff/2, 0, 0);
         gridXY2.rotation.x = Math.PI/2;
         this.scene.add(gridXY2);
+
+        // Adds print limits bounding box
+		var printAreaGeom = new THREE.EdgesGeometry(new THREE.BoxGeometry(BEEwb.main.bedWidth, BEEwb.main.bedDepth, BEEwb.main.bedHeight));
+		var printArea = new THREE.LineSegments(printAreaGeom, new THREE.LineBasicMaterial({
+		  color: "grey"
+		}));
+		printArea.position.setZ((BEEwb.main.bedHeight / 2) -1);
+		this.scene.add(printArea);
     },
 
     /**

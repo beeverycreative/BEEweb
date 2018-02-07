@@ -153,32 +153,28 @@ BEEwb.transformOps.scaleToMax = function() {
 
     if (BEEwb.main.selectedObject !== null) {
 
-        var hLimit = BEEwb.main.bedHeight;// z
-        var wLimit = BEEwb.main.bedWidth; // x
-        var dLimit = BEEwb.main.bedDepth; // y
+		var printAreaSize = new THREE.Vector3(BEEwb.main.bedWidth, BEEwb.main.bedDepth, BEEwb.main.bedHeight);
 
-        var currentSize = BEEwb.helpers.objectSize(BEEwb.main.selectedObject);
+		var ratioSize = new THREE.Vector3();
 
-        var xScale = wLimit / currentSize['x'];
-        var yScale = dLimit / currentSize['y'];
-        var zScale = hLimit / currentSize['z'];
+		var tempBox = new THREE.Box3().setFromObject( BEEwb.main.selectedObject );
+		ratioSize.copy(printAreaSize).divide(tempBox.getSize());
 
-        var scale = Math.min(xScale, Math.min (yScale, zScale));
-        // Small adjustment to avoid false positive out of bounds message due to precision errors
-        scale -= 0.01;
+		var scale = Math.min(ratioSize.x, Math.min (ratioSize.y, ratioSize.z));
+		scale -= 0.01; // Small adjustment to prevent out of bounds due to rounding errors
 
-		BEEwb.main.selectedObject.scale.set(scale, scale ,scale);
+		var newScale = new THREE.Vector3(scale, scale, scale);
+
+		BEEwb.main.selectedObject.scale.multiply(newScale);
 		BEEwb.main.transformControls.update();
+
+        this.centerModelBBox();
 
 		if ($('#scaleby-per').is(':checked')) {
 			BEEwb.transformOps.updateScaleSizeInputsByPercentage();
 		} else {
 			BEEwb.transformOps.updateScaleSizeInputs();
 		}
-
-        BEEwb.main.selectedObject.position.set( 0, 0, 0 );
-
-        this.placeOnBed();
     }
 };
 
@@ -195,6 +191,22 @@ BEEwb.transformOps.centerModel = function() {
     }
 };
 
+/**
+ * Centers the selected model on the platform
+ *
+ */
+BEEwb.transformOps.centerModelBBox = function() {
+
+    if (BEEwb.main.selectedObject !== null) {
+    	var bboxCenter = new THREE.Box3().setFromObject( BEEwb.main.selectedObject ).getCenter();
+    	var xShift = BEEwb.main.selectedObject.position.x - bboxCenter.x;
+    	var yShift = BEEwb.main.selectedObject.position.y - bboxCenter.y;
+        BEEwb.main.selectedObject.position.setX(xShift);
+        BEEwb.main.selectedObject.position.setY(yShift);
+
+        this.placeOnBed();
+    }
+};
 
 /**
  * Places the selected model on top of the platform
