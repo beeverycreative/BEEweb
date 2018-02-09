@@ -1751,6 +1751,10 @@ $(function() {
             }
         };
 
+        self.onStartupComplete = function () {
+        	self.show();
+		}
+
     }
 
     OCTOPRINT_VIEWMODELS.push([

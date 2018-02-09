@@ -18,15 +18,15 @@
                         <div class="span1 text-center">
                             <span class="icon filamentgicon"></span>
                         </div>
-                        <div class="span4">
+                        <div class="span5">
                             <h3>{{ _('Change filament') }}</h3>
                             <p>{{ _('This operation is needed when you want to print with a different color or when the filament available in the spool is not enough.')}}
                             </p>
                          </div>
-                         <div class="span3 text-center">
+                         <div class="span3 text-right">
                              <a href="https://beeverycreative.com/order-here/" class="btn btn-maintenance green" target="_blank" >{{ _('Buy filament') }}</a>
 						 </div>
-						 <div class="span4 text-center">
+						 <div class="span3 text-right">
                              <button class="btn btn-maintenance yellow"
                                 data-bind="click: showFilamentChange, enable: !printerState.isBusy() && !printerState.isErrorOrClosed()" >
                                  <span class="m-icon filamenticon"></span>{{ _('Change filament now') }}
@@ -42,7 +42,7 @@
                              <p>{{ _('This operation is needed to ensure the quality of your 3D prints.')}}
                              </p>
                         </div>
-                        <div class="span4 text-center">
+                        <div class="span4 text-right">
                              <button class="btn btn-maintenance yellow"
                                 data-bind="click: showCalibration, enable: !printerState.isBusy() && !printerState.isErrorOrClosed()" >
                                 <span class="m-icon calibrateicon"></span>{{ _('Calibrate now') }}
@@ -76,7 +76,7 @@
                              <p>{{ _('It is necessary to change the nozzle when it\'s clogged or if you need to print with a nozzle of a different diameter, ex: TPU-FLEX.')}}
                              </p>
                         </div>
-                        <div class="span4 text-center">
+                        <div class="span4 text-right">
                             <button class="btn btn-maintenance yellow"
                                 data-bind="click: showReplaceNozzle, enable: !printerState.isBusy() && !printerState.isErrorOrClosed()">
                                 <span class="m-icon nozzleicon"></span>{{ _('Switch nozzle now') }}
@@ -92,7 +92,7 @@
                              <p>{{ _('Once in while it is recommended to calibrate the extruder to ensure a perfect print every single time.')}}
                              </p>
                         </div>
-                        <div class="span5 text-center">
+                        <div class="span5 text-right">
                             <button class="btn btn-maintenance yellow"
                                 data-bind="click: showCalibrateExtruder, enable: !printerState.isBusy() && !printerState.isErrorOrClosed()">
                                 <span class="m-icon nozzleicon"></span>{{ _('Calibrate extruder now') }}

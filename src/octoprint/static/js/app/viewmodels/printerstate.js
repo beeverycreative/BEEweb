@@ -464,9 +464,9 @@ $(function() {
                 self.printerProfiles.requestData();
 
 				// Checks the necessary API endpoints to know if the maintenance wizard should be shown
-				self._isMaintenanceRequired(function () {
-					self.wizard.forceShowDialog();
-				});
+				// self._isMaintenanceRequired(function () {
+				// 	self.wizard.forceShowDialog();
+				// });
 
             }
 
@@ -771,7 +771,8 @@ $(function() {
 
     OCTOPRINT_VIEWMODELS.push([
         PrinterStateViewModel,
-        ["loginStateViewModel", "printerProfilesViewModel", "slicingViewModel", "connectionViewModel", "settingsViewModel", "wizardViewModel"],
+        ["loginStateViewModel", "printerProfilesViewModel", "slicingViewModel",
+        "connectionViewModel", "settingsViewModel", "wizardViewModel"],
         ["#state_wrapper", "#drop_overlay"]
     ]);
 });

@@ -1302,8 +1302,12 @@ input + span.add-on{
     height: 45px;
 }
 .modal.maintenance {
-    width: 800px;
-    margin-left: -487px;
+	width: 100%;
+	height: calc(100% - 95px);
+	left: 0 !important;
+	margin-left: 0 !important;
+    /*width: 800px;
+    margin-left: -487px; */
 }
 #wizard_dialog .modal-body .full-sized-box { padding: 0px !important; }
 #wizard_dialog {
@@ -1388,8 +1392,8 @@ td.settings_users_actions .m-icon {
 .modal-row .m-icon{ margin-right: 10px; vertical-align: text-top; }
 
 #maintenance_dialog .modal-body{
-    min-height: 500px !important;
-    max-height: 550px !important;
+    /*min-height: 500px !important;*/
+    /*max-height: 550px !important;*/
 }
 #usersettings_dialog .modal-body{
    min-height: 540px;
@@ -1399,7 +1403,8 @@ td.settings_users_actions .m-icon {
 #settings_dialog
 {
     top: 0 !important;
-    margin-top: 20px !important;
+    /*margin-top: 20px !important;*/
+    margin-top: 75px !important;
 }
 #maintenanceList .modal-row > .text-right{
     padding: 35px 0 0;
@@ -1416,11 +1421,11 @@ td.settings_users_actions .m-icon {
 
 .modal-row h3{
     text-transform: uppercase;
-    font: 200 16px "din-light", sans-serif;
+    font: 200 18px "din-light", sans-serif;
     color: #898989;
 }
 .modal-row p{
-    font: 200 11px "din-light", sans-serif;
+    font: 200 14px "din-light", sans-serif;
 }
 .modal-footer-btn {
     padding: 20px 10px !important;
