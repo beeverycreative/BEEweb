@@ -567,30 +567,30 @@ BEEwb.transformOps.scaleBySize = function(x, y, z, changedAxis) {
     }
 
     if (BEEwb.main.selectedObject != null && changedAxis != null) {
+		var bboxSize = new THREE.Box3().setFromObject( BEEwb.main.selectedObject ).getSize();
 
-        var xScale = x / this.initialSize['x'];
-        var yScale = y / this.initialSize['y'];
-        var zScale = z / this.initialSize['z'];
+        var xScale = x / bboxSize.x;
+        var yScale = y / bboxSize.y;
+        var zScale = z / bboxSize.z;
 
         // Checks which axis was changed
-        if (changedAxis == 'x') {
-            if ($('#keep-proportions').is(':checked')) {
-                yScale = xScale;
-                zScale = xScale;
-            }
-        } else if (changedAxis == 'y') {
-            if ($('#keep-proportions').is(':checked')) {
-                xScale = yScale;
-                zScale = yScale;
-            }
-        } else if (changedAxis == 'z') {
-            if ($('#keep-proportions').is(':checked')) {
-                xScale = zScale;
-                yScale = zScale;
-            }
+        if ($('#keep-proportions').is(':checked')) {
+			if (changedAxis === 'x') {
+				yScale = xScale;
+				zScale = xScale;
+			} else if (changedAxis === 'y') {
+				xScale = yScale;
+				zScale = yScale;
+
+			} else if (changedAxis === 'z') {
+				xScale = zScale;
+				yScale = zScale;
+			}
         }
 
-        BEEwb.main.selectedObject.scale.set( xScale, yScale, zScale );
+		var newScale = new THREE.Vector3(xScale, yScale, zScale);
+
+		BEEwb.main.selectedObject.scale.multiply(newScale);
     }
 };
 
