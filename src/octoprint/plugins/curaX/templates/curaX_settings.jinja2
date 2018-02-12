@@ -1,346 +1,320 @@
-{#<h4>{{ _('Filament Profiles') }}</h4>#}
-
-{#--------------------- tree list ----------------------#}
-<div id = "settings_plugin_curaX_brands_interface">
-    <div class = "panel_accordion"  data-toggle = "collapse" href = "#material_tab">
-        <span class = "lbl"  data-toggle = "collapse" href = "#material_tab">Materials</span>
-        <span class = "sign" data-toggle = "collapse" href = "#material_tab" ><i class="icon-chevron-down"></i></span>
-        <span class = "sign" data-bind="click: function() { $root.createNewMaterial(); }" ><i class = "icon-plus-sign-alt"></i></span>
-    </div>
-    <div class = "sub-control collapse in" id = "material_tab">
-       <div data-bind="foreach: brands.paginatedItems">
-{#            <li style="list-style: none" class="item deeper parent">#}
-            <div class="sub_panel_accordion" data-toggle="collapse" data-bind = "attr: {'data-target': '#row' + $index()}" >
-                <span class="sign" data-toggle="collapse" data-bind="attr: {'data-target': '#row' + $index()}" ><i class="icon-chevron-down"></i></span>
-                <span class= "lbl_two" data-toggle="collapse" data-bind = "text: key,attr: {'data-target': '#row' + $index()}"></span>
-            </div>
-            <div data-bind="attr: {id: 'row' + $index()}" class="collapse">
-                <div data-bind ="foreach: $parent.materials.paginatedItems">
-                    <div  data-bind="if: $data.brand() == $parent.key">
-                        <div class = "material_panel_accordion" data-bind = "enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }">
-                         <span class = "lbl_mat" data-bind = "text:key, enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }"></span>
-                         <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.removeMaterial($data); } }"><i class="icon-trash"></i></span>
-                         <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editMaterial($data); } }"><i class="icon-edit"></i></span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-    <div>
-    <div class ="panel_accordion" data-toggle = "collapse" href = "#profiles_tab" >
-        <span class = "lbl"  data-toggle = "collapse" href = "#profiles_tab">Profiles:</span>
-        <span class ="lbl" id = "_profiles_tab_indicator_"></span>
-        <span class = "sign" data-toggle = "collapse" href = "#profiles_tab" ><i class="icon-chevron-down"></i></span>
-        <span class = "sign" data-bind="click: function() { $root.createNewProfile(); }" ><i class = "icon-plus-sign-alt"></i></span>
-    </div>
-    <div class = "collapse" id = "profiles_tab">
-        <div data-bind="foreach: profiles.paginatedItems">
-                <div class="sub_panel_accordion" href="#">
-                    <span class= "lbl" data-bind = "text: key"></span>
-                    <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.duplicateProfileDefault($data); } }">
+<div id="settings_plugin_curaX_brands_interface">
+	<div class="panel_accordion" data-toggle="collapse" >
+		<span class="lbl" data-toggle="collapse" >{{ _('Materials') }}</span>
+		<span class="sign" data-toggle="collapse" ><i class="icon-chevron-down"></i></span>
+		<span class="sign" data-bind="click: function() { $root.createNewMaterial(); }">
+			<i class="icon-plus-sign-alt"></i>
+		</span>
+	</div>
+	<div class="sub-control collapse in" id="material_tab">
+		<div data-bind="foreach: brands.paginatedItems">
+			<div class="sub_panel_accordion" data-toggle="collapse"
+				 data-bind="attr: {'data-target': '#row' + $index()}">
+				<span class="sign" data-toggle="collapse" data-bind="attr: {'data-target': '#row' + $index()}">
+					<i class="icon-chevron-down"></i>
+				</span>
+				<span class="lbl_two" data-toggle="collapse"
+					  data-bind="text: key,attr: {'data-target': '#row' + $index()}">
+				</span>
+			</div>
+			<div data-bind="attr: {id: 'row' + $index()}" class="collapse">
+				<div data-bind="foreach: $parent.materials.paginatedItems">
+					<div data-bind="if: $data.brand() == $parent.key">
+						<div class="material_panel_accordion"
+							 data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }">
+							<span class="lbl_mat"
+								  data-bind="text:key, enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }">
+							</span>
+							<span class="sign"
+								  data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.removeMaterial($data); } }">
+								  <i class="icon-trash"></i>
+							</span>
+							<span class="sign"
+								  data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editMaterial($data); } }">
+								  <i class="icon-edit"></i>
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div>
+		<div class="panel_accordion" data-toggle="collapse" >
+			<span class="lbl" data-toggle="collapse">{{ _('Profiles') }}:</span>
+			<span class="lbl" id="_profiles_tab_indicator_"></span>
+			<span class="sign" data-toggle="collapse"><i class="icon-chevron-down"></i></span>
+			<span class="sign" data-bind="click: function() { $root.createNewProfile(); }">
+				<i class="icon-plus-sign-alt"></i>
+			</span>
+		</div>
+		<div class="collapse" id="profiles_tab">
+			<div data-bind="foreach: profiles.paginatedItems">
+				<div class="sub_panel_accordion" >
+					<span class="lbl" data-bind="text: key"></span>
+					<span class="sign"
+						  data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.duplicateProfileDefault($data); } }">
                         <i class="icon-copy"></i></span>
-                    <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.removeProfile($data); } }">
+					<span class="sign"
+						  data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.removeProfile($data); } }">
                         <i class="icon-trash"></i></span>
-                    <span class="sign" data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">
+					<span class="sign"
+						  data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">
                         <i class="icon-edit"></i></span>
-               </div>
-        </div>
-        <span id = "profile_message" class = "lbl" value = ""></span>
-      </div>
-    </div>
+				</div>
+			</div>
+			<span id="profile_message" class="lbl" ></span>
+		</div>
+	</div>
 
-    <div class = "panel_accordion" >
-{#        <span class = "lbl" data-toggle = "collapse" href = "#information_tab">Information</span>#}
-        <span class ="lbl">Information:</span>
-        <span class ="lbl" id = "_profiles_tab_infomation_indicator_"></span>
-{#        <span class = "sign" data-toggle = "collapse" href = "#information_tab" ><i class="icon-chevron-down"></i></span>#}
-    </div>
-    <div id = "information_tab">
-        <div class="" id="">
-           <table class = "information_table">
-               <tr class="table_line">
-                   <td class="table_head" >Display Name:</td>
-                   <td class="table_data" id = "_information_display_name"></td>
-                   <td class="table_head" >Default Print Temperature:</td>
-                   <td class="table_data" id = "_information_default_material_print_temperature"></td>
-               </tr>
-               <tr>
-                   <td class="table_head">Brand:</td>
-                   <td class="table_data" id = "_information_brand"></td>
-                   <td class="table_head">Infill Speed:</td>
-                   <td class="table_data" id = "_information_speed_infill"></td>
-               </tr>
-               <tr>
-                   <td class="table_head">Material:</td>
-                   <td class="table_data" id = "_information_material"></td>
-                   <td class="table_head">Outer Wall Speed:</td>
-                   <td class="table_data" id = "_information_speed_wall_0"></td>
-               </tr>
-                <tr>
-                   <td class="table_head">Filament Cost:</td>
-                   <td class="table_data" id = "_information_filament_cost"></td>
-                   <td class="table_head">Inner Wall Speed:</td>
-                   <td class="table_data" id = "_information_speed_wall_x"></td>
-               </tr>
-                <tr>
-                   <td class="table_head">Filament Weight:</td>
-                   <td class="table_data" id = "_information_filament_weight"></td>
-                   <td></td>
-                   <td></td>
-               </tr>
-           </table>
-        </div>
-    </div>
+	<div class="panel_accordion">
+		<span class="lbl">{{ _('Information') }}:</span>
+		<span class="lbl" id="_profiles_tab_infomation_indicator_"></span>
+	</div>
+	<div id="information_tab">
+		<div class="" id="">
+			<table class="information_table">
+				<tr class="table_line">
+					<td class="table_head">{{ _('Display Name') }}:</td>
+					<td class="table_data" id="_information_display_name"></td>
+					<td class="table_head">{{ _('Default Print Temperature') }}:</td>
+					<td class="table_data" id="_information_default_material_print_temperature"></td>
+				</tr>
+				<tr>
+					<td class="table_head">{{ _('Brand') }}:</td>
+					<td class="table_data" id="_information_brand"></td>
+					<td class="table_head">{{ _('Infill Speed') }}:</td>
+					<td class="table_data" id="_information_speed_infill"></td>
+				</tr>
+				<tr>
+					<td class="table_head">{{ _('Material') }}:</td>
+					<td class="table_data" id="_information_material"></td>
+					<td class="table_head">{{ _('Outer Wall Speed') }}:</td>
+					<td class="table_data" id="_information_speed_wall_0"></td>
+				</tr>
+				<tr>
+					<td class="table_head">{{ _('Filament Cost') }}:</td>
+					<td class="table_data" id="_information_filament_cost"></td>
+					<td class="table_head">{{ _('Inner Wall Speed') }}:</td>
+					<td class="table_data" id="_information_speed_wall_x"></td>
+				</tr>
+				<tr>
+					<td class="table_head">{{ _('Filament Weight') }}:</td>
+					<td class="table_data" id="_information_filament_weight"></td>
+					<td></td>
+					<td></td>
+				</tr>
+			</table>
+		</div>
+	</div>
 </div>
 
-{#--------------------- new  material ----------------------#}
-<div id = "settings_plugin_curaX_new_material" class = "modal hide fade">
-    <div class="modal-header">
-        <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
-        <a class="" href="#">
-          <span class="signa" id="material_modal_label"></span>
-          <span class="signa" id="material_modal_edition"></span>
-        </a>
-    </div>
-    <div class="modal-body parent">
-                     <div class="panel_input" data-toggle = "collapse" href = "#information_panel">
-                          <span  class = "lbl"  data-parent="#accordion"  data-toggle = "collapse" href = "#information_panel">Information</span>
-                          <span class = "sign" data-toggle = "collapse" href = "#information_panel" ><i class="icon-chevron-down"></i></span>
-                     </div>
-                     <div  class="panel-collapse collapse in" id = "information_panel">
-                         <div class="material_properties">
-                             <span class ="sign">Display Name</span>
-                             <div  class="panel_data" href = "">
-                                 <input id = "display_name" class = "inpt" type="text">
-                             </div>
-                         </div>
-                         <div class="material_properties">
-                             <span class ="sign">Brand</span>
-                             <div  class="panel_data" href = "">
-                                 <input id = "brand" class = "inpt" type="text">
-                             </div>
-                         </div>
-                         <div class="material_properties">
-                             <span class ="sign">Material</span>
-                             <div  class="panel_data" href = "">
-                                 <input id = "material_type" class = "inpt" type="text">
-                             </div>
-                         </div>
-                         <div class="material_properties">
-                             <span class ="sign">Filament Cost</span>
-                             <div  class="panel_data" href = "">
-                                 <input id = "filament_cost" class ="inpt" type="text">
-                                 <span  class="unit">&euro;</span>
-                             </div>
-                         </div>
-                         <div class="material_properties">
-                             <span class ="sign">Filament Weight</span>
-                             <div  class="panel_data" href = "">
-                                 <input id = "filament_weight" class ="inpt" type="text">
-                                 <span  class="unit">g</span>
-                             </div>
-                         </div>
-                     </div>
 
-                     <div class="panel_input" data-toggle = "collapse" href = "#print_settings_panel">
-                        <span class = "lbl"  data-toggle = "collapse" href = "#print_settings_panel">Print Settings</span>
-                        <span class = "sign" data-toggle = "collapse" href = "#print_settings_panel" ><i class="icon-chevron-down"></i></span>
-{#                        <span class = "sign" data-bind="click: function() { $root.createNewProfile(); }" ><i class = "icon-plus-sign"></i></span>#}
-                     </div>
-                     <div  class="panel-collapse collapse" id = "print_settings_panel">
-                          <div class="material_properties">
-                             <span class ="sign">Default Print Temperature</span>
-                             <div  class="panel_data" href = "">
-                                 <input id = "default_material_print_temperature" class ="inpt" type="text">
-                                 <span class="unit">ºC</span>
-                             </div>
-                         </div>
-                         <div class="material_properties">
-                             <span class ="sign">Infill Speed</span>
-                             <div  class="panel_data" href = "">
-                                 <input id = "speed_infill" class ="inpt" type="text">
-                                 <span class="unit">mm/s</span>
-                             </div>
-                         </div>
-                         <div class="material_properties">
-                             <span class ="sign">Outer Wall Speed</span>
-                             <div  class="panel_data" href = "">
-                                 <input id = "speed_wall_0" class ="inpt" type="text">
-                                 <span  class="unit">mm/s</span>
-                             </div>
-                         </div>
-                         <div class="material_properties">
-                             <span class ="sign">Inner Wall Speed</span>
-                             <div  class="panel_data" href = "">
-                                 <input id = "speed_wall_x" class ="inpt" type="text">
-                                 <span  class="unit">mm/s</span>
-                             </div>
-                         </div>
-                     </div>
-        </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>
-        <button class="btn btn-primary green" id="settings-cura2-new-edit" data-bind="click: function() { $root.saveMaterial($data); }">{{ _('Confirm') }}</button>
-    </div>
+<div id="settings_plugin_curaX_new_material" class="modal hide fade">
+	<div class="modal-header">
+		<a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+		<span class="signa" id="material_modal_label"></span>
+		<span class="signa" id="material_modal_edition"></span>
+	</div>
+	<div class="modal-body parent">
+		<div class="panel_input" data-toggle="collapse" >
+			<span class="lbl" data-parent="#accordion" data-toggle="collapse" >{{ _('Information') }}</span>
+			<span class="sign" data-toggle="collapse" ><i class="icon-chevron-down"></i></span>
+		</div>
+		<div class="panel-collapse collapse in" id="information_panel">
+			<div class="material_properties">
+				<span class="sign">{{ _('Display Name') }}</span>
+				<div class="panel_data">
+					<input id="display_name" class="inpt" />
+				</div>
+			</div>
+			<div class="material_properties">
+				<span class="sign">{{ _('Brand') }}</span>
+				<div class="panel_data" >
+					<input id="brand" class="inpt" />
+				</div>
+			</div>
+			<div class="material_properties">
+				<span class="sign">{{ _('Material') }}</span>
+				<div class="panel_data" >
+					<input id="material_type" class="inpt" />
+				</div>
+			</div>
+			<div class="material_properties">
+				<span class="sign">{{ _('Filament Cost') }}</span>
+				<div class="panel_data" >
+					<input id="filament_cost" class="inpt" />
+					<span class="unit">&euro;</span>
+				</div>
+			</div>
+			<div class="material_properties">
+				<span class="sign">{{ _('Filament Weight') }}</span>
+				<div class="panel_data" >
+					<input id="filament_weight" class="inpt" />
+					<span class="unit">g</span>
+				</div>
+			</div>
+		</div>
+
+		<div class="panel_input" data-toggle="collapse">
+			<span class="lbl" data-toggle="collapse" >{{ _('Print Settings') }}</span>
+			<span class="sign" data-toggle="collapse" ><i class="icon-chevron-down"></i></span>
+		</div>
+		<div class="panel-collapse collapse" id="print_settings_panel">
+			<div class="material_properties">
+				<span class="sign">{{ _('Default Print Temperature') }}</span>
+				<div class="panel_data" >
+					<input id="default_material_print_temperature" class="inpt" />
+					<span class="unit">ºC</span>
+				</div>
+			</div>
+			<div class="material_properties">
+				<span class="sign">{{ _('Infill Speed') }}</span>
+				<div class="panel_data" >
+					<input id="speed_infill" class="inpt" />
+					<span class="unit">mm/s</span>
+				</div>
+			</div>
+			<div class="material_properties">
+				<span class="sign">{{ _('Outer Wall Speed') }}</span>
+				<div class="panel_data">
+					<input id="speed_wall_0" class="inpt" />
+					<span class="unit">mm/s</span>
+				</div>
+			</div>
+			<div class="material_properties">
+				<span class="sign">{{ _('Inner Wall Speed') }}</span>
+				<div class="panel_data">
+					<input id="speed_wall_x" class="inpt" />
+					<span class="unit">mm/s</span>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>
+		<button class="btn btn-primary green" id="settings-cura2-new-edit"
+				data-bind="click: function() { $root.saveMaterial($data); }">{{ _('Confirm') }}
+		</button>
+	</div>
 </div>
 
-{#--------------------- new  profile ----------------------#}
 
-<div id="settings_plugin_curaX_new_profile" class ="modal hide fade">
-    <div class="modal-header">
-        <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
-        <a class="" href="#">
-          <span class="signa">NEW PROFILE</span>
-        </a>
-{#        <div>#}
-{#            <span class="signa">Brand:</span>#}
-{#            <span class="signa" id = "BrandDisplay"></span>#}
-{#        </div>#}
-{#        <div>#}
-{#            <span class="signa">Material:</span>#}
-{#            <span class="signa" id = "MaterialDisplay"></span>#}
-{#        </div>#}
-    </div>
-    <div class="modal-body parent">
-        <form class="form-horizontal">
-            <div >
-                     <div class="" href="#">
-                         <span class="lbl">Profile Name:</span>
-                         <input id = "_profile_name_new_profile_" class="inpt"  type="text" >
-                     </div>
-                     <div>
-                         <span class="lbl">Quality Name:</span>
-                         <input id = "_profile_Quality_new_profile_" class="inpt"  type="text" >
-                     </div>
-            </div>
-             <div class="panel-group" id="newProfile_panel">
-                 <div class="panel_collapse panel-default">
+<div id="settings_plugin_curaX_new_profile" class="modal hide fade">
+	<div class="modal-header">
+		<a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+		<span class="signa">{{ _('NEW PROFILE') }}</span>
+	</div>
+	<div class="modal-body parent">
+		<form class="form-horizontal">
+			<div>
+				<div>
+					<label for="_profile_name_new_profile_" class="lbl">{{ _('Profile Name') }}:</label>
+					<input id="_profile_name_new_profile_" class="inpt" type="text">
+				</div>
+				<br />
+				<div>
+					<label for="_profile_Quality_new_profile_" class="lbl">{{ _('Quality Name') }}:</label>
+					<input id="_profile_Quality_new_profile_" class="inpt" type="text">
+				</div>
+			</div>
+			<div class="panel-group" id="newProfile_panel">
+				<div class="panel_collapse panel-default">
 
-                 </div>
-             </div>
-        </form>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>
-        <button class="btn btn-primary green" id="settings-cura2-new-edit" data-bind="click: function() { $root.saveRawProfile(); }">{{ _('Confirm') }}</button>
-    </div>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>
+		<button class="btn btn-primary green" data-bind="click: function() { $root.saveRawProfile(); }">{{ _('Confirm') }}
+		</button>
+	</div>
 </div>
 
-{#--------------------- edit profiles setected ----------------------#}
-{##}
-{#<div id="settings_plugin_curaX_edit_profile" class="modal hide fade">#}
-{#    <div class="modal-header">#}
-{#        <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>#}
-{#        <a class="" href="#">#}
-{#            <span class="signa">EDIT PROFILE:</span>#}
-{#            <span class="signa" id = "profileDisplay"></span>#}
-{#        </a>#}
-{#    </div>#}
-{#    <div class="modal-body parent">#}
-{#        <form class="form-horizontal">#}
-{#             <div class="panel-group" id="edit_panel">#}
-{#                 <div class="panel_collapse panel-default">#}
-{#                     <a class="" href="#">#}
-{#                         <span class="lbl">Profile:</span>#}
-{#                         <select class="form-control" id="comboQuality"></select>#}
-{#                         <span class="sign" data-bind="click: function() {$root.removeQualityInProfile();}"><i class="icon-trash"></i></span>#}
-{#                         <span class="sign" data-bind="click: function() {$root.NewQuality();}"><i class="icon-plus-sign-alt"></i></span>#}
-{#                         <span class="sign" data-bind="click: function() {$root.NewQualityCopy();}"><i class="icon-copy"></i></span>#}
-{#                         <span class="sign" data-bind="click: function() {$root.NewQualityName();}"><i class="icon-edit"></i></span>#}
-{#                     </a>#}
-{#                 </div>#}
-{#             </div>#}
-{#        </form>#}
-{#    </div>#}
-{#    <div class="modal-footer">#}
-{#        <button class="btn" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>#}
-{#        <button class="btn btn-primary green" id="settings-cura2-new-edit" data-bind="click: function() { $root.corfirmProfileEdition(); }">{{ _('Confirm') }}</button>#}
-{#    </div>#}
-{#</div>#}
-
-{#--------------------- new profile message----------------------#}
 
 <div id="settings_plugin_curaX_new_profile_message" class="modal hide fade">
-    <div class="modal-header">
-        <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
-        <a class="" href="#">
-          <span class="signa">{{ _('ERROR MESSAGE') }}</span>
-        </a>
-    </div>
-    <div class="modal-body parent">
-        <form class="form-horizontal">
-             <div class="panel-group" id="edit_panel">
-                 <div class="panel_collapse panel-default">
-                     <a class="" href="#">
-                         <span>{{ _('Confirm') }}</span>
-                     </a>
-                 </div>
-             </div>
-        </form>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-primary green" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>
-{#        <button class="btn btn-primary green" id="settings-cura2-new-edit">{{ _('Confirm') }}</button>#}
-    </div>
+	<div class="modal-header">
+		<a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+		<span class="signa">{{ _('ERROR MESSAGE') }}</span>
+	</div>
+	<div class="modal-body parent">
+		<form class="form-horizontal">
+			<div class="panel-group" id="edit_panel">
+				<div class="panel_collapse panel-default">
+					<a class="" href="#">
+						<span>{{ _('Confirm') }}</span>
+					</a>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary green" data-dismiss="modal">{{ _('Abort') }}</button>
+	</div>
 </div>
 
-{#--------------------- change quality name ----------------------#}
 
 <div id="settings_plugin_curaX_change_name" class="modal hide fade">
-    <div class="modal-header">
-        <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
-        <a class="" href="#">
-          <span class="signa" id ="profileQualityHeader"></span>
-        </a>
-    </div>
-    <div class="modal-body parent">
-        <form class="form-horizontal">
-             <div class="panel-group" id="edit_panel">
-                 <div class="panel_collapse panel-default">
-                     <a class="" href="#">
-                         <span class ="sign">NEW NAME:</span>
-                         <input id = "_new_quality_name" class="inpt"  type="text" >
-                     </a>
-                 </div>
-             </div>
-        </form>
-    </div>
-    <div class="modal-footer">
-        <button class="btn btn-primary green" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>
-        <button class="btn btn-primary green" id="settings-cura2-new-edit" data-bind="click: function() { $root.changeQualityProfileName(); }">{{ _('Confirm') }}</button>
-    </div>
+	<div class="modal-header">
+		<a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+		<span class="signa" id="profileQualityHeader"></span>
+	</div>
+	<div class="modal-body parent">
+		<form class="form-horizontal">
+			<div class="panel-group">
+				<div class="panel_collapse panel-default">
+					<a class="" href="#">
+						<label for="_new_quality_name" class="sign">NEW NAME:</label>
+						<input id="_new_quality_name" class="inpt" />
+					</a>
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary green" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>
+		<button class="btn btn-primary green" data-bind="click: function() { $root.changeQualityProfileName(); }">{{
+			_('Confirm') }}
+		</button>
+	</div>
 </div>
-
 
 
 <div id="settings_plugin_curaX_edit_profile" class="modal hide fade">
-    <div class="modal-header">
-        <a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
-        <a class="" href="#">
-            <span class="signa">EDIT PROFILE:</span>
-            <span class="signa" id = "profileDisplay"></span>
-        </a>
-    </div>
-    <div class="modal-body parent">
-        <form class="form-horizontal">
-            <div class="panel_collapse panel-default">
-                     <div class="" href="#">
-                         <span class="lbl">Profile:</span>
-                         <select class="form-control" id="quality_droplist"></select>
-                         <span class="sign" data-bind="click: function() {$root.removeQualityInProfile();}"><i class="icon-trash"></i></span>
-                         <span class="sign" data-bind="click: function() {$root.NewQuality();}"><i class="icon-plus-sign-alt"></i></span>
-                         <span class="sign" data-bind="click: function() {$root.NewQualityCopy();}"><i class="icon-copy"></i></span>
-                         <span class="sign" data-bind="click: function() {$root.NewQualityName();}"><i class="icon-edit"></i></span>
-                     </div>
-            </div>
-             <div class="panel-group" id="edit_content">
+	<div class="modal-header">
+		<a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+		<span class="signa">{{ _('EDIT PROFILE') }}:</span>
+		<span class="signa" id="profileDisplay"></span>
 
-             </div>
-        </form>
-    </div>
-    <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>
-        <button class="btn btn-primary green" id="settings-cura2-new-edit" data-bind="click: function() { $root.corfirmProfileEdition(); }">{{ _('Confirm') }}</button>
-    </div>
+	</div>
+	<div class="modal-body parent">
+		<form class="form-horizontal">
+			<div class="panel_collapse panel-default">
+				<div class="">
+					<span class="lbl">Profile:</span>
+					<select class="form-control" id="quality_droplist"></select>
+
+
+					<span class="sign" data-bind="click: function() {$root.NewQuality();}">
+					<i class="icon-plus-sign-alt"></i></span>
+					<span class="sign" data-bind="click: function() {$root.NewQualityCopy();}">
+					<i class="icon-copy"></i></span>
+					<span class="sign" data-bind="click: function() {$root.NewQualityName();}">
+					<i class="icon-edit"></i></span>
+					<span class="sign" data-bind="click: function() {$root.removeQualityInProfile();}">
+					<i class="icon-trash"></i></span>
+				</div>
+			</div>
+			<div class="panel-group" id="edit_content">
+
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button class="btn" data-dismiss="modal">{{ _('Abort') }}</button>
+		<button class="btn btn-primary green" data-bind="click: function() { $root.corfirmProfileEdition(); }">{{
+			_('Confirm') }}
+		</button>
+	</div>
 </div>
