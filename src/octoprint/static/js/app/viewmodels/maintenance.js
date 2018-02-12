@@ -754,14 +754,6 @@ $(function() {
         self.cancelCalibrationTest = function() {
 
             self.commandLock(true);
-
-            var showFinalCalibrationScreen = false;
-			// If for some reason the calibration test is already stopped or the connection in error state
-			// signals to show the final calibration screen
-			if (!self.printerState.isPrinting() || self.printerState.isErrorOrClosed()) {
-				showFinalCalibrationScreen = true;
-			}
-
             $.ajax({
                 url: API_BASEURL + "maintenance/cancel_calibration_test",
                 type: "POST",
@@ -770,7 +762,9 @@ $(function() {
                     self.commandLock(false);
                     self.calibrationTestCancelled = true;
 
-					if (showFinalCalibrationScreen === true) {
+					// If for some reason the calibration test is already stopped but the print status is still
+					// printing show the final calibration step screen
+					if (self.printerState.isPrinting()) {
 						self.calibrationTestStep2();
 						return;
 					}
