@@ -454,13 +454,11 @@ BEEwb.transformOps.updateScaleSizeInputs = function() {
             this.initialSize = BEEwb.helpers.objectSize(BEEwb.main.selectedObject);
         }
 
-        var newX = this.initialSize['x'] * BEEwb.main.selectedObject.scale.x;
-        var newY = this.initialSize['y'] * BEEwb.main.selectedObject.scale.y;
-        var newZ = this.initialSize['z'] * BEEwb.main.selectedObject.scale.z;
+		var bboxSize = new THREE.Box3().setFromObject( BEEwb.main.selectedObject ).getSize();
 
-        $('#scalex-axis').val(newX.toFixed(2));
-        $('#scaley-axis').val(newY.toFixed(2));
-        $('#scalez-axis').val(newZ.toFixed(2));
+        $('#scalex-axis').val(bboxSize.x.toFixed(2));
+        $('#scaley-axis').val(bboxSize.y.toFixed(2));
+        $('#scalez-axis').val(bboxSize.z.toFixed(2));
 
         $('#scalex-axis-label').html("X <small>(mm)</small>");
         $('#scaley-axis-label').html("Y <small>(mm)</small>");
