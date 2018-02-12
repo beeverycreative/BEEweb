@@ -2,12 +2,7 @@
 var BEEwb = BEEwb || {};
 
 BEEwb.transformOps = {
-    selectedMode: 'translate',
-    initialSize: null,
-};
-
-BEEwb.transformOps.resetObjectData = function() {
-    this.initialSize = null;
+    selectedMode: 'translate'
 };
 
 /**
@@ -450,10 +445,6 @@ BEEwb.transformOps.updatePositionInputs = function() {
 BEEwb.transformOps.updateScaleSizeInputs = function() {
 
     if (BEEwb.main.selectedObject != null) {
-        if (this.initialSize == null) {
-            this.initialSize = BEEwb.helpers.objectSize(BEEwb.main.selectedObject);
-        }
-
 		var bboxSize = new THREE.Box3().setFromObject( BEEwb.main.selectedObject ).getSize();
 
         $('#scalex-axis').val(bboxSize.x.toFixed(2));
@@ -606,16 +597,5 @@ BEEwb.transformOps._rotateByDegrees = function(x, y, z) {
         var zRotation = BEEwb.helpers.convertToRadians(z);
 
         BEEwb.main.selectedObject.rotation.set( xRotation, yRotation, zRotation );
-    }
-};
-
-/**
- * Sets the initial size for the transform operations
- *
- */
-BEEwb.transformOps.setInitialSize = function() {
-
-    if (BEEwb.main.selectedObject != null) {
-        this.initialSize = BEEwb.helpers.objectSize(BEEwb.main.selectedObject);
     }
 };
