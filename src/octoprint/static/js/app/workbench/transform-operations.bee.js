@@ -2,12 +2,7 @@
 var BEEwb = BEEwb || {};
 
 BEEwb.transformOps = {
-    selectedMode: 'translate',
-    initialSize: null,
-};
-
-BEEwb.transformOps.resetObjectData = function() {
-    this.initialSize = null;
+    selectedMode: 'translate'
 };
 
 /**
@@ -450,17 +445,11 @@ BEEwb.transformOps.updatePositionInputs = function() {
 BEEwb.transformOps.updateScaleSizeInputs = function() {
 
     if (BEEwb.main.selectedObject != null) {
-        if (this.initialSize == null) {
-            this.initialSize = BEEwb.helpers.objectSize(BEEwb.main.selectedObject);
-        }
+		var bboxSize = new THREE.Box3().setFromObject( BEEwb.main.selectedObject ).getSize();
 
-        var newX = this.initialSize['x'] * BEEwb.main.selectedObject.scale.x;
-        var newY = this.initialSize['y'] * BEEwb.main.selectedObject.scale.y;
-        var newZ = this.initialSize['z'] * BEEwb.main.selectedObject.scale.z;
-
-        $('#scalex-axis').val(newX.toFixed(2));
-        $('#scaley-axis').val(newY.toFixed(2));
-        $('#scalez-axis').val(newZ.toFixed(2));
+        $('#scalex-axis').val(bboxSize.x.toFixed(2));
+        $('#scaley-axis').val(bboxSize.y.toFixed(2));
+        $('#scalez-axis').val(bboxSize.z.toFixed(2));
 
         $('#scalex-axis-label').html("X <small>(mm)</small>");
         $('#scaley-axis-label').html("Y <small>(mm)</small>");
@@ -569,30 +558,30 @@ BEEwb.transformOps.scaleBySize = function(x, y, z, changedAxis) {
     }
 
     if (BEEwb.main.selectedObject != null && changedAxis != null) {
+		var bboxSize = new THREE.Box3().setFromObject( BEEwb.main.selectedObject ).getSize();
 
-        var xScale = x / this.initialSize['x'];
-        var yScale = y / this.initialSize['y'];
-        var zScale = z / this.initialSize['z'];
+        var xScale = x / bboxSize.x;
+        var yScale = y / bboxSize.y;
+        var zScale = z / bboxSize.z;
 
         // Checks which axis was changed
-        if (changedAxis == 'x') {
-            if ($('#keep-proportions').is(':checked')) {
-                yScale = xScale;
-                zScale = xScale;
-            }
-        } else if (changedAxis == 'y') {
-            if ($('#keep-proportions').is(':checked')) {
-                xScale = yScale;
-                zScale = yScale;
-            }
-        } else if (changedAxis == 'z') {
-            if ($('#keep-proportions').is(':checked')) {
-                xScale = zScale;
-                yScale = zScale;
-            }
+        if ($('#keep-proportions').is(':checked')) {
+			if (changedAxis === 'x') {
+				yScale = xScale;
+				zScale = xScale;
+			} else if (changedAxis === 'y') {
+				xScale = yScale;
+				zScale = yScale;
+
+			} else if (changedAxis === 'z') {
+				xScale = zScale;
+				yScale = zScale;
+			}
         }
 
-        BEEwb.main.selectedObject.scale.set( xScale, yScale, zScale );
+		var newScale = new THREE.Vector3(xScale, yScale, zScale);
+
+		BEEwb.main.selectedObject.scale.multiply(newScale);
     }
 };
 
@@ -608,16 +597,5 @@ BEEwb.transformOps._rotateByDegrees = function(x, y, z) {
         var zRotation = BEEwb.helpers.convertToRadians(z);
 
         BEEwb.main.selectedObject.rotation.set( xRotation, yRotation, zRotation );
-    }
-};
-
-/**
- * Sets the initial size for the transform operations
- *
- */
-BEEwb.transformOps.setInitialSize = function() {
-
-    if (BEEwb.main.selectedObject != null) {
-        this.initialSize = BEEwb.helpers.objectSize(BEEwb.main.selectedObject);
     }
 };
