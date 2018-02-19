@@ -292,12 +292,10 @@ $(function() {
 
                 }
             });
-
-
         };
 
 
-         self._lookInData = function (name,data) {
+        self._lookInData = function (name,data) {
             var _state = false;
              _.each(data, function(value,item) {
                  if (name == item)
@@ -307,7 +305,6 @@ $(function() {
         };
 
         self.getProfileToEdit = function(data){
-
 
 			var quality = $('#quality_droplist :selected').text();
 
@@ -335,7 +332,6 @@ $(function() {
                         $("#settings_plugin_curaX_edit_profile").modal("show");
                 }
             });
-
         };
 
         $('#quality_droplist').on('change', function (e) {
@@ -343,7 +339,7 @@ $(function() {
         });
 
 
-         self.corfirmProfileEdition = function () {  // call de API function in slicing.py
+        self.corfirmProfileEdition = function () {  // call de API function in slicing.py
 
             var form={};
             var quality = $('#quality_droplist').find('option:selected').text();
@@ -356,7 +352,6 @@ $(function() {
                       else
                          form[info.id.replace('ed','')] = $('#'+ info.id).val();
             });
-
 
             $.ajax({
                 url: API_BASEURL + "slicing/curaX/confirmEdition/" + currentProfileData["key"] + "/" + quality + "/" + selNozzle,
@@ -411,20 +406,20 @@ $(function() {
 
             _.each(_.keys(data), function(key) {
 
-                     material.push({
-                         key: key,
-                         name: ko.observable(data[key].displayName),
-                         description: ko.observable(data[key].description),
-                         isdefault: ko.observable(data[key].default),
-                         resource: ko.observable(data[key].resource),
-                         brand: ko.observable(data[key].brand)
-                     });
+				 material.push({
+					 key: key,
+					 name: ko.observable(data[key].displayName),
+					 description: ko.observable(data[key].description),
+					 isdefault: ko.observable(data[key].default),
+					 resource: ko.observable(data[key].resource),
+					 brand: ko.observable(data[key].brand)
+				 });
 
-                     if (self.findMaterialOnArray(brand, data[key].brand)) {
-                         brand.push({
-                             key: data[key].brand
-                         });
-                     }
+				 if (self.findMaterialOnArray(brand, data[key].brand)) {
+					 brand.push({
+						 key: data[key].brand
+					 });
+				 }
             });
             self.materials.updateItems(material);
             self.brands.updateItems(brand);
@@ -440,7 +435,7 @@ $(function() {
  * @param none
  * @return none
  ******************************************************************************************/
-        self.getProfilesInheritsMaterials = function(data,parent){
+        self.getProfilesInheritsMaterials = function(data, parent){
             $('#profiles_acordion').empty();
 
 
@@ -532,7 +527,7 @@ $(function() {
                     type: "PUT",
                     dataType: "json",
                     data: JSON.stringify(form),
-                    contentType: "application/json; charset=UTF-8",
+                    contentType: "application/json; charset=UTF-8"
                 });
             }else{
                 $.ajax({
@@ -540,7 +535,7 @@ $(function() {
                     type: "PUT",
                     dataType: "json",
                     data: JSON.stringify(form),
-                    contentType: "application/json; charset=UTF-8",
+                    contentType: "application/json; charset=UTF-8"
                 });
             }
 
@@ -838,8 +833,6 @@ $(function() {
            });
 
 
-
-
            self.appendToEditMenu = function () {
                $('#edit_content').empty();
 
@@ -871,7 +864,7 @@ $(function() {
 
                                }else if (_list.type == 'droplist') {
                                    $('#' + _options.id).append('<div class="form-group"><a><span  class="sign">' + _list.label + '</span>' +
-                                       '<select id = "ed' + _list.id + '" ></select></a></div>');
+                                       '<select class="inpt" id="ed' + _list.id + '" ></select></a></div>');
 
                                    if(_list.options.length > 0) {
                                        $.each(_list.options, function (idx,din_options) {
@@ -890,44 +883,44 @@ $(function() {
            };
     }
 
-    $(document).ready(function(){
+    $(document).ready(function() {
 
-              $.ajax({
-                 url: API_BASEURL + "maintenance/get_nozzles_and_filament",
-                 type: "GET",
-                 dataType: "json",
-                 success: function (data) {
-                      self.selNozzle = data.nozzle;
-                 }
-             });
+    	$.ajax({
+			 url: API_BASEURL + "maintenance/get_nozzles_and_filament",
+			 type: "GET",
+			 dataType: "json",
+			 success: function (data) {
+				  self.selNozzle = data.nozzle;
+			 }
+		 });
 
-            var ids = $('.panel_input').map(function () {
-                return this;
-            }).get();
+		var ids = $('.panel_input').map(function () {
+			return this;
+		}).get();
 
-            for (var i = 0; i < ids.length; i++) {
-                var $txt = $(ids[i]).children('.sign').attr('href');
-                if($($txt).hasClass('collapse in')){
-                     $(ids[i]).find('i:first').removeClass('icon-chevron-down').addClass('icon-chevron-up');
-                }else{
-                     $(ids[i]).find('i:first').removeClass('icon-chevron-up').addClass('icon-chevron-down');
-                }
-            }
+		for (var i = 0; i < ids.length; i++) {
+			var $txt = $(ids[i]).children('.sign').attr('href');
+			if ($($txt).hasClass('collapse in')){
+				 $(ids[i]).find('i:first').removeClass('icon-chevron-down').addClass('icon-chevron-up');
+			} else {
+				 $(ids[i]).find('i:first').removeClass('icon-chevron-up').addClass('icon-chevron-down');
+			}
+		}
 
-            var ids = $('.panel_accordion').map(function () {
-                return this;
-            }).get();
+		var ids = $('.panel_accordion').map(function () {
+			return this;
+		}).get();
 
-            for( var i = 0; i < ids.length; i++){
-                var $txt = $(ids[i]).children('.sign').attr('href');
-                if($($txt).hasClass('collapse in')){
-                     $(ids[i]).find('i:first').removeClass('icon-chevron-down').addClass('icon-chevron-up');
-                }else{
-                     $(ids[i]).find('i:first').removeClass('icon-chevron-up').addClass('icon-chevron-down');
-                }
-            }
+		for( var i = 0; i < ids.length; i++){
+			var $txt = $(ids[i]).children('.sign').attr('href');
+			if($($txt).hasClass('collapse in')){
+				 $(ids[i]).find('i:first').removeClass('icon-chevron-down').addClass('icon-chevron-up');
+			} else {
+				 $(ids[i]).find('i:first').removeClass('icon-chevron-up').addClass('icon-chevron-down');
+			}
+		}
 
-        });
+	});
     // view model class, parameters for constructor, container to bind to
     OCTOPRINT_VIEWMODELS.push([
         curaXViewModel,

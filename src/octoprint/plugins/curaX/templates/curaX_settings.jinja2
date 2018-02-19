@@ -1,4 +1,7 @@
 <div id="settings_plugin_curaX_brands_interface">
+
+	<h3>{{ _('Filament Profile Editor') }}</h3>
+
 	<div class="panel_accordion" data-toggle="collapse" >
 		<span class="lbl" data-toggle="collapse" >{{ _('Materials') }}</span>
 		<span class="sign" data-toggle="collapse" ><i class="icon-chevron-down"></i></span>
@@ -22,7 +25,7 @@
 					<div data-bind="if: $data.brand() == $parent.key">
 						<div class="material_panel_accordion"
 							 data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }">
-							<span class="lbl_mat"
+							<span class="lbl_mat" style="text-transform: uppercase;"
 								  data-bind="text:key, enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }">
 							</span>
 							<span class="sign"
@@ -72,7 +75,7 @@
 		<span class="lbl" id="_profiles_tab_infomation_indicator_"></span>
 	</div>
 	<div id="information_tab">
-		<div class="" id="">
+		<div>
 			<table class="information_table">
 				<tr class="table_line">
 					<td class="table_head">{{ _('Display Name') }}:</td>
@@ -210,12 +213,12 @@
 			<div>
 				<div>
 					<label for="_profile_name_new_profile_" class="lbl">{{ _('Profile Name') }}:</label>
-					<input id="_profile_name_new_profile_" class="inpt" type="text">
+					<input id="_profile_name_new_profile_" class="inpt" />
 				</div>
 				<br />
 				<div>
 					<label for="_profile_Quality_new_profile_" class="lbl">{{ _('Quality Name') }}:</label>
-					<input id="_profile_Quality_new_profile_" class="inpt" type="text">
+					<input id="_profile_Quality_new_profile_" class="inpt" />
 				</div>
 			</div>
 			<div class="panel-group" id="newProfile_panel">
@@ -265,7 +268,7 @@
 			<div class="panel-group">
 				<div class="panel_collapse panel-default">
 					<a class="" href="#">
-						<label for="_new_quality_name" class="sign">NEW NAME:</label>
+						<label for="_new_quality_name" class="sign">{{ _('Name') }}:</label>
 						<input id="_new_quality_name" class="inpt" />
 					</a>
 				</div>
@@ -284,7 +287,7 @@
 <div id="settings_plugin_curaX_edit_profile" class="modal hide fade">
 	<div class="modal-header">
 		<a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
-		<span class="signa">{{ _('EDIT PROFILE') }}:</span>
+		<span class="signa">{{ _('Edit Profile') }}:</span>
 		<span class="signa" id="profileDisplay"></span>
 
 	</div>
@@ -292,7 +295,7 @@
 		<form class="form-horizontal">
 			<div class="panel_collapse panel-default">
 				<div class="">
-					<span class="lbl">Profile:</span>
+					<span class="lbl">{{ _('Profile') }}:</span>
 					<select class="form-control" id="quality_droplist"></select>
 
 
