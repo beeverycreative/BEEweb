@@ -973,6 +973,7 @@
 
 				point.sub( offset );
 				point.multiply( parentScale );
+				point.divideScalar(32); // Trick to reduce scale speed...
 
 				if ( scope.space === "local" ) {
 
