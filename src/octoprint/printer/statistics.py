@@ -447,7 +447,7 @@ class StatisticsServerClient:
 		self._logger = logging.getLogger(__name__)
 
 
-	def send_base_statistics(self):
+	def _send_base_statistics(self):
 		try:
 			base_stats_file = os.path.join(settings().getBaseFolder('statistics'), "base_stats.json")
 
@@ -467,7 +467,7 @@ class StatisticsServerClient:
 			self._logger.error('Error sending general usage statistics: ' + ex.message)
 			raise ex
 
-	def send_printer_statistics(self):
+	def _send_printer_statistics(self):
 		try:
 			import glob
 			url = self.STATS_HOST + ':' + str(self.STATS_PORT) + '/api/printer_stats'
@@ -489,7 +489,7 @@ class StatisticsServerClient:
 			self._logger.error('Error sending printer usage statistics: ' + ex.message)
 			raise ex
 
-	def send_print_events_statistics(self):
+	def _send_print_events_statistics(self):
 		try:
 			url = self.STATS_HOST + ':' + str(self.STATS_PORT) + '/api/print_events'
 			request_headers = {'Content-type': 'application/json', 'Authorization': 'Token ' + self.STATS_AUTH}
@@ -521,9 +521,9 @@ class StatisticsServerClient:
 
 			if lastStatsUploadDate is None or sendThreshold > lastStatsUploadDate:
 
-				self.send_base_statistics()
-				self.send_printer_statistics()
-				self.send_print_events_statistics()
+				self._send_base_statistics()
+				self._send_printer_statistics()
+				self._send_print_events_statistics()
 
 				self._logger.info('Usage statistics sent to BVC server!')
 
