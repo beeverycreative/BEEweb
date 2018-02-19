@@ -513,11 +513,12 @@ class StatisticsServerClient:
 
 
 	def gather_and_send_statistics(self):
-		import datetime
-		lastStatsUploadDate = settings().get(['lastStatisticsUpload'])
-		sendThreshold = datetime.datetime.today() - datetime.timedelta(days=7)  # on week ago
-		# Checks if the send threshold was already reached, and if so sends a new batch of usage statistics
 		try:
+			import datetime
+			lastStatsUploadDate = settings().get(['lastStatisticsUpload'])
+			sendThreshold = datetime.datetime.today() - datetime.timedelta(days=7)  # on week ago
+			# Checks if the send threshold was already reached, and if so sends a new batch of usage statistics
+
 			if lastStatsUploadDate is None or sendThreshold > lastStatsUploadDate:
 
 				self.send_base_statistics()
