@@ -560,7 +560,8 @@ class Server(object):
 
 			# Sends statistics to the server
 			stats_client = StatisticsServerClient()
-			stats_client.gather_and_send_statistics()
+			# calls the method in a separate thread to avoid any waiting in server startup caused by DNS failures
+			threading.Thread(target=stats_client.gather_and_send_statistics).start()
 
 
 		ioloop.add_callback(on_after_startup)

@@ -464,7 +464,7 @@ class StatisticsServerClient:
 
 				self._logger.info('General usage statistics uploaded with success')
 		except Exception as ex:
-			self._logger.error('Error sending general usage statistics: ' + ex.message)
+			self._logger.error('Error sending general usage statistics: ' + str(ex))
 			raise ex
 
 	def _send_printer_statistics(self):
@@ -486,7 +486,7 @@ class StatisticsServerClient:
 					else:
 						self._logger.info('Printer (%s) usage statistics uploaded with success' % printer_stats_file)
 		except Exception as ex:
-			self._logger.error('Error sending printer usage statistics: ' + ex.message)
+			self._logger.error('Error sending printer usage statistics: ' + str(ex))
 			raise ex
 
 	def _send_print_events_statistics(self):
@@ -508,7 +508,7 @@ class StatisticsServerClient:
 					# if the upload was ok, erases the file contents
 					open(print_events_filepath, 'w').close()
 		except Exception as ex:
-			self._logger.error('Error sending print events usage statistics: ' + ex.message)
+			self._logger.error('Error sending print events usage statistics: ' + str(ex))
 			raise ex
 
 
