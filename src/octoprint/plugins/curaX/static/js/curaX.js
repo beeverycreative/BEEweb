@@ -187,8 +187,6 @@ $(function () {
 
 
 		self.removeMaterial = function (data) {
-
-
 			if (!data.resource) {
 				return;
 			}
@@ -205,8 +203,6 @@ $(function () {
 					self.slicingViewModel.requestData();
 				}
 			});
-
-			self.requestData();
 		};
 
 
@@ -242,7 +238,6 @@ $(function () {
 		};
 
 
-		/******************************************* Code where **************************************************/
 		self.duplicateProfileDefault = function (data) {
 			if (!data.resource) {
 				return;
@@ -259,19 +254,6 @@ $(function () {
 
 			self.getProfilesInheritsMaterials(currentMaterialSelected, currentBrandSelected)
 		};
-
-
-		self.getNozzle = function () {
-			$.ajax({
-				url: API_BASEURL + "maintenance/get_nozzles_and_filament",
-				type: "GET",
-				dataType: "json",
-				success: function (data) {
-					selNozzle = data.nozzle;
-				}
-			});
-		};
-
 
 		self.editProfile = function (data) {
 
@@ -310,7 +292,7 @@ $(function () {
 
 			$('#profileDisplay').text(data["key"]);
 			$.ajax({
-				url: API_BASEURL + "slicing/curaX/getSingleProfile/" + data["key"] + "/" + quality + "/" + selNozzle,
+				url: API_BASEURL + "slicing/curaX/getSingleProfile/" + data["key"] + "/" + quality + "/" + self.slicingViewModel.selNozzle(),
 				type: "GET",
 				dataType: "json",
 				success: function (data) {
@@ -337,8 +319,7 @@ $(function () {
 		});
 
 
-		self.corfirmProfileEdition = function () {  // call de API function in slicing.py
-
+		self.confirmProfileEdition = function () {
 			var form = {};
 			var quality = $('#quality_droplist').find('option:selected').text();
 
@@ -352,17 +333,18 @@ $(function () {
 			});
 
 			$.ajax({
-				url: API_BASEURL + "slicing/curaX/confirmEdition/" + currentProfileData["key"] + "/" + quality + "/" + selNozzle,
+				url: API_BASEURL + "slicing/curaX/confirmEdition/" + currentProfileData["key"] + "/" + quality + "/" + self.slicingViewModel.selNozzle(),
 				type: "PUT",                //
 				dataType: "json",           // data type
 				data: JSON.stringify(form), // send the data
 				contentType: "application/json; charset=UTF-8",
 				success: function () {
+					self.requestData();
 				}
 			});
 
 			$("#settings_plugin_curaX_edit_profile").modal("hide");
-			self.requestData();
+
 		};
 		/*********************************************************************************************************/
 
@@ -496,10 +478,6 @@ $(function () {
 			}
 
 			var $sub = $('.sub_panel_accordion .sign');
-			for (var i = 0; i < $sub.length; i++) {
-				self.SwitchSecondPanelIcons($($sub[i]).attr('data-target'));
-			}
-
 
 		};
 		/******************************************************************************************
@@ -776,59 +754,6 @@ $(function () {
 
 		};
 
-		/******************************************************************************************
-		 * switch panel icons
-		 * @param none
-		 * @return none
-		 ******************************************************************************************/
-		self.SwitchIcons = function (child) {
-
-			var $this = $(child).attr('href');
-
-			if ($($this).hasClass('collapse in')) {
-				$(child).parent().find('i:first').removeClass('icon-chevron-down').addClass('icon-chevron-up');
-			} else {
-				$(child).parent().find('i:first').removeClass('icon-chevron-up').addClass('icon-chevron-down');
-			}
-		};
-		/******************************************************************************************
-		 * switch panel icons
-		 * @param none
-		 * @return none
-		 ******************************************************************************************/
-		self.SwitchSecondPanelIcons = function (child) {
-
-			var $this = $(child).attr('data-target');
-
-			if ($($this).hasClass('collapse in')) {
-				$(child).parent().find('i:first').removeClass('icon-chevron-down').addClass('icon-chevron-up');
-			} else {
-				$(child).parent().find('i:first').removeClass('icon-chevron-up').addClass('icon-chevron-down');
-			}
-		};
-
-		/******************************************************************************************
-		 * switch panel icons
-		 * @param none
-		 * @return none
-		 ******************************************************************************************/
-		$(document).on("click", ".panel_input", function () {
-			var $this = $(this).children('.sign').attr('href');
-			if ($($this).hasClass('collapse in')) {
-				$(this).find('i:first').removeClass('icon-chevron-down').addClass('icon-chevron-up');
-			} else {
-				$(this).find('i:first').removeClass('icon-chevron-up').addClass('icon-chevron-down');
-			}
-		});
-
-		$(document).on("click", ".panel_accordion", function () {
-			self.SwitchIcons(this);
-		});
-
-		$(document).on("click", ".sub_panel_accordion", function () {
-			self.SwitchSecondPanelIcons(this);
-		});
-
 
 		self.appendToEditMenu = function () {
 			$('#edit_content').empty();
@@ -886,45 +811,6 @@ $(function () {
 			});
 		};
 	}
-
-	$(document).ready(function () {
-
-		$.ajax({
-			url: API_BASEURL + "maintenance/get_nozzles_and_filament",
-			type: "GET",
-			dataType: "json",
-			success: function (data) {
-				self.selNozzle = data.nozzle;
-			}
-		});
-
-		var ids = $('.panel_input').map(function () {
-			return this;
-		}).get();
-
-		for (var i = 0; i < ids.length; i++) {
-			var $txt = $(ids[i]).children('.sign').attr('href');
-			if ($($txt).hasClass('collapse in')) {
-				$(ids[i]).find('i:first').removeClass('icon-chevron-down').addClass('icon-chevron-up');
-			} else {
-				$(ids[i]).find('i:first').removeClass('icon-chevron-up').addClass('icon-chevron-down');
-			}
-		}
-
-		var ids = $('.panel_accordion').map(function () {
-			return this;
-		}).get();
-
-		for (var i = 0; i < ids.length; i++) {
-			var $txt = $(ids[i]).children('.sign').attr('href');
-			if ($($txt).hasClass('collapse in')) {
-				$(ids[i]).find('i:first').removeClass('icon-chevron-down').addClass('icon-chevron-up');
-			} else {
-				$(ids[i]).find('i:first').removeClass('icon-chevron-up').addClass('icon-chevron-down');
-			}
-		}
-
-	});
 
 	// view model class, parameters for constructor, container to bind to
 	OCTOPRINT_VIEWMODELS.push([
