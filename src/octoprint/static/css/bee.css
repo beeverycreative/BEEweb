@@ -888,12 +888,20 @@ button.btn.yellow:hover, a.btn.yellow:hover{ }
 }
 
 input{
-    height: 31px !important;
+    height: 30px !important;
     border-radius: 0 !important;
 }
 input + span.add-on{
     padding: 9px !important;
     border-radius: 0 !important;
+}
+label{
+    height: 35px !important;
+    vertical-align: sub;
+}
+select{
+	border-radius: 0 !important;
+	-webkit-border-radius: 0px;
 }
 
 .btn-prepareprint{
@@ -2305,10 +2313,15 @@ table.information_table th{
 
 /*}*/
 /*!* ---- edit profile -------*!*/
+#settings_plugin_curaX_edit_material,
+#settings_plugin_curaX_edit_profile {
+    top: 0 !important;
+    margin-top: 20px !important;
+}
 #settings_plugin_curaX_edit_material .panel_input,
 #settings_plugin_curaX_new_material .panel_input,
-#settings_plugin_curaX_new_profile  .panel_collapse> a,
-#settings_plugin_curaX_edit_profile .panel_collapse> a{
+#settings_plugin_curaX_new_profile  .panel-heading,
+#settings_plugin_curaX_edit_profile .panel-heading {
     display: inline-block;
     width:100%;
     line-height:35px;
@@ -2316,6 +2329,15 @@ table.information_table th{
     background-color: #e1e2e1 !important;
     margin-top: 2px;
     margin-bottom: 2px;
+}
+#settings_plugin_curaX_new_profile  .panel-heading .collapse-icon,
+#settings_plugin_curaX_edit_profile .panel-heading .collapse-icon {
+	float:right;
+	margin-right: 10px;
+}
+#settings_plugin_curaX_new_profile .panel-collapse .form-group,
+#settings_plugin_curaX_edit_profile .panel-collapse .form-group {
+	padding: 5px;
 }
 #settings_plugin_curaX_change_name .signa,
 #settings_plugin_curaX_new_material .sign,
@@ -2335,6 +2357,7 @@ table.information_table th{
 #settings_plugin_curaX_new_profile .lbl,
 #settings_plugin_curaX_edit_profile .lbl{
     text-transform: uppercase;
+    margin-left: 10px;
 }
 
 #settings_plugin_curaX_edit_material .panel_input .sign,
@@ -2359,8 +2382,8 @@ table.information_table th{
 }
 
 #settings_plugin_curaX_new_material  .material_properties,
-#settings_plugin_curaX_new_profile   .form-group>a,
-#settings_plugin_curaX_edit_profile  .form-group>a{
+#settings_plugin_curaX_new_profile   .form-group>span,
+#settings_plugin_curaX_edit_profile  .form-group>span{
     display: inline-block;
     margin-top: 1px;
     margin-bottom: 1px;
@@ -2376,20 +2399,30 @@ table.information_table th{
 }
 
 #settings_plugin_curaX_new_material .form-group .lbl,
-#settings_plugin_curaX_new_profile  .form-group >a .lbl,
-#settings_plugin_curaX_edit_profile .form-group >a .lbl{
+#settings_plugin_curaX_new_profile  .form-group > .lbl,
+#settings_plugin_curaX_edit_profile .form-group > .lbl{
     margin-left: 20px!important;
 }
 
 /*#settings_plugin_curaX_new_material .panel_data .inpt,*/
-#settings_plugin_curaX_new_profile  .form-group>a .inpt,
-#settings_plugin_curaX_edit_profile .form-group>a .inpt {
+#settings_plugin_curaX_new_profile  .form-group> .inpt,
+#settings_plugin_curaX_edit_profile .form-group> .inpt {
     width: 150px;
     float:right;
 }
 
-#settings_plugin_curaX_brands_interface .table_head {
+#settings_plugin_curaX_new_profile  .form-group> .slct,
+#settings_plugin_curaX_edit_profile .form-group> .slct {
+    width: 165px;
+    float:right;
+}
 
+#settings_plugin_curaX_new_profile  .form-group> .chck,
+#settings_plugin_curaX_edit_profile .form-group> .chck {
+    float:right;
+}
+
+#settings_plugin_curaX_brands_interface .table_head {
      margin-left: 40px!important;
      color: #333;
      font-weight: bold;

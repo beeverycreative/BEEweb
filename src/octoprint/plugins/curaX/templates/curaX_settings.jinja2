@@ -5,7 +5,8 @@
 	<div class="panel_accordion" data-toggle="collapse" >
 		<span class="lbl" data-toggle="collapse" >{{ _('Materials') }}</span>
 		<span class="sign" data-toggle="collapse" ><i class="icon-chevron-down"></i></span>
-		<span class="sign" data-bind="click: function() { $root.createNewMaterial(); }">
+		<span class="sign" title="{{ _('New Material') }}" data-toggle="tooltip"
+			data-bind="click: function() { $root.createNewMaterial(); }">
 			<i class="icon-plus-sign-alt"></i>
 		</span>
 	</div>
@@ -25,9 +26,10 @@
 					<div data-bind="if: $data.brand() == $parent.key">
 						<div class="material_panel_accordion"
 							 data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }">
-							<span class="lbl_mat" style="text-transform: uppercase;"
+							<a href="#"><span class="lbl_mat" style="text-transform: uppercase;"
 								  data-bind="text:key, enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }">
-							</span>
+
+							</span></a>
 							<span class="sign"
 								  data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.removeMaterial($data); } }">
 								  <i class="icon-trash"></i>
@@ -47,20 +49,21 @@
 			<span class="lbl" data-toggle="collapse">{{ _('Profiles') }}:</span>
 			<span class="lbl" id="_profiles_tab_indicator_"></span>
 			<span class="sign" data-toggle="collapse"><i class="icon-chevron-down"></i></span>
-			<span class="sign" data-bind="click: function() { $root.createNewProfile(); }">
+			<span class="sign" title="{{ _('Create Profile') }}" data-toggle="tooltip"
+				data-bind="click: function() { $root.createNewProfile(); }">
 				<i class="icon-plus-sign-alt"></i>
 			</span>
 		</div>
 		<div class="collapse" id="profiles_tab">
 			<div data-bind="foreach: profiles.paginatedItems">
 				<div class="sub_panel_accordion" >
-					<span class="lbl" data-bind="text: key"></span>
-					<span class="sign"
-						  data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.duplicateProfileDefault($data); } }">
-                        <i class="icon-copy"></i></span>
+					<a href="#"><span class="lbl" data-bind="text: key, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }"></span></a>
 					<span class="sign"
 						  data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.removeProfile($data); } }">
                         <i class="icon-trash"></i></span>
+					<span class="sign"
+						  data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.duplicateProfileDefault($data); } }">
+                        <i class="icon-copy"></i></span>
 					<span class="sign"
 						  data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">
                         <i class="icon-edit"></i></span>
@@ -209,7 +212,7 @@
 		<span class="signa">{{ _('NEW PROFILE') }}</span>
 	</div>
 	<div class="modal-body parent">
-		<form class="form-horizontal">
+		<form class="form-inline">
 			<div>
 				<div>
 					<label for="_profile_name_new_profile_" class="lbl">{{ _('Profile Name') }}:</label>
@@ -239,21 +242,19 @@
 <div id="settings_plugin_curaX_new_profile_message" class="modal hide fade">
 	<div class="modal-header">
 		<a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
-		<span class="signa">{{ _('ERROR MESSAGE') }}</span>
+		<span class="signa">{{ _('No material selected.') }}</span>
 	</div>
 	<div class="modal-body parent">
 		<form class="form-horizontal">
 			<div class="panel-group" id="edit_panel">
 				<div class="panel_collapse panel-default">
-					<a class="" href="#">
-						<span>{{ _('Confirm') }}</span>
-					</a>
+
 				</div>
 			</div>
 		</form>
 	</div>
 	<div class="modal-footer">
-		<button class="btn btn-primary green" data-dismiss="modal">{{ _('Abort') }}</button>
+		<button class="btn btn-default green" data-dismiss="modal">{{ _('Abort') }}</button>
 	</div>
 </div>
 
@@ -267,16 +268,14 @@
 		<form class="form-horizontal">
 			<div class="panel-group">
 				<div class="panel_collapse panel-default">
-					<a class="" href="#">
-						<label for="_new_quality_name" class="sign">{{ _('Name') }}:</label>
-						<input id="_new_quality_name" class="inpt" />
-					</a>
+					<label for="_new_quality_name" class="sign">{{ _('Name') }}:</label>
+					<input id="_new_quality_name" class="inpt" />
 				</div>
 			</div>
 		</form>
 	</div>
 	<div class="modal-footer">
-		<button class="btn btn-primary green" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>
+		<button class="btn btn-default green" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>
 		<button class="btn btn-primary green" data-bind="click: function() { $root.changeQualityProfileName(); }">{{
 			_('Confirm') }}
 		</button>
@@ -292,12 +291,11 @@
 
 	</div>
 	<div class="modal-body parent">
-		<form class="form-horizontal">
+		<form class="form-inline">
 			<div class="panel_collapse panel-default">
 				<div class="">
 					<span class="lbl">{{ _('Profile') }}:</span>
 					<select class="form-control" id="quality_droplist"></select>
-
 
 					<span class="sign" data-bind="click: function() {$root.NewQuality();}">
 					<i class="icon-plus-sign-alt"></i></span>
@@ -309,6 +307,7 @@
 					<i class="icon-trash"></i></span>
 				</div>
 			</div>
+			<br />
 			<div class="panel-group" id="edit_content">
 
 			</div>

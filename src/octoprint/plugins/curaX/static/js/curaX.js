@@ -282,7 +282,7 @@ $(function () {
 				success: function (current) {
 					$('#quality_droplist').empty();
 					$.each(current, function (_value) {
-						$('#quality_droplist').append('<option>' + _value + '</option>');
+						$('#quality_droplist').append('<option>' + _value.toUpperCase() + '</option>');
 					});
 
 					self.appendToEditMenu();
@@ -839,20 +839,26 @@ $(function () {
 				dataType: "json",
 				success: function (data) {
 					$.each(data.options, function (_value, _options) {
-						$('#edit_content').append('<div class="panel_collapse collapsed" ><a class="" href="#">' +
-							'<span data-toggle="collapse"  data-parent="#accordion" href="#' + _options.id + '" class="lbl">' + _options.id + '</span>' + '<span data-toggle="collapse"  data-parent="#accordion" href="#edit' + _options.id + '" class="sign"><i class="icon-chevron-down"></i></span></a>' +
-							'<div id="' + _options.id + '" class="panel-collapse collapse"></div> </div>');
+						$('#edit_content').append(
+						'<div class="panel panel-default">' +
+						 	'<div class="panel-heading">' +
+								'<a data-toggle="collapse" href="#' + _options.id + '" class="lbl">' + _options.id +
+								'<span class="collapse-icon"><i class="icon-chevron-down"></i></span></a></div>' +
+							'<div id="' + _options.id + '" class="panel-collapse collapse"></div>' +
+						'</div>');
 
 						$.each(_options.list, function (_value, _list) {
 
 							if (_list.type == 'integer') {
-								$('#' + _options.id).append('<div class="form-group"><a><span  class="sign">' + _list.label + '</span>' +
-									'<input class="inpt" id = "ed' + _list.id + '" type="number"  step="0.01"></a></div>');
+								$('#' + _options.id).append('<div class="form-group">' +
+								 '<label for="ed' + _list.id + '" class="sign">' + _list.label + '</label>' +
+									'<input class="inpt form-control" id = "ed' + _list.id + '" type="number"  step="0.01"></div>');
 
 								$('#ed' + _list.id).val(_list.default_value);
 							} else if (_list.type == 'boolean') {
-								$('#' + _options.id).append('<div class="form-group"><a><span  class="sign">' + _list.label + '</span>' +
-									'<input class="inpt" id = "ed' + _list.id + '" type="checkbox" ></a></div>');
+								$('#' + _options.id).append('<div class="form-group">' +
+								 '<label for="ed' + _list.id + '" class="sign">' + _list.label + '</label>' +
+									'<input class="chck form-control" id="ed' + _list.id + '" type="checkbox" ></div>');
 
 								if (_list.default_value == 'false')
 									$('#ed' + _list.id).attr('checked', false);
@@ -860,8 +866,9 @@ $(function () {
 									$('#ed' + _list.id).attr('checked', true);
 
 							} else if (_list.type == 'droplist') {
-								$('#' + _options.id).append('<div class="form-group"><a><span  class="sign">' + _list.label + '</span>' +
-									'<select class="inpt" id="ed' + _list.id + '" ></select></a></div>');
+								$('#' + _options.id).append('<div class="form-group">' +
+								 '<label for="ed\' + _list.id + \'"  class="sign">' + _list.label + '</label>' +
+									'<select class="slct" id="ed' + _list.id + '" ></select></div>');
 
 								if (_list.options.length > 0) {
 									$.each(_list.options, function (idx, din_options) {
