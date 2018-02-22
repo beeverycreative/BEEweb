@@ -19,7 +19,7 @@ from octoprint.events import eventManager, Events
 from octoprint.slicing import SlicingManager
 from octoprint.filemanager import FileDestinations
 from octoprint.util.comm import PrintingFileInformation
-from octoprint.printer.statistics import BaseStatistics, PrintEventStatistics, PrinterStatistics
+from octoprint.printer.statistics import BaseStatistics, PrintEventStatistics, PrinterStatistics, StatisticsServerClient
 from octoprint.printer.estimation import TimeEstimationHelper
 from octoprint.plugins.curaX import ProfileReader
 
@@ -764,8 +764,8 @@ class BeePrinter(Printer):
 
                     if current_nozzle is not None and current_nozzle in valid_nozzle_sizes:
                         self._currentNozzle = nozzle_type_prefix + str(current_nozzle)
-
-                self._currentNozzle = nozzle_type_prefix + str(default_nozzle_size)
+                    else:
+                        self._currentNozzle = nozzle_type_prefix + str(default_nozzle_size)
         except Exception as ex:
             self._logger.error(ex)
 
@@ -858,8 +858,8 @@ class BeePrinter(Printer):
             self._runningCalibrationTest = False
             file_path = os.path.join(settings().getBaseFolder("uploads"), 'BEETHEFIRST_calib_test.gcode')
             self._fileManager.remove_file(FileDestinations.LOCAL, file_path)
-        except Exception as ex:
-            self._logger.error('Error finishing calibration test : %s' % ex.message)
+        except Exception:
+            self._logger.error('Error finishing calibration test', exc_info=True)
 
 
     def toggle_pause_print(self):

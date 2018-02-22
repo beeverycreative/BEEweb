@@ -8,6 +8,7 @@ import os
 import json
 import logging
 import uuid
+import requests
 from octoprint.settings import settings
 
 class BaseStatistics:
@@ -430,3 +431,103 @@ class PrintEventStatistics:
 			raise
 		else:
 			return True
+
+
+class StatisticsServerClient:
+	"""
+	Class used as communication interface with the statistics server
+	"""
+	STATS_HOST = 'https://beestats.beeverycreative.local'
+	STATS_PORT = 443
+	STATS_AUTH = '0d676254058389e6a06c903a2e7d8897f7d05dde'
+
+	_conn = None
+
+	def __init__(self):
+		self._logger = logging.getLogger(__name__)
+
+
+	def _send_base_statistics(self):
+		try:
+			base_stats_file = os.path.join(settings().getBaseFolder('statistics'), "base_stats.json")
+
+			url = self.STATS_HOST + ':' + str(self.STATS_PORT) + '/api/general_stats'
+			request_headers = {'Content-type': 'application/json','Authorization': 'Token ' + self.STATS_AUTH}
+			with open(base_stats_file) as json_data:
+				payload = json.load(json_data)
+
+				resp = requests.post(url, json=payload, headers=request_headers, verify=False)
+
+				if resp.status_code != requests.codes.created:
+					self._logger.error('Error uploading general usage statistics. Server response code: %s' % resp.status_code)
+					return
+
+				self._logger.info('General usage statistics uploaded with success')
+		except Exception as ex:
+			self._logger.error('Error sending general usage statistics: ' + str(ex))
+			raise ex
+
+	def _send_printer_statistics(self):
+		try:
+			import glob
+			url = self.STATS_HOST + ':' + str(self.STATS_PORT) + '/api/printer_stats'
+			request_headers = {'Content-type': 'application/json', 'Authorization': 'Token ' + self.STATS_AUTH}
+
+			path = os.path.join(settings().getBaseFolder('statistics'), "printer_stats_*.json")
+			for printer_stats_file in glob.glob(path):
+				with open(printer_stats_file) as json_data:
+					payload = json.load(json_data)
+
+					resp = requests.post(url, json=payload, headers=request_headers, verify=False)
+
+					if resp.status_code != requests.codes.created:
+						self._logger.error('Error uploading printer (%s) usage statistics. Server response code: %s' %
+						(printer_stats_file, resp.status_code))
+					else:
+						self._logger.info('Printer (%s) usage statistics uploaded with success' % printer_stats_file)
+		except Exception as ex:
+			self._logger.error('Error sending printer usage statistics: ' + str(ex))
+			raise ex
+
+	def _send_print_events_statistics(self):
+		try:
+			url = self.STATS_HOST + ':' + str(self.STATS_PORT) + '/api/print_events'
+			request_headers = {'Content-type': 'application/json', 'Authorization': 'Token ' + self.STATS_AUTH}
+
+			print_events_filepath = os.path.join(settings().getBaseFolder('statistics'), "print_stats.json")
+			with open(print_events_filepath) as json_data:
+				payload = json.load(json_data)
+
+				resp = requests.post(url, json=payload, headers=request_headers, verify=False)
+
+				if resp.status_code != requests.codes.created:
+					self._logger.error('Error uploading print events usage statistics. Server response code: %s' %
+					resp.status_code)
+				else:
+					self._logger.info('Print events usage statistics uploaded with success')
+					# if the upload was ok, erases the file contents
+					open(print_events_filepath, 'w').close()
+		except Exception as ex:
+			self._logger.error('Error sending print events usage statistics: ' + str(ex))
+			raise ex
+
+
+	def gather_and_send_statistics(self):
+		try:
+			import datetime
+			lastStatsUploadDate = settings().get(['lastStatisticsUpload'])
+			sendThreshold = datetime.datetime.today() - datetime.timedelta(days=7)  # on week ago
+			# Checks if the send threshold was already reached, and if so sends a new batch of usage statistics
+
+			if lastStatsUploadDate is None or sendThreshold > lastStatsUploadDate:
+
+				self._send_base_statistics()
+				self._send_printer_statistics()
+				self._send_print_events_statistics()
+
+				self._logger.info('Usage statistics sent to BVC server!')
+
+				settings().set(['lastStatisticsUpload'], datetime.datetime.today())
+				settings().save()
+		except Exception as ex:
+			self._logger.error('Failed sending statistics to server.')

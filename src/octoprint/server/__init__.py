@@ -19,6 +19,7 @@ from watchdog.observers import Observer
 from watchdog.observers.polling import PollingObserver
 from collections import defaultdict
 from octoprint.printer.bee_printer import BeePrinter
+from octoprint.printer.statistics import StatisticsServerClient
 from builtins import bytes, range
 
 import os
@@ -556,6 +557,11 @@ class Server(object):
 
 			import threading
 			threading.Thread(target=work).start()
+
+			# Sends statistics to the server
+			stats_client = StatisticsServerClient()
+			# calls the method in a separate thread to avoid any waiting in server startup caused by DNS failures
+			threading.Thread(target=stats_client.gather_and_send_statistics).start()
 
 
 		ioloop.add_callback(on_after_startup)
