@@ -167,7 +167,7 @@ $(function() {
                     new PNotify({title: gettext("No slicer configured"), text: html, type: "error", hide: true});
                     return;
                 }
-                self._nozzleFilamentUpdate();
+                self.nozzleFilamentUpdate();
                 self.target = target;
                 self.file(file);
                 self.path = path;self.title(_.sprintf(gettext("Slicing %(filename)s"), {filename: filename}));
@@ -268,7 +268,7 @@ $(function() {
             return destinationExtensions[0] || fallback;
         });
 
-        self._nozzleFilamentUpdate = function() {
+        self.nozzleFilamentUpdate = function() {
             $.ajax({
                 url: API_BASEURL + "maintenance/get_nozzles_and_filament",
                 type: "GET",

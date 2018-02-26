@@ -29,6 +29,15 @@ $(function () {
 		self.uploadButton = $("#settings-curaX-import-start");
 		self.editButton = $("#settings-curaX-edit-start");
 
+        self.onStartup = function() {
+            self.slicingViewModel.nozzleFilamentUpdate();
+            self.requestData();
+        };
+
+		self.onBeforeBinding = function () {
+			self.settings = self.settingsViewModel.settings;
+		};
+
 		self.profiles = new ItemListHelper(
 			"plugin_cura_profiles",
 			{
@@ -286,7 +295,7 @@ $(function () {
 
 		self.getProfileToEdit = function (data) {
 
-			var quality = $('#quality_droplist :selected').text();
+			var quality = $('#quality_droplist').find(':selected').text();
 
 			currentProfileData = data;
 
@@ -324,7 +333,7 @@ $(function () {
 			var quality = $('#quality_droplist').find('option:selected').text();
 
 			var _input = $('#edit_content').find('input , select');
-			$.each(_input, function (value, info) {
+			$.each(_input, function(value, info) {
 
 				if (info.type == 'checkbox')
 					form[info.id.replace('ed', '')] = $('#' + info.id).is(':checked');
@@ -375,7 +384,7 @@ $(function () {
 
 		self.fromResponse = function (data) {
 
-			if (self.profiles.allItems.length == 0) {
+			if (self.profiles.allItems.length === 0) {
 				$('#profile_message').text("No material selected");
 				$('#_profiles_tab_indicator_').text("No material selected");
 				$('#_profiles_tab_infomation_indicator_').text("No material selected");
@@ -405,16 +414,12 @@ $(function () {
 			self.brands.updateItems(brand);
 		};
 
-		self.onBeforeBinding = function () {
-			self.settings = self.settingsViewModel.settings;
-			self.requestData();
-		};
 
-		/******************************************************************************************
-		 * Get Profiles from material
-		 * @param none
-		 * @return none
-		 ******************************************************************************************/
+		/**
+		 * Get Profiles from clicked Material
+		 * @param data
+		 * @param parent
+		 */
 		self.getProfilesInheritsMaterials = function (data, parent) {
 			$('#profiles_acordion').empty();
 
@@ -423,24 +428,24 @@ $(function () {
 			currentBrandSelected = parent;
 
 			$.ajax({
-				url: API_BASEURL + "slicing/curaX/InheritsMaterials/" + data["key"],
+				url: API_BASEURL + "slicing/curaX/inheritsMaterials/" + data["key"],
 				type: "GET",
 				dataType: "json",
 				success: function (current) {
 
-					var profile = [];
+					var profiles = [];
 					_.each(_.keys(current), function (key) {
-						profile.push({
+						profiles.push({
 							key: key,
 							resource: ko.observable(current[key].resource),
 							isdefault: ko.observable(current[key].default)
 
 						});
 					});
-					self.profiles.updateItems(profile);
+					self.profiles.updateItems(profiles);
 
-					if (self.profiles.allItems.length == 0)
-						$('#profile_message').text("No profiles for this material!!");
+					if (self.profiles.allItems.length === 0)
+						$('#profile_message').text(gettext("No profiles found for the selected material."));
 					else
 						$('#profile_message').text("");
 				}
@@ -466,7 +471,7 @@ $(function () {
 			$('#_profiles_tab_indicator_').text(data['key']);
 			$('#_profiles_tab_infomation_indicator_').text(data['key']);
 
-			$("#material_tab").collapse("hide");
+			//$("#material_tab").collapse("hide");
 			$("#profiles_tab").collapse("show");
 
 
@@ -476,27 +481,24 @@ $(function () {
 					$('#' + $col[i].id).collapse("hide");
 				}
 			}
-
-			var $sub = $('.sub_panel_accordion .sign');
-
 		};
-		/******************************************************************************************
-		 * Save new Material in the files
-		 * @param none
-		 * @return none
-		 ******************************************************************************************/
+
+		/**
+		 * Saves a new Material file
+		 */
 		self.saveMaterial = function () {
 
 			var form = {};
 
-			var current = $('#settings_plugin_curaX_new_material div').find('input');
+			var newMaterialModal = $("#settings_plugin_curaX_new_material");
+			var current = newMaterialModal.find('div').find('input');
 
 			$.each(current, function (_input, _value) {
 				form[_value.id] = $('#' + _value.id).val();
 			});
 
 
-			if ($('#material_modal_label').text() == "NEW MATERIAL") {
+			if ($('#material_modal_label').text() === "NEW MATERIAL") {
 				$.ajax({
 					url: API_BASEURL + "slicing/curaX/saveMaterial",
 					type: "PUT",
@@ -513,12 +515,12 @@ $(function () {
 					contentType: "application/json; charset=UTF-8"
 				});
 			}
-
-			$("#settings_plugin_curaX_new_material").modal("hide");
-
-
 			self.requestData();
+
+			newMaterialModal.modal("hide");
+
 		};
+
 		/******************************************************************************************
 		 * Get material data["key"] data from files
 		 * @param data [material do edit]
@@ -533,10 +535,10 @@ $(function () {
 				type: "GET",
 				dataType: "json",
 				success: function (data) {
-					var $current = $('#settings_plugin_curaX_new_material div').find('input');
+					var $current = $('#settings_plugin_curaX_new_material').find('div').find('input');
 					for (var i = 0; i < $current.length; i++) {
 						var fieldID = $current[i].id;
-						if ($current[i].type == 'number' || $current[i].type == 'text')
+						if ($current[i].type === 'number' || $current[i].type === 'text')
 							$('#' + fieldID).val(data[fieldID].default_value);
 					}
 				}
@@ -544,9 +546,9 @@ $(function () {
 
 			$("#settings_plugin_curaX_new_material").modal("show");
 		};
+
 		/******************************************************************************************
 		 * Get data from rawprofile and added to new profile form
-		 * @param none
 		 * @return none
 		 ******************************************************************************************/
 		self.createNewProfile = function () {
@@ -560,10 +562,10 @@ $(function () {
 					type: "GET",
 					dataType: "json",
 					success: function (data) {
-						var $current = $('#newProfile_panel div').find('input');
+						var $current = $('#newProfile_panel').find('div').find('input');
 						for (var i = 0; i < $current.length; i++) {
 							var fieldID = $current[i].id;
-							if ($current[i].type == 'number' || $current[i].type == 'text')
+							if ($current[i].type === 'number' || $current[i].type === 'text')
 								$('#' + fieldID).val(data[fieldID.replace('new', '')].default_value);
 						}
 					}
@@ -571,9 +573,9 @@ $(function () {
 				$("#settings_plugin_curaX_new_profile").modal("show");
 			}
 		};
+
 		/******************************************************************************************
-		 * Get data from rawmterial and added to new profile form
-		 * @param none
+		 * Get data from raw material and added to new profile form
 		 * @return none
 		 ******************************************************************************************/
 		self.createNewMaterial = function () {
@@ -584,31 +586,30 @@ $(function () {
 				type: "GET",
 				dataType: "json",
 				success: function (data) {
-					var $current = $('#settings_plugin_curaX_new_material div').find('input');
+					var $current = $('#settings_plugin_curaX_new_material').find('div').find('input');
 					for (var i = 0; i < $current.length; i++) {
 						var fieldID = $current[i].id;
-						if ($current[i].type == 'number' || $current[i].type == 'text')
+						if ($current[i].type === 'number' || $current[i].type === 'text')
 							$('#' + fieldID).val(data[fieldID].default_value);
 					}
 				}
 			});
 			$("#settings_plugin_curaX_new_material").modal("show");
 		};
+
 		/******************************************************************************************
 		 * Save data from created profile
-		 * @param none
 		 * @return none
 		 ******************************************************************************************/
 		self.saveRawProfile = function () {  // call de API function in slicing.py
 
 			var form = {};
-			var quality = $('#comboQuality').find('option:selected').text();
 
-			var $current = $('#newProfile_panel div').find('input');
+			var $current = $('#newProfile_panel').find('div').find('input');
 
 			for (var i = 0; i < $current.length; i++) {
 				var fieldID = $current[i].id;
-				if ($current[i].type == 'number')
+				if ($current[i].type === 'number')
 					form[fieldID.replace('new', '')] = $('#' + fieldID).val();
 			}
 
@@ -626,6 +627,7 @@ $(function () {
 					// self.requestData();
 				}
 			});
+
 			$("#settings_plugin_curaX_new_profile").modal("hide");
 			self.getProfilesInheritsMaterials(currentMaterialSelected, currentBrandSelected);
 			// self.requestData();
@@ -683,7 +685,7 @@ $(function () {
 			$quality_to_edit = $("#comboQuality").val();
 			$new_quality_name = $("#_new_quality_name").val();
 
-			if ($('#profileQualityHeader').text() == "CHANGE PROFILE NAME") {
+			if ($('#profileQualityHeader').text() === "CHANGE PROFILE NAME") {
 				$.ajax({
 					url: API_BASEURL + "slicing/curaX/change_quality_profile/" + $profile_to_edit + "/" + $quality_to_edit + "/" + $new_quality_name,
 					type: "POST",
@@ -694,7 +696,7 @@ $(function () {
 				});
 			}
 
-			if ($('#profileQualityHeader').text() == "PROFILE COPY") {
+			if ($('#profileQualityHeader').text() === "PROFILE COPY") {
 				$.ajax({
 					url: API_BASEURL + "slicing/curaX/copy_quality_profile/" + $profile_to_edit + "/" + $quality_to_edit + "/" + $new_quality_name,
 					type: "POST",
@@ -705,7 +707,7 @@ $(function () {
 				});
 			}
 
-			if ($('#profileQualityHeader').text() == "NEW PROFILE") {
+			if ($('#profileQualityHeader').text() === "NEW PROFILE") {
 				$.ajax({
 					url: API_BASEURL + "slicing/curaX/new_quality/" + $profile_to_edit + "/" + $new_quality_name,
 					type: "POST",
@@ -719,13 +721,11 @@ $(function () {
 			$("#settings_plugin_curaX_change_name").modal("hide");
 			$("#settings_plugin_curaX_edit_profile").modal("hide");
 			self.getProfilesInheritsMaterials(currentMaterialSelected, currentBrandSelected);
-
 		};
 
 
 		/******************************************************************************************
 		 * call name change form
-		 * @param none
 		 * @return none
 		 ******************************************************************************************/
 		self.NewQualityName = function () {

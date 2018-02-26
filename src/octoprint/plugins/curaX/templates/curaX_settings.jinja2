@@ -3,7 +3,7 @@
 	<h3>{{ _('Filament Profile Editor') }}</h3>
 
 	<div class="panel_accordion" data-toggle="collapse" >
-		<span class="lbl" data-toggle="collapse" >{{ _('Materials') }}</span>
+		<span class="lbl" data-toggle="collapse" data-bind="click: requestData">{{ _('Materials') }}</span>
 		<span class="sign" data-toggle="collapse" ><i class="icon-chevron-down"></i></span>
 		<span class="sign" title="{{ _('New Material') }}" data-toggle="tooltip"
 			data-bind="click: function() { $root.createNewMaterial(); }">
@@ -25,17 +25,20 @@
 				<div data-bind="foreach: $parent.materials.paginatedItems">
 					<div data-bind="if: $data.brand() == $parent.key">
 						<div class="material_panel_accordion"
-							 data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }">
+							 data-bind="enable: !isdefault(), css: {disabled: isdefault()},
+							 click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }">
 							<a href="#"><span class="lbl_mat" style="text-transform: uppercase;"
-								  data-bind="text:key, enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }">
-
+								  data-bind="text:key, enable: !isdefault(), css: {disabled: isdefault()},
+								  click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }">
 							</span></a>
 							<span class="sign"
-								  data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.removeMaterial($data); } }">
+								  data-bind="enable: !isdefault(), css: {disabled: isdefault()},
+								  click: function() { if (!$data.isdefault()) { $root.removeMaterial($data); } }">
 								  <i class="icon-trash"></i>
 							</span>
 							<span class="sign"
-								  data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editMaterial($data); } }">
+								  data-bind="enable: !isdefault(), css: {disabled: isdefault()},
+								  click: function() { if (!$data.isdefault()) { $root.editMaterial($data); } }">
 								  <i class="icon-edit"></i>
 							</span>
 						</div>
@@ -81,30 +84,35 @@
 		<div>
 			<table class="information_table">
 				<tr class="table_line">
+					<td>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </td>
 					<td class="table_head">{{ _('Display Name') }}:</td>
 					<td class="table_data" id="_information_display_name"></td>
 					<td class="table_head">{{ _('Default Print Temperature') }}:</td>
 					<td class="table_data" id="_information_default_material_print_temperature"></td>
 				</tr>
 				<tr>
+					<td> </td>
 					<td class="table_head">{{ _('Brand') }}:</td>
 					<td class="table_data" id="_information_brand"></td>
 					<td class="table_head">{{ _('Infill Speed') }}:</td>
 					<td class="table_data" id="_information_speed_infill"></td>
 				</tr>
 				<tr>
+					<td> </td>
 					<td class="table_head">{{ _('Material') }}:</td>
 					<td class="table_data" id="_information_material"></td>
 					<td class="table_head">{{ _('Outer Wall Speed') }}:</td>
 					<td class="table_data" id="_information_speed_wall_0"></td>
 				</tr>
 				<tr>
+					<td> </td>
 					<td class="table_head">{{ _('Filament Cost') }}:</td>
 					<td class="table_data" id="_information_filament_cost"></td>
 					<td class="table_head">{{ _('Inner Wall Speed') }}:</td>
 					<td class="table_data" id="_information_speed_wall_x"></td>
 				</tr>
 				<tr>
+					<td> </td>
 					<td class="table_head">{{ _('Filament Weight') }}:</td>
 					<td class="table_data" id="_information_filament_weight"></td>
 					<td></td>

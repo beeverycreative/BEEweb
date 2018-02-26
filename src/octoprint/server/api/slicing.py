@@ -221,13 +221,13 @@ def slicingListSlicerProfiles(slicer):
 def slicingListSlicerMaterials(slicer):
 	configured = False
 	if "configured" in request.values and request.values["configured"] in valid_boolean_trues:
-	 	configured = True
+		configured = True
 	try:
 		return jsonify(_getSlicingMaterialData(slicer, require_configured=configured))
 	except (UnknownSlicer, SlicerNotConfigured):
 		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
 
-@api.route("/slicing/<string:slicer>/InheritsMaterials/<string:material>", methods=["GET"])
+@api.route("/slicing/<string:slicer>/inheritsMaterials/<string:material>", methods=["GET"])
 def slicingListInheritsMaterials(slicer,material):
 	configured = False
 	if "configured" in request.values and request.values["configured"] in valid_boolean_trues:
