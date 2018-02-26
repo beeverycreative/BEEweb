@@ -541,8 +541,8 @@ class ProfileReader(object):
 				for printer_list in filament_json['PrinterGroups']:
 					if printer_id.lower() in printer_list['group_printers']:
 						return True
-		except Exception as ex:
-			logger.error("Error while getting Values from profile: " + ex.message)
+		except Exception:
+			logger.error("Error while getting Values from profile", exc_info=True)
 
 		return False
 
