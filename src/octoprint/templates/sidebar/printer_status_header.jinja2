@@ -2,6 +2,6 @@
     <span class="status-ball" data-bind="css: stateClass"></span>
     <strong data-bind="text: stateString, css: stateClass" class="printer-status"></strong>
 </a>
-<a id="printer-name-link" href="#" data-bind="click: connect" >
+<a id="printer-name-link" href="#" data-bind="click: connect, css:  {'button-connect': isErrorOrClosed() && !isConnecting() }" >
     <span data-bind="text: printerName " />
 </a>

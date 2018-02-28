@@ -766,6 +766,8 @@ class BeePrinter(Printer):
                         self._currentNozzle = nozzle_type_prefix + str(current_nozzle)
                     else:
                         self._currentNozzle = nozzle_type_prefix + str(default_nozzle_size)
+                else:
+                    self._currentNozzle = nozzle_type_prefix + str(default_nozzle_size)
         except Exception as ex:
             self._logger.error(ex)
 
