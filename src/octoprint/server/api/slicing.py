@@ -140,8 +140,7 @@ def slicingSaveMaterial(slicer):
 		return make_response("Expected content-type JSON", 400)
 	try:
 		json_data = request.json
-		# slicingManager.edit_profile(slicer, name, printer_id, quality)
-		slicingManager.saveNewMaterial(slicer, json_data )
+		slicingManager.save_new_material(slicer, json_data )
 		return NO_CONTENT
 	except BadRequest:
 		return make_response("Malformed JSON body in request", 400)
@@ -153,8 +152,7 @@ def slicingSaveRawProfile(slicer):
 		return make_response("Expected content-type JSON", 400)
 	try:
 		json_data = request.json
-		# slicingManager.edit_profile(slicer, name, printer_id, quality)
-		slicingManager.saveNewProfile(slicer, json_data )
+		slicingManager.save_new_profile(slicer, json_data )
 		return NO_CONTENT
 	except BadRequest:
 		return make_response("Malformed JSON body in request", 400)
@@ -166,8 +164,7 @@ def slicingSaveMaterialEdition(slicer, name):
 		return make_response("Expected content-type JSON", 400)
 	try:
 		json_data = request.json
-		# slicingManager.edit_profile(slicer, name, printer_id, quality)
-		slicingManager.saveNewMaterialEdition(slicer, json_data,name)
+		slicingManager.save_material(slicer, json_data,name)
 		return NO_CONTENT
 	except BadRequest:
 		return make_response("Malformed JSON body in request", 400)

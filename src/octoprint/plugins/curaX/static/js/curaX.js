@@ -423,7 +423,6 @@ $(function () {
 		self.getProfilesInheritsMaterials = function (data, parent) {
 			$('#profiles_acordion').empty();
 
-
 			currentMaterialSelected = data;
 			currentBrandSelected = parent;
 

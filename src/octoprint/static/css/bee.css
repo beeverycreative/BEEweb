@@ -1596,7 +1596,7 @@ td.settings_users_actions .m-icon {
 #slicing_configuration_dialog_advanced_settings .controls label,
 #slicing_configuration_dialog .form-horizontal .controls label {
     width: 20%;
-    height: 85px;
+    height: 85px !important;
     padding: 10px 0 5px;
     margin: 0;
     transition: all 0.2s ease;
@@ -2399,14 +2399,6 @@ table.information_table th{
     width: 100%;
 }
 
-#settings_plugin_curaX_new_profile .form-group .sign{
-     margin-left: 30px!important;
-}
-
-#settings_plugin_curaX_new_material .form-group .sign{
-     margin-left: 30px!important;
-}
-
 #settings_plugin_curaX_new_material .form-group .lbl,
 #settings_plugin_curaX_new_profile  .form-group > .lbl,
 #settings_plugin_curaX_edit_profile .form-group > .lbl{
@@ -2465,30 +2457,26 @@ table.information_table th{
      border: 1px solid #898989;
 }
 
-#settings_plugin_curaX_edit_material .panel_data .unit,
-#settings_plugin_curaX_new_material .panel_data .unit{
+#settings_plugin_curaX_edit_material .panel-collapse .form-group,
+#settings_plugin_curaX_new_material .panel-collapse .form-group {
+	padding: 5px;
+}
+
+#settings_plugin_curaX_edit_material .form-group .unit,
+#settings_plugin_curaX_new_material .form-group .unit{
     font-weight: bold;
-    position: absolute !important;
-    display: block !important;
-    top: 3px;
-    right: 5px;
-    text-align: center!important;
-    background-color: white;
-    padding-left: 5px !important;
-    width: 50px !important;
+    position: relative;
+    display: block;
+    top: 10px;
+    text-align: center;
+    float: right;
+    width: 50px;
 
 }
-#settings_plugin_curaX_edit_material .panel_data .sign,
-#settings_plugin_curaX_new_material .panel_data .sign{
-    vertical-align: middle !important;
-    margin-right: 20px;
-    float:left;
 
-}
-#settings_plugin_curaX_edit_material .panel_data,
-#settings_plugin_curaX_new_material .panel_data{
-    position: relative !important;
-    margin-right:20px !important;
+#settings_plugin_curaX_edit_material .form-group> .inpt,
+#settings_plugin_curaX_new_material .form-group> .inpt{
+    width: 150px;
     float:right;
 }
 

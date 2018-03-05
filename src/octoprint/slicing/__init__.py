@@ -692,7 +692,7 @@ class SlicingManager(object):
 	def load_profile_quality(self,slicer, name):
 		slicer_object_curaX = self.get_slicer(slicer)
 		try:
-			path = self.get_slicer_profile_path(slicer);
+			path = self.get_slicer_profile_path(slicer)
 		except IOError:
 			return None
 
@@ -701,7 +701,7 @@ class SlicingManager(object):
 	def load_options(self, slicer):
 		slicer_object_curaX = self.get_slicer(slicer)
 		try:
-			path = self.get_slicer_profile_path(slicer);
+			path = self.get_slicer_profile_path(slicer)
 		except IOError:
 			return None
 
@@ -715,16 +715,16 @@ class SlicingManager(object):
 		except IOError:
 			return None
 
-		return slicer_object_curaX.getProfileTeste(name, path, quality, nozzle)
+		return slicer_object_curaX.getProfile(name, path, quality, nozzle)
 
 
 	def load_inherits_material(self,slicer,name):
-		slicer_object_curaX = self.get_slicer(slicer);
+		slicer_object_curaX = self.get_slicer(slicer)
 		try:
-			path = self.get_slicer_profile_path(slicer);
+			path = self.get_slicer_profile_path(slicer)
 		except IOError:
 			return None
-		return slicer_object_curaX.get_inherits_material(name,path);
+		return slicer_object_curaX.get_inherits_material(name,path)
 
 
 	def load_raw_material(self,slicer):
@@ -757,11 +757,9 @@ class SlicingManager(object):
 		return slicer_object_curaX.getMaterial(path, name)
 
 
-
-
 	def edit_profile(self, slicer, name , data , quality, nozzle):
 		profile = self.get_slicer(slicer).getSavedEditionFilament(name, self.get_slicer_profile_path(slicer))
-		override_profile = self.get_slicer(slicer).getProfileTeste(name, self.get_slicer_profile_path(slicer), quality , nozzle)
+		override_profile = self.get_slicer(slicer).getProfile(name, self.get_slicer_profile_path(slicer), quality , nozzle)
 
 		for current in data:
 			if current in override_profile:
@@ -782,7 +780,7 @@ class SlicingManager(object):
 		self._save_edit_profile_to_path(slicer, path, profile)
 
 
-	def saveNewMaterial(self, slicer, data):
+	def save_new_material(self, slicer, data):
 
 		slicer_object_curaX = self.get_slicer(slicer)
 		slicerPath = self.get_slicer_profile_path(slicer)
@@ -790,7 +788,7 @@ class SlicingManager(object):
 		profile = slicer_object_curaX.getRawCopyMaterial(slicerPath, data)
 
 		tempPath = self.get_slicer_profile_path(slicer) + "/Materials/" + "{name}.json".format(name=profile['id'])
-		count = 0;
+		count = 0
 
 		while True:
 			count = count + 1
@@ -804,15 +802,15 @@ class SlicingManager(object):
 		self._save_edit_profile_to_path(slicer, tempPath, profile)
 
 
-	def saveNewProfile(self,slicer,data):
-		slicer_object_curaX = self.get_slicer(slicer);
-		slicerPath = self.get_slicer_profile_path(slicer);
+	def save_new_profile(self,slicer,data):
+		slicer_object_curaX = self.get_slicer(slicer)
+		slicerPath = self.get_slicer_profile_path(slicer)
 
 		profile =slicer_object_curaX.getRawCopyProfile(slicerPath,data)
 
 		tempPath = self.get_slicer_profile_path(slicer) + "/Variants/" + "{name}.json".format(name=data['name'])
 
-		count = 0;
+		count = 0
 
 		while True:
 			count = count + 1
@@ -824,32 +822,26 @@ class SlicingManager(object):
 			else:
 				break
 
-
 		self._save_edit_profile_to_path(slicer, tempPath, profile)
 
 
-
-	def saveNewMaterialEdition(self,slicer, data,name):
+	def save_material(self, slicer, data, name):
 
 		slicer_object_curaX = self.get_slicer(slicer)
 		slicerPath = self.get_slicer_profile_path(slicer)
-
 
 		profile = slicer_object_curaX.getRawCopyMaterial(slicerPath, data)
 
 		if name != data['display_name']:
 
-			path = self.get_slicer_profile_path(slicer)+ "/Materials/" + "{name}.json".format(name=name)
-			os.remove(path)
-
 			if data['display_name'] == "":
 				tempPath = self.get_slicer_profile_path(slicer) + "/Materials/" + "{name}.json".format(name='Unknown')
-				slicer_object_curaX.changeInheritsProfile(self.get_slicer_profile_path(slicer),'Unknown',name)
+				slicer_object_curaX.changeInheritsProfile(self.get_slicer_profile_path(slicer),'Unknown', name)
 			else:
 				tempPath = self.get_slicer_profile_path(slicer) + "/Materials/" + "{name}.json".format(name=data['display_name'])
-				slicer_object_curaX.changeInheritsProfile(self.get_slicer_profile_path(slicer),data['display_name'],name)
+				slicer_object_curaX.changeInheritsProfile(self.get_slicer_profile_path(slicer),data['display_name'], name)
 
-			count = 0;
+			count = 0
 
 			while True:
 				count = count + 1

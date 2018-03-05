@@ -24,9 +24,7 @@
 			<div data-bind="attr: {id: 'row' + $index()}" class="collapse">
 				<div data-bind="foreach: $parent.materials.paginatedItems">
 					<div data-bind="if: $data.brand() == $parent.key">
-						<div class="material_panel_accordion"
-							 data-bind="enable: !isdefault(), css: {disabled: isdefault()},
-							 click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }">
+						<div class="material_panel_accordion">
 							<a href="#"><span class="lbl_mat" style="text-transform: uppercase;"
 								  data-bind="text:key, enable: !isdefault(), css: {disabled: isdefault()},
 								  click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }">
@@ -131,79 +129,63 @@
 		<span class="signa" id="material_modal_edition"></span>
 	</div>
 	<div class="modal-body parent">
-		<div class="panel_input" data-toggle="collapse" >
-			<span class="lbl" data-parent="#accordion" data-toggle="collapse" >{{ _('Information') }}</span>
-			<span class="sign" data-toggle="collapse" ><i class="icon-chevron-down"></i></span>
-		</div>
-		<div class="panel-collapse collapse in" id="information_panel">
-			<div class="material_properties">
-				<span class="sign">{{ _('Display Name') }}</span>
-				<div class="panel_data">
-					<input id="display_name" class="inpt" />
-				</div>
+		<form class="form-inline">
+			<div class="panel_input" data-toggle="collapse" data-target="#information_panel">
+				<span class="lbl"  >{{ _('Information') }}</span>
+				<span class="sign" ><i class="icon-chevron-down"></i></span>
 			</div>
-			<div class="material_properties">
-				<span class="sign">{{ _('Brand') }}</span>
-				<div class="panel_data" >
-					<input id="brand" class="inpt" />
+			<div class="panel-collapse collapse in" id="information_panel">
+				<div class="form-group">
+					<label class="sign" for="display_name">{{ _('Display Name') }}</label>
+					<input id="display_name" class="inpt form-control" type="text"/>
 				</div>
-			</div>
-			<div class="material_properties">
-				<span class="sign">{{ _('Material') }}</span>
-				<div class="panel_data" >
-					<input id="material_type" class="inpt" />
+				<div class="form-group">
+					<label class="sign" for="brand">{{ _('Brand') }}</label>
+					<input id="brand" class="inpt form-control" type="text" />
 				</div>
-			</div>
-			<div class="material_properties">
-				<span class="sign">{{ _('Filament Cost') }}</span>
-				<div class="panel_data" >
-					<input id="filament_cost" class="inpt" />
+				<div class="form-group">
+					<label class="sign" for="material_type">{{ _('Material') }}</label>
+					<input id="material_type" class="inpt form-control" type="text" />
+				</div>
+				<div class="form-group">
+					<label class="sign" for="filament_cost">{{ _('Filament Cost') }}</label>
+					<input id="filament_cost" class="inpt form-control" type="number"/>
 					<span class="unit">&euro;</span>
 				</div>
-			</div>
-			<div class="material_properties">
-				<span class="sign">{{ _('Filament Weight') }}</span>
-				<div class="panel_data" >
-					<input id="filament_weight" class="inpt" />
+				<div class="form-group">
+					<label class="sign" for="filament_weight">{{ _('Filament Weight') }}</label>
+					<input id="filament_weight" class="inpt form-control" type="number"/>
 					<span class="unit">g</span>
 				</div>
 			</div>
-		</div>
 
-		<div class="panel_input" data-toggle="collapse">
-			<span class="lbl" data-toggle="collapse" >{{ _('Print Settings') }}</span>
-			<span class="sign" data-toggle="collapse" ><i class="icon-chevron-down"></i></span>
-		</div>
-		<div class="panel-collapse collapse" id="print_settings_panel">
-			<div class="material_properties">
-				<span class="sign">{{ _('Default Print Temperature') }}</span>
-				<div class="panel_data" >
-					<input id="default_material_print_temperature" class="inpt" />
+			<div class="panel_input" data-toggle="collapse" data-target="#print_settings_panel">
+				<span class="lbl" data-toggle="collapse" >{{ _('Print Settings') }}</span>
+				<span class="sign" data-toggle="collapse" ><i class="icon-chevron-down"></i></span>
+			</div>
+			<div class="panel-collapse collapse in" id="print_settings_panel">
+				<div class="form-group">
+					<label class="sign" for="default_material_print_temperature">{{ _('Default Print Temperature') }}</label>
+					<input id="default_material_print_temperature" class="inpt form-control" type="number"/>
 					<span class="unit">ºC</span>
 				</div>
-			</div>
-			<div class="material_properties">
-				<span class="sign">{{ _('Infill Speed') }}</span>
-				<div class="panel_data" >
-					<input id="speed_infill" class="inpt" />
+				<div class="form-group">
+					<label class="sign" for="speed_infill">{{ _('Infill Speed') }}</label>
+					<input id="speed_infill" class="inpt form-control" type="number"/>
+					<span class="unit">mm/s</span>
+				</div>
+				<div class="form-group">
+					<label class="sign" for="speed_wall_0">{{ _('Outer Wall Speed') }}</label>
+					<input id="speed_wall_0" class="inpt form-control" type="number"/>
+					<span class="unit">mm/s</span>
+				</div>
+				<div class="form-group">
+					<label class="sign" for="speed_wall_x">{{ _('Inner Wall Speed') }}</label>
+					<input id="speed_wall_x" class="inpt form-control" type="number"/>
 					<span class="unit">mm/s</span>
 				</div>
 			</div>
-			<div class="material_properties">
-				<span class="sign">{{ _('Outer Wall Speed') }}</span>
-				<div class="panel_data">
-					<input id="speed_wall_0" class="inpt" />
-					<span class="unit">mm/s</span>
-				</div>
-			</div>
-			<div class="material_properties">
-				<span class="sign">{{ _('Inner Wall Speed') }}</span>
-				<div class="panel_data">
-					<input id="speed_wall_x" class="inpt" />
-					<span class="unit">mm/s</span>
-				</div>
-			</div>
-		</div>
+		</form>
 	</div>
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>

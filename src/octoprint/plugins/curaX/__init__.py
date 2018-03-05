@@ -445,7 +445,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 	def _save_profile(self, path, profile, allow_overwrite=True):
 		import json
-		with octoprint.util.atomic_write(path, "wb", max_permissions=0o666) as f:
+		with octoprint.util.atomic_write(path, "w", max_permissions=0o666) as f:
 			json.dump(profile, f)
 
 	def _desanitize(self, name):
@@ -719,11 +719,11 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 	def getOptionSettings(self, slicer_profile_path):
 		return ProfileReader.getOptions(slicer_profile_path)
 
-	def getProfileTeste(self, filament_id,slicer_profile_path, quality , nozzle):
-		return ProfileReader.getFilamentOverridesTeste(filament_id, slicer_profile_path, quality,nozzle)
+	def getProfile(self, filament_id,slicer_profile_path, quality , nozzle):
+		return ProfileReader.getFilamentOverrides(filament_id, slicer_profile_path, quality,nozzle)
 
 	def get_inherits_material(self,name,path):
-		return ProfileReader.getInheritsMaterial(name,path);
+		return ProfileReader.getInheritsMaterial(name,path)
 
 	def getSavedEditionFilament(self,filament_id, slicer_profile_path):
 		return ProfileReader.getSaveEditionFilament(filament_id, slicer_profile_path)
@@ -745,8 +745,6 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 	def getRawCopyProfile(self,path, data):
 		return ProfileReader.getRawCopyProfile(path,data)
-
-
 
 
 
