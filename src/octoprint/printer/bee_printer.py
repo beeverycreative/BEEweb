@@ -197,9 +197,9 @@ class BeePrinter(Printer):
             self._currentFirmware = self.getCurrentFirmware()
 
             # Starts the printer status monitor thread
-            if self._bvc_status_thread is None:
-                self._bvc_status_thread = StatusDetectionMonitorThread(self._comm)
-                self._bvc_status_thread.start()
+            # if self._bvc_status_thread is None:
+            #     self._bvc_status_thread = StatusDetectionMonitorThread(self._comm)
+            #     self._bvc_status_thread.start()
 
             # make sure the connection monitor thread is null so we are able to instantiate a new thread later on
             if self._bvc_conn_thread is not None:
@@ -227,9 +227,9 @@ class BeePrinter(Printer):
         super(BeePrinter, self).disconnect()
 
         # Starts the connection monitor thread only if there are any connected clients
-        if len(self._connectedClients) > 0 and self._bvc_conn_thread is None:
-            self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
-            self._bvc_conn_thread.start()
+        # if len(self._connectedClients) > 0 and self._bvc_conn_thread is None:
+        #     self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
+        #     self._bvc_conn_thread.start()
 
         if self._bvc_status_thread is not None:
             self._bvc_status_thread.stop_status_monitor()
@@ -766,6 +766,8 @@ class BeePrinter(Printer):
                         self._currentNozzle = nozzle_type_prefix + str(current_nozzle)
                     else:
                         self._currentNozzle = nozzle_type_prefix + str(default_nozzle_size)
+                else:
+                    self._currentNozzle = nozzle_type_prefix + str(default_nozzle_size)
         except Exception as ex:
             self._logger.error(ex)
 
@@ -1479,9 +1481,10 @@ class BeePrinter(Printer):
             self._connectedClients.append(payload['remoteAddress'])
 
             # Starts the connection monitor thread
-            if self._bvc_conn_thread is None and (self._comm is None or (self._comm is not None and not self._comm.isOperational())):
-                self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
-                self._bvc_conn_thread.start()
+            # if self._bvc_conn_thread is None and (self._comm is None or (self._comm is not None and not self._comm.isOperational())):
+            #     self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
+            #     self._bvc_conn_thread.start()
+            self.connect()
 
 
     def on_client_disconnected(self, event, payload):
@@ -1759,9 +1762,9 @@ class BeePrinter(Printer):
             self._comm = None
 
         # Starts the connection monitor thread only if there are any connected clients and the thread was stopped
-        if len(self._connectedClients) > 0 and self._bvc_conn_thread is None:
-            self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
-            self._bvc_conn_thread.start()
+        # if len(self._connectedClients) > 0 and self._bvc_conn_thread is None:
+        #     self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
+        #     self._bvc_conn_thread.start()
         # stops the status thread if it was started previously
         if self._bvc_status_thread is not None:
             self._bvc_status_thread.stop()

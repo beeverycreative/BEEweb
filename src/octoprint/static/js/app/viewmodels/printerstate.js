@@ -195,9 +195,13 @@ $(function() {
         self.titlePauseButton = ko.observable(self.TITLE_PAUSE_BUTTON_UNPAUSED);
 
         self.printerName = ko.computed(function() {
-            var name = "";
+            var name = gettext("Connect");
+            if (self.isConnecting()) {
+            	return "";
+            }
             if (self.isErrorOrClosed() !== undefined && !self.isErrorOrClosed() && !self.isError()) {
-                name = self.printerProfiles.currentProfileData().name();
+            	if (self.printerProfiles.currentProfileData())
+                	name = self.printerProfiles.currentProfileData().name();
             }
             return name;
         });
@@ -766,6 +770,30 @@ $(function() {
             $('#selecteFileInfo').removeClass('hidden');
 
             window.addEventListener('resize', self.resizeSidebar, false );
+        };
+
+		/**
+		 * Tries to connect to a USB printer
+		 */
+		self.connect = function() {
+
+            if (self.isErrorOrClosed()) {
+                self.isConnecting(true);
+
+                var data = {
+                };
+
+                OctoPrint.connection.connect(data)
+                    .done(function() {
+                        self.settings.requestData();
+                        self.settings.printerProfiles.requestData();
+
+                        self.isConnecting(false);
+                    });
+            } else {
+                self.connection.requestData();
+                OctoPrint.connection.disconnect();
+            }
         };
     }
 
