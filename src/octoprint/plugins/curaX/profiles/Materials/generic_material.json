@@ -4,7 +4,7 @@
     "version": 2,
     "inherits": "",
     "brand": "",
-    "Information":
+    "material_information":
         {
         "display_name": { "default_value": "Custom"},
         "brand": { "default_value": "Generic"},

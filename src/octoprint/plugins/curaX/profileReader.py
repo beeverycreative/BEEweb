@@ -689,21 +689,21 @@ class ProfileReader(object):
 			else:
 				filament_json['brand'] = "Unknown"
 
-		if 'Information' in filament_json:
-			for key in filament_json['Information'].keys():
+		if 'material_information' in filament_json:
+			for key in filament_json['material_information'].keys():
 				if key in data:
 					if key == 'display_name':
 						if data['display_name'] == "":
-							filament_json['Information'][key] = {'default_value': 'Unknown'}
+							filament_json['material_information'][key] = {'default_value': 'Unknown'}
 						else:
-							filament_json['Information'][key] = {'default_value': data[key]}
+							filament_json['material_information'][key] = {'default_value': data[key]}
 					elif key == 'brand':
 						if data['brand'] == "":
-							filament_json['Information'][key] = {'default_value': 'Unknown'}
+							filament_json['material_information'][key] = {'default_value': 'Unknown'}
 						else:
-							filament_json['Information'][key] = {'default_value': data[key]}
+							filament_json['material_information'][key] = {'default_value': data[key]}
 					else:
-						filament_json['Information'][key] = {'default_value': data[key]}
+						filament_json['material_information'][key] = {'default_value': data[key]}
 
 		if 'overrides' in filament_json:
 			for key in filament_json['overrides'].keys():
@@ -786,8 +786,8 @@ class ProfileReader(object):
 			with open(path + "/Materials/" + name +".json") as data_file:
 				filament_json = json.load(data_file)
 
-		if 'Information' in filament_json:
-			material_Values = filament_json['Information']
+		if 'material_information' in filament_json:
+			material_Values = filament_json['material_information']
 
 		overrides_Values = {}
 		if 'overrides' in filament_json:
@@ -805,8 +805,8 @@ class ProfileReader(object):
 		with open(path + "/Materials/"+ "generic_material.json") as data_file:
 			filament_json = json.load(data_file)
 
-		if 'Information' in filament_json:
-			material_Values = filament_json['Information']
+		if 'material_information' in filament_json:
+			material_Values = filament_json['material_information']
 
 		overrides_Values = {}
 		if 'overrides' in filament_json:

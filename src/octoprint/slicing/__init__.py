@@ -832,7 +832,7 @@ class SlicingManager(object):
 
 		profile = slicer_object_curaX.getRawCopyMaterial(slicerPath, data)
 
-		if name != data['display_name']:
+		if name.lower() != data['display_name'].lower():
 
 			if data['display_name'] == "":
 				tempPath = self.get_slicer_profile_path(slicer) + "/Materials/" + "{name}.json".format(name='Unknown')

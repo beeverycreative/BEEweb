@@ -4,13 +4,13 @@
     "version": 2,
     "inherits": "generic_tpu",
     "brand": "BEEVERYCREATIVE",
-    "Information":
+    "material_information":
         {
-        "display_name": { "default_value": "custom PLA"},
-        "brand": { "default_value": "custom brand"},
-        "material_type": { "default_value": "custom PLA"},
-        "filament_cost": { "default_value": "in euros"},
-        "filament_weight": { "default_value": "weight of full spool"}
+        "display_name": { "default_value": "TPU"},
+        "brand": { "default_value": "BEEVERYCREATIVE"},
+        "material_type": { "default_value": "tpu"},
+        "filament_cost": { "default_value": 30},
+        "filament_weight": { "default_value": 350.0}
         },	
 
     "overrides": 
