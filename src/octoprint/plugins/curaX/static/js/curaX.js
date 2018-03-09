@@ -248,6 +248,7 @@ $(function () {
 
 
 		self.duplicateProfileDefault = function (data) {
+			self._hideMessageContainers();
 			if (!data.resource) {
 				return;
 			}
@@ -256,8 +257,14 @@ $(function () {
 				url: API_BASEURL + "slicing/curaX/duplicate_profile/" + data["key"],
 				type: "POST",
 				success: function () {
-					// self.requestData();
+					self._showSuccessMsg('Profile Duplicated');
+					self.requestData();
 					self.slicingViewModel.requestData();
+					// Hides the profiles list if it is expanded
+					$("#profiles_tab").collapse("hide");
+				},
+				error: function () {
+					self._showErrorMsg('Error duplicating profile');
 				}
 			});
 
@@ -355,18 +362,17 @@ $(function () {
 			$("#settings_plugin_curaX_edit_profile").modal("hide");
 
 		};
-		/*********************************************************************************************************/
 
 		self.findMaterialOnArray = function (data, material) {
 
 			if (!material)
 				return false;
 
-			if (data.length == 0)
+			if (data.length === 0)
 				return true;
 
 			for (index = 0; index < data.length; ++index) {
-				if (data[index].key == material)
+				if (data[index].key === material)
 					return false;
 			}
 			return true;
@@ -808,6 +814,24 @@ $(function () {
 					});
 				}
 			});
+		};
+
+
+		self._showSuccessMsg = function (message) {
+			var msgDiv = $('#editor_success_msg');
+			msgDiv.removeClass('hidden');
+			msgDiv.text(gettext(message))
+		};
+
+		self._showErrorMsg = function (message) {
+			var msgDiv = $('#editor_error_msg');
+			msgDiv.removeClass('hidden');
+			msgDiv.text(gettext(message))
+		};
+
+		self._hideMessageContainers = function (message) {
+			$('#editor_success_msg').addClass('hidden');
+			$('#editor_error_msg').addClass('hidden');
 		};
 	}
 

@@ -50,8 +50,9 @@ def _etag(configured, lm=None):
 
 @api.route("/slicing", methods=["GET"])
 @with_revalidation_checking(etag_factory=lambda lm=None: _etag(request.values.get("configured", "false") in valid_boolean_trues, lm=lm),
-                            lastmodified_factory=lambda: _lastmodified(request.values.get("configured", "false") in valid_boolean_trues),
-                            unless=lambda: request.values.get("force", "false") in valid_boolean_trues)
+							lastmodified_factory=lambda: _lastmodified(request.values.get("configured", "false") in valid_boolean_trues),
+							unless=lambda: request.values.get("force", "true") in valid_boolean_trues)
+							# the force variable was set to true by default because the _lastmodified doesn't work properly for curaX
 def slicingListAll():
 	from octoprint.filemanager import get_extensions
 
@@ -283,7 +284,7 @@ def slicingAddSlicerProfile(slicer, name):
 
 	try:
 		profile = slicingManager.save_profile(slicer, name, data,
-		                                      allow_overwrite=True, display_name=display_name, description=description)
+											  allow_overwrite=True, display_name=display_name, description=description)
 	except UnknownSlicer:
 		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
 
@@ -321,10 +322,10 @@ def slicingPatchSlicerProfile(slicer, name):
 		description = json_data["description"]
 
 	saved_profile = slicingManager.save_profile(slicer, name, profile,
-	                                            allow_overwrite=True,
-	                                            overrides=data,
-	                                            display_name=display_name,
-	                                            description=description)
+												allow_overwrite=True,
+												overrides=data,
+												display_name=display_name,
+												description=description)
 
 	from octoprint.server.api import valid_boolean_trues
 	if "default" in json_data and json_data["default"] in valid_boolean_trues:
@@ -377,10 +378,7 @@ def slicingChangeQualityProfile(slicer,filament_id,quality,name):
 		slicingManager.change_quality_name(slicer, filament_id,quality, name)
 	except UnknownSlicer:
 		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
-	except CouldNotDeleteProfile as e:
-		return make_response(
-			"Could not delete profile {profile} for slicer {slicer}: {cause}".format(profile=name, slicer=slicer,
-																					 cause=str(e.cause)), 500)
+
 	return NO_CONTENT
 
 
@@ -391,10 +389,7 @@ def slicingCopyQualityProfile(slicer,filament_id,quality,name):
 		slicingManager.copy_quality_name(slicer, filament_id,quality, name)
 	except UnknownSlicer:
 		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
-	except CouldNotDeleteProfile as e:
-		return make_response(
-			"Could not delete profile {profile} for slicer {slicer}: {cause}".format(profile=name, slicer=slicer,
-																					 cause=str(e.cause)), 500)
+
 	return NO_CONTENT
 
 @api.route("/slicing/<string:slicer>/new_quality/<string:filament_id>/<string:quality>", methods=["POST"])
@@ -404,10 +399,7 @@ def slicingNewQuality(slicer,filament_id,quality):
 		slicingManager.new_quality(slicer, filament_id,quality)
 	except UnknownSlicer:
 		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
-	except CouldNotDeleteProfile as e:
-		return make_response(
-			"Could not delete profile {profile} for slicer {slicer}: {cause}".format(profile=name, slicer=slicer,
-																					 cause=str(e.cause)), 500)
+
 	return NO_CONTENT
 
 
@@ -415,26 +407,12 @@ def slicingNewQuality(slicer,filament_id,quality):
 @restricted_access
 def pluginDuplicateProfile(slicer,name):
 	try:
-		result = slicingManager.duplicate_plugin_profile(slicer, name)
-	except UnknownSlicer:
-		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
-	except CouldNotDeleteProfile as e:
-		return make_response(
-			"Could not delete profile {profile} for slicer {slicer}: {cause}".format(profile=name, slicer=slicer,
-																					 cause=str(e.cause)), 500)
-	return NO_CONTENT
-
-@api.route("/slicing/<string:slicer>/profiles/<string:name>", methods=["POST"])
-@restricted_access
-def slicingDuplicateSlicerProfile(slicer, name):
-	try:
 		result = slicingManager.duplicate_profile(slicer, name)
 	except UnknownSlicer:
 		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
-	except CouldNotDeleteProfile as e:
-		return make_response("Could not delete profile {profile} for slicer {slicer}: {cause}".format(profile=name, slicer=slicer, cause=str(e.cause)), 500)
 
 	return NO_CONTENT
+
 
 def _getSlicingProfilesData(slicer, require_configured=False):
 	result = dict()
@@ -487,7 +465,7 @@ def _getSlicingInheritsMaterials(slicer, material_id, require_configured = False
 	return result
 
 
-def _getSlicingProfileData(slicer, name, profile, brand=None):
+def _getSlicingProfileData(slicer, name, profile):
 	defaultProfiles = s().get(["slicing", "defaultProfiles"])
 	result = dict(
 		key=name,

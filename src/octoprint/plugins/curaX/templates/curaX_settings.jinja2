@@ -2,6 +2,10 @@
 
 	<h3>{{ _('Filament Profile Editor') }}</h3>
 
+	<div id="editor_messages">
+		<div id="editor_success_msg" class="alert alert-success hidden"></div>
+		<div id="editor_error_msg" class="alert alert-error hidden"></div>
+	</div>
 	<div class="panel_accordion" data-toggle="collapse" >
 		<span class="lbl" data-toggle="collapse" data-bind="click: requestData">{{ _('Materials') }}</span>
 		<span class="sign" data-toggle="collapse" ><i class="icon-chevron-down"></i></span>
@@ -25,20 +29,22 @@
 				<div data-bind="foreach: $parent.materials.paginatedItems">
 					<div data-bind="if: $data.brand() == $parent.key">
 						<div class="material_panel_accordion">
-							<a href="#"><span class="lbl_mat" style="text-transform: uppercase;"
+							<a href="#">
+								<span class="lbl_mat" style="text-transform: uppercase;"
 								  data-bind="text:key, enable: !isdefault(), css: {disabled: isdefault()},
 								  click: function() { if (!$data.isdefault()) { $root.getProfilesInheritsMaterials($data , $parent); } }">
-							</span></a>
-							<span class="sign"
-								  data-bind="enable: !isdefault(), css: {disabled: isdefault()},
-								  click: function() { if (!$data.isdefault()) { $root.removeMaterial($data); } }">
-								  <i class="icon-trash"></i>
-							</span>
-							<span class="sign"
+								</span>
+							</a>
+							<!--<a class="sign" title="{{ _('Delete') }}" data-toggle="tooltip"-->
+								  <!--data-bind="enable: !isdefault(), css: {disabled: isdefault()},-->
+								  <!--click: function() { if (!$data.isdefault()) { $root.removeMaterial($data); } }">-->
+								  <!--<i class="icon-trash"></i>-->
+							<!--</a>-->
+							<a class="sign" title="{{ _('Edit') }}" data-toggle="tooltip"
 								  data-bind="enable: !isdefault(), css: {disabled: isdefault()},
 								  click: function() { if (!$data.isdefault()) { $root.editMaterial($data); } }">
 								  <i class="icon-edit"></i>
-							</span>
+							</a>
 						</div>
 					</div>
 				</div>
@@ -59,15 +65,18 @@
 			<div data-bind="foreach: profiles.paginatedItems">
 				<div class="sub_panel_accordion" >
 					<a href="#"><span class="lbl" data-bind="text: key, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }"></span></a>
-					<span class="sign"
-						  data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.removeProfile($data); } }">
-                        <i class="icon-trash"></i></span>
-					<span class="sign"
-						  data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.duplicateProfileDefault($data); } }">
-                        <i class="icon-copy"></i></span>
-					<span class="sign"
-						  data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">
-                        <i class="icon-edit"></i></span>
+					<a class="sign" title="{{ _('Delete') }}" data-toggle="tooltip"
+					   data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.removeProfile($data); } }">
+                        <i class="icon-trash"></i>
+					</a>
+					<a class="sign" title="{{ _('Copy') }}" data-toggle="tooltip"
+					   data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.duplicateProfileDefault($data); } }">
+                        <i class="icon-copy"></i>
+					</a>
+					<a class="sign" title="{{ _('Edit') }}" data-toggle="tooltip"
+					   data-bind="enable: !isdefault(), css: {disabled: isdefault()},click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">
+                        <i class="icon-edit"></i>
+					</a>
 				</div>
 			</div>
 			<span id="profile_message" class="lbl" ></span>

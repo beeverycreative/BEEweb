@@ -202,20 +202,21 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 	def save_slicer_profile(self, path, profile, allow_overwrite=True, overrides=None):
 
-		new_profile = profile.data
+		if 'data' in profile and profile.data is not None:
+			target_profile = profile.data
 
-		tmp=path.split("/")
-		name= tmp[len(tmp)-1]
-		new_profile["name"] = name[:-len(".json")]
-		new_profile["id"] = self._sanitize (name[:-len(".json")])
+			tmp=path.split("/")
+			name= tmp[len(tmp)-1]
+			target_profile["name"] = name[:-len(".json")]
+			target_profile["id"] = self._sanitize (name[:-len(".json")])
 
-		if profile.description is not None:
-			new_profile["description"] = profile.description
+			if profile.description is not None:
+				target_profile["description"] = profile.description
+		else:
+			target_profile = profile
 
-		self._save_profile(path, new_profile, allow_overwrite=allow_overwrite)
+		self._save_profile(path, target_profile, allow_overwrite=allow_overwrite)
 
-	def save_edit_profile(self, path, profile, allow_overwrite=True, overrides=None):
-		self._save_profile(path, profile, allow_overwrite=allow_overwrite)
 
 	def do_slice(self, model_path, printer_profile, model_path1=None, machinecode_path=None, profile_path=None, position=None, overrides=None, resolution=None, nozzle_size=None, on_progress=None, on_progress_args=None, on_progress_kwargs=None):
 		try:
@@ -582,7 +583,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 		profile_path = path + "/Variants/" + "{name}.json".format(name=filament_id)
 
-		self.save_edit_profile(profile_path, filament_json, allow_overwrite=True)
+		self._save_profile(profile_path, filament_json, allow_overwrite=True)
 
 
 	def change_quality_name(self, path,filament_id,quality,name):
@@ -612,11 +613,10 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 		profile_path = path + "/Variants/" + "{name}.json".format(name=filament_id)
 		filament_json['PrinterGroups'][0]['quality'][name] = filament_json['PrinterGroups'][0]['quality'].pop(quality)
-		self.save_edit_profile(profile_path,filament_json,allow_overwrite=True)
+		self._save_profile(profile_path,filament_json,allow_overwrite=True)
 
 
 	def delete_quality_material(self,path,quality, name):
-		overrides_Values = {}
 		filament_json = dict()
 		custom = False
 
@@ -636,7 +636,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		if not custom:
 			for entry in os.listdir(path + "/Quality/"):
 				if not entry.endswith(".json"):
-					# we are only interestedmost beautiful music ever  in profiles and no hidden files
+					# we are only interested in profiles and no hidden files
 					continue
 
 				if name.lower() not in entry.lower():
@@ -649,23 +649,22 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 		del(filament_json['PrinterGroups'][0]['quality'][quality])
 		profile_path = path + "/Variants/" + "{name}.json".format(name=name)
-		self.save_edit_profile(profile_path,filament_json,allow_overwrite=True)
+		self._save_profile(profile_path, filament_json,allow_overwrite=True)
 
 
 	def new_quality(self,path,filament_id,quality):
 		overrides_values = {}
-		filament_json = dict()
 		filament_data = dict()
 		custom = False
 
 		with open(path + "/generic_profile.json") as data_file:
-				filament_json = json.load(data_file)
-				cnt = 0
-				for list in filament_json['PrinterGroups']:
-					for key in filament_json['PrinterGroups'][cnt]:
-						if 'quality' == key:
-							overrides_values = filament_json['PrinterGroups'][cnt][key]
-					cnt  += 1
+			filament_json = json.load(data_file)
+			cnt = 0
+			for list in filament_json['PrinterGroups']:
+				for key in filament_json['PrinterGroups'][cnt]:
+					if 'quality' == key:
+						overrides_values = filament_json['PrinterGroups'][cnt][key]
+				cnt  += 1
 
 		overrides_values[quality] = overrides_values.pop('normal')
 
@@ -698,7 +697,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		filament_data['PrinterGroups'][0]['quality'].update(overrides_values)
 
 		profile_path = path + "/Variants/" + "{name}.json".format(name=filament_id)
-		self.save_edit_profile(profile_path, filament_data, allow_overwrite=True)
+		self._save_profile(profile_path, filament_data, allow_overwrite=True)
 
 
 	def isPrinterAndNozzleCompatible(self, filament_id, printer_id, nozzle_size):

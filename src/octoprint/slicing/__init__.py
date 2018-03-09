@@ -585,32 +585,6 @@ class SlicingManager(object):
 		settings().set(["slicing", "defaultProfiles"], default_profiles)
 		settings().save(force=True)
 
-
-
-	def duplicate_plugin_profile(self,slicer,name):
-		profile = self.get_slicer(slicer).getSavedEditionFilament(name, self.get_slicer_profile_path(slicer))
-
-		slicerPath = self.get_slicer_profile_path(slicer)
-		tempPath = self.get_slicer_profile_path(slicer) + "/Variants/" + "{name}.json".format(name=name)
-		count = 0
-
-		while True:
-			count = count + 1
-			is_overwrite = os.path.exists(tempPath)
-
-			if is_overwrite:
-				tempPath = slicerPath + "/Variants/" + "{name} (copy {number} ).json".format(name=name, number=count)
-			else:
-				break
-
-		tmp = tempPath.split("/")
-		name = tmp[len(tmp) - 1]
-		profile["name"] = name[:-len(".json")]
-		profile["id"] = self._sanitize(name[:-len(".json")])
-
-		self._save_edit_profile_to_path(slicer, tempPath, profile)
-
-
 	def duplicate_profile(self, slicer, name):
 		if not slicer in self.registered_slicers:
 			raise UnknownSlicer(slicer)
@@ -618,28 +592,25 @@ class SlicingManager(object):
 		if not name:
 			raise ValueError("name must be set")
 
-
-		profile = self.load_profile(slicer, name)
-
-
-		profile.slicer = slicer
-		profile.name = name
-
+		profile = self.get_slicer(slicer).getSavedEditionFilament(name, self.get_slicer_profile_path(slicer))
 		slicerPath = self.get_slicer_profile_path(slicer)
 
-		tempPath = self.get_slicer_profile_path(slicer) + "/Variants/" + "{name}.json".format(name=name)
-		count = 0
+		count = 1
+		destinationPath = slicerPath + "/Variants/" + "{name}_copy{number}.json".format(name=name, number=count)
 
 		while True:
 			count = count + 1
-			is_overwrite = os.path.exists(tempPath)
+			is_overwrite = os.path.exists(destinationPath)
 
 			if is_overwrite:
-				tempPath = slicerPath + "/Variants/" + "{name} (copy {number} ).json".format(name=name, number=count)
+				destinationPath = slicerPath + "/Variants/" + "{name}_copy{number}.json".format(name=name, number=count)
 			else:
 				break
 
-		destinationPath = tempPath
+		pathSplit = destinationPath.split("/")
+		name = pathSplit[len(pathSplit) - 1]
+		profile["name"] = name[:-len(".json")]
+		profile["id"] = self._sanitize(name[:-len(".json")])
 		self._save_profile_to_path(slicer, destinationPath, profile)
 
 		payload = dict(slicer=slicer, profile=name)
@@ -777,7 +748,7 @@ class SlicingManager(object):
 					cnt += 1
 
 		path = self.get_slicer_profile_path(slicer) + "/Variants/" + "{name}.json".format(name=name)
-		self._save_edit_profile_to_path(slicer, path, profile)
+		self._save_profile_to_path(slicer, path, profile)
 
 
 	def save_new_material(self, slicer, data):
@@ -795,11 +766,11 @@ class SlicingManager(object):
 			is_overwrite = os.path.exists(tempPath)
 
 			if is_overwrite:
-				tempPath = slicerPath + "/Materials/" + "{name} (copy {number} ).json".format(name=profile['id'], number=count)
+				tempPath = slicerPath + "/Materials/" + "{name}_copy{number}.json".format(name=profile['id'], number=count)
 			else:
 				break
 
-		self._save_edit_profile_to_path(slicer, tempPath, profile)
+		self._save_profile_to_path(slicer, tempPath, profile)
 
 
 	def save_new_profile(self,slicer,data):
@@ -817,12 +788,12 @@ class SlicingManager(object):
 			is_overwrite = os.path.exists(tempPath)
 
 			if is_overwrite:
-				tempPath = slicerPath + "/Variants/" + "{name} (copy {number} ).json".format(name=profile['id'],
+				tempPath = slicerPath + "/Variants/" + "{name}_copy{number}.json".format(name=profile['id'],
 																							  number=count)
 			else:
 				break
 
-		self._save_edit_profile_to_path(slicer, tempPath, profile)
+		self._save_profile_to_path(slicer, tempPath, profile)
 
 
 	def save_material(self, slicer, data, name):
@@ -849,9 +820,9 @@ class SlicingManager(object):
 
 				if is_overwrite:
 					if data['display_name'] == "":
-						tempPath = slicerPath + "/Materials/" + "{name} (copy {number} ).json".format(name='Unknown', number=count)
+						tempPath = slicerPath + "/Materials/" + "{name}_copy{number}.json".format(name='Unknown', number=count)
 					else:
-						tempPath = slicerPath + "/Materials/" + "{name} (copy {number} ).json".format(name=data['display_name'],number=count)
+						tempPath = slicerPath + "/Materials/" + "{name}_copy{number}.json".format(name=data['display_name'],number=count)
 
 				else:
 					break
@@ -859,12 +830,7 @@ class SlicingManager(object):
 			tempPath = self.get_slicer_profile_path(slicer) + "/Materials/" + "{name}.json".format(name=profile['id'])
 
 
-		self._save_edit_profile_to_path(slicer, tempPath, profile)
-
-	def _save_edit_profile_to_path(self, slicer, path, profile, allow_overwrite=True, overrides=None,require_configured=False):
-		self.get_slicer(slicer, require_configured=require_configured).save_edit_profile(path, profile,
-																						 allow_overwrite=allow_overwrite,
-																						 overrides=overrides)
+		self._save_profile_to_path(slicer, tempPath, profile)
 
 	def all_profiles_list(self, slicer, require_configured=False, from_current_printer=True):
 		"""
