@@ -122,8 +122,8 @@ class BeePrinter(Printer):
             self._comm = BeeCom(callbackObject=self, printerProfileManager=self._printerProfileManager)
 
             # returns in case the connection with the printer was not established
-            if self._comm is None:
-                self._isConnecting = False
+            if self._comm is None or self._comm.getCommandsInterface() is None:
+                self._handleConnectionException('Connection with printer failed. Check if the printer is connected.')
                 return False
 
             # If a critical error occurred while establishing the connection (e.g: libusb problems), stops the connection
@@ -1759,7 +1759,9 @@ class BeePrinter(Printer):
         self._isConnecting = False
         if self._comm is not None:
             self._comm.close()
-            self._comm = None
+
+        self._comm.updatePrinterState()
+        self._comm.unselectFile()
 
         # Starts the connection monitor thread only if there are any connected clients and the thread was stopped
         # if len(self._connectedClients) > 0 and self._bvc_conn_thread is None:
