@@ -1757,11 +1757,13 @@ class BeePrinter(Printer):
         self._logger.error("Error connecting to BVC printer: %s" % str(ex))
 
         self._isConnecting = False
-        if self._comm is not None:
-            self._comm.close()
 
         self._comm.updatePrinterState()
         self._comm.unselectFile()
+
+        if self._comm is not None:
+            self._comm.close()
+            self._comm = None
 
         # Starts the connection monitor thread only if there are any connected clients and the thread was stopped
         # if len(self._connectedClients) > 0 and self._bvc_conn_thread is None:

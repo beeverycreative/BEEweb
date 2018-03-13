@@ -1,7 +1,14 @@
-<a id="state-header-link" class="accordion-toggle" data-target="#state">
+<a id="state-header-link" class="accordion-toggle" data-target="#state" data-bind="visible: isConnected()">
     <span class="status-ball" data-bind="css: stateClass"></span>
     <strong data-bind="text: stateString, css: stateClass" class="printer-status"></strong>
 </a>
-<a id="printer-name-link" href="#" data-bind="click: connect, css:  {'button-connect': isErrorOrClosed() && !isConnecting() }" >
-    <span data-bind="text: printerName " />
+<a href="#" id="printer-name-link" data-bind="visible: !isErrorOrClosed()">
+    <span data-bind="text: printerName" />
 </a>
+<div data-bind="visible: !isConnected()">
+	<a id="connect-button" href="#" class="button-connect" title="{{ _('Connect your USB printer and click here to connect...') }}"
+		data-bind="click: connect" data-toggle="tooltip">
+		<span class="m-icon shutdownwicon"></span>
+		{{ _('Connect') }}...
+	</a>
+</div>

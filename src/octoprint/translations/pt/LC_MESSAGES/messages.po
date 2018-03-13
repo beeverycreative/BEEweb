@@ -2077,3 +2077,6 @@ msgstr "Estás prestes a redefinir as configurações da impressora para as defi
 
 msgid "Printer configurations set to factory defaults!"
 msgstr "Configurações da impressora alteradas para as definições iniciais de fábrica!"
+
+msgid "Connect your USB printer and click here to connect..."
+msgstr "Liga a tua impressora USB e clica aqui para estabelecer a ligação..."

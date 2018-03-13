@@ -2042,3 +2042,6 @@ msgstr "Sie sind dabei, Ihre Druckerkonfigurationen auf die Werkseinstellungen z
 
 msgid "Printer configurations set to factory defaults!"
 msgstr "Druckerkonfigurationen auf Werkseinstellungen gesetzt!"
+
+msgid "Connect your USB printer and click here to connect..."
+msgstr "Schließen Sie Ihren USB-Drucker an und klicken Sie hier, um eine Verbindung herzustellen..."

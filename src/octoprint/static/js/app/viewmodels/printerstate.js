@@ -93,6 +93,11 @@ $(function() {
             return self.isOperational() && (self.isPrinting() || self.isShutdown() || self.isHeating()
              || self.isTransferring() || self.isPaused() || self.isResuming());
         });
+        self.isConnected = ko.pureComputed(function() {
+        	debugger;
+            return self.isOperational() || self.isPrinting() || self.isShutdown() || self.isHeating()
+             || self.isTransferring() || self.isPaused() || self.isResuming() || self.isConnecting();
+        });
 
         /**
          * Expands the status/print buttons panel to a larger size
@@ -195,10 +200,7 @@ $(function() {
         self.titlePauseButton = ko.observable(self.TITLE_PAUSE_BUTTON_UNPAUSED);
 
         self.printerName = ko.computed(function() {
-            var name = gettext("Connect");
-            if (self.isConnecting()) {
-            	return "";
-            }
+            var name = "";
             if (self.isErrorOrClosed() !== undefined && !self.isErrorOrClosed() && !self.isError()) {
             	if (self.printerProfiles.currentProfileData())
                 	name = self.printerProfiles.currentProfileData().name();
@@ -776,24 +778,21 @@ $(function() {
 		 * Tries to connect to a USB printer
 		 */
 		self.connect = function() {
+			self.isConnecting(true);
 
-            if (self.isErrorOrClosed()) {
-                self.isConnecting(true);
+			var data = {
+			};
 
-                var data = {
-                };
+			OctoPrint.connection.connect(data)
+				.done(function() {
+					self.settings.requestData();
+					self.settings.printerProfiles.requestData();
 
-                OctoPrint.connection.connect(data)
-                    .done(function() {
-                        self.settings.requestData();
-                        self.settings.printerProfiles.requestData();
-
-                        self.isConnecting(false);
-                    });
-            } else {
-                self.connection.requestData();
-                OctoPrint.connection.disconnect();
-            }
+					self.isConnecting(false);
+				})
+				.error(function () {
+					self.isConnecting(false);
+				});
         };
     }
 
