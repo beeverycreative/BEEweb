@@ -167,12 +167,17 @@ def install_source(python_executable, folder, user=False, sudo=False):
     print(">>> Copying CuraX files to settings directory...")
     # folder where the installation settings files are located
     try:
-        # copies the files in the /etc directory
+        import os
+        # removes any previous existing filament profiles
+        profiles_path = settings_folder + '/slicingProfiles/curaX/profiles/Quality'
+        if os.path.exists(profiles_path):
+            os.remove(profiles_path)
+        # copies and overwrites all CuraX settings
         copy_tree(folder + '/src/octoprint/plugins/curaX/profiles', settings_folder + '/slicingProfiles/curaX')
-        print("CuraEngine files installed.")
+        print("CuraX files installed.")
     except Exception as ex:
         raise RuntimeError(
-            "Could not update, copying the CuraEngine files to respective settings directory failed with error: %s" % ex.message)
+            "Could not update, copying the CuraX files to respective settings directory failed with error: %s" % ex.message)
 
 
     # Removes print statistics files in order to ensure valid data
