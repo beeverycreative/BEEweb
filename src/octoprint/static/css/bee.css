@@ -728,20 +728,28 @@ a.brand{
     vertical-align: middle;
     line-height: 16px;
     font-size: 14px;
-    text-align: center;
+    text-align: right;
     word-break: break-word;
+    cursor: default;
 }
 #printer-name-link:hover, #printer-name-link:focus {
     text-decoration: none;
 }
 .button-connect {
-    color: #ffcc00 !important;
-    font-weight: bold;
-    border: 1px #ffcc00 solid;
-    padding: 5px;
+    color: #fff !important;
+    background-color: #32312b;
+	padding: 16px 0px 16px 0px;
+	width: 283px;
+    display: inline-block;
+    line-height: 12px;
+    text-align: center;
+    word-break: break-word;
+    text-transform: uppercase;
+    border: 1px solid #141414;
 }
 .button-connect:hover {
 	background-color: #111;
+	text-decoration: none;
 }
 
 #showPrintDetails .progress{
