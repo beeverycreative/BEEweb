@@ -744,14 +744,14 @@ $(function() {
                dataType:"json",
                success: function(data){
                    _.each(data.options,function(dinamic){
-                       $('#dynamic_advanced_options').append('<div data-toggle ="collapse"  data-parent="#accordion" href="#'+ dinamic.id +'" class="panel_collapse_options collapsed">' + '<span class = "sig">' + dinamic.id +'</span></div>' + '<div id="'+ dinamic.id+'" class="panel-collapse collapse"></div>');
+                       $('#dynamic_advanced_options').append('<div data-toggle="collapse" data-parent="#accordion" href="#'+ dinamic.id +'" class="panel_collapse_options collapsed">' + '<span class="sig">' + dinamic.id +'</span></div>' + '<div id="'+ dinamic.id+'" class="panel-collapse collapse"></div>');
 
                        _.each(dinamic.list,function(din_type){
-                           if(din_type.type == 'integer')
-                               $('#'+ dinamic.id).append('<div class = "accordion_toggle" ><span >'+ din_type.label +'</span>' + '<input  id = "' + din_type.id + '" type="number" value="'+ din_type.default_value +'" step="0.01"></div>');
+                           if(din_type.type === 'integer')
+                               $('#'+ dinamic.id).append('<div class="form-group" ><label for="' + din_type.id + '" class="lbl">'+ din_type.label +'</label>' + '<input id="' + din_type.id + '" type="number" class="inpt" value="'+ din_type.default_value +'" step="0.01"></div>');
 
-                           if(din_type.type == 'droplist') {
-                               $('#' + dinamic.id).append('<div class = "accordion_toggle"><span>' + din_type.label + '</span><select id = "' + din_type.id + '" ></select></div>');
+                           if(din_type.type === 'droplist') {
+                               $('#' + dinamic.id).append('<div class="form-group"><label for="' + din_type.id + '" class="lbl">' + din_type.label + '</label><select id="' + din_type.id + '" class="inpt"></select></div>');
                                if(din_type.options.length > 0) {
                                    _.each(din_type.options, function (din_options) {
                                        $('#' + din_type.id).append($('<option>', {
@@ -763,8 +763,8 @@ $(function() {
                                }
                            }
 
-                           if(din_type.type == 'boolean'){
-                               $('#'+ dinamic.id).append('<div class = "accordion_toggle" ><span >'+ din_type.label +'</span>' + '<input  id = "' + din_type.id + '" type="checkbox" checked></div>');
+                           if(din_type.type === 'boolean'){
+                               $('#'+ dinamic.id).append('<div class="form-group" ><label for="' + din_type.id + '" class="lbl">'+ din_type.label +'</label>' + '<input id="' + din_type.id + '" type="checkbox" class="inpt" checked></div>');
                                $('#'+ din_type.id).attr('checked', din_type.default_value);
                            }
                        });

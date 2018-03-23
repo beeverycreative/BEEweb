@@ -166,16 +166,17 @@
                             <div class="controls">
                                 <div class="filament-div">
                                     <select data-bind="options: qualityProfiles ,value: selQuality , valueAllowUnset: false, visible: estimationDialog(), event:{ change: $root.permissionChanged}" ></select>
+                                	<button class="btn" data-bind="click: function() {$root.saveProfileChanges();}">
+                                		<i class="icon-save"></i>
+									</button>
                                 </div>
-                                <div>
-                                    <button data-bind="click: function() {$root.saveProfileChanges();}"><i class = "icon-save"></i></button>
-                                </div>
+
                             </div>
                         </div>
                     </form>
-
+					<form class="form-inline">
                     {% include 'dialogs/advancedoptions/advanced.jinja2' ignore missing %}
-
+					</form>
                 </div>
              </div>
 
@@ -187,9 +188,9 @@
                                 <span class="small-label">{{ _('FILAMENT') }}:</span>
                                 <span class="filament" data-bind="text: selColor, visible: !estimationDialog()"></span>
                                 <select data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
-                                <span class="remaining-filament" data-bind="visible: !estimationDialog()">
+                                <div class="remaining-filament" data-bind="visible: !estimationDialog()">
                                     <div>{{ _('Remaining filament') }}:  <span data-bind="text: filamentInSpool" ></span> (g)</div>
-                                </span>
+                                </div>
                             </div>
                             <div class="nozzle-div">
                                 <span class="small-label">{{ _('NOZZLE') }}: </span>

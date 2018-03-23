@@ -1637,7 +1637,6 @@ td.settings_users_actions .m-icon {
     margin: 0;
 }
 
-#dynamic_advanced_options .lbl,
 #slicing_configuration_dialog .form-horizontal > .control-label{
     width: unset;
     text-align: left;
@@ -1823,7 +1822,6 @@ td.settings_users_actions .m-icon {
 }
 
 .filament-div, .nozzle-div{
-    width: 50%;
     padding: 10px 0;
     text-align: center;
     display: inline-block;
@@ -1831,7 +1829,6 @@ td.settings_users_actions .m-icon {
 .filament-div select, .nozzle-div select{
     border: none;
     height: 35px;
-    margin-bottom: 5px;
     background: #f5f5f5;
 }
 
@@ -2372,7 +2369,9 @@ table.information_table th{
 
 #settings_plugin_curaX_new_material .lbl,
 #settings_plugin_curaX_new_profile .lbl,
-#settings_plugin_curaX_edit_profile .lbl{
+#settings_plugin_curaX_edit_profile .lbl,
+#slicing_configuration_dialog_advanced_settings .lbl
+{
     text-transform: uppercase;
     margin-left: 10px;
 }
@@ -2415,7 +2414,8 @@ table.information_table th{
 
 /*#settings_plugin_curaX_new_material .panel_data .inpt,*/
 #settings_plugin_curaX_new_profile  .form-group> .inpt,
-#settings_plugin_curaX_edit_profile .form-group> .inpt {
+#settings_plugin_curaX_edit_profile .form-group> .inpt,
+#slicing_configuration_dialog_advanced_settings .form-group> .inpt{
     width: 150px;
     float:right;
 }
