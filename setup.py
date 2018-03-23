@@ -38,7 +38,7 @@ INSTALL_REQUIRES = [
 	"pylru>=1.0.9,<1.1",
 	"rsa>=3.2,<3.3",
 	"pkginfo>=1.2.1,<1.3",
-	"requests>=2.7,<2.8",
+	"requests==2.18.4",
 	"semantic_version>=2.4.2,<2.5",
 	"psutil>=3.2.1,<3.3",
 	"Click>=6.2,<6.3",
@@ -49,8 +49,9 @@ INSTALL_REQUIRES = [
 	"scandir>=1.3,<1.4",
 	"websocket-client>=0.40,<0.41",
 	"python-dateutil>=2.6,<2.7",
-	"beecom==0.3.30",
-	"pyusb==1.0.2"
+	"beecom==0.3.31",
+	"pyusb==1.0.2",
+	"pyOpenSSL==17.5.0"
 ]
 
 if sys.platform == "darwin":
