@@ -106,11 +106,6 @@ class BeePrinter(Printer):
                 self._isConnecting = False
                 return False
 
-            # makes sure the status monitor thread is stopped
-            if self._bvc_status_thread is not None:
-                self._bvc_status_thread.stop_status_monitor()
-                self._bvc_status_thread = None
-
             if self._comm is not None:
                 if not self._comm.isBusy():
                     self._comm.close()
@@ -196,11 +191,6 @@ class BeePrinter(Printer):
             # gets the firmware version from the printer
             self._currentFirmware = self.getCurrentFirmware()
 
-            # Starts the printer status monitor thread
-            # if self._bvc_status_thread is None:
-            #     self._bvc_status_thread = StatusDetectionMonitorThread(self._comm)
-            #     self._bvc_status_thread.start()
-
             # make sure the connection monitor thread is null so we are able to instantiate a new thread later on
             if self._bvc_conn_thread is not None:
                 self._bvc_conn_thread.stop_connection_monitor()
@@ -226,14 +216,6 @@ class BeePrinter(Printer):
         self._logger.info("Closing USB printer connection.")
         super(BeePrinter, self).disconnect()
 
-        # Starts the connection monitor thread only if there are any connected clients
-        # if len(self._connectedClients) > 0 and self._bvc_conn_thread is None:
-        #     self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
-        #     self._bvc_conn_thread.start()
-
-        if self._bvc_status_thread is not None:
-            self._bvc_status_thread.stop_status_monitor()
-            self._bvc_status_thread = None
 
     def select_file(self, path, sd, printAfterSelect=False, pos=None):
         """
@@ -1758,21 +1740,11 @@ class BeePrinter(Printer):
 
         self._isConnecting = False
 
-        self._comm.updatePrinterState()
-        self._comm.unselectFile()
-
         if self._comm is not None:
+            self._comm.updatePrinterState()
+            self._comm.unselectFile()
             self._comm.close()
             self._comm = None
-
-        # Starts the connection monitor thread only if there are any connected clients and the thread was stopped
-        # if len(self._connectedClients) > 0 and self._bvc_conn_thread is None:
-        #     self._bvc_conn_thread = ConnectionMonitorThread(self.connect)
-        #     self._bvc_conn_thread.start()
-        # stops the status thread if it was started previously
-        if self._bvc_status_thread is not None:
-            self._bvc_status_thread.stop()
-            self._bvc_status_thread = None
 
 
     def _register_filament_statistics(self):
@@ -1815,47 +1787,6 @@ class BeePrinter(Printer):
             return filamentProfile.data['preheat_temperature']
         else:
             return defaultPreheatTemperature
-
-    @deprecated
-    def _sendAzureUsageStatistics(self, operation):
-        """
-        Calls and external executable to send usage statistics to a remote cloud server
-        :param operation: Supports 'start' (Start Print), 'cancel' (Cancel Print), 'stop' (Print finished) operations
-        :return: true in case the operation was successful or false if not
-        """
-        import sys
-        if not sys.platform == "darwin" and not sys.platform == "win32":
-            _logger = logging.getLogger()
-            biExePath = settings().getBaseFolder('bi') + '/bi_azure'
-
-            if operation != 'start' and operation != 'cancel' and operation != 'stop':
-                return False
-
-            if os.path.exists(biExePath) and os.path.isfile(biExePath):
-
-                printerSN = self.get_printer_serial()
-
-                if printerSN is None:
-                    _logger.error("Could not get Printer Serial Number for statistics communication.")
-                    return False
-                else:
-                    cmd = '%s %s %s' % (biExePath,str(printerSN), str(operation))
-                    _logger.info(u"Running %s" % cmd)
-
-                    import subprocess
-                    p = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=True)
-
-                    (output, err) = p.communicate()
-
-                    p_status = p.wait()
-
-                    if p_status == 0 and 'IOTHUB_CLIENT_CONFIRMATION_OK' in output:
-                        _logger.info(u"Statistics sent to remote server. (Operation: %s)" % operation)
-                        return True
-                    else:
-                        _logger.info(u"Failed sending statistics to remote server. (Operation: %s)" % operation)
-
-        return False
 
 
 class CalibrationGCoder:
