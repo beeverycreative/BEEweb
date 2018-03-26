@@ -744,7 +744,7 @@ $(function() {
                dataType:"json",
                success: function(data){
                    _.each(data.options,function(dinamic){
-                       $('#dynamic_advanced_options').append('<div data-toggle="collapse" data-parent="#accordion" href="#'+ dinamic.id +'" class="panel_collapse_options collapsed">' + '<span class="sig">' + dinamic.id +'</span></div>' + '<div id="'+ dinamic.id+'" class="panel-collapse collapse"></div>');
+                       $('#dynamic_advanced_options').append('<div data-toggle="collapse" data-parent="#accordion" href="#'+ dinamic.id +'" class="panel_collapse_options collapsed">' + '<a class="sig">' + dinamic.id +'</a></div>' + '<div id="'+ dinamic.id+'" class="panel-collapse collapse"></div>');
 
                        _.each(dinamic.list,function(din_type){
                            if(din_type.type === 'integer')
@@ -790,8 +790,8 @@ $(function() {
                 dataType: "json",
                 success:function (current) {
                     self.qualityProfiles.removeAll();
-                    for ( var options in current ) {
-                        self.qualityProfiles.push(options.trim());
+                    for (var options in current ) {
+                        self.qualityProfiles.push(options.toUpperCase().trim());
                     }
                 }
             });
