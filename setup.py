@@ -50,8 +50,7 @@ INSTALL_REQUIRES = [
 	"websocket-client>=0.40,<0.41",
 	"python-dateutil>=2.6,<2.7",
 	"beecom==0.3.31",
-	"pyusb==1.0.2",
-	"pyOpenSSL==17.5.0"
+	"pyusb==1.0.2"
 ]
 
 if sys.platform == "darwin":
