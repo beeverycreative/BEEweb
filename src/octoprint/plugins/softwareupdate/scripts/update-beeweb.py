@@ -169,7 +169,7 @@ def install_source(python_executable, folder, user=False, sudo=False):
     try:
         import os
         # removes any previous existing filament profiles
-        profiles_path = settings_folder + '/slicingProfiles/curaX/profiles/Quality'
+        profiles_path = settings_folder + '/slicingProfiles/curaX/Quality'
         if os.path.exists(profiles_path):
             os.remove(profiles_path)
         # copies and overwrites all CuraX settings
