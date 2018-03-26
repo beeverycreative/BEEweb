@@ -94,7 +94,6 @@ $(function() {
              || self.isTransferring() || self.isPaused() || self.isResuming());
         });
         self.isConnected = ko.pureComputed(function() {
-        	debugger;
             return self.isOperational() || self.isPrinting() || self.isShutdown() || self.isHeating()
              || self.isTransferring() || self.isPaused() || self.isResuming() || self.isConnecting();
         });
