@@ -159,25 +159,28 @@ def install_source(python_executable, folder, user=False, sudo=False):
         copy_tree(folder + '/firmware', settings_folder + '/firmware')
         print("Firmware files installed.")
     except Exception as ex:
+        print(ex.message)
         raise RuntimeError(
-            "Could not update, copying the firmware files to respective settings directory failed with error: %s" % ex.message)
+            "Could not update, copying the firmware files to respective settings directory failed with error: %s" % str(ex))
 
 
     # Copies the CuraEngine files to the settings directory
     print(">>> Copying CuraX files to settings directory...")
-    # folder where the installation settings files are located
     try:
-        import os
+        from os import path, remove
+        import glob
         # removes any previous existing filament profiles
         profiles_path = settings_folder + '/slicingProfiles/curaX/Quality'
-        if os.path.exists(profiles_path):
-            os.remove(profiles_path)
-        # copies and overwrites all CuraX settings
+        if path.exists(profiles_path):
+            for fl in glob.glob(profiles_path + '/*.json'):
+                remove(fl)
+        # copies all CuraX profiles
         copy_tree(folder + '/src/octoprint/plugins/curaX/profiles', settings_folder + '/slicingProfiles/curaX')
         print("CuraX files installed.")
     except Exception as ex:
+        print(ex.message)
         raise RuntimeError(
-            "Could not update, copying the CuraX files to respective settings directory failed with error: %s" % ex.message)
+            "Could not update, copying the CuraX files to respective settings directory failed with error: %s" % str(ex))
 
 
     # Removes print statistics files in order to ensure valid data
@@ -189,7 +192,7 @@ def install_source(python_executable, folder, user=False, sudo=False):
             os.remove(print_stats_path)
         print("Print statistics removed.")
     except Exception as ex:
-        print('Error while resetting statistics files: ' + ex.message)
+        print('Error while resetting statistics files: ' + str(ex))
 
 def parse_arguments():
     import argparse
