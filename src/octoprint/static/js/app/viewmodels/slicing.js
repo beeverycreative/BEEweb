@@ -744,14 +744,14 @@ $(function() {
                dataType:"json",
                success: function(data){
                    _.each(data.options,function(dinamic){
-                       $('#dynamic_advanced_options').append('<div data-toggle="collapse" data-parent="#accordion" href="#'+ dinamic.id +'" class="panel_collapse_options collapsed">' + '<a class="sig">' + dinamic.id +'</a></div>' + '<div id="'+ dinamic.id+'" class="panel-collapse collapse"></div>');
+                       $('#dynamic_advanced_options').append('<label class="control-label advanced-slice-option closed">' + dinamic.id +'</label>' + '<div id="'+ dinamic.id+'" class="control-group"></div>');
 
                        _.each(dinamic.list,function(din_type){
                            if(din_type.type === 'integer')
                                $('#'+ dinamic.id).append('<div class="form-group" ><label for="' + din_type.id + '" class="lbl">'+ din_type.label +'</label>' + '<input id="' + din_type.id + '" type="number" class="inpt" value="'+ din_type.default_value +'" step="0.01"></div>');
 
                            if(din_type.type === 'droplist') {
-                               $('#' + dinamic.id).append('<div class="form-group"><label for="' + din_type.id + '" class="lbl">' + din_type.label + '</label><select id="' + din_type.id + '" class="inpt"></select></div>');
+                               $('#' + dinamic.id).append('<div class="form-group"><label for="' + din_type.id + '" class="lbl">' + din_type.label + '</label><select id="' + din_type.id + '" class="inpt-select"></select></div>');
                                if(din_type.options.length > 0) {
                                    _.each(din_type.options, function (din_options) {
                                        $('#' + din_type.id).append($('<option>', {
@@ -764,11 +764,14 @@ $(function() {
                            }
 
                            if(din_type.type === 'boolean'){
-                               $('#'+ dinamic.id).append('<div class="form-group" ><label for="' + din_type.id + '" class="lbl">'+ din_type.label +'</label>' + '<input id="' + din_type.id + '" type="checkbox" class="inpt" checked></div>');
+                               $('#'+ dinamic.id).append('<div class="form-group" ><label for="' + din_type.id + '" class="lbl">'+ din_type.label +'</label>' + '<input id="' + din_type.id + '" type="checkbox" class="inpt-checkbox" checked></div>');
                                $('#'+ din_type.id).attr('checked', din_type.default_value);
                            }
                        });
                    });
+                   $('#slicing_configuration_dialog_advanced_settings .form-inline .control-label').on('click', function(){
+                       $(this).toggleClass('closed');
+				   });
                }
             });
         };

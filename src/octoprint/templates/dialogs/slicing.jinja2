@@ -159,7 +159,7 @@
             <div id="slicing_configuration_dialog_content">
                 <div id="slicing_configuration_dialog_advanced_settings" class="hidden">
                     <form class="form-horizontal">
-                        <label class="control-label slice-option">{{ _('PROFILE') }}</label>
+                        <label class="control-label slice-option">{{ _('Profile') }}</label>
                         <div class="control-group">
                             <div class="controls">
                                 <div class="filament-div">
@@ -172,9 +172,9 @@
                             </div>
                         </div>
                     </form>
-					<form class="form-inline">
+
                     {% include 'dialogs/advancedoptions/advanced.jinja2' ignore missing %}
-					</form>
+
                 </div>
              </div>
 
@@ -234,12 +234,12 @@
     </div>
     <div class="modal-footer">
         <a href="#" class="btn modal-footer-btn" data-dismiss="modal" aria-hidden="true" data-bind="click: closeSlicing">{{ _('Cancel') }}</a>
-        <button id="estimate_button" href="#" class="btn btn-default modal-footer-btn" data-bind="click: sliceAndEstimate, enable: enableEstimateButton">
+        <button id="estimate_button" class="btn btn-default modal-footer-btn" data-bind="click: sliceAndEstimate, enable: enableEstimateButton">
             <span class="m-icon estimateicon" data-bind="visible: estimateButtonControl"></span>
             <span >{{ _('Estimate') }} </span>
 
         </button>
-        <button id="slice_button" href="#" class="btn btn-primary modal-footer-btn"
+        <button id="slice_button" class="btn btn-primary modal-footer-btn"
             data-bind="click: $root.printOrSlice(), enable: enableSliceButton, css: {disabled: !$root.enableSliceButton()}, attr: {title: $root.sliceButtonTooltip}">
             <span class="m-icon printwicon"></span>
             <span>{{ _('Print') }} </span>

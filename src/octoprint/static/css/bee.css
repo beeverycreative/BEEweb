@@ -1561,12 +1561,12 @@ td.settings_users_actions .m-icon {
     padding: 0  !important;
 }
 /*-------------------------------------LABEL UI----------------------------------------*/
-#slicing_configuration_dialog_advanced_settings .control-label.closed + .control-group > .controls,
+#slicing_configuration_dialog_advanced_settings .form-inline .control-label.closed + .control-group,
 #slicing_configuration_dialog .form-horizontal .control-label.closed + .control-group > .controls {
     height: 0;
     display: none;
 }
-#slicing_configuration_dialog_advanced_settings .control-label:after,
+#slicing_configuration_dialog_advanced_settings .form-inline .control-label:after,
 #slicing_configuration_dialog .form-horizontal .control-label:after {
     content: '\f106';
     right: 23px;
@@ -1578,6 +1578,7 @@ td.settings_users_actions .m-icon {
 }
 
 #slicing_configuration_dialog_advanced_settings .form-horizontal .control-label.closed:after,
+#slicing_configuration_dialog_advanced_settings .form-inline .control-label.closed:after,
 #slicing_configuration_dialog .form-horizontal .control-label.closed:after {
     transform: rotate(180deg);
     -webkit-transform: rotate(180deg);
@@ -1593,7 +1594,7 @@ td.settings_users_actions .m-icon {
     background: #e1e2e1;
 }
 
-#slicing_configuration_dialog_advanced_settings .controls,
+#slicing_configuration_dialog_advanced_settings .form-inline .controls,
 #slicing_configuration_dialog .form-horizontal .controls{
     margin-left: 0;
     display: flex;
@@ -1601,7 +1602,7 @@ td.settings_users_actions .m-icon {
     transition: all 0.1s ease;
 }
 
-#slicing_configuration_dialog_advanced_settings .controls label,
+#slicing_configuration_dialog_advanced_settings .form-inline .controls label,
 #slicing_configuration_dialog .form-horizontal .controls label {
     width: 20%;
     height: 85px !important;
@@ -1610,42 +1611,39 @@ td.settings_users_actions .m-icon {
     transition: all 0.2s ease;
 }
 
-#slicing_configuration_dialog_advanced_settings .controls label.estimation,
 #slicing_configuration_dialog .form-horizontal .controls label.estimation {
     width: 50% !important;
     cursor: default;
 }
 
-#slicing_configuration_dialog_advanced_settings .controls label > div,
 #slicing_configuration_dialog .form-horizontal .controls label > div {  margin: 10px 0 0; }
 
-#slicing_configuration_dialog_advanced_settings .controls label > p,
 #slicing_configuration_dialog .form-horizontal .controls label > p   {  margin: 0; }
 
 
-#slicing_configuration_dialog_advanced_settings .controls > input,
 #slicing_configuration_dialog .form-horizontal .controls > input{ display: none; }
 
-#slicing_configuration_dialog_advanced_settings .controls > input:checked + label,
 #slicing_configuration_dialog .form-horizontal .controls > input:checked + label{
     background: #fc0;
     color: #000;
     box-shadow: inset 0 3px 5px 0 rgba(0, 0, 0, 0.15);
 }
 
+#slicing_configuration_dialog_advanced_settings .form-inline,
 #slicing_configuration_dialog .form-horizontal{
     margin: 0;
 }
-
+#slicing_configuration_dialog_advanced_settings .form-inline > .control-label,
 #slicing_configuration_dialog .form-horizontal > .control-label{
     width: unset;
     text-align: left;
     float: none;
     text-transform: uppercase;
-    padding: 5px 23px 6px;
+    padding: 10px 23px 0px;
     margin-bottom: 0;
     border-bottom: 1px solid #c5c5c5;
     background: #e1e2e1;
+    display: inherit;
 }
 
 #slicing_configuration_dialog_advanced_settings .control-label small,
@@ -2418,6 +2416,13 @@ table.information_table th{
 #slicing_configuration_dialog_advanced_settings .form-group> .inpt{
     width: 150px;
     float:right;
+}
+
+#slicing_configuration_dialog_advanced_settings .form-group> .inpt-checkbox,
+#slicing_configuration_dialog_advanced_settings .form-group> .inpt-select {
+    float:right;
+	border-radius: 0px !important;
+	width: 165px;
 }
 
 #settings_plugin_curaX_new_profile  .form-group> .slct,
