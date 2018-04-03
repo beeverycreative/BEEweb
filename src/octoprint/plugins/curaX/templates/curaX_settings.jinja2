@@ -64,17 +64,17 @@
 		<div class="collapse" id="profiles_tab">
 			<div data-bind="foreach: profiles.paginatedItems">
 				<div class="sub_panel_accordion" >
-					<a href="#"><span class="lbl" data-bind="text: key, click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }"></span></a>
+					<a href="#"><span class="lbl" data-bind="text: key, click: function() { $root.editProfile($data); }"></span></a>
 					<a class="sign" title="{{ _('Delete') }}" data-toggle="tooltip"
 					   data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.removeProfile($data); } }">
                         <i class="icon-trash"></i>
 					</a>
 					<a class="sign" title="{{ _('Copy') }}" data-toggle="tooltip"
-					   data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { if (!$data.isdefault()) { $root.duplicateProfileDefault($data); } }">
+					   data-bind="enable: !isdefault(), css: {disabled: isdefault()}, click: function() { $root.duplicateProfileDefault($data); }">
                         <i class="icon-copy"></i>
 					</a>
 					<a class="sign" title="{{ _('Edit') }}" data-toggle="tooltip"
-					   data-bind="enable: !isdefault(), css: {disabled: isdefault()},click: function() { if (!$data.isdefault()) { $root.editProfile($data); } }">
+					   data-bind="enable: !isdefault(), css: {disabled: isdefault()},click: function() { $root.editProfile($data); }">
                         <i class="icon-edit"></i>
 					</a>
 				</div>

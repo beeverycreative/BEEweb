@@ -482,8 +482,9 @@ $(function () {
 
 			var $col = $("#material_tab").find('.collapse');
 			for (var i = 0; i < $col.length; i++) {
-				if ($('#' + $col[i].id).hasClass('in')) {
-					$('#' + $col[i].id).collapse("hide");
+				var column = $('#' + $col[i].id);
+				if (column.hasClass('in')) {
+					column.collapse("hide");
 				}
 			}
 		};
