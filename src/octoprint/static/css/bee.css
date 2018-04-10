@@ -2367,11 +2367,17 @@ table.information_table th{
 
 #settings_plugin_curaX_new_material .lbl,
 #settings_plugin_curaX_new_profile .lbl,
-#settings_plugin_curaX_edit_profile .lbl,
-#slicing_configuration_dialog_advanced_settings .lbl
+#settings_plugin_curaX_edit_profile .lbl
 {
     text-transform: uppercase;
     margin-left: 10px;
+}
+
+#slicing_configuration_dialog_advanced_settings .lbl
+{
+    text-transform: uppercase;
+    margin-bottom: 0 !important;
+    margin-top: 10px;
 }
 
 #settings_plugin_curaX_edit_material .panel_input .sign,
@@ -2415,13 +2421,13 @@ table.information_table th{
 #settings_plugin_curaX_edit_profile .form-group> .inpt,
 #slicing_configuration_dialog_advanced_settings .form-group> .inpt{
     width: 150px;
-    float:right;
+    float: right;
 }
 
 #slicing_configuration_dialog_advanced_settings .form-group> .inpt-checkbox,
 #slicing_configuration_dialog_advanced_settings .form-group> .inpt-select {
     float:right;
-	border-radius: 0px !important;
+	border-radius: 0 !important;
 	width: 165px;
 }
 

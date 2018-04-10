@@ -721,9 +721,6 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 	def getProfile(self, filament_id,slicer_profile_path, quality , nozzle):
 		return ProfileReader.getFilamentOverrides(filament_id, slicer_profile_path, quality,nozzle)
 
-	def get_inherits_material(self,name,path):
-		return ProfileReader.getInheritsMaterial(name,path)
-
 	def getSavedEditionFilament(self,filament_id, slicer_profile_path):
 		return ProfileReader.getSaveEditionFilament(filament_id, slicer_profile_path)
 

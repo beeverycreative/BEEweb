@@ -164,7 +164,8 @@
                             <div class="controls">
                                 <div class="filament-div">
                                     <select data-bind="options: qualityProfiles ,value: selQuality , valueAllowUnset: false, visible: estimationDialog(), event:{ change: $root.permissionChanged}" ></select>
-                                	<button class="btn" data-bind="click: function() {$root.saveProfileChanges();}">
+                                	<button class="btn btn-primary" data-bind="click: function() {$root.saveProfileChanges();}"
+                                		title="{{ _('Save Profile') }}" data-toggle="tooltip">
                                 		<i class="icon-save"></i>
 									</button>
                                 </div>

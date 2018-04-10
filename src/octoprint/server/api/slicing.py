@@ -172,7 +172,7 @@ def slicingSaveMaterialEdition(slicer, name):
 
 
 @api.route("/slicing/<string:slicer>/getSingleProfile/<string:name>/<string:quality>/<string:nozzle>", methods=["GET"])
-def slicingGetSingleProfile(slicer, name, quality,nozzle):
+def slicingGetSingleProfile(slicer, name, quality, nozzle):
 	try:
 		profile = slicingManager.load_single_profile(slicer, name, quality, nozzle)
 	except UnknownSlicer:
@@ -234,16 +234,6 @@ def slicingListInheritsMaterials(slicer,material):
 		return jsonify(_getSlicingInheritsMaterials(slicer, material , require_configured=configured))
 	except (UnknownSlicer, SlicerNotConfigured):
 		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
-
-@api.route("/slicing/<string:slicer>/getMaterialInherits/<string:material>", methods=["GET"])
-def slicingGetInheritsMaterials(slicer,material):
-	try:
-		profile = slicingManager.load_inherits_material(slicer,material)
-	except UnknownSlicer:
-		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
-	except UnknownProfile:
-		return make_response("Profile not found", 404)
-	return jsonify(profile)
 
 
 @api.route("/slicing/<string:slicer>/profiles/<string:name>", methods=["GET"])

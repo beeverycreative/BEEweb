@@ -807,11 +807,11 @@ $(function() {
                 type: "GET",
                 dataType: "json",
                 success:function(data){
-                    var _input = $('#advanced_edit_panel div').find('input,select');
+                    var _input = $('#dynamic_advanced_options').find('input,select');
                     _.each(_input,function (info) {
                         if(self._lookInData(info.id,data)) {
-                            if (info.type == 'checkbox') {
-                                $('#'+ info.id).prop('checked',data[info.id].default_value);
+                            if (info.type === 'checkbox') {
+                                $('#'+ info.id).prop('checked', data[info.id].default_value);
                             }else {
                                 $('#' + info.id).val(data[info.id].default_value);
                             }
@@ -827,7 +827,7 @@ $(function() {
 
             var input = $('#dynamic_advanced_options').find('input , select');
             _.each(input, function (_input) {
-                if(_input.type == 'checkbox')
+                if(_input.type === 'checkbox')
                     form[_input.id] = $('#'+ _input.id).is(':checked');
                 else
                     form[_input.id] = $('#'+ _input.id).val();

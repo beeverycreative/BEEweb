@@ -265,7 +265,7 @@ class ProfileReader(object):
 	@classmethod
 	def getPrinterJsonByFileName(cls, name='', slicer_profile_path=''):
 
-		if slicer_profile_path=='' or name=='':
+		if not slicer_profile_path or not name:
 			return None
 
 		printer_json = None
@@ -622,7 +622,8 @@ class ProfileReader(object):
 
 	@classmethod
 	def getFilamentQuality(cls, slicer_profile_path, filament_id):
-		overrides_Values = {}
+		overrides_values = {}
+		filament_json = {}
 		custom = False
 
 		for entry in os.listdir(slicer_profile_path + "/Variants/"):
@@ -652,10 +653,10 @@ class ProfileReader(object):
 					filament_json = json.load(data_file)
 
 		if 'PrinterGroups' in filament_json:
-			for list in filament_json['PrinterGroups']:
-					overrides_Values = list['quality']
+			for printer_groups in filament_json['PrinterGroups']:
+				overrides_values = printer_groups['quality']
 
-		return overrides_Values
+		return overrides_values
 
 	@classmethod
 	def getOptions(cls, slicer_profile_path):
@@ -732,7 +733,7 @@ class ProfileReader(object):
 
 			cnt = 0
 
-			for list in filament_json['PrinterGroups']:
+			for printer_groups in filament_json['PrinterGroups']:
 				for key in filament_json['PrinterGroups'][cnt]:
 					if 'quality' == key:
 						overrides_values = filament_json['PrinterGroups'][cnt][key][data['quality']]
@@ -755,25 +756,9 @@ class ProfileReader(object):
 
 
 	@classmethod
-	def getInheritsMaterial(cls,name,path):
-
-		for entry in os.listdir(path + "/Variants/"):
-			if not entry.endswith(".json"):
-				# we are only interested in profiles and no hidden files
-				continue
-
-			if name.lower() not in entry.lower():
-				continue
-
-			# creates a shallow slicing profile
-			with open(path + '/Variants/' + entry) as data_file:
-				filament_json = json.load(data_file)
-				custom = True
-
-
-	@classmethod
 	def getMaterial(cls,path,name):
 		material_Values = {}
+		filament_json = {}
 		for entry in os.listdir(path + "/Materials/"):
 			if not entry.endswith(".json"):
 				# we are only interested in profiles and no hidden files
@@ -789,12 +774,12 @@ class ProfileReader(object):
 		if 'material_information' in filament_json:
 			material_Values = filament_json['material_information']
 
-		overrides_Values = {}
+		overrides_values = {}
 		if 'overrides' in filament_json:
 			for key in filament_json['overrides'].keys():
-				overrides_Values.update(filament_json['overrides'][key])
+				overrides_values.update(filament_json['overrides'][key])
 
-		material_Values = cls.merge_dicts(overrides_Values,material_Values)
+		material_Values = cls.merge_dicts(overrides_values,material_Values)
 
 		return material_Values
 
@@ -808,12 +793,12 @@ class ProfileReader(object):
 		if 'material_information' in filament_json:
 			material_Values = filament_json['material_information']
 
-		overrides_Values = {}
+		overrides_values = {}
 		if 'overrides' in filament_json:
 			for key in filament_json['overrides'].keys():
-				overrides_Values.update(filament_json['overrides'][key])
+				overrides_values.update(filament_json['overrides'][key])
 
-		material_Values = cls.merge_dicts(overrides_Values,material_Values)
+		material_Values = cls.merge_dicts(overrides_values,material_Values)
 
 		return material_Values
 
@@ -821,30 +806,29 @@ class ProfileReader(object):
 	def getRawProfile(cls, path, material):
 
 
-		overrides_Values = {}
+		overrides_values = {}
 		with open(path + "/generic_profile.json") as data_file:
 			filament_json = json.load(data_file)
 
 		if 'PrinterGroups' in filament_json:
 			for list in filament_json['PrinterGroups']:
-				overrides_Values = list['quality']['normal']
+				overrides_values = list['quality']['normal']
 
 		# check for overrides that do not depend on quality
 		if 'overrides' in filament_json:
-			overrides_Values = cls.merge_dicts(filament_json['overrides'], overrides_Values)
+			overrides_values = cls.merge_dicts(filament_json['overrides'], overrides_values)
 
 		# check if it was parent, if so, get overrides
 
-		overrides_Values = cls.merge_dicts(cls.getParentOverridesTeste(material, path), overrides_Values)
+		overrides_values = cls.merge_dicts(cls.getParentOverridesTeste(material, path), overrides_values)
 
-		overrides_Values = cls.merge_dicts(cls.getParentPrinterOverrides(path), overrides_Values)
+		overrides_values = cls.merge_dicts(cls.getParentPrinterOverrides(path), overrides_values)
 
-		return overrides_Values
+		return overrides_values
 
 	@classmethod
 	def getSaveEditionFilament(cls,filament_id, slicer_profile_path):
-
-		overrides_Values = {}
+		filament_json = {}
 		custom = False
 
 		for entry in os.listdir(slicer_profile_path + "/Variants/"):
@@ -878,7 +862,8 @@ class ProfileReader(object):
 
 	@classmethod
 	def getFilamentOverrides(cls, filament_id, slicer_profile_path, quality, nozzle):
-		overrides_Values = {}
+		overrides_values = {}
+		filament_json = {}
 		custom = False
 
 		for entry in os.listdir(slicer_profile_path + "/Variants/"):
@@ -909,51 +894,51 @@ class ProfileReader(object):
 
 		if 'PrinterGroups' in filament_json:
 			for list in filament_json['PrinterGroups']:
-				if quality in list['quality']:
-					overrides_Values = list['quality'][quality]
+				if quality.lower() in list['quality']:
+					overrides_values = list['quality'][quality.lower()]
 
 		# check for overrides that do not depend on quality
 		if 'overrides' in filament_json:
-			overrides_Values = cls.merge_dicts(filament_json['overrides'], overrides_Values)
+			overrides_values = cls.merge_dicts(filament_json['overrides'], overrides_values)
 
 		# check if it was parent, if so, get overrides
 		if 'inherits' in filament_json:
-			overrides_Values = cls.merge_dicts(cls.getParentOverridesTeste(filament_json['inherits'], slicer_profile_path), overrides_Values)
+			overrides_values = cls.merge_dicts(cls.getParentOverridesTeste(filament_json['inherits'], slicer_profile_path), overrides_values)
 
-		overrides_Values = cls.merge_dicts(cls.getParentPrinterOverrides(slicer_profile_path),overrides_Values)
+		overrides_values = cls.merge_dicts(cls.getParentPrinterOverrides(slicer_profile_path),overrides_values)
 
-		overrides_Values = cls.merge_dicts(cls.getParentNozzleOverrides(slicer_profile_path,nozzle),overrides_Values)
+		overrides_values = cls.merge_dicts(cls.getParentNozzleOverrides(slicer_profile_path,nozzle),overrides_values)
 
-		return overrides_Values
+		return overrides_values
 
 	@classmethod
 	def getParentPrinterOverrides(cls,slicer_profile_path):
-		overrides_Values = {}
+		overrides_values = {}
 		with open(slicer_profile_path + '/Printers/' + 'beevc_btf_series.json') as data_file:
 			filament_json = json.load(data_file)
 
 		if 'overrides' in filament_json:
 			for key in filament_json['overrides'].keys():
-				overrides_Values.update(filament_json['overrides'][key])
+				overrides_values.update(filament_json['overrides'][key])
 
-		return overrides_Values
+		return overrides_values
 
 	@classmethod
 	def getParentNozzleOverrides(cls,slicer_profile_path,nozzle):
-		overrides_Values = {}
+		overrides_values = {}
 		with open(slicer_profile_path + '/Nozzles/' + nozzle +'.json') as data_file:
 			filament_json = json.load(data_file)
 
 		if 'overrides' in filament_json:
 			for key in filament_json['overrides'].keys():
-				overrides_Values.update(filament_json['overrides'][key])
+				overrides_values.update(filament_json['overrides'][key])
 
-		return overrides_Values
+		return overrides_values
 
 	@classmethod
 	def getParentOverridesTeste(cls, filament_id, slicer_profile_path):
 
-		overrides_Values = {}
+		overrides_values = {}
 		filament_json = dict()
 
 		with open(slicer_profile_path + '/Materials/' + filament_id + ".json") as data_file:
@@ -962,11 +947,11 @@ class ProfileReader(object):
 		# check for overrides
 		if 'overrides' in filament_json:
 			for key in filament_json['overrides'].keys():
-				overrides_Values.update(filament_json['overrides'][key])
-			# overrides_Values = cls.merge_dicts(filament_json['overrides'], overrides_Values)
+				overrides_values.update(filament_json['overrides'][key])
+			# overrides_values = cls.merge_dicts(filament_json['overrides'], overrides_values)
 		# check if it was parent, if so, get overrides
 		if 'inherits' in filament_json:
 			if filament_json['inherits'] != '':
-				overrides_Values = cls.merge_dicts(
-					cls.getParentOverridesTeste(filament_json['inherits'], slicer_profile_path), overrides_Values)
-		return overrides_Values
+				overrides_values = cls.merge_dicts(
+					cls.getParentOverridesTeste(filament_json['inherits'], slicer_profile_path), overrides_values)
+		return overrides_values

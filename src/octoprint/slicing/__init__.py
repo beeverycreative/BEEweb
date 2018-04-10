@@ -689,15 +689,6 @@ class SlicingManager(object):
 		return slicer_object_curaX.getProfile(name, path, quality, nozzle)
 
 
-	def load_inherits_material(self,slicer,name):
-		slicer_object_curaX = self.get_slicer(slicer)
-		try:
-			path = self.get_slicer_profile_path(slicer)
-		except IOError:
-			return None
-		return slicer_object_curaX.get_inherits_material(name,path)
-
-
 	def load_raw_material(self,slicer):
 		slicer_object_curaX = self.get_slicer(slicer)
 		try:
