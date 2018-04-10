@@ -736,7 +736,7 @@ $(function() {
         };
 
 
-        self.appendAdvancedOptions = function(){
+        self.fetchAdvancedOptions = function(callback){
 
             $.ajax({
                url: API_BASEURL+"slicing/curaX/getOptions",
@@ -772,6 +772,10 @@ $(function() {
                    $('#slicing_configuration_dialog_advanced_settings .form-inline .control-label').on('click', function(){
                        $(this).toggleClass('closed');
 				   });
+
+				   if (callback !== undefined) {
+				       callback();
+				   }
                }
             });
         };
@@ -862,12 +866,11 @@ $(function() {
                  $('#simple_settings_btn').text(gettext('Basic'));
                  $('#slicing_form').addClass('hidden');
                  advancedSettingsForm.removeClass('hidden');
-                 self.appendAdvancedOptions();
-                 self.updateAvailableQuality();
+                 self.fetchAdvancedOptions(self.updateAvailableQuality);
             }
         };
 
-        self.permissionChanged = function(){
+        self.qualityProfileChanged = function(){
             self.getProfileToEdit(self.selColor());
         };
 

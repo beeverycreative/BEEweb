@@ -201,7 +201,7 @@ $(function () {
 			}
 
 			self.profiles.removeItem(function (item) {
-				return (item.key == data.key);
+				return (item.key === data.key);
 			});
 
 			$.ajax({
@@ -224,7 +224,7 @@ $(function () {
 				item.isdefault(false);
 			});
 			var item = self.profiles.getItem(function (item) {
-				return item.key == data.key;
+				return item.key === data.key;
 			});
 			if (item !== undefined) {
 				item.isdefault(true);
@@ -318,11 +318,11 @@ $(function () {
 					var current = $('#edit_content div').find('input');
 
 					$.each(current, function (idx, value) {
-						if (self._lookInData(value.id.replace('ed', ''), result)) {
+						if (self._lookInData(value.id.replace('ed_', ''), result)) {
 							if (value.type === 'checkbox') {
-								$('#' + value.id).prop('checked', result[value.id.replace('ed', '')].default_value);
+								$('#' + value.id).prop('checked', result[value.id.replace('ed_', '')].default_value);
 							} else
-								$('#' + value.id).val(result[value.id.replace('ed', '')].default_value);
+								$('#' + value.id).val(result[value.id.replace('ed_', '')].default_value);
 						}
 					});
 
@@ -775,42 +775,43 @@ $(function () {
 						$('#edit_content').append(
 						'<div class="panel panel-default">' +
 						 	'<div class="panel-heading">' +
-								'<a data-toggle="collapse" href="#' + _options.id + '" class="lbl">' + _options.id +
+								'<a data-toggle="collapse" href="#ed_' + _options.id + '" class="lbl">' + _options.id +
 								'<span class="collapse-icon"><i class="icon-chevron-down"></i></span></a></div>' +
-							'<div id="' + _options.id + '" class="panel-collapse collapse"></div>' +
+							'<div id="ed_' + _options.id + '" class="panel-collapse collapse"></div>' +
 						'</div>');
 
 						$.each(_options.list, function (_value, _list) {
+							debugger;
 
 							if (_list.type == 'integer') {
-								$('#' + _options.id).append('<div class="form-group">' +
-								 '<label for="ed' + _list.id + '" class="sign">' + _list.label + '</label>' +
-									'<input class="inpt form-control" id = "ed' + _list.id + '" type="number"  step="0.01"></div>');
+								$('#ed_' + _options.id).append('<div class="form-group">' +
+								 '<label for="ed_' + _list.id + '" class="sign">' + _list.label + '</label>' +
+									'<input class="inpt form-control" id="ed_' + _list.id + '" type="number"  step="0.01"></div>');
 
 								$('#ed' + _list.id).val(_list.default_value);
 							} else if (_list.type == 'boolean') {
-								$('#' + _options.id).append('<div class="form-group">' +
-								 '<label for="ed' + _list.id + '" class="sign">' + _list.label + '</label>' +
-									'<input class="chck form-control" id="ed' + _list.id + '" type="checkbox" ></div>');
+								$('#ed_' + _options.id).append('<div class="form-group">' +
+								 '<label for="ed_' + _list.id + '" class="sign">' + _list.label + '</label>' +
+									'<input class="chck form-control" id="ed_' + _list.id + '" type="checkbox" ></div>');
 
 								if (_list.default_value == 'false')
-									$('#ed' + _list.id).attr('checked', false);
+									$('#ed_' + _list.id).attr('checked', false);
 								else
-									$('#ed' + _list.id).attr('checked', true);
+									$('#ed_' + _list.id).attr('checked', true);
 
 							} else if (_list.type == 'droplist') {
-								$('#' + _options.id).append('<div class="form-group">' +
-								 '<label for="ed\' + _list.id + \'"  class="sign">' + _list.label + '</label>' +
-									'<select class="slct" id="ed' + _list.id + '" ></select></div>');
+								$('#ed_' + _options.id).append('<div class="form-group">' +
+								 '<label for="ed_\' + _list.id + \'"  class="sign">' + _list.label + '</label>' +
+									'<select class="slct" id="ed_' + _list.id + '" ></select></div>');
 
 								if (_list.options.length > 0) {
 									$.each(_list.options, function (idx, din_options) {
-										$('#ed' + _list.id).append($('<option>', {
+										$('#ed_' + _list.id).append($('<option>', {
 											value: din_options,
 											text: din_options
 										}));
 									});
-									$('#ed' + _list.id).val(_list.default_value);
+									$('#ed_' + _list.id).val(_list.default_value);
 								}
 							}
 						});
