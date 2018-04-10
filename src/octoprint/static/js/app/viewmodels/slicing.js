@@ -779,7 +779,7 @@ $(function() {
         self._lookInData = function (name,data) {
             var _state = false;
              _.each(data, function(value,item) {
-                 if (name == item)
+                 if (name === item)
                      _state = true;
             });
             return _state;
@@ -796,9 +796,10 @@ $(function() {
                     for (var options in current ) {
                         self.qualityProfiles.push(options.toUpperCase().trim());
                     }
+
+                    self.getProfileToEdit();
                 }
             });
-            self.getProfileToEdit();
         };
 
         self.getProfileToEdit = function(){
@@ -846,18 +847,21 @@ $(function() {
             });
         };
 
-        self.tooglePrintOptions = function() {
-            var $txt = $('#simple_settings_btn').text();
+		/**
+		 * Shows or hides the Advanced options form panel
+		 */
+        self.togglePrintOptions = function() {
+            var advancedSettingsForm = $('#slicing_configuration_dialog_advanced_settings');
 
-            if($txt == 'Basic') {
+            if(!advancedSettingsForm.hasClass('hidden')) {
                  $('#simple_settings_btn').text(gettext('Advanced'));
                  $('#slicing_form').removeClass('hidden');
-                 $('#slicing_configuration_dialog_advanced_settings').addClass('hidden');
+                 advancedSettingsForm.addClass('hidden');
                  $('#dynamic_advanced_options').empty();
             } else {
                  $('#simple_settings_btn').text(gettext('Basic'));
                  $('#slicing_form').addClass('hidden');
-                 $('#slicing_configuration_dialog_advanced_settings').removeClass('hidden');
+                 advancedSettingsForm.removeClass('hidden');
                  self.appendAdvancedOptions();
                  self.updateAvailableQuality();
             }

@@ -278,14 +278,17 @@ $(function () {
 				type: "GET",
 				dataType: "json",
 				success: function (current) {
-					$('#quality_droplist').empty();
+					var qualitySelect = $('#quality_droplist');
+					qualitySelect.empty();
 					$.each(current, function (_value) {
-						$('#quality_droplist').append('<option>' + _value.toUpperCase() + '</option>');
+						qualitySelect.append('<option>' + _value.toUpperCase() + '</option>');
 					});
 
-					self.appendToEditMenu();
-					self.getProfileToEdit(data)
+					qualitySelect.on('change', function (e) {
+						self.getProfileToEdit(currentProfileData);
+					});
 
+					self.fetchEditOptions(self.getProfileToEdit, data);
 				}
 			});
 		};
@@ -294,7 +297,7 @@ $(function () {
 		self._lookInData = function (name, data) {
 			var _state = false;
 			_.each(data, function (value, item) {
-				if (name == item)
+				if (name === item)
 					_state = true;
 			});
 			return _state;
@@ -303,7 +306,6 @@ $(function () {
 		self.getProfileToEdit = function (data) {
 
 			var quality = $('#quality_droplist').find(':selected').text();
-
 			currentProfileData = data;
 
 			$('#profileDisplay').text(data["key"]);
@@ -311,16 +313,16 @@ $(function () {
 				url: API_BASEURL + "slicing/curaX/getSingleProfile/" + data["key"] + "/" + quality + "/" + self.slicingViewModel.selNozzle(),
 				type: "GET",
 				dataType: "json",
-				success: function (data) {
+				success: function (result) {
 
 					var current = $('#edit_content div').find('input');
 
 					$.each(current, function (idx, value) {
-						if (self._lookInData(value.id.replace('ed', ''), data)) {
-							if (value.type == 'checkbox') {
-								$('#' + value.id).prop('checked', data[value.id.replace('ed', '')].default_value);
+						if (self._lookInData(value.id.replace('ed', ''), result)) {
+							if (value.type === 'checkbox') {
+								$('#' + value.id).prop('checked', result[value.id.replace('ed', '')].default_value);
 							} else
-								$('#' + value.id).val(data[value.id.replace('ed', '')].default_value);
+								$('#' + value.id).val(result[value.id.replace('ed', '')].default_value);
 						}
 					});
 
@@ -330,10 +332,6 @@ $(function () {
 			});
 		};
 
-		$('#quality_droplist').on('change', function (e) {
-			self.getProfileToEdit(currentProfileData);
-		});
-
 
 		self.confirmProfileEdition = function () {
 			var form = {};
@@ -342,7 +340,7 @@ $(function () {
 			var _input = $('#edit_content').find('input , select');
 			$.each(_input, function(value, info) {
 
-				if (info.type == 'checkbox')
+				if (info.type === 'checkbox')
 					form[info.id.replace('ed', '')] = $('#' + info.id).is(':checked');
 				else
 					form[info.id.replace('ed', '')] = $('#' + info.id).val();
@@ -683,7 +681,6 @@ $(function () {
 
 		/******************************************************************************************
 		 * change profile quality name
-		 * @param none
 		 * @return none
 		 ******************************************************************************************/
 		self.changeQualityProfileName = function () {
@@ -760,8 +757,13 @@ $(function () {
 
 		};
 
-
-		self.appendToEditMenu = function () {
+		/**
+		 * This method gets all the available options that must be displayed in the profile editor
+		 * and calls the passed callback to populate these same options
+		 *
+		 * @param callback
+		 */
+		self.fetchEditOptions = function (callback, profileData) {
 			$('#edit_content').empty();
 
 			$.ajax({
@@ -813,6 +815,10 @@ $(function () {
 							}
 						});
 					});
+
+					if (callback !== undefined) {
+						callback(profileData);
+					}
 				}
 			});
 		};
