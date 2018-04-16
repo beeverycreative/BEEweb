@@ -549,8 +549,7 @@ def gcodeFileCommand(filename, target):
 			make_response("Trying to slice into file that is currently being printed: %s" % full_path, 409)
 
 		# registers print/slicing options for statistics before any changes to the data variable
-		#TODO rever nomes parametros. atuais são referentes ao cura
-		printer.savePrintOptions(data["resolution"], data["profile.fill_density"], data["profile.platform_adhesion"], data["profile.support"])
+		printer.savePrintOptions(data["resolution"], data["profile.infill_sparse_density"], data["profile.adhesion_type"], data["profile.support_type"])
 
 		if "profile" in data.keys() and data["profile"]:
 			profile = data["profile"]

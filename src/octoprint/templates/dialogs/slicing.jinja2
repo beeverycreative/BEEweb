@@ -163,13 +163,14 @@
                         <div class="control-group">
                             <div class="controls">
                                 <div class="filament-div">
-                                    <select data-bind="options: qualityProfiles ,value: selQuality , valueAllowUnset: false, visible: estimationDialog(), event:{ change: $root.qualityProfileChanged}" ></select>
-                                	<button class="btn btn-primary" data-bind="click: function() {$root.saveProfileChanges();}"
-                                		title="{{ _('Save Profile') }}" data-toggle="tooltip">
-                                		<i class="icon-save"></i>
-									</button>
+                                    <select data-bind="options: qualityProfiles ,value: selQuality,
+                                    valueAllowUnset: false, event:{ change: $root.qualityProfileChanged}" >
+									</select>
                                 </div>
-
+								<button class="btn btn-primary" data-bind="click: function() {$root.saveProfileChanges();}"
+									title="{{ _('Save Profile') }}" data-toggle="tooltip">
+									<i class="icon-save"></i>
+								</button>
                             </div>
                         </div>
                     </form>
@@ -187,7 +188,7 @@
                                 <span class="small-label">{{ _('FILAMENT') }}:</span>
                                 <span class="filament" data-bind="text: selColor, visible: !estimationDialog()"></span>
                                 <select data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
-                                <div class="remaining-filament" data-bind="visible: !estimationDialog()">
+                                <div class="remaining-filament" data-bind="visible: !estimationDialog() && filamentInSpool">
                                     <div>{{ _('Remaining filament') }}:  <span data-bind="text: filamentInSpool" ></span> (g)</div>
                                 </div>
                             </div>

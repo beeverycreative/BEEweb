@@ -118,14 +118,14 @@ class ProfileReader(object):
 			#for each extruder
 			for count in range(0, len(filament)):
 				# get filament and parent overrides
-				extruder_settings[count] = cls.getFilamentOverrides(filament[count], printer_id, nozzle[count], profile_path, quality)
+				extruder_settings[count] = cls.getFilamentOverrides(filament[count], profile_path, quality, nozzle[count])
 				# get nozzle overrides
 				extruder_settings[count] = cls.merge_dicts(extruder_settings[count], cls.getNozzleOverrides(nozzle[count], profile_path))
 
 		# if single extruder
 		else:
 			# get filament and parent overrides
-			filament_Overrides = cls.getFilamentOverrides(filament, printer_id, nozzle, profile_path, quality)
+			filament_Overrides = cls.getFilamentOverrides(filament, profile_path, quality, nozzle)
 			# get nozzle overrides
 			nozzle_Overrides = cls.getNozzleOverrides(nozzle, profile_path)
 
@@ -162,7 +162,7 @@ class ProfileReader(object):
 		settings = {}
 
 		for field in overrides:
-			if field == "fill_density":
+			if field == "infill_sparse_density":
 				settings['infill_sparse_density'] = {'default_value' : overrides[field]}
 
 				infill_line_width = engine_settings['infill_line_width']['default_value']
@@ -184,15 +184,14 @@ class ProfileReader(object):
 
 				settings['infill_line_distance'] = {'default_value': infill_line_dist}
 
-
 				#engine_settings = cls.merge_profile_key(engine_settings, "infill_sparse_density", overrides[field])
 
-			if field == "platform_adhesion":
+			if field == "adhesion_type":
 				if overrides[field] in ["none", "brim", "raft", "skirt"]:
 					settings['adhesion_type'] = {'default_value': overrides[field]}
 					#engine_settings = cls.merge_profile_key(engine_settings, "adhesion_type", overrides[field])
 
-			if field == "support":
+			if field == "support_type":
 				if overrides[field] in [ "none", "everywhere", "buildplate"]:
 					settings['support_type'] = {'default_value': overrides[field]}
 					#engine_settings = cls.merge_profile_key(engine_settings, "support_type", overrides[field])
@@ -205,58 +204,58 @@ class ProfileReader(object):
 						#engine_settings = cls.merge_profile_key(engine_settings, "support_bottom_distance", "0.15")
 
 		for field in overrides:
-			if field != "fill_density" and field != "platform_adhesion" and field != "support":
+			if field == "retraction_speed":
+				settings['retraction_retract_speed'] = {'default_value': overrides[field]}
+				settings['retraction_prime_speed']   = {'default_value': overrides[field]}
 
-				if field == "retraction_speed":
-					settings['retraction_retract_speed'] = {'default_value': overrides[field]};
-					settings['retraction_prime_speed']   = {'default_value': overrides[field]};
+			if field == "cool_fan_speed":
+				settings['cool_fan_speed_min'] = {'default_value': overrides[field]}
+				settings['cool_fan_speed_max'] = {'default_value': overrides[field]}
 
-				if field == "cool_fan_speed":
-					settings['cool_fan_speed_min'] = {'default_value': overrides[field]};
-					settings['cool_fan_speed_max'] = {'default_value': overrides[field]};
+			if field == "speed_layer_0":
+				settings['speed_print_layer_0']  = {'default_value': overrides[field]}
+				settings['speed_travel_layer_0'] = {'default_value': overrides[field]}
 
-				if field == "speed_layer_0":
-					settings['speed_print_layer_0']  = {'default_value': overrides[field]};
-					settings['speed_travel_layer_0'] = {'default_value': overrides[field]};
+			if field == "retraction_speed":
+				settings['retraction_retract_speed'] = {'default_value': overrides[field]}
+				settings['retraction_prime_speed']   = {'default_value': overrides[field]}
 
-				if field == "retraction_speed":
-					settings['retraction_retract_speed'] = {'default_value': overrides[field]};
-					settings['retraction_prime_speed']   = {'default_value': overrides[field]};
+			if field == "infill_sparse_density":
 
-				if field == "infill_sparse_density":
+				infill_line_width = engine_settings['infill_line_width']['default_value']
 
-					infill_line_width = engine_settings['infill_line_width']['default_value']
+				multiplier = 1
+				if 'infill_pattern' in overrides:
+					infill_pattern = overrides['infill_pattern']
+				else:
+					infill_pattern = engine_settings['infill_pattern']
 
+				if infill_pattern == 'grid':
+					multiplier = 2
+				elif infill_pattern in ['triangles', 'cubic', 'cubicsubdiv']:
+					multiplier = 3
+				elif infill_pattern in ['tetrahedral', 'quarter_cubic']:
+					multiplier = 2
+				elif infill_pattern in ['cross', 'cross_3d']:
 					multiplier = 1
-					if overrides['infill_pattern'] == 'grid':
-						multiplier = 2
-					elif overrides['infill_pattern'] in ['triangles', 'cubic', 'cubicsubdiv']:
-						multiplier = 3
-					elif overrides['infill_pattern'] in ['tetrahedral', 'quarter_cubic']:
-						multiplier = 2
-					elif overrides['infill_pattern'] in ['cross', 'cross_3d']:
-						multiplier = 1
 
-					if overrides[field] == 0:
-						infill_line_dist = 0
-					else:
-						infill_line_dist = (multiplier * infill_line_width * 100) / float(overrides[field])
+				if overrides[field] == 0:
+					infill_line_dist = 0
+				else:
+					infill_line_dist = (multiplier * infill_line_width * 100) / float(overrides[field])
 
-					settings['infill_line_distance'] = {'default_value': infill_line_dist}
+				settings['infill_line_distance'] = {'default_value': infill_line_dist}
 
-				if field == "support_type":
-					if overrides[field] == "buildplate":
-						settings['support_enable'] = {'default_value': True}
-					elif overrides[field] == "everywhere":
-						settings['support_enable'] = {'default_value': True}
-					else:
-						settings['support_enable'] = {'default_value': False}
-
-				# if field == "line_width":
+			if field == "support_type":
+				if overrides[field] == "buildplate":
+					settings['support_enable'] = {'default_value': True}
+				elif overrides[field] == "everywhere":
+					settings['support_enable'] = {'default_value': True}
+				else:
+					settings['support_enable'] = {'default_value': False}
 
 
-
-				settings[field] = {'default_value': overrides[field]}
+			settings[field] = {'default_value': overrides[field]}
 
 
 		return settings

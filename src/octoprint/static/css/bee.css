@@ -1823,6 +1823,7 @@ td.settings_users_actions .m-icon {
     padding: 10px 0;
     text-align: center;
     display: inline-block;
+    width: 50%;
 }
 .filament-div select, .nozzle-div select{
     border: none;

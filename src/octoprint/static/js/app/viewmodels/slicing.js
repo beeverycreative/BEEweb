@@ -567,38 +567,38 @@ $(function() {
 
 				// Density support
 				if (self.selDensity() == "Low") {
-					data['profile.fill_density'] = 5;
+					data['profile.infill_sparse_density'] = 5;
 				} else if (self.selDensity() == "Medium") {
-					data['profile.fill_density'] = 10;
+					data['profile.infill_sparse_density'] = 10;
 				} else if (self.selDensity() == "High") {
-					data['profile.fill_density'] = 20;
+					data['profile.infill_sparse_density'] = 20;
 				} else if (self.selDensity() == "High+") {
-					data['profile.fill_density'] = 40;
+					data['profile.infill_sparse_density'] = 40;
 				} else if (self.selDensity() == "Custom") {
 					if (self.customDensity() > 100)
 						self.customDensity(100);
 					if (self.customDensity() < 0)
 						self.customDensity(0);
 
-					data['profile.fill_density'] = self.customDensity();
+					data['profile.infill_sparse_density'] = self.customDensity();
 				}
 
 				// BVC Raft Support
 				if (self.platformAdhesion() == 'Raft') {
-					data['profile.platform_adhesion'] = 'raft';
+					data['profile.adhesion_type'] = 'raft';
 				} else if (self.platformAdhesion() == 'Brim') {
-					data['profile.platform_adhesion'] = 'brim';
+					data['profile.adhesion_type'] = 'brim';
 				} else {
-					data['profile.platform_adhesion'] = 'none';
+					data['profile.adhesion_type'] = 'none';
 				}
 
 				// BVC Support
 				if (self.support() == 'Everywhere') {
-					data['profile.support'] = 'everywhere';
+					data['profile.support_type'] = 'everywhere';
 				} else if (self.support() == 'Touching Platform') {
-					data['profile.support'] = 'buildplate';
+					data['profile.support_type'] = 'buildplate';
 				} else {
-					data['profile.support'] = 'none';
+					data['profile.support_type'] = 'none';
 				}
 			}else {
 
