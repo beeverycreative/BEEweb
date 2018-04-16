@@ -781,7 +781,6 @@ $(function () {
 						'</div>');
 
 						$.each(_options.list, function (_value, _list) {
-							debugger;
 
 							if (_list.type == 'integer') {
 								$('#ed_' + _options.id).append('<div class="form-group">' +
