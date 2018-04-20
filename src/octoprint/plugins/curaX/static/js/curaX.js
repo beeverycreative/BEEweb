@@ -257,14 +257,14 @@ $(function () {
 				url: API_BASEURL + "slicing/curaX/duplicate_profile/" + data["key"],
 				type: "POST",
 				success: function () {
-					self._showSuccessMsg('Profile Duplicated');
+					self._showSuccessMsg(gettext('Profile Duplicated'));
 					self.requestData();
 					self.slicingViewModel.requestData();
 					// Hides the profiles list if it is expanded
 					$("#profiles_tab").collapse("hide");
 				},
 				error: function () {
-					self._showErrorMsg('Error duplicating profile');
+					self._showErrorMsg(gettext('Error duplicating profile'));
 				}
 			});
 
@@ -334,6 +334,7 @@ $(function () {
 
 
 		self.confirmProfileEdition = function () {
+			self._hideMessageContainers();
 			var form = {};
 			var quality = $('#quality_droplist').find('option:selected').text();
 
@@ -354,10 +355,15 @@ $(function () {
 				contentType: "application/json; charset=UTF-8",
 				success: function () {
 					self.requestData();
+					self._showSuccessMsg(gettext('Profile saved.'));
+					$("#settings_plugin_curaX_edit_profile").modal("hide");
+				},
+				error: function () {
+					self._showErrorMsg(gettext('Error saving profile.'));
 				}
 			});
 
-			$("#settings_plugin_curaX_edit_profile").modal("hide");
+
 
 		};
 
@@ -491,7 +497,7 @@ $(function () {
 		 * Saves a new Material file
 		 */
 		self.saveMaterial = function () {
-
+			self._hideMessageContainers();
 			var form = {};
 
 			var newMaterialModal = $("#settings_plugin_curaX_new_material");
@@ -508,7 +514,15 @@ $(function () {
 					type: "PUT",
 					dataType: "json",
 					data: JSON.stringify(form),
-					contentType: "application/json; charset=UTF-8"
+					contentType: "application/json; charset=UTF-8",
+					success: function () {
+						self.requestData();
+						newMaterialModal.modal("hide");
+						self._showSuccessMsg(gettext('Material profile saved.'));
+					},
+					error: function () {
+						self._showErrorMsg(gettext('Error saving Material profile.'))
+					}
 				});
 			} else {
 				$.ajax({
@@ -516,13 +530,17 @@ $(function () {
 					type: "PUT",
 					dataType: "json",
 					data: JSON.stringify(form),
-					contentType: "application/json; charset=UTF-8"
+					contentType: "application/json; charset=UTF-8",
+					success: function () {
+						self.requestData();
+						newMaterialModal.modal("hide");
+						self._showSuccessMsg(gettext('Material profile saved.'));
+					},
+					error: function () {
+						self._showErrorMsg(gettext('Error saving Material profile.'))
+					}
 				});
 			}
-			self.requestData();
-
-			newMaterialModal.modal("hide");
-
 		};
 
 		/******************************************************************************************
@@ -531,7 +549,7 @@ $(function () {
 		 * @return none
 		 ******************************************************************************************/
 		self.editMaterial = function (data) {
-
+			self._hideMessageContainers();
 			$('#material_modal_label').text("EDIT MATERIAL:");
 			$('#material_modal_edition').text(data["key"]);
 			$.ajax({
@@ -545,14 +563,14 @@ $(function () {
 						if ($current[i].type === 'number' || $current[i].type === 'text')
 							$('#' + fieldID).val(data[fieldID].default_value);
 					}
+
+					$("#settings_plugin_curaX_new_material").modal("show");
 				}
 			});
-
-			$("#settings_plugin_curaX_new_material").modal("show");
 		};
 
 		/******************************************************************************************
-		 * Get data from rawprofile and added to new profile form
+		 * Get data from raw profile and added to new profile form
 		 * @return none
 		 ******************************************************************************************/
 		self.createNewProfile = function () {
@@ -572,9 +590,11 @@ $(function () {
 							if ($current[i].type === 'number' || $current[i].type === 'text')
 								$('#' + fieldID).val(data[fieldID.replace('new', '')].default_value);
 						}
+
+						$("#settings_plugin_curaX_new_profile").modal("show");
 					}
 				});
-				$("#settings_plugin_curaX_new_profile").modal("show");
+
 			}
 		};
 
@@ -596,9 +616,11 @@ $(function () {
 						if ($current[i].type === 'number' || $current[i].type === 'text')
 							$('#' + fieldID).val(data[fieldID].default_value);
 					}
+
+					$("#settings_plugin_curaX_new_material").modal("show");
 				}
 			});
-			$("#settings_plugin_curaX_new_material").modal("show");
+
 		};
 
 		/******************************************************************************************
@@ -606,7 +628,7 @@ $(function () {
 		 * @return none
 		 ******************************************************************************************/
 		self.saveRawProfile = function () {  // call de API function in slicing.py
-
+			self._hideMessageContainers();
 			var form = {};
 
 			var $current = $('#newProfile_panel').find('div').find('input');
@@ -629,12 +651,15 @@ $(function () {
 				contentType: "application/json; charset=UTF-8",
 				success: function () {
 					// self.requestData();
+					self._showSuccessMsg(gettext('Profile Saved.'));
+					$("#settings_plugin_curaX_new_profile").modal("hide");
+					self.getProfilesInheritsMaterials(currentMaterialSelected, currentBrandSelected);
+				},
+				error: function () {
+					self._showErrorMsg(gettext('Error saving profile. Please consult the logs.'))
+					$("#settings_plugin_curaX_new_profile").modal("hide");
 				}
 			});
-
-			$("#settings_plugin_curaX_new_profile").modal("hide");
-			self.getProfilesInheritsMaterials(currentMaterialSelected, currentBrandSelected);
-			// self.requestData();
 		};
 		/******************************************************************************************
 		 * remove profile
@@ -642,6 +667,7 @@ $(function () {
 		 * @return none
 		 ******************************************************************************************/
 		self.removeProfile = function (data) {
+			self._hideMessageContainers();
 			if (!data.resource) {
 				return;
 			}
@@ -654,9 +680,14 @@ $(function () {
 				success: function () {
 					self.requestData();
 					self.slicingViewModel.requestData();
+					self.getProfilesInheritsMaterials(currentMaterialSelected, currentProfileData);
+					self._showSuccessMsg(gettext('Profile deleted.'));
+				},
+				error: function () {
+					self._showErrorMsg(gettext('Error deleting profile. Please consult the logs.'));
 				}
 			});
-			self.getProfilesInheritsMaterials(currentMaterialSelected, currentProfileData);
+
 		};
 
 		/******************************************************************************************
@@ -665,6 +696,7 @@ $(function () {
 		 * @return none
 		 ******************************************************************************************/
 		self.removeQualityInProfile = function () {
+			self._hideMessageContainers();
 			$profile_to_edit = $("#profileDisplay").text();
 			$quality_to_edit = $("#comboQuality").val();
 			$.ajax({
@@ -673,10 +705,15 @@ $(function () {
 				success: function () {
 					self.requestData();
 					self.slicingViewModel.requestData();
+					$("#settings_plugin_curaX_edit_profile").modal("hide");
+					self.getProfilesInheritsMaterials(currentMaterialSelected, currentProfileData);
+					self._showSuccessMsg(gettext('Quality profile deleted.'));
+				},
+				error: function () {
+					self._showErrorMsg(gettext('Error deleting quality profile. Please consult the logs.'));
 				}
 			});
-			$("#settings_plugin_curaX_edit_profile").modal("hide");
-			self.getProfilesInheritsMaterials(currentMaterialSelected, currentProfileData)
+
 		};
 
 		/******************************************************************************************
@@ -684,6 +721,7 @@ $(function () {
 		 * @return none
 		 ******************************************************************************************/
 		self.changeQualityProfileName = function () {
+			self._hideMessageContainers();
 			$profile_to_edit = $("#profileDisplay").text();
 			$quality_to_edit = $("#comboQuality").val();
 			$new_quality_name = $("#_new_quality_name").val();
@@ -695,6 +733,10 @@ $(function () {
 					success: function () {
 						self.requestData();
 						self.slicingViewModel.requestData();
+						self._showSuccessMsg(gettext('Profile name changed.'));
+					},
+					error: function () {
+						self._showErrorMsg(gettext('Error changing profile name. Please consult the logs.'));
 					}
 				});
 			}
@@ -825,20 +867,18 @@ $(function () {
 
 
 		self._showSuccessMsg = function (message) {
-			var msgDiv = $('#editor_success_msg');
-			msgDiv.removeClass('hidden');
-			msgDiv.text(gettext(message))
+			$('#editor_success_msg_alert').removeClass('hidden');
+			$('#editor_success_msg').text(message);
 		};
 
 		self._showErrorMsg = function (message) {
-			var msgDiv = $('#editor_error_msg');
-			msgDiv.removeClass('hidden');
-			msgDiv.text(gettext(message))
+			$('#editor_error_msg_alert').removeClass('hidden');
+			$('#editor_error_msg').text(message)
 		};
 
-		self._hideMessageContainers = function (message) {
-			$('#editor_success_msg').addClass('hidden');
-			$('#editor_error_msg').addClass('hidden');
+		self._hideMessageContainers = function () {
+			$('#editor_success_msg_alert').addClass('hidden');
+			$('#editor_error_msg_alert').addClass('hidden');
 		};
 	}
 

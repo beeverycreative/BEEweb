@@ -3,8 +3,12 @@
 	<h3>{{ _('Filament Profile Editor') }}</h3>
 
 	<div id="editor_messages">
-		<div id="editor_success_msg" class="alert alert-success hidden"></div>
-		<div id="editor_error_msg" class="alert alert-error hidden"></div>
+		<div id="editor_success_msg_alert" class="alert alert-success hidden">
+			<div id="editor_success_msg"></div>
+		</div>
+		<div id="editor_error_msg_alert" class="alert alert-error hidden">
+			<div id="editor_error_msg"></div>
+		</div>
 	</div>
 	<div class="panel_accordion" data-toggle="collapse" >
 		<span class="lbl" data-toggle="collapse" data-bind="click: requestData">{{ _('Materials') }}</span>
@@ -213,14 +217,14 @@
 	<div class="modal-body parent">
 		<form class="form-inline">
 			<div>
-				<div>
+				<div class="form-group">
 					<label for="_profile_name_new_profile_" class="lbl">{{ _('Profile Name') }}:</label>
-					<input id="_profile_name_new_profile_" class="inpt" />
+					<input id="_profile_name_new_profile_" class="inpt form-control" />
 				</div>
 				<br />
-				<div>
+				<div class="form-group">
 					<label for="_profile_Quality_new_profile_" class="lbl">{{ _('Quality Name') }}:</label>
-					<input id="_profile_Quality_new_profile_" class="inpt" />
+					<input id="_profile_Quality_new_profile_" class="inpt form-control" />
 				</div>
 			</div>
 			<div class="panel-group" id="newProfile_panel">
@@ -264,11 +268,11 @@
 		<span class="signa" id="profileQualityHeader"></span>
 	</div>
 	<div class="modal-body parent">
-		<form class="form-horizontal">
+		<form class="form-inline">
 			<div class="panel-group">
-				<div class="panel_collapse panel-default">
+				<div class="form-group">
 					<label for="_new_quality_name" class="sign">{{ _('Name') }}:</label>
-					<input id="_new_quality_name" class="inpt" />
+					<input id="_new_quality_name" class="form-control" />
 				</div>
 			</div>
 		</form>
