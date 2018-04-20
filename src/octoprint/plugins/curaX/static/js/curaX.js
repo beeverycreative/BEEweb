@@ -147,7 +147,7 @@ $(function () {
 			maxNumberOfFiles: 1,
 			autoUpload: false,
 			add: function (e, data) {
-				if (data.files.length == 0) {
+				if (data.files.length === 0) {
 					return false;
 				}
 
@@ -368,7 +368,6 @@ $(function () {
 		};
 
 		self.findMaterialOnArray = function (data, material) {
-
 			if (!material)
 				return false;
 
@@ -393,7 +392,6 @@ $(function () {
 		};
 
 		self.fromResponse = function (data) {
-
 			if (self.profiles.allItems.length === 0) {
 				$('#profile_message').text("No material selected");
 				$('#_profiles_tab_indicator_').text("No material selected");
@@ -663,16 +661,16 @@ $(function () {
 		};
 		/******************************************************************************************
 		 * remove profile
-		 * @param none
+		 * @param data
 		 * @return none
 		 ******************************************************************************************/
 		self.removeProfile = function (data) {
 			self._hideMessageContainers();
 			if (!data.resource) {
-				return;
+				return null;
 			}
 			self.profiles.removeItem(function (item) {
-				return (item.key == data.key);
+				return (item.key === data.key);
 			});
 			$.ajax({
 				url: data.resource(),
@@ -687,20 +685,18 @@ $(function () {
 					self._showErrorMsg(gettext('Error deleting profile. Please consult the logs.'));
 				}
 			});
-
 		};
 
 		/******************************************************************************************
 		 * remove profile
-		 * @param none
 		 * @return none
 		 ******************************************************************************************/
 		self.removeQualityInProfile = function () {
 			self._hideMessageContainers();
-			$profile_to_edit = $("#profileDisplay").text();
-			$quality_to_edit = $("#comboQuality").val();
+			var profile_to_edit = $("#profileDisplay").text();
+			var quality_to_edit = $("#comboQuality").val();
 			$.ajax({
-				url: API_BASEURL + "slicing/curaX/delete_quality/" + $quality_to_edit + "/" + $profile_to_edit,
+				url: API_BASEURL + "slicing/curaX/delete_quality/" + quality_to_edit + "/" + profile_to_edit,
 				type: "DELETE",
 				success: function () {
 					self.requestData();
@@ -713,7 +709,6 @@ $(function () {
 					self._showErrorMsg(gettext('Error deleting quality profile. Please consult the logs.'));
 				}
 			});
-
 		};
 
 		/******************************************************************************************
@@ -722,13 +717,13 @@ $(function () {
 		 ******************************************************************************************/
 		self.changeQualityProfileName = function () {
 			self._hideMessageContainers();
-			$profile_to_edit = $("#profileDisplay").text();
-			$quality_to_edit = $("#comboQuality").val();
-			$new_quality_name = $("#_new_quality_name").val();
+			var profile_to_edit = $("#profileDisplay").text();
+			var quality_to_edit = $("#comboQuality").val();
+			var new_quality_name = $("#_new_quality_name").val();
 
 			if ($('#profileQualityHeader').text() === "CHANGE PROFILE NAME") {
 				$.ajax({
-					url: API_BASEURL + "slicing/curaX/change_quality_profile/" + $profile_to_edit + "/" + $quality_to_edit + "/" + $new_quality_name,
+					url: API_BASEURL + "slicing/curaX/change_quality_profile/" + profile_to_edit + "/" + quality_to_edit + "/" + new_quality_name,
 					type: "POST",
 					success: function () {
 						self.requestData();
@@ -743,7 +738,7 @@ $(function () {
 
 			if ($('#profileQualityHeader').text() === "PROFILE COPY") {
 				$.ajax({
-					url: API_BASEURL + "slicing/curaX/copy_quality_profile/" + $profile_to_edit + "/" + $quality_to_edit + "/" + $new_quality_name,
+					url: API_BASEURL + "slicing/curaX/copy_quality_profile/" + profile_to_edit + "/" + quality_to_edit + "/" + new_quality_name,
 					type: "POST",
 					success: function () {
 						self.requestData();
@@ -754,7 +749,7 @@ $(function () {
 
 			if ($('#profileQualityHeader').text() === "NEW PROFILE") {
 				$.ajax({
-					url: API_BASEURL + "slicing/curaX/new_quality/" + $profile_to_edit + "/" + $new_quality_name,
+					url: API_BASEURL + "slicing/curaX/new_quality/" + profile_to_edit + "/" + $new_quality_name,
 					type: "POST",
 					success: function () {
 						self.requestData();
@@ -780,7 +775,6 @@ $(function () {
 
 		/******************************************************************************************
 		 * call name change form
-		 * @param none
 		 * @return none
 		 ******************************************************************************************/
 		self.NewQualityCopy = function () {
@@ -790,7 +784,6 @@ $(function () {
 
 		/******************************************************************************************
 		 * call name change form
-		 * @param none
 		 * @return none
 		 ******************************************************************************************/
 		self.NewQuality = function () {
@@ -804,6 +797,7 @@ $(function () {
 		 * and calls the passed callback to populate these same options
 		 *
 		 * @param callback
+		 * @param profileData
 		 */
 		self.fetchEditOptions = function (callback, profileData) {
 			$('#edit_content').empty();
