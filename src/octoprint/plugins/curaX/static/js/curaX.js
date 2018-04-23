@@ -711,84 +711,90 @@ $(function () {
 			});
 		};
 
-		/******************************************************************************************
-		 * change profile quality name
-		 * @return none
-		 ******************************************************************************************/
+
 		self.changeQualityProfileName = function () {
 			self._hideMessageContainers();
 			var profile_to_edit = $("#profileDisplay").text();
-			var quality_to_edit = $("#comboQuality").val();
-			var new_quality_name = $("#_new_quality_name").val();
+			var quality_to_edit = $("#quality_droplist").val();
+			var new_quality_name = $("#changed_quality_name").val();
 
-			if ($('#profileQualityHeader').text() === "CHANGE PROFILE NAME") {
-				$.ajax({
-					url: API_BASEURL + "slicing/curaX/change_quality_profile/" + profile_to_edit + "/" + quality_to_edit + "/" + new_quality_name,
-					type: "POST",
-					success: function () {
-						self.requestData();
-						self.slicingViewModel.requestData();
-						self._showSuccessMsg(gettext('Profile name changed.'));
-					},
-					error: function () {
-						self._showErrorMsg(gettext('Error changing profile name. Please consult the logs.'));
-					}
-				});
-			}
+			$.ajax({
+				url: API_BASEURL + "slicing/curaX/change_quality_profile/" + profile_to_edit + "/" + quality_to_edit + "/" + new_quality_name,
+				type: "POST",
+				success: function () {
+					self.requestData();
+					self.slicingViewModel.requestData();
+					self._showSuccessMsg(gettext('Profile name changed.'));
 
-			if ($('#profileQualityHeader').text() === "PROFILE COPY") {
-				$.ajax({
-					url: API_BASEURL + "slicing/curaX/copy_quality_profile/" + profile_to_edit + "/" + quality_to_edit + "/" + new_quality_name,
-					type: "POST",
-					success: function () {
-						self.requestData();
-						self.slicingViewModel.requestData();
-					}
-				});
-			}
+					$("#settings_plugin_curaX_change_name").modal("hide");
+					$("#settings_plugin_curaX_edit_profile").modal("hide");
+					self.getProfilesInheritsMaterials(currentMaterialSelected, currentBrandSelected);
+				},
+				error: function () {
+					self._showErrorMsg(gettext('Error changing profile name. Please consult the logs.'));
+				}
+			});
+		};
 
-			if ($('#profileQualityHeader').text() === "NEW PROFILE") {
-				$.ajax({
-					url: API_BASEURL + "slicing/curaX/new_quality/" + profile_to_edit + "/" + new_quality_name,
-					type: "POST",
-					success: function () {
-						self.requestData();
-						self.slicingViewModel.requestData();
-					}
-				});
-			}
+		self.copyQualityProfile = function () {
+			self._hideMessageContainers();
+			var profile_to_edit = $("#profileDisplay").text();
+			var quality_to_edit = $("#quality_droplist").val();
+			var quality_name = $("#copied_profile_name").val();
 
-			$("#settings_plugin_curaX_change_name").modal("hide");
-			$("#settings_plugin_curaX_edit_profile").modal("hide");
-			self.getProfilesInheritsMaterials(currentMaterialSelected, currentBrandSelected);
+			$.ajax({
+				url: API_BASEURL + "slicing/curaX/copy_quality_profile/" + profile_to_edit + "/" + quality_to_edit + "/" + quality_name,
+				type: "POST",
+				success: function () {
+					self.requestData();
+					self.slicingViewModel.requestData();
+					self._showSuccessMsg(gettext('Quality profile copied.'));
+
+					$("#settings_plugin_curaX_copy_profile").modal("hide");
+					$("#settings_plugin_curaX_edit_profile").modal("hide");
+					self.getProfilesInheritsMaterials(currentMaterialSelected, currentBrandSelected);
+				},
+				error: function () {
+					self._showErrorMsg(gettext('Error copying profile. Please consult the logs.'));
+				}
+			});
 		};
 
 
-		/******************************************************************************************
-		 * call name change form
-		 * @return none
-		 ******************************************************************************************/
+		self.newQualityProfile = function () {
+			self._hideMessageContainers();
+			var profile_to_edit = $("#profileDisplay").text();
+			var new_quality_name = $("#new_quality_profile_name").val();
+
+			$.ajax({
+				url: API_BASEURL + "slicing/curaX/new_quality/" + profile_to_edit + "/" + new_quality_name,
+				type: "POST",
+				success: function () {
+					self.requestData();
+					self.slicingViewModel.requestData();
+
+					self._showSuccessMsg(gettext('Quality profile created.'));
+					$("#settings_plugin_curaX_new_quality_profile").modal("hide");
+					$("#settings_plugin_curaX_edit_profile").modal("hide");
+					self.getProfilesInheritsMaterials(currentMaterialSelected, currentBrandSelected);
+				},
+				error: function () {
+					self._showErrorMsg(gettext('Error creating profile. Please consult the logs.'));
+				}
+			});
+		};
+
+
 		self.newQualityName = function () {
-			$("#profileQualityHeader").text("CHANGE PROFILE NAME");
 			$("#settings_plugin_curaX_change_name").modal("show");
 		};
 
-		/******************************************************************************************
-		 * call name change form
-		 * @return none
-		 ******************************************************************************************/
 		self.newQualityCopy = function () {
-			$("#profileQualityHeader").text("PROFILE COPY");
-			$("#settings_plugin_curaX_change_name").modal("show");
+			$("#settings_plugin_curaX_copy_profile").modal("show");
 		};
 
-		/******************************************************************************************
-		 * call name change form
-		 * @return none
-		 ******************************************************************************************/
 		self.newQuality = function () {
-			$("#profileQualityHeader").text("NEW PROFILE");
-			$("#settings_plugin_curaX_change_name").modal("show");
+			$("#settings_plugin_curaX_new_quality_profile").modal("show");
 
 		};
 

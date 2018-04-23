@@ -1740,6 +1740,8 @@ td.settings_users_actions .m-icon {
 #settings-usersDialogChangePassword .modal-footer .btn-primary,
 #settings_plugin_softwareupdate_configurationdialog .modal-footer .btn-primary,
 #settings_plugin_curaX_change_name .modal-footer .btn-primary,
+#settings_plugin_curaX_copy_profile .modal-footer .btn-primary,
+#settings_plugin_curaX_new_quality_profile .modal-footer .btn-primary,
 #settings_plugin_curaX_new_profile_message .modal-footer .btn-primary,
 #settings_plugin_curaX_new_profile .modal-footer .btn-primary,
 #settings_plugin_curaX_new_material .modal-footer .btn-primary,
@@ -2353,6 +2355,8 @@ table.information_table th{
 	padding: 5px;
 }
 #settings_plugin_curaX_change_name .signa,
+#settings_plugin_curaX_copy_profile .signa,
+#settings_plugin_curaX_new_quality_profile .signa,
 #settings_plugin_curaX_new_material .sign,
 #settings_plugin_curaX_new_material .signa,
 #settings_plugin_curaX_new_material .lbl,
@@ -2391,6 +2395,8 @@ table.information_table th{
 }
 
 #settings_plugin_curaX_change_name .panel_collapse .signa,
+#settings_plugin_curaX_copy_profile .panel_collapse .signa,
+#settings_plugin_curaX_new_quality_profile .panel-collapse .signa,
 #settings_plugin_curaX_edit_material .panel_collapse .signa,
 #settings_plugin_curaX_edit_material .panel_collapse .lbl,
 #settings_plugin_curaX_new_material .panel_collapse .signa,
@@ -2471,7 +2477,9 @@ table.information_table th{
      font-weight: bold;
 }
 
-#settings_plugin_curaX_change_name .inpt{
+#settings_plugin_curaX_change_name .inpt,
+#settings_plugin_curaX_copy_profile .inpt,
+#settings_plugin_curaX_new_quality_profile .inpt{
      height:15px !important;
      width: 150px;
      border: 1px solid #898989;

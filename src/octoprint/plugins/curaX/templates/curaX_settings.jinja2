@@ -271,8 +271,8 @@
 		<form class="form-inline">
 			<div class="panel-group">
 				<div class="form-group">
-					<label for="_new_quality_name" class="sign">{{ _('Name') }}:</label>
-					<input id="_new_quality_name" class="form-control" />
+					<label for="changed_quality_name" class="sign">{{ _('Name') }}:</label>
+					<input id="changed_quality_name" class="form-control" />
 				</div>
 			</div>
 		</form>
@@ -280,6 +280,53 @@
 	<div class="modal-footer">
 		<button class="btn btn-default green" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>
 		<button class="btn btn-primary green" data-bind="click: function() { $root.changeQualityProfileName(); }">{{
+			_('Confirm') }}
+		</button>
+	</div>
+</div>
+
+<div id="settings_plugin_curaX_copy_profile" class="modal hide fade">
+	<div class="modal-header">
+		<a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+		<span class="signa" id="headerTitle">{{ _('Profile Copy') }}</span>
+	</div>
+	<div class="modal-body parent">
+		<form class="form-inline">
+			<div class="panel-group">
+				<div class="form-group">
+					<label for="copied_profile_name" class="sign">{{ _('Name') }}:</label>
+					<input id="copied_profile_name" class="form-control" />
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-default green" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>
+		<button class="btn btn-primary green" data-bind="click: function() { $root.copyQualityProfile(); }">{{
+			_('Confirm') }}
+		</button>
+	</div>
+</div>
+
+
+<div id="settings_plugin_curaX_new_quality_profile" class="modal hide fade">
+	<div class="modal-header">
+		<a href="#" class="close" data-dismiss="modal" aria-hidden="true">&times;</a>
+		<span class="signa" id="headerTitle">{{ _('New Profile') }}</span>
+	</div>
+	<div class="modal-body parent">
+		<form class="form-inline">
+			<div class="panel-group">
+				<div class="form-group">
+					<label for="new_quality_profile_name" class="sign">{{ _('Name') }}:</label>
+					<input id="new_quality_profile_name" class="form-control" />
+				</div>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<button class="btn btn-default green" data-dismiss="modal" aria-hidden="true">{{ _('Abort') }}</button>
+		<button class="btn btn-primary green" data-bind="click: function() { $root.newQualityProfile(); }">{{
 			_('Confirm') }}
 		</button>
 	</div>
