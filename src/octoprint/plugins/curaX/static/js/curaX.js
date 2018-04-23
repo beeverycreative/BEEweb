@@ -768,7 +768,7 @@ $(function () {
 		 * call name change form
 		 * @return none
 		 ******************************************************************************************/
-		self.NewQualityName = function () {
+		self.newQualityName = function () {
 			$("#profileQualityHeader").text("CHANGE PROFILE NAME");
 			$("#settings_plugin_curaX_change_name").modal("show");
 		};
@@ -777,7 +777,7 @@ $(function () {
 		 * call name change form
 		 * @return none
 		 ******************************************************************************************/
-		self.NewQualityCopy = function () {
+		self.newQualityCopy = function () {
 			$("#profileQualityHeader").text("PROFILE COPY");
 			$("#settings_plugin_curaX_change_name").modal("show");
 		};
@@ -786,7 +786,7 @@ $(function () {
 		 * call name change form
 		 * @return none
 		 ******************************************************************************************/
-		self.NewQuality = function () {
+		self.newQuality = function () {
 			$("#profileQualityHeader").text("NEW PROFILE");
 			$("#settings_plugin_curaX_change_name").modal("show");
 
