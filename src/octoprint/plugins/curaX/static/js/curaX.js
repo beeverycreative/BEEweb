@@ -749,7 +749,7 @@ $(function () {
 
 			if ($('#profileQualityHeader').text() === "NEW PROFILE") {
 				$.ajax({
-					url: API_BASEURL + "slicing/curaX/new_quality/" + profile_to_edit + "/" + $new_quality_name,
+					url: API_BASEURL + "slicing/curaX/new_quality/" + profile_to_edit + "/" + new_quality_name,
 					type: "POST",
 					success: function () {
 						self.requestData();
