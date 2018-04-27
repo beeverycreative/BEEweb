@@ -1,45 +1,91 @@
 {
-	"id" : "print_options_available", 
-	"name" : "Print Options Available", 
-	"description" : "List of options available to each material", 
+	"id" : "print_options_available",
+	"name" : "Print Options Available",
+	"description" : "List of options available to each material",
 	"types": ["integer", "double", "boolean", "array", "droplist"],
 	"options":
 	[
 		{
 			"id": "Quality",
 			"list":
-			[		
-				{"id": "layer_height", 	"DisplayName": "Layer Height", 	"Type": "integer"}
+			[
+				{"id": "layer_height", "label": "Layer Height","type": "double", "default_value":"0.3", "options":[]},
+				{"id": "line_width", "label": "Line Width","type": "double", "default_value":"0.4", "options":[]}
+			]
+		},
+		{
+			"id": "Shell",
+			"list":
+			[
+				{"id": "wall_thickness", "label": "Wall Thickness","type": "v", "default_value":"0.8", "options":[]},
+				{"id": "wall_line_count", "label": "Wall Line Count","type": "integer", "default_value":"2", "options":[]},
+				{"id": "fill_perimeter_gaps", "label": "Fill Gaps Between Walls","type": "droplist", "default_value":"everywhere", "options":["nowhere","everywhere"]},
+				{"id": "fill_outline_gaps", "label": "Print Thin Walls","type": "boolean", "default_value":"false", "options":[]},
+				{"id": "xy_offset", "label": "Horizontal Expansion","type": "integer", "default_value":"0", "options":[]},
+				{"id": "z_seam_type", "label": "Z Seam Aligment","type": "droplist", "default_value":"sharpest_corner", "options":["back","shortest","random","sharpest_corner"]},
+				{"id": "z_seam_x", "label": "Z Seam X","type": "double", "default_value":"100.0", "options":[]},
+				{"id": "z_seam_y", "label": "Z Seam Y","type": "double", "default_value":"100.0", "options":[]},
+				{"id": "z_seam_relative", "label": "Z Seam Relative","type": "boolean", "default_value":"false", "options":[]},
+				{"id": "z_seam_corner", "label": "Seam Corner Preference","type": "droplist", "default_value":"z_seam_corner_inner", "options":["z_seam_corner_none","z_seam_corner_inner","z_seam_corner_outer","z_seam_corner_any"]}
+			]
+		},
+		{
+			"id":"Infill",
+			"list":
+			[
+				{"id": "infill_sparse_density","label": "Infill Density","type": "integer","default_value":"5","options":[]},
+				{"id": "infill_pattern","label": "Infill Pattern","type": "droplist","default_value":"grid","options":["grid","lines","triangles","cubic","tetrahedral","zigzag"]},
+				{"id": "gradual_infill_steps","label": "Gradual Infill Steps","type": "integer","default_value":"0","options":[]}
 			]
 		},
 		{
 			"id": "Material",
 			"list":
-			[	
-				
-				{"id": "material_print_temperature", "DisplayName": "Material Print Temperature", "Type": "integer" },
-				{"id": "default_material_print_temperature", "DisplayName": "Deafult Printing Temperature", "Type": "integer" },
-				{"id": "material_print_temperature_layer_0", "DisplayName": "Printing Temperature Initial Layer", "Type": "integer" },
-				{"id": "retraction_amount", "DisplayName": "Retraction Distance", "Type": "integer" },
-				{"id": "retraction_speed", "DisplayName": "Retraction Speed", "Type": "integer" },
-				{"id": "retraction_extra_prime_amount", "DisplayName": "Retration Extra Prime Amout", "Type": "integer" }
+			[
+				{"id": "material_print_temperature", "label": "Material Print Temperature","type": "integer","default_value":"210","options":[]},
+				{"id": "default_material_print_temperature", "label": "Deafult Printing Temperature","type": "integer","default_value":"210","options":[]},
+				{"id": "material_print_temperature_layer_0", "label": "Printing Temperature Initial Layer","type": "integer","default_value":"210","options":[]},
+				{"id": "material_flow", "label": "Flow","type": "integer","default_value":"100","options":[]},
+				{"id": "retraction_amount", "label": "Retraction Distance","type": "double","default_value":"1.0","options":[]},
+				{"id": "retraction_speed", "label": "Retraction Speed","type": "integer","default_value":"20","options":[]},
+				{"id": "retraction_extra_prime_amount", "label": "Retration Extra Prime Amout","type": "integer","default_value":"0.2","options":[] }
 			]
 		},
 		{
 			"id": "Speed",
 			"list":
-			[		
-				{"id": "speed_infill", 	"DisplayName": "Infill Speed"    , "Type": "integer" },
-				{"id": "speed_wall_0", 	"DisplayName": "Outer Wall Speed", "Type": "integer" },
-				{"id": "speed_wall_x", 	"DisplayName": "Inner Wall Speed", "Type": "integer" },
-				{"id": "speed_layer_0", "DisplayName": "Initial Layer Speed", "Type": "integer" }
+			[
+				{"id": "speed_infill", 	"label": "Infill Speed"    ,"type": "integer","default_value":"80","options":[]},
+				{"id": "speed_wall_0", 	"label": "Outer Wall Speed", "type": "integer","default_value":"20","options":[]},
+				{"id": "speed_wall_x", 	"label": "Inner Wall Speed", "type": "integer","default_value":"40","options":[]},
+				{"id": "speed_roofing", "label": "Top Surface Skin Speed", "type": "integer","default_value":"25","options":[]},
+				{"id": "speed_topbottom", "label": "Top/bottom Speed", "type": "integer","default_value":"30","options":[]},
+				{"id": "speed_travel",  "label": "Travel Speed","type": "integer","default_value":"120", "options":[]},
+				{"id": "speed_layer_0", "label": "Initial Layer Speed","type": "integer","default_value":"15", "options":[]}
+
+
+			]
+		},
+		{
+			"id":"Support",
+			"list":
+			[
+				{"id":"support_type","label": "Support Placement","type": "droplist","default_value":"none","options":["none","buildplate","everywhere"]},
+				{"id":"support_angle","label": "Support Overhang Angle","type": "integer","default_value":"50","options":[]}
+			]
+		},
+		{
+			"id":"Plataform",
+			"list":
+			[
+				{"id": "adhesion_type","label": "Build Plate Adhesion Type","type": "droplist","default_value":"none","options":["none","brim","raft"]}
 			]
 		},
 		{
 			"id": "Cooling",
 			"list":
-			[		
-				{"id": "cool_fan_speed", 	"DisplayName": "Fan Speed", "Type": "integer" }
+			[
+				{"id": "cool_fan_speed","label": "Fan Speed","type": "integer" ,"default_value":"65","options":[]}
 			]
 		}
 	]

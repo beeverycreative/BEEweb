@@ -831,23 +831,29 @@ $(function () {
 
 						$.each(_options.list, function (_value, _list) {
 
-							if (_list.type == 'integer') {
+							if (_list.type === 'integer') {
 								$('#ed_' + _options.id).append('<div class="form-group">' +
 								 '<label for="ed_' + _list.id + '" class="sign">' + _list.label + '</label>' +
-									'<input class="inpt form-control" id="ed_' + _list.id + '" type="number"  step="0.01"></div>');
+									'<input class="inpt form-control" id="ed_' + _list.id + '" type="number"  step="1"></div>');
 
-								$('#ed' + _list.id).val(_list.default_value);
-							} else if (_list.type == 'boolean') {
+								$('#ed_' + _list.id).val(_list.default_value);
+							} else if (_list.type === 'double') {
+								$('#ed_' + _options.id).append('<div class="form-group">' +
+								 '<label for="ed_' + _list.id + '" class="sign">' + _list.label + '</label>' +
+									'<input class="inpt form-control" id="ed_' + _list.id + '" type="number"  step="0.1"></div>');
+
+								$('#ed_' + _list.id).val(_list.default_value);
+							} else if (_list.type === 'boolean') {
 								$('#ed_' + _options.id).append('<div class="form-group">' +
 								 '<label for="ed_' + _list.id + '" class="sign">' + _list.label + '</label>' +
 									'<input class="chck form-control" id="ed_' + _list.id + '" type="checkbox" ></div>');
 
-								if (_list.default_value == 'false')
+								if (_list.default_value === 'false')
 									$('#ed_' + _list.id).attr('checked', false);
 								else
 									$('#ed_' + _list.id).attr('checked', true);
 
-							} else if (_list.type == 'droplist') {
+							} else if (_list.type === 'droplist') {
 								$('#ed_' + _options.id).append('<div class="form-group">' +
 								 '<label for="ed_\' + _list.id + \'"  class="sign">' + _list.label + '</label>' +
 									'<select class="slct" id="ed_' + _list.id + '" ></select></div>');

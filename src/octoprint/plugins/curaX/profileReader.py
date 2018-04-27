@@ -661,9 +661,9 @@ class ProfileReader(object):
 	def getOptions(cls, slicer_profile_path):
 
 		with open(slicer_profile_path + "/optionsAvailable.json") as data_file:
-			filament_json = json.load(data_file)
+			available_options = json.load(data_file)
 
-		return filament_json
+		return available_options
 
 	@classmethod
 	def getRawCopyMaterial(cls,path,data):
