@@ -15,7 +15,6 @@ import json
 import octoprint.plugin
 import octoprint.util
 import octoprint.slicing
-from octoprint.settings import settings
 from octoprint.util.paths import normalize as normalize_path
 
 from .profileReader import ProfileReader
@@ -62,7 +61,6 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 	@octoprint.plugin.BlueprintPlugin.route("/import", methods=["POST"])
 	def import_cura_profile(self):
 		import datetime
-		import tempfile
 
 		from octoprint.server import slicingManager
 
@@ -447,7 +445,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 	def _save_profile(self, path, profile, allow_overwrite=True):
 		import json
 		with octoprint.util.atomic_write(path, "w", max_permissions=0o666) as f:
-			json.dump(profile, f)
+			json.dump(profile, f, indent=4)
 
 	def _desanitize(self, name):
 		if name is None:

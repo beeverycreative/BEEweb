@@ -719,22 +719,23 @@ class SlicingManager(object):
 		return slicer_object_curaX.getMaterial(path, name)
 
 
-	def edit_profile(self, slicer, name , data , quality, nozzle):
+	def edit_profile(self, slicer, name, data, quality, nozzle):
 		profile = self.get_slicer(slicer).getSavedEditionFilament(name, self.get_slicer_profile_path(slicer))
 		override_profile = self.get_slicer(slicer).getProfile(name, self.get_slicer_profile_path(slicer), quality , nozzle)
+		quality = quality.lower()
 
 		for current in data:
 			if current in override_profile:
 				if data[current] != override_profile[current]['default_value']:
 					cnt = 0
-					for list in profile['PrinterGroups']:
-						if quality in list['quality']:
-									profile['PrinterGroups'][cnt]['quality'][quality][current] = {'default_value':data[current]}
+					for printer in profile['PrinterGroups']:
+						if quality in printer['quality']:
+							profile['PrinterGroups'][cnt]['quality'][quality][current] = {'default_value': data[current]}
 						cnt += 1
 			else:
 				cnt = 0
-				for list in profile['PrinterGroups']:
-					if quality in list['quality']:
+				for printer in profile['PrinterGroups']:
+					if quality in printer['quality']:
 						profile['PrinterGroups'][cnt]['quality'][quality][current] = {'default_value': data[current]}
 					cnt += 1
 

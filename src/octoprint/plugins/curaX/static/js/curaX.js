@@ -342,9 +342,16 @@ $(function () {
 			$.each(_input, function(value, info) {
 
 				if (info.type === 'checkbox')
-					form[info.id.replace('ed', '')] = $('#' + info.id).is(':checked');
-				else
-					form[info.id.replace('ed', '')] = $('#' + info.id).val();
+					form[info.id.replace('ed_', '')] = $('#' + info.id).is(':checked');
+				else {
+					var inputValue = $('#' + info.id).val();
+					if (!isNaN(inputValue)) {
+						inputValue = +inputValue; // If the input value is numeric transforms it into a number
+					}
+					form[info.id.replace('ed_', '')] = inputValue;
+
+				}
+
 			});
 
 			$.ajax({

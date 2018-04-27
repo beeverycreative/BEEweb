@@ -129,8 +129,7 @@ def slicingEditSlicerProfile(slicer, name, quality, nozzle):
 		return make_response("Expected content-type JSON", 400)
 	try:
 		json_data = request.json
-		# slicingManager.edit_profile(slicer, name, printer_id, quality)
-		slicingManager.edit_profile(slicer, name , json_data , quality,nozzle)
+		slicingManager.edit_profile(slicer, name, json_data, quality, nozzle)
 		return NO_CONTENT
 	except BadRequest:
 		return make_response("Malformed JSON body in request", 400)
