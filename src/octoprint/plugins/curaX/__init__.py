@@ -540,11 +540,13 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 					profilePath =path + "/Variants/" + "{name}".format(name=entry)
 					os.remove(profilePath)
 
-	def copy_quality_name(self, path,filament_id,quality,name):
+	def copy_quality_name(self, path, filament_id, quality, name):
 		overrides_values = {}
 		overrides_data ={}
 		filament_json = dict()
 		custom = False
+		quality = quality.lower()
+
 		for entry in os.listdir(path + "/Variants/"):
 			if not entry.endswith(".json"):
 				# we are only interested in profiles and no hidden files
@@ -568,12 +570,11 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 					filament_json = json.load(data_file)
 
 		cnt = 0
-
-		for list in filament_json['PrinterGroups']:
+		for printer in filament_json['PrinterGroups']:
 			for key in filament_json['PrinterGroups'][cnt]:
 				if 'quality' == key:
 					overrides_values = filament_json['PrinterGroups'][cnt][key]
-		cnt += 1
+			cnt += 1
 
 		overrides_data[name] = overrides_values[quality]
 
@@ -584,9 +585,11 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		self._save_profile(profile_path, filament_json, allow_overwrite=True)
 
 
-	def change_quality_name(self, path,filament_id,quality,name):
+	def change_quality_name(self, path, filament_id, quality, name):
 		filament_json = dict()
 		custom = False
+		quality = quality.lower()
+
 		for entry in os.listdir(path + "/Variants/"):
 			if not entry.endswith(".json"):
 				# we are only interested in profiles and no hidden files
@@ -617,6 +620,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 	def delete_quality_material(self,path,quality, name):
 		filament_json = dict()
 		custom = False
+		quality = quality.lower()
 
 		for entry in os.listdir(path + "/Variants/"):
 			if not entry.endswith(".json"):
@@ -717,7 +721,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		return ProfileReader.getOptions(slicer_profile_path)
 
 	def getProfile(self, filament_id,slicer_profile_path, quality , nozzle):
-		return ProfileReader.getFilamentOverrides(filament_id, slicer_profile_path, quality,nozzle)
+		return ProfileReader.getFilamentOverrides(filament_id, slicer_profile_path, quality, nozzle)
 
 	def getSavedEditionFilament(self,filament_id, slicer_profile_path):
 		return ProfileReader.getSaveEditionFilament(filament_id, slicer_profile_path)
