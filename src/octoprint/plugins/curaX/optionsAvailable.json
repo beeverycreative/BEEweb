@@ -17,7 +17,7 @@
 			"id": "Shell",
 			"list":
 			[
-				{"id": "wall_thickness", "label": "Wall Thickness","type": "v", "default_value":"0.8", "options":[]},
+				{"id": "wall_thickness", "label": "Wall Thickness","type": "double", "default_value":"0.8", "options":[]},
 				{"id": "wall_line_count", "label": "Wall Line Count","type": "integer", "default_value":"2", "options":[]},
 				{"id": "fill_perimeter_gaps", "label": "Fill Gaps Between Walls","type": "droplist", "default_value":"everywhere", "options":["nowhere","everywhere"]},
 				{"id": "fill_outline_gaps", "label": "Print Thin Walls","type": "boolean", "default_value":"false", "options":[]},

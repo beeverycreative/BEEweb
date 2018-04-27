@@ -748,7 +748,10 @@ $(function() {
 
                        _.each(dinamic.list,function(din_type){
                            if(din_type.type === 'integer')
-                               $('#'+ dinamic.id).append('<div class="form-group" ><label for="' + din_type.id + '" class="lbl">'+ din_type.label +'</label>' + '<input id="' + din_type.id + '" type="number" class="inpt" value="'+ din_type.default_value +'" step="0.01"></div>');
+                               $('#'+ dinamic.id).append('<div class="form-group" ><label for="' + din_type.id + '" class="lbl">'+ din_type.label +'</label>' + '<input id="' + din_type.id + '" type="number" class="inpt" value="'+ din_type.default_value +'" step="1"></div>');
+
+                           if(din_type.type === 'double')
+                               $('#'+ dinamic.id).append('<div class="form-group" ><label for="' + din_type.id + '" class="lbl">'+ din_type.label +'</label>' + '<input id="' + din_type.id + '" type="number" class="inpt" value="'+ din_type.default_value +'" step=0.1"></div>');
 
                            if(din_type.type === 'droplist') {
                                $('#' + dinamic.id).append('<div class="form-group"><label for="' + din_type.id + '" class="lbl">' + din_type.label + '</label><select id="' + din_type.id + '" class="inpt-select"></select></div>');
