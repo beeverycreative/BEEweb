@@ -589,6 +589,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 		filament_json = dict()
 		custom = False
 		quality = quality.lower()
+		name = name.lower()
 
 		for entry in os.listdir(path + "/Variants/"):
 			if not entry.endswith(".json"):
