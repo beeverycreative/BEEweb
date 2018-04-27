@@ -1587,11 +1587,16 @@ td.settings_users_actions .m-icon {
     -ms-transform: rotate(180deg);
 }
 
-#slicing_configuration_dialog_advanced_settings .control-group,
 #slicing_configuration_dialog .control-group{
     margin-bottom: 2px;
     text-align: center;
     background: #e1e2e1;
+}
+#slicing_configuration_dialog_advanced_settings .control-group .form-group {
+    margin-bottom: 3px;
+    text-align: left;
+    background: #e1e2e1;
+    padding-left: 20px;
 }
 
 #slicing_configuration_dialog_advanced_settings .form-inline .controls,
