@@ -355,6 +355,11 @@
 					<i class="icon-edit"></i></span>
 					<span class="sign" data-bind="click: function() {$root.removeQualityInProfile();}">
 					<i class="icon-trash"></i></span>
+
+					<button class="btn btn-primary pull-right" data-bind="click: function() {$root.confirmProfileEdition(false);}"
+						title="{{ _('Save Profile') }}" data-toggle="tooltip" data-placement="bottom">
+						<i class="icon-save"></i>
+					</button>
 				</div>
 			</div>
 			<br />
@@ -365,7 +370,7 @@
 	</div>
 	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal">{{ _('Abort') }}</button>
-		<button class="btn btn-primary green" data-bind="click: function() { $root.confirmProfileEdition(); }">{{
+		<button class="btn btn-primary green" data-bind="click: function() { $root.confirmProfileEdition(true); }">{{
 			_('Confirm') }}
 		</button>
 	</div>

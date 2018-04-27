@@ -333,7 +333,7 @@ $(function () {
 		};
 
 
-		self.confirmProfileEdition = function () {
+		self.confirmProfileEdition = function (closeDialog) {
 			self._hideMessageContainers();
 			var form = {};
 			var quality = $('#quality_droplist').find('option:selected').text();
@@ -363,16 +363,17 @@ $(function () {
 				success: function () {
 					self.requestData();
 					self._showSuccessMsg(gettext('Profile saved.'));
-					$("#settings_plugin_curaX_edit_profile").modal("hide");
+
+					if (closeDialog) {
+						$("#settings_plugin_curaX_edit_profile").modal("hide");
+					}
 				},
 				error: function () {
 					self._showErrorMsg(gettext('Error saving profile.'));
 				}
 			});
-
-
-
 		};
+
 
 		self.findMaterialOnArray = function (data, material) {
 			if (!material)
