@@ -747,7 +747,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 
 
-__plugin_name__ = "CuraEngineX (>= 2.7)"
+__plugin_name__ = "Profile Manager"
 __plugin_author__ = "Bruno Andrade"
 __plugin_url__ = "https://github.com/Beeverycreative"
 __plugin_description__ = "Adds support for slicing via CuraEngine from versions 2.X from within Octoprint"
