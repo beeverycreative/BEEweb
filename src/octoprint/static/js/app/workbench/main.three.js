@@ -225,6 +225,13 @@ BEEwb.main = {
         this.removeAllSelections();
     },
 
+	_loadModelError: function () {
+		//onError
+		$('#loadingDialog').modal('hide');
+		var html = _.sprintf(gettext("Please confirm that the model is valid."));
+		new PNotify({title: gettext("Error loading model"), text: html, type: "error", hide: true});
+	},
+
     /**
      * Loads an STL model into the canvas
      *
@@ -260,41 +267,44 @@ BEEwb.main = {
         var loader = new THREE.STLLoader();
 
         var that = this;
-        // Colored binary STL
-        loader.load(folder + modelName, function ( geometry ) {
-            var material = new THREE.MeshPhongMaterial( { color: 0x8C8C8C, specular: 0x111111, shininess: 100 } );
 
-            geometry.computeFaceNormals();
-            geometry.computeVertexNormals();
+		loader.load(folder + modelName, function ( geometry ) {
+			var material = new THREE.MeshPhongMaterial( { color: 0x8C8C8C, specular: 0x111111, shininess: 100 } );
+			// Colored binary STL
+			geometry.computeFaceNormals();
+			geometry.computeVertexNormals();
 
-            var mesh = new THREE.Mesh( geometry, material );
-            //mesh.castShadow = true;
-            // Sets the name of the object to the same as the model file
-            mesh.name = modelName;
+			var mesh = new THREE.Mesh( geometry, material );
+			//mesh.castShadow = true;
+			// Sets the name of the object to the same as the model file
+			mesh.name = modelName;
 
-            // Calculates any possible translation in the X axis due to the previously loaded model
-            var xShift = BEEwb.helpers.calculateObjectShift( geometry );
-            if (xShift !== 0) {
-                mesh.position.set( xShift, 0, 0 );
-            }
+			// Calculates any possible translation in the X axis due to the previously loaded model
+			var xShift = BEEwb.helpers.calculateObjectShift( geometry );
+			if (xShift !== 0) {
+				mesh.position.set( xShift, 0, 0 );
+			}
 
-            // Centers the object only if it is not centered with the 3d scene
-            //if (BEEwb.helpers.objectOutOfBounds(mesh, [BEEwb.main.bedWidth, BEEwb.main.bedDepth, BEEwb.main.bedHeight])) {
-            BEEwb.helpers.centerModelBasedOnBoundingBox(mesh.geometry);
-            mesh.updateMatrix();
-            //}
+			// Centers the object only if it is not centered with the 3d scene
+			//if (BEEwb.helpers.objectOutOfBounds(mesh, [BEEwb.main.bedWidth, BEEwb.main.bedDepth, BEEwb.main.bedHeight])) {
+			BEEwb.helpers.centerModelBasedOnBoundingBox(mesh.geometry);
+			mesh.updateMatrix();
+			//}
 
-            that.scene.add(mesh);
-            that.objects.add(mesh);
+			that.scene.add(mesh);
+			that.objects.add(mesh);
 
-            // Runs the placeOnBed algorithm
-            that.selectModel(mesh);
+			// Runs the placeOnBed algorithm
+			that.selectModel(mesh);
 
-            BEEwb.transformOps.placeOnBed();
+			BEEwb.transformOps.placeOnBed();
 
-            $('#loadingDialog').modal('hide');
-            saveCookie('lastModel', modelName, 90);
-        });
+			$('#loadingDialog').modal('hide');
+			saveCookie('lastModel', modelName, 90);
+		}, function () {
+			//onProgress...
+		}, this._loadModelError);
+
     },
 
     /**
