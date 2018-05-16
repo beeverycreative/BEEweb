@@ -627,7 +627,7 @@ class BeePrinter(Printer):
             if filament_mm >= 0:
                 filament_cm = filament_mm / 10.0
 
-                filament_diameter, filament_density = self.getFilamentSettings()
+                filament_diameter, filament_density = self.getFilamentSettingsForPrinter()
 
                 filament_radius = float(int(filament_diameter) / 10000.0) / 2.0
                 filament_volume = filament_cm * (math.pi * filament_radius * filament_radius)
@@ -653,7 +653,7 @@ class BeePrinter(Printer):
                 self._logger.error('Unable to set invalid filament weight: %s' % filamentInSpool)
                 return
 
-            filament_diameter, filament_density = self.getFilamentSettings()
+            filament_diameter, filament_density = self.getFilamentSettingsForPrinter()
 
             filament_volume = filamentInSpool / filament_density
             filament_radius = float(int(filament_diameter) / 10000.0) / 2.0
@@ -709,9 +709,8 @@ class BeePrinter(Printer):
         Gets the current selected nozzle size in the printer memory
         :return: float
         """
+        default_nozzle = 400
         try:
-            default_nozzle = 400
-
             printer_nozzle = self._comm.getCommandsInterface().getNozzleSize()
             if printer_nozzle is not None:
                 return printer_nozzle

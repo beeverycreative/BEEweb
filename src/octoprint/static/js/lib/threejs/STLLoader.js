@@ -44,8 +44,11 @@ THREE.STLLoader.prototype = {
 		var loader = new THREE.FileLoader( scope.manager );
 		loader.setResponseType( 'arraybuffer' );
 		loader.load( url, function ( text ) {
-
-			onLoad( scope.parse( text ) );
+			try{
+				onLoad( scope.parse( text ) );
+			} catch (e) {
+				if (onError !== undefined) onError();
+			}
 
 		}, onProgress, onError );
 

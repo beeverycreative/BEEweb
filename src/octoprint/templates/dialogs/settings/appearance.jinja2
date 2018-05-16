@@ -1,30 +1,30 @@
 <form class="form-horizontal">
-    <div class="control-group" title="{{ _('Name of this BEESOFT instance, will be shown in the navigation bar and broadcast on the network') }}">
-        <label class="control-label" for="settings-appearanceName">{{ _('Title') }}</label>
-        <div class="controls">
-            <input type="text" class="input-block-level" data-bind="value: appearance_name" id="settings-appearanceName">
-        </div>
-    </div>
-    <div class="control-group" title="{{ _('Personalize the color of the navigation bar') }}">
-        <label class="control-label" for="settings-appearanceColor">{{ _('Color') }}</label>
-        <div class="controls">
-            <select id="settings-appearanceColor" data-bind="value: appearance_color, options: appearance_available_colors, optionsText: 'name', optionsValue: 'key'">
-            </select>
-        </div>
-    </div>
-    <div class="control-group" title="{{ _('For acrylic printers ;)') }}">
-        <div class="controls">
-            <label class="checkbox">
-                <input type="checkbox" data-bind="checked: appearance_colorTransparent"> {{ _('Transparent Color') }}
-            </label>
-        </div>
-    </div>
-    <div class="control-group" title="">
-        <label class="control-label" for="settings-appearanceLanguages">{{ _('Language Packs') }}</label>
-        <div class="controls">
-            <button class="btn yellow" data-bind="click: showTranslationManager">{{ _('Manage...') }}</button>
-        </div>
-    </div>
+{#    <div class="control-group" title="{{ _('Name of this BEESOFT instance, will be shown in the navigation bar and broadcast on the network') }}">#}
+{#        <label class="control-label" for="settings-appearanceName">{{ _('Title') }}</label>#}
+{#        <div class="controls">#}
+{#            <input type="text" class="input-block-level" data-bind="value: appearance_name" id="settings-appearanceName">#}
+{#        </div>#}
+{#    </div>#}
+{#    <div class="control-group" title="{{ _('Personalize the color of the navigation bar') }}">#}
+{#        <label class="control-label" for="settings-appearanceColor">{{ _('Color') }}</label>#}
+{#        <div class="controls">#}
+{#            <select id="settings-appearanceColor" data-bind="value: appearance_color, options: appearance_available_colors, optionsText: 'name', optionsValue: 'key'">#}
+{#            </select>#}
+{#        </div>#}
+{#    </div>#}
+{#    <div class="control-group" title="{{ _('For acrylic printers ;)') }}">#}
+{#        <div class="controls">#}
+{#            <label class="checkbox">#}
+{#                <input type="checkbox" data-bind="checked: appearance_colorTransparent"> {{ _('Transparent Color') }}#}
+{#            </label>#}
+{#        </div>#}
+{#    </div>#}
+{#    <div class="control-group" title="">#}
+{#        <label class="control-label" for="settings-appearanceLanguages">{{ _('Language Packs') }}</label>#}
+{#        <div class="controls">#}
+{#            <button class="btn yellow" data-bind="click: showTranslationManager">{{ _('Manage...') }}</button>#}
+{#        </div>#}
+{#    </div>#}
     <div class="control-group" title="">
         <label class="control-label" for="settings-appearanceDefaultLanguage">{{ _('Default Language') }}</label>
         <div class="controls">
@@ -36,13 +36,13 @@
             <span class="help-inline">{{ _('Changes to the default interface language will only become active after a reload of the page and only be active if not overridden by the user''s language settings.') }}</span>
         </div>
     </div>
-    <div class="control-group">
-        <div class="controls">
-            <label class="checkbox">
-                <input type="checkbox" data-bind="checked: appearance_showFahrenheitAlso" id="settings-appearanceShowFahrenheitAlso"> {{ _('Show temperatures in Fahrenheit as well as Celsius') }}
-            </label>
-        </div>
-    </div>
+{#    <div class="control-group">#}
+{#        <div class="controls">#}
+{#            <label class="checkbox">#}
+{#                <input type="checkbox" data-bind="checked: appearance_showFahrenheitAlso" id="settings-appearanceShowFahrenheitAlso"> {{ _('Show temperatures in Fahrenheit as well as Celsius') }}#}
+{#            </label>#}
+{#        </div>#}
+{#    </div>#}
 </form>
 
 <div id="settings_appearance_managelanguagesdialog" class="modal hide fade">

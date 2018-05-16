@@ -557,6 +557,9 @@ def _process_templates():
 	templates["settings"]["entries"] = dict(
 		section_features=(gettext("General Settings"), None),
 	)
+	templates["settings"]["entries"]["appearance"] = (gettext("Appearance"),
+													  dict(template="dialogs/settings/appearance.jinja2",
+														   _div="settings_appearance", custom_bindings=False))
 	templates["settings"]["entries"]["logs"] = (gettext("Logs"), dict(template="dialogs/settings/logs.jinja2", _div="settings_logs"))
 
 	if enable_accesscontrol:
@@ -567,9 +570,7 @@ def _process_templates():
 		templates["settings"]["entries"]["section_printer"]=(gettext("Printer"), None)
 		#templates["settings"]["entries"]["folders"]=(gettext("Serial Connection"), dict(template="dialogs/settings/serialconnection.jinja2", _div="settings_serialConnection", custom_bindings=False)),
 		templates["settings"]["entries"]["printerprofiles"]=(gettext("Printer Profiles"), dict(template="dialogs/settings/printerprofiles.jinja2", _div="settings_printerProfiles", custom_bindings=False))
-
 		templates["settings"]["entries"]["folders"] = (gettext("Folders"), dict(template="dialogs/settings/folders.jinja2", _div="settings_folders", custom_bindings=False))
-		templates["settings"]["entries"]["appearance"] = (gettext("Appearance"),dict(template="dialogs/settings/appearance.jinja2", _div="settings_appearance", custom_bindings=False))
 		templates["settings"]["entries"]["temperatures"] = (gettext("Temperatures"), dict(template="dialogs/settings/temperatures.jinja2", _div="settings_temperature", custom_bindings=False))
 		templates["settings"]["entries"]["terminalfilters"] = (gettext("Terminal Filters"), dict(template="dialogs/settings/terminalfilters.jinja2", _div="settings_terminalFilters", custom_bindings=False))
 		templates["settings"]["entries"]["gcodescripts"] = (gettext("GCODE Scripts"), dict(template="dialogs/settings/gcodescripts.jinja2", _div="settings_gcodeScripts", custom_bindings=False))
