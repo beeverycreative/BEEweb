@@ -392,10 +392,6 @@ class PrintEventStatistics:
 			del self._stats["firmware_version"]
 			self._dirty = True
 
-	def remove_print_options(self):
-		if self._stats is not None and "print_options" in self._stats:
-			del self._stats["print_options"]
-			self._dirty = True
 
 	def remove_redundant_information(self):
 		"""
