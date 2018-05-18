@@ -717,7 +717,7 @@ $(function() {
                 return false;
             }
 
-            if (self.filename() == undefined) {
+            if (self.filename() === undefined) {
                 return false;
             }
 

@@ -6,7 +6,6 @@ $(function () {
 		var currentMaterialSelected = null;
 		var currentBrandSelected = null;
 
-		self.profile_quality_droplist = ko.observableArray();
 		self.selQualityDroplist = ko.observable();
 
 		self.selNozzle = undefined;
@@ -75,8 +74,7 @@ $(function () {
 					if (aName.toLocaleLowerCase() < bBrand.toLocaleLowerCase()) return -1;
 					if (aName.toLocaleLowerCase() > bBrand.toLocaleLowerCase()) return 1;
 					return 0;
-				},
-
+				}
 			},
 			{},
 			"id",
@@ -102,7 +100,7 @@ $(function () {
 					if (aName.toLocaleLowerCase() < bBrand.toLocaleLowerCase()) return -1;
 					if (aName.toLocaleLowerCase() > bBrand.toLocaleLowerCase()) return 1;
 					return 0;
-				},
+				}
 			},
 			{},
 			"id",
@@ -128,7 +126,7 @@ $(function () {
 					if (aName.toLocaleLowerCase() < bBrand.toLocaleLowerCase()) return -1;
 					if (aName.toLocaleLowerCase() > bBrand.toLocaleLowerCase()) return 1;
 					return 0;
-				},
+				}
 			},
 			{},
 			"id",
@@ -136,7 +134,6 @@ $(function () {
 			[],
 			20
 		);
-
 
 		self._sanitize = function (name) {
 			return name.replace(/[^a-zA-Z0-9\-_\.\(\) ]/g, "").replace(/ /g, "_");
@@ -272,7 +269,6 @@ $(function () {
 		};
 
 		self.editProfile = function (data) {
-
 			$.ajax({
 				url: API_BASEURL + "slicing/curaX/getProfileQuality/" + data["key"],
 				type: "GET",
@@ -349,9 +345,7 @@ $(function () {
 						inputValue = +inputValue; // If the input value is numeric transforms it into a number
 					}
 					form[info.id.replace('ed_', '')] = inputValue;
-
 				}
-
 			});
 
 			$.ajax({
@@ -403,7 +397,7 @@ $(function () {
 			if (self.profiles.allItems.length === 0) {
 				$('#profile_message').text("No material selected");
 				$('#_profiles_tab_indicator_').text("No material selected");
-				$('#_profiles_tab_infomation_indicator_').text("No material selected");
+				$('#_profiles_tab_information_indicator_').text("No material selected");
 			}
 
 			var brand = [];
@@ -484,7 +478,7 @@ $(function () {
 			});
 
 			$('#_profiles_tab_indicator_').text(data['key']);
-			$('#_profiles_tab_infomation_indicator_').text(data['key']);
+			$('#_profiles_tab_information_indicator_').text(data['key']);
 
 			//$("#material_tab").collapse("hide");
 			$("#profiles_tab").collapse("show");
@@ -563,14 +557,15 @@ $(function () {
 				type: "GET",
 				dataType: "json",
 				success: function (data) {
-					var $current = $('#settings_plugin_curaX_new_material').find('div').find('input');
-					for (var i = 0; i < $current.length; i++) {
-						var fieldID = $current[i].id;
-						if ($current[i].type === 'number' || $current[i].type === 'text')
+					var newMaterialDialog = $('#settings_plugin_curaX_new_material');
+					var formInputs = newMaterialDialog.find('div').find('input');
+					for (var i = 0; i < formInputs.length; i++) {
+						var fieldID = formInputs[i].id;
+						if (formInputs[i].type === 'number' || formInputs[i].type === 'text')
 							$('#' + fieldID).val(data[fieldID].default_value);
 					}
 
-					$("#settings_plugin_curaX_new_material").modal("show");
+					newMaterialDialog.modal("show");
 				}
 			});
 		};
@@ -590,10 +585,10 @@ $(function () {
 					type: "GET",
 					dataType: "json",
 					success: function (data) {
-						var $current = $('#newProfile_panel').find('div').find('input');
-						for (var i = 0; i < $current.length; i++) {
-							var fieldID = $current[i].id;
-							if ($current[i].type === 'number' || $current[i].type === 'text')
+						var formInputs = $('#newProfile_panel').find('div').find('input');
+						for (var i = 0; i < formInputs.length; i++) {
+							var fieldID = formInputs[i].id;
+							if (formInputs[i].type === 'number' || formInputs[i].type === 'text')
 								$('#' + fieldID).val(data[fieldID.replace('new', '')].default_value);
 						}
 
@@ -616,14 +611,15 @@ $(function () {
 				type: "GET",
 				dataType: "json",
 				success: function (data) {
-					var $current = $('#settings_plugin_curaX_new_material').find('div').find('input');
-					for (var i = 0; i < $current.length; i++) {
-						var fieldID = $current[i].id;
-						if ($current[i].type === 'number' || $current[i].type === 'text')
+					var newMaterialDialog = $('#settings_plugin_curaX_new_material');
+					var formInputs = newMaterialDialog.find('div').find('input');
+					for (var i = 0; i < formInputs.length; i++) {
+						var fieldID = formInputs[i].id;
+						if (formInputs[i].type === 'number' || formInputs[i].type === 'text')
 							$('#' + fieldID).val(data[fieldID].default_value);
 					}
 
-					$("#settings_plugin_curaX_new_material").modal("show");
+					newMaterialDialog.modal("show");
 				}
 			});
 
@@ -637,11 +633,11 @@ $(function () {
 			self._hideMessageContainers();
 			var form = {};
 
-			var $current = $('#newProfile_panel').find('div').find('input');
+			var formInputs = $('#newProfile_panel').find('div').find('input');
 
-			for (var i = 0; i < $current.length; i++) {
-				var fieldID = $current[i].id;
-				if ($current[i].type === 'number')
+			for (var i = 0; i < formInputs.length; i++) {
+				var fieldID = formInputs[i].id;
+				if (formInputs[i].type === 'number')
 					form[fieldID.replace('new', '')] = $('#' + fieldID).val();
 			}
 
@@ -662,7 +658,7 @@ $(function () {
 					self.getProfilesInheritsMaterials(currentMaterialSelected, currentBrandSelected);
 				},
 				error: function () {
-					self._showErrorMsg(gettext('Error saving profile. Please consult the logs.'))
+					self._showErrorMsg(gettext('Error saving profile. Please consult the logs.'));
 					$("#settings_plugin_curaX_new_profile").modal("hide");
 				}
 			});

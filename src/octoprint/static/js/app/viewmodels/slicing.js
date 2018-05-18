@@ -798,10 +798,10 @@ $(function() {
                 url: API_BASEURL + "slicing/curaX/getProfileQuality/" + self.selColor() ,
                 type: "GET",
                 dataType: "json",
-                success:function (current) {
+                success:function (profileQualities) {
                     self.qualityProfiles.removeAll();
-                    for (var options in current ) {
-                        self.qualityProfiles.push(options.toUpperCase().trim());
+                    for (var option in profileQualities) {
+                        self.qualityProfiles.push(option.toUpperCase().trim());
                     }
 
                     self.getProfileToEdit();
@@ -841,8 +841,6 @@ $(function() {
                     form[_input.id] = $('#'+ _input.id).val();
             });
 
-            console.log(form);
-
             $.ajax({
                 url: API_BASEURL + "slicing/curaX/confirmEdition/" + self.selColor() + "/" + self.selQuality() + "/" + self.selNozzle(),
                 type: "PUT",                //
@@ -850,6 +848,8 @@ $(function() {
                 data: JSON.stringify(form), // send the data
                 contentType: "application/json; charset=UTF-8",
                 success: function() {
+                	var html = _.sprintf(gettext("Print profile updated."));
+                	new PNotify({title: gettext("Profile saved"), text: html, type: "success", hide: true});
                 }
             });
         };
@@ -876,7 +876,6 @@ $(function() {
         self.qualityProfileChanged = function(){
             self.getProfileToEdit(self.selColor());
         };
-
 
 
         $(document).on("click",".panel_collapse_options", function() {
