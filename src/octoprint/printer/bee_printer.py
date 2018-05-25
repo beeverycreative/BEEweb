@@ -161,10 +161,10 @@ class BeePrinter(Printer):
                 currentPrinterFile = self._comm.getCurrentFileNameFromPrinter()
 
                 if currentPrinterFile is not None and lastFile != currentPrinterFile:
-                    # This means the the connection was established with a different printer than before or
-                    # the file is missing so we must create a generic (empty) file information with just
+                    # This means that the connection was established with a different printer or in a different PC
+                    # than before and the file is missing so we must create a generic (empty) file information with just
                     # the name returned by the printer
-                    self.select_file(PrintingFileInformation(currentPrinterFile), False)
+                    self.select_unexistent_file(currentPrinterFile)
                 else:
                     # Calls the select_file with the real previous PrintFileInformation object to recover the print status
                     if self._currentPrintJobFile is not None:
@@ -231,10 +231,6 @@ class BeePrinter(Printer):
             self._logger.info("Cannot load file: printer not connected or currently busy")
             return
 
-        if path is not None and isinstance(path, PrintingFileInformation):
-            self._comm._currentFile = path
-            return
-
         self._printAfterSelect = printAfterSelect
 
         # saves the selected file analysis info to be later passed to the printer in the communications layer
@@ -251,6 +247,37 @@ class BeePrinter(Printer):
         settings().set(['lastPrintJobFile'], path)
         settings().save()
 
+
+    def select_unexistent_file(self, filename):
+        """
+        This method is used to select an non existent file, in situations like resuming from shutdown when switching
+        to another PC
+        :return:
+        """
+        shadow_file = PrintingFileInformation(filename)
+
+        self._comm._currentFile = shadow_file
+        self._selectedFile = {
+                "filename": filename,
+                "filesize": 0,
+                "sd": None,
+                "estimatedPrintTime": None
+        }
+        self._stateMonitor.set_job_data({
+            "file": {
+                "name": filename,
+                "path": None,
+                "origin": None,
+                "size": None,
+                "date": None
+            },
+            "estimatedPrintTime": None,
+            "averagePrintTime": None,
+            "lastPrintTime": None,
+            "filament": None,
+        })
+
+        return
 
     # # # # # # # # # # # # # # # # # # # # # # #
     ############# PRINTER ACTIONS ###############
