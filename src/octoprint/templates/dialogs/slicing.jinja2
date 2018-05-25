@@ -187,7 +187,8 @@
                             <div class="filament-div">
                                 <span class="small-label">{{ _('FILAMENT') }}:</span>
                                 <span class="filament" data-bind="text: selColor, visible: !estimationDialog()"></span>
-                                <select data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
+                                <select data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog(),
+                                event: { change: $root.filamentColorChanged }" ></select>
                                 <div class="remaining-filament" data-bind="visible: !estimationDialog() && filamentInSpool">
                                     <div>{{ _('Remaining filament') }}:  <span data-bind="text: filamentInSpool" ></span> (g)</div>
                                 </div>

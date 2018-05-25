@@ -739,11 +739,13 @@ $(function() {
         self.fetchAdvancedOptions = function(callback){
 
             $.ajax({
-               url: API_BASEURL+"slicing/curaX/getOptions",
-               type: "GET",
-               dataType:"json",
-               success: function(data){
-                   _.each(data.options,function(dinamic){
+            	url: API_BASEURL+"slicing/curaX/getOptions",
+            	type: "GET",
+            	dataType:"json",
+            	success: function(data){
+            		$('#dynamic_advanced_options').empty();
+
+            		_.each(data.options,function(dinamic){
                        $('#dynamic_advanced_options').append('<label class="control-label advanced-slice-option closed">' + dinamic.id +'</label>' + '<div id="'+ dinamic.id+'" class="control-group"></div>');
 
                        _.each(dinamic.list,function(din_type){
@@ -873,8 +875,24 @@ $(function() {
             }
         };
 
-        self.qualityProfileChanged = function(){
+		/**
+		 * This method is responsible for updating the advanced options form when a different quality
+		 * is selected (High, Medium, etc)
+		 */
+        self.qualityProfileChanged = function() {
             self.getProfileToEdit(self.selColor());
+        };
+
+		/**
+		 * This method is responsible for updating the advanced options form when another Filament
+		 * color is select (when the advanced options is active)
+		 */
+		self.filamentColorChanged = function() {
+			var advancedSettingsForm = $('#slicing_configuration_dialog_advanced_settings');
+			if(!advancedSettingsForm.hasClass('hidden')) {
+
+				self.fetchAdvancedOptions(self.updateAvailableQuality);
+			}
         };
 
 
