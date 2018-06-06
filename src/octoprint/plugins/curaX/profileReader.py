@@ -163,25 +163,26 @@ class ProfileReader(object):
 		settings = {}
 		for field in overrides:
 			if field == "fill_density":
-				settings['infill_sparse_density'] = {'default_value' : overrides[field]}
+				fill_density_value = float(overrides[field])
+				settings['infill_sparse_density'] = {'default_value' : fill_density_value }
 
 				infill_line_width = engine_settings['infill_line_width']['default_value']
 
 				multiplier = 1
 				if engine_settings['infill_pattern']['default_value'] == 'grid':
 					multiplier = 2
-				elif engine_settings['infill_pattern']['default_value'] in ['triangles','cubic','cubicsubdiv']:
+				elif engine_settings['infill_pattern']['default_value'] in ['triangles','cubic', 'cubicsubdiv']:
 					multiplier = 3
 				elif engine_settings['infill_pattern']['default_value'] in ['tetrahedral','quarter_cubic']:
 					multiplier = 2
 				elif engine_settings['infill_pattern']['default_value'] in ['cross','cross_3d']:
 					multiplier = 1
 
-				infill_line_dist = (multiplier * infill_line_width * 100) / float(overrides[field])
+				if float(fill_density_value) == 0:
+					infill_line_dist = 0
+				else:
+					infill_line_dist = (multiplier * infill_line_width * 100) / fill_density_value
 				settings['infill_line_distance'] = {'default_value': infill_line_dist}
-
-
-				#engine_settings = cls.merge_profile_key(engine_settings, "infill_sparse_density", overrides[field])
 
 			if field == "platform_adhesion":
 				if overrides[field] in ["none", "brim", "raft", "skirt"]:
