@@ -1249,11 +1249,21 @@ class BeePrinter(Printer):
             if measuredFilamentInput and measuredFilamentInput >= 100:
                 currSteps = float(self.getExtruderStepsMM())
                 newSteps = currSteps * float(extrudedAmmount) / float(measuredFilamentInput)
-                return self._comm.setExtruderStepsMM('{0:.2f}'.format(newSteps))
+
+                op_result = self._comm.setExtruderStepsMM('{0:.2f}'.format(newSteps))
+
+                # registers the extruder calibration statistics
+                calib_value = round(newSteps, 2)
+                self._stats.register_extruder_calibration(calib_value)
+                self._printerStats.register_extruder_calibration(calib_value)
+                self._save_usage_statistics()
+
+                return op_result
             elif measuredFilamentInput is None:
                 return self._comm.setExtruderStepsMM('{0:.4f}'.format(441.3897))
             else:
                 raise Exception('Invalid Extruder value input')
+
         except Exception as ex:
             self._logger.error(ex)
 
