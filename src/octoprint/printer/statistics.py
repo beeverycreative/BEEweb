@@ -539,18 +539,19 @@ class StatisticsServerClient:
 			request_headers = {'Content-type': 'application/json', 'Authorization': 'Token ' + self.STATS_AUTH}
 
 			print_events_filepath = os.path.join(settings().getBaseFolder('statistics'), "print_stats.json")
-			with open(print_events_filepath) as json_data:
-				payload = json.load(json_data)
+			if os.stat(print_events_filepath).st_size > 0:
+				with open(print_events_filepath) as json_data:
+					payload = json.load(json_data)
 
-				resp = requests.post(url, json=payload, headers=request_headers, verify=False)
+					resp = requests.post(url, json=payload, headers=request_headers, verify=False)
 
-				if resp.status_code != requests.codes.created:
-					self._logger.error('Error uploading print events usage statistics. Server response code: %s' %
-					resp.status_code)
-				else:
-					self._logger.info('Print events usage statistics uploaded with success')
-					# if the upload was ok, erases the file contents
-					open(print_events_filepath, 'w').close()
+					if resp.status_code != requests.codes.created:
+						self._logger.error('Error uploading print events usage statistics. Server response code: %s' %
+						resp.status_code)
+					else:
+						self._logger.info('Print events usage statistics uploaded with success')
+						# if the upload was ok, erases the file contents
+						open(print_events_filepath, 'w').close()
 		except Exception as ex:
 			self._logger.error('Error sending print events usage statistics: ' + str(ex))
 			raise ex
@@ -575,3 +576,4 @@ class StatisticsServerClient:
 				settings().save()
 		except Exception as ex:
 			self._logger.error('Failed sending statistics to server.')
+			self._logger.exception(ex)
