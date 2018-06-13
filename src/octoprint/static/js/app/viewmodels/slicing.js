@@ -25,6 +25,7 @@ $(function() {
 
         self.colors = ko.observableArray();
         self.selColor = ko.observable();
+        self.filamentLabel = ko.observable();
         self.selDensity = ko.observable("Low");
         self.customDensity = ko.observable();
         self.selResolution = ko.observable("Medium");
@@ -268,16 +269,17 @@ $(function() {
 
                     if (data.filament !== null) {
                         self.colors().forEach(function(elem) {
-
                             if (elem === data.filament) {
                                 self.selColor(elem);
                             }
                         });
+                        self.filamentLabel(data.filament);
                     } else {
-                        // Selects the first color from the list by default
+                        //Selects the first color from the list by default
                         if (self.colors().length > 0) {
                             self.selColor(self.colors()[0]);
                         }
+                        self.filamentLabel('-');
                     }
 
 					if (data.filamentInSpool === null) {
@@ -289,11 +291,11 @@ $(function() {
             });
         };
         self.enableHighPlusResolution = ko.pureComputed(function() {
-            return self.selNozzle() != "0.6";
+            return self.selNozzle() !== "0.6";
         });
 
         self.forPrint = function() {
-            if (self.afterSlicing() != "none")
+            if (self.afterSlicing() !== "none")
                 return true;
 
             return false;
@@ -499,8 +501,20 @@ $(function() {
         };
 
         self.slice = function(modelToRemoveAfterSlice) {
+
+        	if (!self.filamentLabel || self.filamentLabel === '' || self.filamentLabel === '-') {
+            	html = _.sprintf(gettext("Please load a filament using the Change Filament maintenance operation."));
+            	new PNotify({title: gettext("No filament loaded in the printer"), text: html, type: "error", hide: false});
+
+            	self.sliceButtonControl(true);
+            	self.slicingInProgress(false);
+            	self.estimating(false);
+            	self.estimateButtonControl(true);
+            	return;
+            }
+
             // Selects the slicing profile based on the color and resolution
-            if (self.selColor() !== null && self.selResolution() !== null) {
+            if (self.selColor() && self.selResolution()) {
 
                 _.each(self.profiles(), function(profile) {
                     // checks if the profile contains the selected color and nozzle size

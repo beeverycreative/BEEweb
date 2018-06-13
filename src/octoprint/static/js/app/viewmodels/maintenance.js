@@ -325,7 +325,6 @@ $(function() {
         self.nextStep3 = function() {
             // Heating is finished, let's move on
             self._heatingDone();
-            self.saveFilament();
 
             $('#step3').removeClass('hidden');
             $('#step4').addClass('hidden');
@@ -460,6 +459,9 @@ $(function() {
                 success: function() {
                     self.commandLock(false);
                     self._hideMovingMessage();
+
+                    // Saves the filament string after the load
+                    self.saveFilament();
                 },
                 error: function() {
                     self.commandLock(false);
@@ -479,7 +481,6 @@ $(function() {
                 type: "POST",
                 dataType: "json",
                 success: function() {
-
                     self.commandLock(false);
                     self._hideMovingMessage();
                 },

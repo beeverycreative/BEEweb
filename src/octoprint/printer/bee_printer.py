@@ -540,7 +540,11 @@ class BeePrinter(Printer):
         :return:
         """
         try:
-            return self._comm.unload()
+            unload_result = self._comm.unload()
+            # resets the filament string in the printer memory to empty
+            self.setFilamentString('')
+
+            return unload_result
         except Exception as ex:
             self._logger.error(ex)
 
