@@ -13,16 +13,18 @@ from octoprint.settings import settings
 
 class BaseStatistics:
 	BASE_STATS = {
-		"software_id": str(uuid.uuid1()),
-		"total_prints": 0,
-		"total_cancelled_prints": 0,
-		"total_filament_changes": 0,
-		"avg_prints_per_calibration": 0,
-		"total_calibrations": 0,
-		"total_prints_since_last_calibration": 0,
-		"total_nozzle_changes": 0,
-		"total_extruder_maintenance": 0,
-		"total_calibration_tests": 0,
+		'software_id': str(uuid.uuid1()),
+		'total_prints': 0,
+		'total_cancelled_prints': 0,
+		'total_filament_changes': 0,
+		'avg_prints_per_calibration': 0,
+		'total_calibrations': 0,
+		'total_prints_since_last_calibration': 0,
+		'total_nozzle_changes': 0,
+		'total_extruder_maintenance': 0,
+		'total_calibration_tests': 0,
+		'total_extruder_calibration': 0,
+		'extruder_calibration_value': 0.0
 		# "workbench_move": 0,
 		# "workbench_rotate": 0,
 		# "workbench_scale": 0
@@ -75,8 +77,15 @@ class BaseStatistics:
 		:return boolean True if the stats were successfully saved
 		"""
 		try:
-			self._stats["total_prints"] = self._stats["total_prints"] + 1
-			self._stats["total_prints_since_last_calibration"] = self._stats["total_prints_since_last_calibration"] + 1
+			if 'total_prints' in self._stats:
+				self._stats['total_prints'] = self._stats['total_prints'] + 1
+			else:
+				self._stats['total_prints'] = 1
+
+			if 'total_prints_since_last_calibration' in self._stats:
+				self._stats['total_prints_since_last_calibration'] = self._stats['total_prints_since_last_calibration'] + 1
+			else:
+				self._stats['total_prints_since_last_calibration'] = 1
 			self._dirty = True
 
 		except Exception as ex:
@@ -92,7 +101,10 @@ class BaseStatistics:
 		"""
 
 		try:
-			self._stats["total_cancelled_prints"] = self._stats["total_cancelled_prints"] + 1
+			if 'total_cancelled_prints' in self._stats:
+				self._stats['total_cancelled_prints'] = self._stats['total_cancelled_prints'] + 1
+			else:
+				self._stats['total_cancelled_prints'] = 1
 			self._dirty = True
 
 		except Exception as ex:
@@ -107,7 +119,10 @@ class BaseStatistics:
 		:return boolean True if the stats were successfully saved
 		"""
 		try:
-			self._stats["total_filament_changes"] = self._stats["total_filament_changes"] + 1
+			if 'total_filament_changes' in self._stats:
+				self._stats['total_filament_changes'] = self._stats['total_filament_changes'] + 1
+			else:
+				self._stats['total_filament_changes'] = 1
 			self._dirty = True
 
 		except Exception as ex:
@@ -122,11 +137,15 @@ class BaseStatistics:
 		:return boolean True if the stats were successfully saved
 		"""
 		try:
-			self._stats["total_calibrations"] = self._stats["total_calibrations"] + 1
-			if self._stats["total_calibrations"] > 0:
-				self._stats["avg_prints_per_calibration"] = \
-					round(float(self._stats["total_prints"]) / float(self._stats["total_calibrations"]), 2)
-			self._stats["total_prints_since_last_calibration"] = 0
+			if 'total_calibrations' in self._stats:
+				self._stats['total_calibrations'] = self._stats['total_calibrations'] + 1
+			else:
+				self._stats['total_calibrations'] = 1
+				
+			if 'total_calibrations' in self._stats and self._stats['total_calibrations'] > 0:
+				self._stats['avg_prints_per_calibration'] = \
+					round(float(self._stats['total_prints']) / float(self._stats['total_calibrations']), 2)
+			self._stats['total_prints_since_last_calibration'] = 0
 			self._dirty = True
 
 		except Exception as ex:
@@ -142,7 +161,10 @@ class BaseStatistics:
 		:return boolean True if the stats were successfully saved
 		"""
 		try:
-			self._stats["total_calibration_tests"] = self._stats["total_calibration_tests"] + 1
+			if 'total_calibration_tests' in self._stats:
+				self._stats['total_calibration_tests'] = self._stats['total_calibration_tests'] + 1
+			else:
+				self._stats['total_calibration_tests'] = 1
 			self._dirty = True
 
 		except Exception as ex:
@@ -157,7 +179,10 @@ class BaseStatistics:
 		:return boolean True if the stats were successfully saved
 		"""
 		try:
-			self._stats["total_extruder_maintenance"] = self._stats["total_extruder_maintenance"] + 1
+			if 'total_extruder_maintenance' in self._stats:
+				self._stats['total_extruder_maintenance'] = self._stats['total_extruder_maintenance'] + 1
+			else:
+				self._stats['total_extruder_maintenance'] = 1
 			self._dirty = True
 
 		except Exception as ex:
@@ -172,7 +197,10 @@ class BaseStatistics:
 		:return boolean True if the stats were successfully saved
 		"""
 		try:
-			self._stats["total_nozzle_changes"] = self._stats["total_nozzle_changes"] + 1
+			if 'total_nozzle_changes' in self._stats:
+				self._stats['total_nozzle_changes'] = self._stats['total_nozzle_changes'] + 1
+			else:
+				self._stats['total_nozzle_changes'] = 1
 			self._dirty = True
 
 		except Exception as ex:
@@ -181,18 +209,38 @@ class BaseStatistics:
 
 		return True
 
+	def register_extruder_calibration(self, extruder_calibration_value):
+		"""
+		Logs an extruder calibration operation.
+		:param extruder_calibration_value
+		:return boolean True if the stats were successfully saved
+		"""
+		try:
+			if 'total_extruder_calibration' in self._stats:
+				self._stats['total_extruder_calibration'] = self._stats['total_extruder_calibration'] + 1
+			else:
+				self._stats['total_extruder_calibration'] = 1
+			self._stats["extruder_calibration_value"] = extruder_calibration_value
+			self._dirty = True
+
+		except Exception as ex:
+			self._logger.error("Unable to register extruder calibration statistics. Error: %s" % str(ex))
+			return False
+
+		return True
+
 class PrinterStatistics(BaseStatistics):
 	BASE_STATS = {
 		"printer_serial_number": "00000",
-		"total_prints": 0,
-		"total_cancelled_prints": 0,
-		"total_filament_changes": 0,
-		"avg_prints_per_calibration": 0,
-		"total_calibrations": 0,
-		"total_prints_since_last_calibration": 0,
-		"total_nozzle_changes": 0,
-		"total_extruder_maintenance": 0,
-		"total_calibration_tests": 0
+		'total_prints': 0,
+		'total_cancelled_prints': 0,
+		'total_filament_changes': 0,
+		'avg_prints_per_calibration': 0,
+		'total_calibrations': 0,
+		'total_prints_since_last_calibration': 0,
+		'total_nozzle_changes': 0,
+		'total_extruder_maintenance': 0,
+		'total_calibration_tests': 0
 	}
 
 	def __init__(self, printer_serial_number):
@@ -491,18 +539,19 @@ class StatisticsServerClient:
 			request_headers = {'Content-type': 'application/json', 'Authorization': 'Token ' + self.STATS_AUTH}
 
 			print_events_filepath = os.path.join(settings().getBaseFolder('statistics'), "print_stats.json")
-			with open(print_events_filepath) as json_data:
-				payload = json.load(json_data)
+			if os.stat(print_events_filepath).st_size > 0:
+				with open(print_events_filepath) as json_data:
+					payload = json.load(json_data)
 
-				resp = requests.post(url, json=payload, headers=request_headers, verify=False)
+					resp = requests.post(url, json=payload, headers=request_headers, verify=False)
 
-				if resp.status_code != requests.codes.created:
-					self._logger.error('Error uploading print events usage statistics. Server response code: %s' %
-					resp.status_code)
-				else:
-					self._logger.info('Print events usage statistics uploaded with success')
-					# if the upload was ok, erases the file contents
-					open(print_events_filepath, 'w').close()
+					if resp.status_code != requests.codes.created:
+						self._logger.error('Error uploading print events usage statistics. Server response code: %s' %
+						resp.status_code)
+					else:
+						self._logger.info('Print events usage statistics uploaded with success')
+						# if the upload was ok, erases the file contents
+						open(print_events_filepath, 'w').close()
 		except Exception as ex:
 			self._logger.error('Error sending print events usage statistics: ' + str(ex))
 			raise ex
@@ -527,3 +576,4 @@ class StatisticsServerClient:
 				settings().save()
 		except Exception as ex:
 			self._logger.error('Failed sending statistics to server.')
+			self._logger.exception(ex)

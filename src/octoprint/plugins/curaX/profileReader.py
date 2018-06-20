@@ -163,24 +163,25 @@ class ProfileReader(object):
 
 		for field in overrides:
 			if field == "infill_sparse_density":
-				settings['infill_sparse_density'] = {'default_value' : overrides[field]}
+				fill_density_value = float(overrides[field])
+				settings['infill_sparse_density'] = {'default_value' : fill_density_value}
 
 				infill_line_width = engine_settings['infill_line_width']['default_value']
 
 				multiplier = 1
 				if engine_settings['infill_pattern']['default_value'] == 'grid':
 					multiplier = 2
-				elif engine_settings['infill_pattern']['default_value'] in ['triangles','cubic','cubicsubdiv']:
+				elif engine_settings['infill_pattern']['default_value'] in ['triangles','cubic', 'cubicsubdiv']:
 					multiplier = 3
 				elif engine_settings['infill_pattern']['default_value'] in ['tetrahedral','quarter_cubic']:
 					multiplier = 2
 				elif engine_settings['infill_pattern']['default_value'] in ['cross','cross_3d']:
 					multiplier = 1
 
-				if overrides[field] == 0:
+				if fill_density_value == 0:
 					infill_line_dist = 0
 				else:
-					infill_line_dist = (multiplier * infill_line_width * 100) / float(overrides[field])
+					infill_line_dist = (multiplier * infill_line_width * 100) / fill_density_value
 
 				settings['infill_line_distance'] = {'default_value': infill_line_dist}
 
