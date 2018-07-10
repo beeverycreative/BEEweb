@@ -2,6 +2,17 @@
     <div class="control-group">
         <div class="controls">
             <label class="checkbox">
+                <input type="checkbox" data-bind="checked: feature_uploadStatistics" id="settings-featureUploadStatistics"> {{ _('Enable Anonymous Statistics') }}
+				<span class="help-inline">{% trans %}
+                    If enabled, a collection of anonymous statistics from the software and printer usage are periodically sent to a remote server.
+                {% endtrans %}</span>
+            </label>
+        </div>
+    </div>
+	{% if devMode == true %}
+    <div class="control-group">
+        <div class="controls">
+            <label class="checkbox">
                 <input type="checkbox" data-bind="checked: feature_temperatureGraph" id="settings-featureTemperatureGraph"> {{ _('Enable Temperature Graph') }}
             </label>
         </div>
@@ -117,4 +128,5 @@
             </div>
         </div>
     </div>
+    {% endif %}
 </form>

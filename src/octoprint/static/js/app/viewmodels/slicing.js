@@ -284,19 +284,19 @@ $(function() {
 
                     self.selNozzle(data.nozzle);
 
-                    if (data.filament !== null) {
+                    if (data.filament === null || data.filament === '') {
+                        //Selects the first color from the list by default
+                        if (self.colors().length > 0) {
+                            self.selColor(self.colors()[0]);
+                        }
+                        self.filamentLabel('-');
+                    } else {
                         self.colors().forEach(function(elem) {
                             if (elem === data.filament) {
                                 self.selColor(elem);
                             }
                         });
                         self.filamentLabel(data.filament);
-                    } else {
-                        //Selects the first color from the list by default
-                        if (self.colors().length > 0) {
-                            self.selColor(self.colors()[0]);
-                        }
-                        self.filamentLabel('-');
                     }
 
 					if (data.filamentInSpool === null) {
@@ -520,8 +520,7 @@ $(function() {
         };
 
         self.slice = function(modelToRemoveAfterSlice) {
-
-        	if (!self.filamentLabel || self.filamentLabel === '' || self.filamentLabel === '-') {
+        	if (!self.filamentLabel() || self.filamentLabel() === '' || self.filamentLabel() === '-') {
             	html = _.sprintf(gettext("Please load a filament using the Change Filament maintenance operation."));
             	new PNotify({title: gettext("No filament loaded in the printer"), text: html, type: "error", hide: false});
 

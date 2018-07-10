@@ -223,7 +223,8 @@ default_settings = {
 		"printCancelConfirmation": True,
 		"blockWhileDwelling": False,
 		"g90InfluencesExtruder": False,
-		"checkSufficientFilament": False
+		"checkSufficientFilament": False,
+		"uploadStatistics": True,
 	},
 	"folder": {
 		"uploads": None,
@@ -270,8 +271,8 @@ default_settings = {
 				"tab": ["workbench", "gcodeviewer", "control", "temperature", "terminal", "timelapse"],
 				"settings": [
 					"section_printer", "printerprofiles", "temperatures", "terminalfilters", "gcodescripts",
-					"section_features", "features",
-					"section_general_settings", "accesscontrol", "appearance", "server", "folders", "logs", "plugin_pluginmanager", "api", "webcam", "plugin_softwareupdate"
+					"section_features",
+					"section_general_settings", "accesscontrol", "appearance", "features", "server", "folders", "logs", "plugin_pluginmanager", "api", "webcam", "plugin_softwareupdate"
 				],
 				"usersettings": ["access", "interface"],
 				"wizard": ["access"],

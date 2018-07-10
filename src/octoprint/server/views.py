@@ -421,7 +421,7 @@ def _get_render_kwargs(templates, plugin_names, plugin_vars, now):
 	first_run = settings().getBoolean(["server", "firstRun"])
 	locales = dict((l.language, dict(language=l.language, display=l.display_name, english=l.english_name)) for l in LOCALES)
 	extensions = map(lambda ext: ".{}".format(ext), get_all_extensions())
-
+	dev_mode = userManager.devModeEnabled()
 	#~~ prepare full set of template vars for rendering
 
 	render_kwargs = dict(
@@ -433,7 +433,8 @@ def _get_render_kwargs(templates, plugin_names, plugin_vars, now):
 		pluginNames=plugin_names,
 		locales=locales,
 		supportedExtensions=extensions,
-		desktopApp=octoprint.server.DESKTOP_APP
+		desktopApp=octoprint.server.DESKTOP_APP,
+		devMode=dev_mode
 	)
 	render_kwargs.update(plugin_vars)
 
@@ -560,8 +561,12 @@ def _process_templates():
 	templates["settings"]["entries"]["appearance"] = (gettext("Appearance"),
 													  dict(template="dialogs/settings/appearance.jinja2",
 														   _div="settings_appearance", custom_bindings=False))
-	templates["settings"]["entries"]["logs"] = (gettext("Logs"), dict(template="dialogs/settings/logs.jinja2", _div="settings_logs"))
 
+	templates["settings"]["entries"]["logs"] = (gettext("Logs"), dict(template="dialogs/settings/logs.jinja2", _div="settings_logs"))
+	templates["settings"]["entries"]["features"] = (gettext("Features"),
+													dict(template="dialogs/settings/features.jinja2",
+														 _div="settings_features", custom_bindings=False))
+														 
 	if enable_accesscontrol:
 		templates["settings"]["entries"]["accesscontrol"] = (gettext("Access Control"), dict(template="dialogs/settings/accesscontrol.jinja2", _div="settings_users", custom_bindings=False))
 
@@ -574,7 +579,6 @@ def _process_templates():
 		templates["settings"]["entries"]["temperatures"] = (gettext("Temperatures"), dict(template="dialogs/settings/temperatures.jinja2", _div="settings_temperature", custom_bindings=False))
 		templates["settings"]["entries"]["terminalfilters"] = (gettext("Terminal Filters"), dict(template="dialogs/settings/terminalfilters.jinja2", _div="settings_terminalFilters", custom_bindings=False))
 		templates["settings"]["entries"]["gcodescripts"] = (gettext("GCODE Scripts"), dict(template="dialogs/settings/gcodescripts.jinja2", _div="settings_gcodeScripts", custom_bindings=False))
-		templates["settings"]["entries"]["features"] = (gettext("Features"), dict(template="dialogs/settings/features.jinja2", _div="settings_features", custom_bindings=False))
 		templates["settings"]["entries"]["api"] = (gettext("API"), dict(template="dialogs/settings/api.jinja2", _div="settings_api", custom_bindings=False))
 
 		templates["settings"]["entries"]["server"] = (gettext("Server"),

@@ -481,9 +481,9 @@ class StatisticsServerClient:
 	"""
 	Class used as communication interface with the statistics server
 	"""
-	STATS_HOST = 'https://beestats.beeverycreative.local'
+	STATS_HOST = 'https://beestats.westus2.cloudapp.azure.com'
 	STATS_PORT = 443
-	STATS_AUTH = '0d676254058389e6a06c903a2e7d8897f7d05dde'
+	STATS_AUTH = 'e4ea2c92f97d7e497664380922a4dd33567951ed'
 
 	_conn = None
 
@@ -559,12 +559,16 @@ class StatisticsServerClient:
 
 	def gather_and_send_statistics(self):
 		try:
+			if settings().get(['feature','uploadStatistics']) is False:
+				self._logger.warning('Statistics upload disabled. Skipping...')
+				return
+
 			import datetime
-			lastStatsUploadDate = settings().get(['lastStatisticsUpload'])
+			lastStatsUploadDateStr = settings().get(['lastStatisticsUpload'])
+			lastStatsUploadDatetime = datetime.datetime.strptime(lastStatsUploadDateStr, '%Y-%m-%d %H:%M:%S.%fs')
 			sendThreshold = datetime.datetime.today() - datetime.timedelta(days=7)  # on week ago
 			# Checks if the send threshold was already reached, and if so sends a new batch of usage statistics
-
-			if lastStatsUploadDate is None or sendThreshold > lastStatsUploadDate:
+			if lastStatsUploadDateStr is None or sendThreshold > lastStatsUploadDatetime:
 
 				self._send_base_statistics()
 				self._send_printer_statistics()

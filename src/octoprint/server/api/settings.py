@@ -129,7 +129,8 @@ def getSettings():
 			"firmwareDetection": s.getBoolean(["feature", "firmwareDetection"]),
 			"printCancelConfirmation": s.getBoolean(["feature", "printCancelConfirmation"]),
 			"blockWhileDwelling": s.getBoolean(["feature", "blockWhileDwelling"]),
-			"g90InfluencesExtruder": s.getBoolean(["feature", "g90InfluencesExtruder"])
+			"g90InfluencesExtruder": s.getBoolean(["feature", "g90InfluencesExtruder"]),
+			"uploadStatistics": s.getBoolean(['feature','uploadStatistics'])
 		},
 		"usb": {
 			"autoconnect": s.getBoolean(["usb", "autoconnect"]),
@@ -340,6 +341,7 @@ def _saveSettings(data):
 		if "printCancelConfirmation" in data["feature"]: s.setBoolean(["feature", "printCancelConfirmation"], data["feature"]["printCancelConfirmation"])
 		if "blockWhileDwelling" in data["feature"]: s.setBoolean(["feature", "blockWhileDwelling"], data["feature"]["blockWhileDwelling"])
 		if "g90InfluencesExtruder" in data["feature"]: s.setBoolean(["feature", "g90InfluencesExtruder"], data["feature"]["g90InfluencesExtruder"])
+		if "uploadStatistics" in data["feature"]: s.setBoolean(["feature", "uploadStatistics"], data["feature"]["uploadStatistics"])
 
 	if "usb" in data.keys():
 		if "autoconnect" in data["usb"].keys(): s.setBoolean(["usb", "autoconnect"], data["usb"]["autoconnect"])
