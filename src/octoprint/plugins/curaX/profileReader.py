@@ -129,18 +129,7 @@ class ProfileReader(object):
 			# get nozzle overrides
 			nozzle_Overrides = cls.getNozzleOverrides(nozzle, profile_path)
 
-			# merge everything together
-			for key in filament_Overrides.keys():
-				if key not in raw_settings.keys():
-					raw_settings[key] = {}
-				raw_settings[key].update(filament_Overrides[key])
-			for key in nozzle_Overrides.keys():
-				if key not in raw_settings.keys():
-					raw_settings[key] = {}
-				raw_settings[key].update(nozzle_Overrides[key])
-			#engine_settings = cls.merge_dicts(engine_settings, filament_Overrides, nozzle_Overrides)
-			# merge interface overrides
-
+			# populates the final engine_settings with the values from the fdmprinter and specific printer settings
 			for key in raw_settings.keys():
 				if 'default_value' in raw_settings[key].keys():
 					engine_settings[key] = raw_settings[key]
@@ -148,6 +137,17 @@ class ProfileReader(object):
 					for k in raw_settings[key].keys():
 						if 'default_value' in raw_settings[key][k].keys():
 							engine_settings[k] = raw_settings[key][k]
+
+			# merge the filament and nozzle overrides with the engine_settings
+			for key in filament_Overrides.keys():
+				if key not in engine_settings.keys():
+					engine_settings[key] = {}
+				engine_settings[key].update(filament_Overrides[key])
+
+			for key in nozzle_Overrides.keys():
+				if key not in engine_settings.keys():
+					engine_settings[key] = {}
+				engine_settings[key].update(nozzle_Overrides[key])
 
 			interface_overrides = cls.overrideCustomValues(engine_settings,overrides)
 			# merge interface overrides
@@ -374,15 +374,15 @@ class ProfileReader(object):
 	def getParentOverrides(cls, filament_id, nozzle_id, slicer_profile_path):
 		overrides_values = {}
 		with open(slicer_profile_path +'Materials/' + filament_id + ".json") as data_file:
-			filament_json = json.load(data_file)
+			material_json = json.load(data_file)
 
 		# check for overrides
-		if 'overrides' in filament_json:
-			for key in filament_json['overrides'].keys():
-				overrides_values.update(filament_json['overrides'][key])
+		if 'overrides' in material_json:
+			for key in material_json['overrides'].keys():
+				overrides_values.update(material_json['overrides'][key])
 		# check if has parent, if so, gets overrides
-		if 'inherits' in filament_json:
-			overrides_values = cls.merge_dicts(cls.getParentOverrides(filament_json['inherits'], nozzle_id, slicer_profile_path), overrides_values)
+		if 'inherits' in material_json:
+			overrides_values = cls.merge_dicts(cls.getParentOverrides(material_json['inherits'], nozzle_id, slicer_profile_path), overrides_values)
 
 		return overrides_values
 
