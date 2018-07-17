@@ -564,12 +564,13 @@ class StatisticsServerClient:
 				return
 
 			import datetime
-			lastStatsUploadDateStr = settings().get(['lastStatisticsUpload'])
-			lastStatsUploadDatetime = datetime.datetime.strptime(lastStatsUploadDateStr, '%Y-%m-%d %H:%M:%S.%fs')
+			lastStatsUploadDate = settings().get(['lastStatisticsUpload'])
+			if type(lastStatsUploadDate) is not datetime.datetime:
+				lastStatsUploadDate = datetime.datetime.strptime(lastStatsUploadDate, '%Y-%m-%d %H:%M:%S.%fs')
+
 			sendThreshold = datetime.datetime.today() - datetime.timedelta(days=7)  # on week ago
 			# Checks if the send threshold was already reached, and if so sends a new batch of usage statistics
-			if lastStatsUploadDateStr is None or sendThreshold > lastStatsUploadDatetime:
-
+			if lastStatsUploadDate is None or sendThreshold > lastStatsUploadDate:
 				self._send_base_statistics()
 				self._send_printer_statistics()
 				self._send_print_events_statistics()
