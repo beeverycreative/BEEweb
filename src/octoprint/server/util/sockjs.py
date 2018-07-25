@@ -195,6 +195,9 @@ class PrinterStateConnection(sockjs.tornado.SockJSConnection, octoprint.printer.
 	def sendFirmwareUpdateAvailable(self, firmwareVersion):
 		self._emit("firmwareUpdate", dict(version=firmwareVersion))
 
+	def sendSerialNumberPrompt(self):
+		self._emit("serialNumberPrompt", dict())
+
 	def on_plugin_message(self, plugin, data):
 		self._emit("plugin", dict(plugin=plugin, data=data))
 

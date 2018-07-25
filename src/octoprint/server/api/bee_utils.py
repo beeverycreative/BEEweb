@@ -230,3 +230,19 @@ def saveModelInformation():
 	return jsonify({
 		"success": res
 	})
+
+
+@api.route("/save_printer_serial_number", methods=["POST"])
+@restricted_access
+def savePrinterSerialNumber():
+	if not "application/json" in request.headers["Content-Type"]:
+		return make_response("Expected content-type JSON", 400)
+
+	data = request.json
+	serial_number = data['serial_number']
+
+	res = printer.setPrinterSerialNumber(serial_number)
+
+	return jsonify({
+		"success": res
+	})

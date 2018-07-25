@@ -279,6 +279,10 @@ function DataUpdater(allViewModels) {
         });
     };
 
+    self._onSerialNumberPrompt = function(event) {
+		callViewModels(self.allViewModels, "showSerialNumberDialog", [event.data]);
+    };
+
     OctoPrint.socket.onReconnectAttempt = self._onReconnectAttempt;
     OctoPrint.socket.onReconnectFailed = self._onReconnectFailed;
     OctoPrint.socket.onRateTooHigh = self._onDecreaseRate;
@@ -293,5 +297,6 @@ function DataUpdater(allViewModels) {
         .onMessage("plugin", self._onPluginMessage)
         .onMessage("flashing", self._onFlashing)
         .onMessage("flashingFinished", self._onFlashingFinished)
-        .onMessage("firmwareUpdate", self._onFirmwareUpdateAvailable);
+        .onMessage("firmwareUpdate", self._onFirmwareUpdateAvailable)
+        .onMessage("serialNumberPrompt", self._onSerialNumberPrompt);
 }

@@ -115,6 +115,7 @@ class BeePrinter(Printer):
                     return False
 
             self._comm = BeeCom(callbackObject=self, printerProfileManager=self._printerProfileManager)
+            self._comm.openConnection()
 
             # returns in case the connection with the printer was not established
             if self._comm is None or self._comm.getCommandsInterface() is None:
@@ -1299,6 +1300,24 @@ class BeePrinter(Printer):
 
         return False
 
+
+    def setPrinterSerialNumber(self, serial_number):
+        """
+        Sets the printer serial number in the comm layer object that will handle it by saving it in the printer
+        and unlocking the ongoing connection thread
+        :param serial_number:
+        :return:
+        """
+        try:
+            if self._comm is not None:
+                self._comm.setSerialNumber(serial_number)
+
+            return True
+        except Exception as ex:
+            self._logger.error('Error setting serial number in comm layer: %s' % str(ex))
+
+            return False
+
     # # # # # # # # # # # # # # # # # # # # # # #
     ##########  CALLBACK FUNCTIONS  #############
     # # # # # # # # # # # # # # # # # # # # # # #
@@ -1551,6 +1570,13 @@ class BeePrinter(Printer):
                 callback.sendFirmwareUpdateAvailable(payload['version'])
             except:
                 self._logger.exception("Exception while notifying client of firmware update available")
+
+    def on_serial_number_prompt(self, event, payload):
+        for callback in self._callbacks:
+            try:
+                callback.sendSerialNumberPrompt()
+            except:
+                self._logger.exception("Exception while asking client for serial number input")
 
     # # # # # # # # # # # # # # # # # # # # # # #
     ########### AUXILIARY FUNCTIONS #############

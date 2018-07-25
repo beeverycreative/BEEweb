@@ -120,6 +120,10 @@ class Events(object):
 	FIRMWARE_UPDATE_FINISHED = "FirmwareUpdateFinished"
 	FIRMWARE_UPDATE_AVAILABLE = "FirmwareUpdateAvailable"
 
+	# Printer serial number
+	SERIAL_NUMBER_PROMPT_START = "SerialNumberPromptStart"
+	SERIAL_NUMBER_PROMPT_FINISHED = "SerialNumberPromptFinished"
+
 def eventManager():
 	global _instance
 	if _instance is None:
