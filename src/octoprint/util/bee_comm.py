@@ -34,12 +34,22 @@ class BeeCom(MachineCom):
     _resume_print_thread = None
     _transferProgress = 0
     _heatingProgress = 0
-    _serialNumberReceived = False
     _heating = False
     _monitoring_thread = None
     _monitoring_active = False
 
-    def openConnection(self):
+    def __init__(self, callbackObject=None, printerProfileManager=None):
+        super(BeeCom, self).__init__(None, None, callbackObject, printerProfileManager)
+
+        self._openConnection()
+
+        # monitoring thread
+        self._monitoring_active = True
+        self._monitoring_thread = threading.Thread(target=self._monitor, name="comm._monitor")
+        self._monitoring_thread.daemon = True
+        self._monitoring_thread.start()
+
+    def _openConnection(self):
         """
         Opens a new connection using the BEEcom driver
 
@@ -66,8 +76,10 @@ class BeeCom(MachineCom):
                     while True:
                         # Waits for the control flag to release this cycle after some user input
                         time.sleep(2)
-                        if self._serialNumberReceived is True:
+                        if self._callback.receivedSerialNumber is not None:
                             break
+
+                    self.setSerialNumber(self._callback.receivedSerialNumber)
 
                 # checks for firmware updates
                 firmware_available, firmware_version = self.check_firmware_update()
@@ -85,12 +97,6 @@ class BeeCom(MachineCom):
 
             # post connection callback
             self._onConnected()
-
-            # monitoring thread
-            self._monitoring_active = True
-            self._monitoring_thread = threading.Thread(target=self._monitor, name="comm._monitor")
-            self._monitoring_thread.daemon = True
-            self._monitoring_thread.start()
 
             return True
         else:
@@ -861,8 +867,6 @@ class BeeCom(MachineCom):
             self._logger.info("New printer serial number set!")
         else:
             self._logger.error("The serial number entered by the user is not valid.")
-
-        self._serialNumberReceived = True
 
 
     def _monitor(self):

@@ -62,6 +62,7 @@ class BeePrinter(Printer):
         self._currentFilamentProfile = None
         self._currentNozzle = None
         self._currentFirmware = None
+        self.receivedSerialNumber = None
 
         # We must keep a copy of the _currentFile variable (from the comm layer) to allow the situation of
         # disconnecting the printer and maintaining any selected file information after a reconnect is done
@@ -115,7 +116,6 @@ class BeePrinter(Printer):
                     return False
 
             self._comm = BeeCom(callbackObject=self, printerProfileManager=self._printerProfileManager)
-            self._comm.openConnection()
 
             # returns in case the connection with the printer was not established
             if self._comm is None or self._comm.getCommandsInterface() is None:
@@ -1303,20 +1303,13 @@ class BeePrinter(Printer):
 
     def setPrinterSerialNumber(self, serial_number):
         """
-        Sets the printer serial number in the comm layer object that will handle it by saving it in the printer
-        and unlocking the ongoing connection thread
+        Sets the printer serial number in this public attribute in order to be consulted by the comm layer to
+        unlock the ongoing connection thread...
         :param serial_number:
         :return:
         """
-        try:
-            if self._comm is not None:
-                self._comm.setSerialNumber(serial_number)
+        self.receivedSerialNumber = serial_number
 
-            return True
-        except Exception as ex:
-            self._logger.error('Error setting serial number in comm layer: %s' % str(ex))
-
-            return False
 
     # # # # # # # # # # # # # # # # # # # # # # #
     ##########  CALLBACK FUNCTIONS  #############
