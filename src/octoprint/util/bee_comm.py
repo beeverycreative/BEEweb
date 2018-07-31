@@ -71,15 +71,14 @@ class BeeCom(MachineCom):
                 # checks if the printer serial number is valid
                 if not self._valid_serial_number(self.getConnectedPrinterSN()):
 
-                    self._logger.info("Asking user for correct Printer serial number...")
-                    self._callback.on_serial_number_prompt(Events.SERIAL_NUMBER_PROMPT_START, dict())
-                    while True:
-                        # Waits for the control flag to release this cycle after some user input
-                        time.sleep(2)
-                        if self._callback.receivedSerialNumber is not None:
-                            break
+                    if self._callback.receivedSerialNumber:
+                        self.setSerialNumber(self._callback.receivedSerialNumber)
+                    else:
+                        self._logger.info("Asking user for correct Printer serial number...")
+                        self._callback.on_serial_number_prompt(Events.SERIAL_NUMBER_PROMPT_START, dict())
 
-                    self.setSerialNumber(self._callback.receivedSerialNumber)
+                        self._changeState(self.STATE_CLOSED)
+                        return False
 
                 # checks for firmware updates
                 firmware_available, firmware_version = self.check_firmware_update()
@@ -155,8 +154,8 @@ class BeeCom(MachineCom):
                     for i in range(3):
                         if int(file_version_parts[i]) != int(curr_version_parts[i]):
                             return True, curr_firmware
-            elif curr_firmware == '0.0.0':
-                return True, curr_firmware
+            elif 'BEEVC' not in curr_firmware:
+                return True, 'BEEVC-BEETHEFIRST-0.0.0.BIN'
 
         self._logger.info("No firmware updates found")
         return False, '0.0.0'

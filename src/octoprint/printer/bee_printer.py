@@ -1239,10 +1239,10 @@ class BeePrinter(Printer):
 
         return
 
-    def setExtruderStepsMM(self, measuredFilamentInput=None, extrudedAmmount=250):
+    def setExtruderStepsMM(self, measuredFilamentInput=None, extrudedAmount=250):
         """
         Sets extruder steps per mm
-        :param extrudedAmmount: expected extruded ammount
+        :param extrudedAmount: expected extruded amount
         :param measuredFilamentInput:
         :return:
         """
@@ -1253,7 +1253,7 @@ class BeePrinter(Printer):
 
             if measuredFilamentInput and measuredFilamentInput >= 100:
                 currSteps = float(self.getExtruderStepsMM())
-                newSteps = currSteps * float(extrudedAmmount) / float(measuredFilamentInput)
+                newSteps = currSteps * float(extrudedAmount) / float(measuredFilamentInput)
 
                 op_result = self._comm.setExtruderStepsMM('{0:.2f}'.format(newSteps))
 
@@ -1309,6 +1309,8 @@ class BeePrinter(Printer):
         :return:
         """
         self.receivedSerialNumber = serial_number
+        # tries to reconnect
+        self.connect()
 
 
     # # # # # # # # # # # # # # # # # # # # # # #

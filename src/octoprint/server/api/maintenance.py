@@ -402,7 +402,7 @@ def defineExtruderSteps():
     if 'Info' in data:
         measuredFilamentInput = data['Info'][0]
 
-        resp = printer.setExtruderStepsMM(measuredFilamentInput=measuredFilamentInput, extrudedAmmount=250)
+        resp = printer.setExtruderStepsMM(measuredFilamentInput=measuredFilamentInput, extrudedAmount=250)
     else:
         resp = "Invalid input arguments."
 
