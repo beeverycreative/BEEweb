@@ -1487,7 +1487,6 @@ class BeePrinter(Printer):
             # removes redundant information
             self._currentPrintStatistics.remove_redundant_information()
 
-            # TODO: This line should be removed after saveUserFeedback is re-activated again
             self._save_usage_statistics()
             self._currentPrintStatistics.remove_total_print_time()
 
