@@ -174,7 +174,7 @@
                             <div class="nozzle-div">
                                 <span class="small-label">{{ _('NOZZLE') }}: </span>
                                 <span class="nozzle" data-bind="text: selNozzle, visible: !estimationDialog()"></span>
-                                <select data-bind="options: nozzleTypes, value: selNozzle, valueAllowUnset: false, visible: estimationDialog()" ></select>
+                                <select data-bind="options: nozzleTypes, value: selNozzle, valueAllowUnset: false, visible: estimationDialog(), event: { change: updateFilamentList }" ></select>
                             </div>
                         </div>
                     </div>
