@@ -34,19 +34,20 @@ class BeeCom(MachineCom):
     _resume_print_thread = None
     _transferProgress = 0
     _heatingProgress = 0
+    _heating = False
+    _monitoring_thread = None
+    _monitoring_active = False
 
     def __init__(self, callbackObject=None, printerProfileManager=None):
         super(BeeCom, self).__init__(None, None, callbackObject, printerProfileManager)
 
         self._openConnection()
-        self._heating = False
 
         # monitoring thread
         self._monitoring_active = True
-        self.monitoring_thread = threading.Thread(target=self._monitor, name="comm._monitor")
-        self.monitoring_thread.daemon = True
-        self.monitoring_thread.start()
-
+        self._monitoring_thread = threading.Thread(target=self._monitor, name="comm._monitor")
+        self._monitoring_thread.daemon = True
+        self._monitoring_thread.start()
 
     def _openConnection(self):
         """
@@ -67,6 +68,18 @@ class BeeCom(MachineCom):
 
             # change to firmware
             if self._beeCommands.getPrinterMode() == 'Bootloader':
+                # checks if the printer serial number is valid
+                if not self._valid_serial_number(self.getConnectedPrinterSN()):
+
+                    if self._callback.receivedSerialNumber:
+                        self.setSerialNumber(self._callback.receivedSerialNumber)
+                    else:
+                        self._logger.info("Asking user for correct Printer serial number...")
+                        self._callback.on_serial_number_prompt(Events.SERIAL_NUMBER_PROMPT_START, dict())
+
+                        self._changeState(self.STATE_CLOSED)
+                        return False
+
                 # checks for firmware updates
                 firmware_available, firmware_version = self.check_firmware_update()
                 if firmware_available:
@@ -108,7 +121,6 @@ class BeeCom(MachineCom):
         :return: if a different version is available than the current, returns a tuple with True and the new version. If no
         printer is detected or no update is available returns False
         """
-        _logger = logging.getLogger()
         # get the latest firmware file for the connected printer
         conn_printer = self.getConnectedPrinterName()
         if conn_printer is None:
@@ -116,14 +128,14 @@ class BeeCom(MachineCom):
 
         printer_id = conn_printer.replace(' ', '').lower()
 
-        _logger.info("Checking for firmware updates...")
+        self._logger.info("Checking for firmware updates...")
         from os.path import isfile, join
         try:
             firmware_path = settings().getBaseFolder('firmware')
             firmware_properties = parsePropertiesFile(join(firmware_path, 'firmware.properties'))
             firmware_file_name = firmware_properties['firmware.' + printer_id]
         except KeyError as e:
-            _logger.error(
+            self._logger.error(
                 "Problem with printer_id %s. Firmware properties not found for this printer model." % printer_id)
             return
 
@@ -142,10 +154,10 @@ class BeeCom(MachineCom):
                     for i in range(3):
                         if int(file_version_parts[i]) != int(curr_version_parts[i]):
                             return True, curr_firmware
-            elif curr_firmware == '0.0.0':
-                return True, curr_firmware
+            elif 'BEEVC' not in curr_firmware:
+                return True, 'BEEVC-BEETHEFIRST-0.0.0.BIN'
 
-        _logger.info("No firmware updates found")
+        self._logger.info("No firmware updates found")
         return False, '0.0.0'
 
     def update_firmware(self):
@@ -153,7 +165,6 @@ class BeeCom(MachineCom):
         Updates the printer firmware if a printer is connected
         :return: if no printer is connected just returns void
         """
-        _logger = logging.getLogger()
         # get the latest firmware file for the connected printer
         conn_printer = self.getConnectedPrinterName()
         if conn_printer is None:
@@ -164,14 +175,14 @@ class BeeCom(MachineCom):
         if printer_id:
             from os.path import isfile, join
 
-            _logger.info("Checking for firmware updates...")
+            self._logger.info("Checking for firmware updates...")
 
             try:
                 firmware_path = settings().getBaseFolder('firmware')
                 firmware_properties = parsePropertiesFile(join(firmware_path, 'firmware.properties'))
                 firmware_file_name = firmware_properties['firmware.' + printer_id]
             except KeyError as e:
-                _logger.error("Problem with printer_id %s. Firmware properties not found for this printer model." % printer_id)
+                self._logger.error("Problem with printer_id %s. Firmware properties not found for this printer model." % printer_id)
                 return
 
             if firmware_file_name is not None and isfile(join(firmware_path, firmware_file_name)):
@@ -179,7 +190,7 @@ class BeeCom(MachineCom):
                 fname_parts = firmware_file_name.split('-')
                 return self._flashFirmware(firmware_file_name, firmware_path, fname_parts[2])
             else:
-                _logger.error("No firmware file matching the configuration for printer %s found" % conn_printer)
+                self._logger.error("No firmware file matching the configuration for printer %s found" % conn_printer)
 
 
     def reset_printer_settings(self):
@@ -849,6 +860,14 @@ class BeeCom(MachineCom):
         self._callback.on_comm_print_job_done()
 
 
+    def setSerialNumber(self, serial_number):
+        if self._valid_serial_number(serial_number):
+            self._beeCommands.setSerialNumber(serial_number)
+            self._logger.info("New printer serial number set!")
+        else:
+            self._logger.error("The serial number entered by the user is not valid.")
+
+
     def _monitor(self):
         """
         Monitor thread of responses from the commands sent to the printer
@@ -1220,25 +1239,35 @@ class BeeCom(MachineCom):
         :return:
         """
         from os.path import join
-        _logger = logging.getLogger()
 
         try:
-            _logger.info("Updating printer firmware...")
+            self._logger.info("Updating printer firmware...")
             eventManager().fire(Events.FIRMWARE_UPDATE_STARTED, {"version": firmware_file_name})
 
             if self.getCommandsInterface().flashFirmware(join(firmware_path, firmware_file_name), firmware_file_name):
-
-                _logger.info("Firmware updated to %s" % version)
+                self._logger.info("Firmware updated to %s" % version)
                 eventManager().fire(Events.FIRMWARE_UPDATE_FINISHED, {"result": True})
                 return True
 
         except Exception as ex:
-            _logger.exception(ex)
+            self._logger.exception(ex)
 
-        _logger.info("Error updating firmware to version %s" % version)
+        self._logger.info("Error updating firmware to version %s" % version)
         eventManager().fire(Events.FIRMWARE_UPDATE_FINISHED, {"result": False})
         return False
 
+
+    def _valid_serial_number(self, sn=None):
+        if sn is None:
+            sn = self.getConnectedPrinterSN()
+
+        if sn is None:
+            return False
+
+        if not isinstance(sn, basestring) or sn == '0000000000' or sn == '0000000001' or len(sn) != 10:
+            return False
+
+        return True
 
 
 class InMemoryFileInformation(PrintingFileInformation):

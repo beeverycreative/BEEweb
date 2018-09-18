@@ -42,7 +42,7 @@ $(function() {
             } else {
                 callback();
             }
-        }
+        };
 
         self.aboutDialog = $('#aboutbee_dialog');
         self.currentFirmware = ko.observable('Undefined');

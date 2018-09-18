@@ -78,7 +78,7 @@ def slicingListAll():
 				sameDevice=slicer_impl.get_slicer_properties()["same_device"],
 				default=default_slicer == slicer,
 				configured=slicer_impl.is_slicer_configured(),
-				profiles=_getSlicingProfilesData(slicer),
+				profiles=getSlicingProfilesData(slicer),
 				extensions=dict(
 					source=list(extensions),
 					destination=slicer_impl.get_slicer_properties().get("destination_extensions", ["gco", "gcode", "g"])
@@ -210,7 +210,7 @@ def slicingListSlicerProfiles(slicer):
 		configured = True
 
 	try:
-		return jsonify(_getSlicingProfilesData(slicer, require_configured=configured))
+		return jsonify(getSlicingProfilesData(slicer, require_configured=configured))
 	except (UnknownSlicer, SlicerNotConfigured):
 		return make_response("Unknown slicer {slicer}".format(**locals()), 404)
 
@@ -402,13 +402,15 @@ def pluginDuplicateProfile(slicer,name):
 
 	return NO_CONTENT
 
-
-def _getSlicingProfilesData(slicer, require_configured=False):
+def getSlicingProfilesData(slicer, require_configured=False, nozzle_size=None):
 	result = dict()
+	if not nozzle_size:
+		nozzle_size = printer.getNozzleTypeString().replace("nz", "")
+
 	if slicer == "curaX":
 		profiles = slicingManager.all_profiles_list_json(slicer,
 													require_configured=require_configured,
-													nozzle_size=printer.getNozzleTypeString().replace("nz", ""),
+													nozzle_size=nozzle_size,
 													from_current_printer=True)
 		for name, profile in profiles.items():
 			result[name] = _getSlicingProfileData(slicer, name, profile)

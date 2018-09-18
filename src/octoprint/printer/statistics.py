@@ -481,9 +481,9 @@ class StatisticsServerClient:
 	"""
 	Class used as communication interface with the statistics server
 	"""
-	STATS_HOST = 'https://beestats.westus2.cloudapp.azure.com'
-	STATS_PORT = 443
-	STATS_AUTH = 'e4ea2c92f97d7e497664380922a4dd33567951ed'
+	STATS_HOST = 'https://beevc.beeverycreative.com'
+	STATS_PORT = 4443
+	STATS_AUTH = '0d676254058389e6a06c903a2e7d8897f7d05dde'
 
 	_conn = None
 

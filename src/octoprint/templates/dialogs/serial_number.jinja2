@@ -1,0 +1,25 @@
+<div id="serial_number_dialog" class="modal hide fade">
+	<div class="modal-header">
+		<h3>{{ _('Insert Printer Serial Number') }}</h3>
+	</div>
+	<div class="modal-body">
+		<p>{{ _('Please enter your printer 10 digit serial number. The number is located on a sticker on the side of the printer.') }}</p>
+		<form class="form-horizontal" action="javascript:void(0)">
+			<div class="control-group">
+				<div class="controls">
+					<input id="serialNumberInput" data-bind="value: serialNumber, valueUpdate: 'afterkeydown'" style="width: 100%;" />
+				</div>
+			</div>
+			<br />
+			<div class="text-center">
+				<span class="alert alert-warning" data-bind="text: serialError, visible: serialError"></span>
+			</div>
+		</form>
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="btn" data-dismiss="modal" data-bind="click: function() { $root.cancelSerialNumberInput() }">{{ _('Cancel') }}</a>
+		<a href="#" class="btn btn-primary" data-bind="click: function() { $root.saveSerialNumber() }">
+			<i class="icon-spinner icon-spin" data-bind="visible: savingSerialNumber"></i> {{ _('Save') }}
+		</a>
+	</div>
+</div>

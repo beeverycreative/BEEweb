@@ -444,11 +444,11 @@ $(function() {
 
                 if (!self.isErrorOrClosed()) {
                     // Shows user feedback dialog
-                    // $("#user_feedback_dialog").modal({
-                    //     backdrop: 'static',
-                    //     keyboard: false
-                    // });
-                    // $("#user_feedback_dialog").modal('show');
+                    $("#user_feedback_dialog").modal({
+                        backdrop: 'static',
+                        keyboard: false
+                    });
+                    $("#user_feedback_dialog").modal('show');
                 }
             }
 

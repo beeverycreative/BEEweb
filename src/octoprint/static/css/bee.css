@@ -1752,6 +1752,7 @@ td.settings_users_actions .m-icon {
 #settings_plugin_curaX_new_material .modal-footer .btn-primary,
 #settings_plugin_curaX_edit_profile .modal-footer .btn-primary,
 #save_scene_dialog .modal-footer .btn-primary,
+#serial_number_dialog .modal-footer .btn-primary,
 #user_feedback_dialog .modal-footer .btn-primary {
     padding: 20px 0;
     width: 175px;

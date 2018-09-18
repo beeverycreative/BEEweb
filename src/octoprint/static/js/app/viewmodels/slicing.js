@@ -307,6 +307,55 @@ $(function() {
                 }
             });
         };
+
+		/**
+		 * Gets the updated list of available filaments based on the current selected nozzle
+		 */
+        self.updateFilamentList = function(obj, event) {
+        	if (event.originalEvent) { // we want to execute the function only when the user triggers the change
+
+				var selectedNozzle = self.selNozzle() * 1000;
+
+				$.ajax({
+					url: API_BASEURL + "maintenance/filament_profiles/" + selectedNozzle,
+					type: "GET",
+					dataType: "json",
+					success: function(data) {
+						if (data.profiles) {
+							var selectedProfile = undefined;
+							self.colors.removeAll();
+
+							_.each(_.values(data.profiles), function(profile) {
+								var name = profile.displayName;
+								if (name === undefined) {
+									name = profile.key;
+								}
+
+								if (profile.default) {
+									selectedProfile = profile.key;
+								}
+
+								self.profiles.push({
+									key: profile.key,
+									name: name
+								});
+
+								// Fills the colors = filaments list
+								self.colors.push(name);
+
+							});
+
+							if (selectedProfile !== undefined) {
+								self.profile(selectedProfile);
+							}
+
+            				self.defaultProfile = selectedProfile;
+						}
+					}
+				});
+        	}
+        };
+
         self.enableHighPlusResolution = ko.pureComputed(function() {
             return self.selNozzle() !== "0.6";
         });

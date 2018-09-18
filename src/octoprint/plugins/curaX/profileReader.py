@@ -139,15 +139,15 @@ class ProfileReader(object):
 							engine_settings[k] = raw_settings[key][k]
 
 			# merge the filament and nozzle overrides with the engine_settings
-			for key in filament_Overrides.keys():
-				if key not in engine_settings.keys():
-					engine_settings[key] = {}
-				engine_settings[key].update(filament_Overrides[key])
-
 			for key in nozzle_Overrides.keys():
 				if key not in engine_settings.keys():
 					engine_settings[key] = {}
 				engine_settings[key].update(nozzle_Overrides[key])
+
+			for key in filament_Overrides.keys():
+				if key not in engine_settings.keys():
+					engine_settings[key] = {}
+				engine_settings[key].update(filament_Overrides[key])
 
 			interface_overrides = cls.overrideCustomValues(engine_settings,overrides)
 

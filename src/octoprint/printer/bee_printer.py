@@ -62,6 +62,7 @@ class BeePrinter(Printer):
         self._currentFilamentProfile = None
         self._currentNozzle = None
         self._currentFirmware = None
+        self.receivedSerialNumber = None
 
         # We must keep a copy of the _currentFile variable (from the comm layer) to allow the situation of
         # disconnecting the printer and maintaining any selected file information after a reconnect is done
@@ -1238,10 +1239,10 @@ class BeePrinter(Printer):
 
         return
 
-    def setExtruderStepsMM(self, measuredFilamentInput=None, extrudedAmmount=250):
+    def setExtruderStepsMM(self, measuredFilamentInput=None, extrudedAmount=250):
         """
         Sets extruder steps per mm
-        :param extrudedAmmount: expected extruded ammount
+        :param extrudedAmount: expected extruded amount
         :param measuredFilamentInput:
         :return:
         """
@@ -1252,7 +1253,7 @@ class BeePrinter(Printer):
 
             if measuredFilamentInput and measuredFilamentInput >= 100:
                 currSteps = float(self.getExtruderStepsMM())
-                newSteps = currSteps * float(extrudedAmmount) / float(measuredFilamentInput)
+                newSteps = currSteps * float(extrudedAmount) / float(measuredFilamentInput)
 
                 op_result = self._comm.setExtruderStepsMM('{0:.2f}'.format(newSteps))
 
@@ -1298,6 +1299,19 @@ class BeePrinter(Printer):
             self._logger.error(ex)
 
         return False
+
+
+    def setPrinterSerialNumber(self, serial_number):
+        """
+        Sets the printer serial number in this public attribute in order to be consulted by the comm layer to
+        unlock the ongoing connection thread...
+        :param serial_number:
+        :return:
+        """
+        self.receivedSerialNumber = serial_number
+        # tries to reconnect
+        self.connect()
+
 
     # # # # # # # # # # # # # # # # # # # # # # #
     ##########  CALLBACK FUNCTIONS  #############
@@ -1473,7 +1487,6 @@ class BeePrinter(Printer):
             # removes redundant information
             self._currentPrintStatistics.remove_redundant_information()
 
-            # TODO: This line should be removed after saveUserFeedback is re-activated again
             self._save_usage_statistics()
             self._currentPrintStatistics.remove_total_print_time()
 
@@ -1551,6 +1564,13 @@ class BeePrinter(Printer):
                 callback.sendFirmwareUpdateAvailable(payload['version'])
             except:
                 self._logger.exception("Exception while notifying client of firmware update available")
+
+    def on_serial_number_prompt(self, event, payload):
+        for callback in self._callbacks:
+            try:
+                callback.sendSerialNumberPrompt()
+            except:
+                self._logger.exception("Exception while asking client for serial number input")
 
     # # # # # # # # # # # # # # # # # # # # # # #
     ########### AUXILIARY FUNCTIONS #############

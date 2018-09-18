@@ -5,15 +5,14 @@ import re
 __author__ = "BEEVC - Electronic Systems "
 __license__ = "GNU Affero General Public License http://www.gnu.org/licenses/agpl.html"
 
-from flask import request, make_response, jsonify, url_for
+from flask import request, make_response, jsonify
 
 from octoprint.server import printer, printerProfileManager, NO_CONTENT
 from octoprint.server.util.flask import restricted_access, get_json_command_from_request
 from octoprint.server.api import api
 from octoprint.settings import settings as s
-from octoprint.server.api.slicing import _getSlicingProfilesData as getSlicingProfilesData
-from octoprint.slicing import SlicingManager
-from octoprint.settings import settings
+from octoprint.server.api.slicing import getSlicingProfilesData
+
 
 @api.route("/maintenance/start_heating", methods=["POST"])
 @restricted_access
@@ -242,6 +241,27 @@ def getNozzlesAndFilament():
         "filamentInSpool": filamentInSpool
     })
 
+@api.route("/maintenance/filament_profiles/<string:nozzle>", methods=["GET"])
+@restricted_access
+def getFilamentsForNozzle(nozzle):
+    """
+    Returns the list of available filament profiles for a given nozzle size
+    :return:
+    """
+    nozzle_list = ['400', '600']
+
+    if not nozzle or nozzle not in nozzle_list:
+        return make_response("Invalid nozzle size", 409)
+
+    default_slicer = s().get(["slicing", "defaultSlicer"])
+
+    profiles = getSlicingProfilesData(default_slicer, False, nozzle)
+
+    return jsonify({
+        "profiles": profiles
+    })
+
+
 @api.route("/maintenance/save_nozzle", methods=["POST"])
 @restricted_access
 def saveNozzle():
@@ -402,7 +422,7 @@ def defineExtruderSteps():
     if 'Info' in data:
         measuredFilamentInput = data['Info'][0]
 
-        resp = printer.setExtruderStepsMM(measuredFilamentInput=measuredFilamentInput, extrudedAmmount=250)
+        resp = printer.setExtruderStepsMM(measuredFilamentInput=measuredFilamentInput, extrudedAmount=250)
     else:
         resp = "Invalid input arguments."
 

@@ -39,6 +39,10 @@ $(function() {
 
         self.isConnecting = ko.observable(undefined);
 
+        self.serialNumber = ko.observable(undefined);
+        self.savingSerialNumber = ko.observable(false);
+        self.serialError = ko.observable(undefined);
+
         self.buttonText = ko.pureComputed(function() {
             if (self.isConnecting())
                 return gettext("Connecting...");
@@ -113,7 +117,6 @@ $(function() {
         };
 
         self.connect = function() {
-
             if (self.isErrorOrClosed()) {
                 self.isConnecting(true);
 
@@ -140,6 +143,70 @@ $(function() {
             }
         };
 
+		/** Printer Serial Number methods **/
+		self.showSerialNumberDialog = function() {
+			self.snDialog = $("#serial_number_dialog");
+			self.snDialog.on("shown", function() {
+				$("input", self.snDialog).focus();
+			});
+
+			self.snDialog.modal("show");
+		};
+
+		self.validSerialNumber = ko.computed(function () {
+			if (self.serialNumber() && self.serialNumber().length === 10) {
+				return true;
+			}
+			return false;
+    	}, this);
+
+        self.saveSerialNumber = function() {
+        	self.savingSerialNumber(true);
+        	self.serialError(undefined);
+
+        	if (!self.validSerialNumber()) {
+        		self.savingSerialNumber(false);
+        		self.serialError(gettext('Please insert a valid 10 digit serial number.'));
+        		return;
+        	}
+
+            var data = {
+                serial_number: self.serialNumber()
+            };
+
+            $.ajax({
+                url: BEE_API_BASEURL + "save_printer_serial_number",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                data: JSON.stringify(data),
+                success: function(response) {
+                	self.savingSerialNumber(false);
+                	self.snDialog.modal("hide");
+                }
+            });
+        };
+
+        self.cancelSerialNumberInput = function() {
+        	self.serialError(undefined);
+            var data = {
+                serial_number: '000'
+            };
+
+			// Sends an invalid serial number just to unlock the connection thread
+            $.ajax({
+                url: BEE_API_BASEURL + "save_printer_serial_number",
+                type: "POST",
+                dataType: "json",
+                contentType: "application/json; charset=UTF-8",
+                data: JSON.stringify(data),
+                success: function(response) {
+                }
+            });
+
+            self.snDialog.modal("hide");
+        };
+
         self.onStartup = function() {
             self.requestData();
 
@@ -158,6 +225,6 @@ $(function() {
     OCTOPRINT_VIEWMODELS.push([
         ConnectionViewModel,
         ["loginStateViewModel", "settingsViewModel", "printerProfilesViewModel"],
-        "#connection_wrapper"
+        ["#connection_wrapper", "#serial_number_dialog"]
     ]);
 });
