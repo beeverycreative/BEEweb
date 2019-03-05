@@ -1,0 +1,68 @@
+{
+    "id": "tpu-mito-06",
+    "name": "TPU Mito 06",
+    "version": 2,
+    "inherits": "tpu_mito",
+    "cost": 20,
+    "color": "#ffffff" ,
+    "nozzles_supported": [0.6],
+    "unload_temperature": 225,
+    "preheat_temperature": 225,
+    "filament_density": 1.24,
+    "PrinterGroups":[
+        {
+            "group_printers": ["beethefirstplus","beethefirstplusa","beeinschool","beeinschoola"],
+            "quality":
+            {
+
+                "low":
+                {       
+                    "layer_height": { "default_value": 0.3 },
+                    "layer_height_0": { "default_value": 0.3 },
+                    "top_layers": { "default_value": 4 },
+                    "bottom_layers": { "default_value": 4 },
+                    "material_print_temperature": { "default_value": 225 },
+                    "material_print_temperature_layer_0": { "default_value": 225 },
+                    "default_material_print_temperature": { "default_value": 225 },
+                    "material_initial_print_temperature": { "default_value": 225 },
+                    "material_final_print_temperature": { "default_value": 225 },
+                    "material_flow": { "default_value": 105.0 },
+                    "wall_thickness": { "default_value": 1.2 },
+                    "wall_line_count": { "default_value": 2 }
+                },
+
+                "medium":
+                {       
+                    "layer_height": { "default_value": 0.2 },
+                    "layer_height_0": { "default_value": 0.2 },
+                    "top_layers": { "default_value": 5 },
+                    "bottom_layers": { "default_value": 5 },
+                    "material_print_temperature": { "default_value": 225 },
+                    "material_print_temperature_layer_0": { "default_value": 225 },
+                    "default_material_print_temperature": { "default_value": 225 },
+                    "material_initial_print_temperature": { "default_value": 225 },
+                    "material_final_print_temperature": { "default_value": 225 },
+                    "material_flow": { "default_value": 105.0 },
+                    "wall_thickness": { "default_value": 1.2 },
+                    "wall_line_count": { "default_value": 2 }
+                },
+
+                "high":
+                {       
+                    "layer_height": { "default_value": 0.1 },
+                    "layer_height_0": { "default_value": 0.2 },
+                    "top_layers": { "default_value": 10 },
+                    "bottom_layers": { "default_value": 10 },
+                    "material_print_temperature": { "default_value": 225 },
+                    "material_print_temperature_layer_0": { "default_value": 225 },
+                    "default_material_print_temperature": { "default_value": 225 },
+                    "material_initial_print_temperature": { "default_value": 225 },
+                    "material_final_print_temperature": { "default_value": 225 },
+                    "material_flow": { "default_value": 105.0 },
+                    "wall_thickness": { "default_value": 1.2 },
+                    "wall_line_count": { "default_value": 2 }
+                }
+            }
+        }
+    ]
+}

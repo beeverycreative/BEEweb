@@ -1,12 +1,12 @@
 {
     "id": "nylon",
-    "name": "NYLON",
+    "name": "nylon",
     "version": 2,
     "inherits": "generic_nylon",
     "brand": "BEEVERYCREATIVE",
     "Information":
         {
-        "display_name": { "default_value": "custom PLA"},
+        "display_name": { "default_value": "nylon"},
         "brand": { "default_value": "custom brand"},
         "material_type": { "default_value": "custom PLA"},
         "filament_cost": { "default_value": "in euros"},
@@ -27,7 +27,12 @@
             "speed_print_layer_0": { "default_value": 20},
             "speed_travel_layer_0": { "default_value": 60}
         },
-         
+
+        "shell": 
+        {   
+            "outer_inset_first": { "default_value": false }
+        },
+
         "cooling":
         {
             "cool_fan_enabled": { "default_value": false },
