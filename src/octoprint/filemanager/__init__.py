@@ -21,11 +21,6 @@ from .util import AbstractFileWrapper, StreamWrapper, DiskFileWrapper
 
 from collections import namedtuple
 
-##import sys
-##sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/../..")
-##from .BEEestimator_t import *
-##from .tmpfile import *
-
 
 ContentTypeMapping = namedtuple("ContentTypeMapping", "extensions, content_type")
 ContentTypeDetector = namedtuple("ContentTypeDetector", "extensions, detector")
@@ -299,8 +294,6 @@ class FileManager(object):
 							gcoder_result = bvcGcoder.analyse(self.path_on_disk(dest_location, dest_path))
 							if 'estimated_duration' in gcoder_result:
 								_analysis["estimatedPrintTime"] = gcoder_result['estimated_duration']
-								print("FILE LOCATION: "+dest_location)
-								print("FILE PATH: "+dest_path)
 								_analysis["gcodeLines"] = gcoder_result['gcode_lines']
 								self._add_analysis_result(dest_location, dest_path, _analysis)
 					except Exception as ex:
