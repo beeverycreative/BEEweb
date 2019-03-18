@@ -196,8 +196,9 @@ default_settings = {
 		"throttle_normalprio": 0.01,
 		"throttle_highprio": 0.0,
 		"throttle_lines": 100,
-		"analyser": "BVC" # If this option is set for BVC it uses the custom gcode analyser from previous BEESOFT version
-						  # If it is set to another value, it uses the defaul GCodeAnalyser from octoprint
+		"analyser": "BEEt_estimator_-_beesoft4.0.7"		# if this option is set as "BVC", then it uses the custom gcode analyser from previous BEESOFT version;
+								# else if it is set to "BEEt_estimator_t_-_beesoft4.0.7", then it uses the BEEt_estimator_t;
+								# else: it uses the default GCodeAnalyser from octoprint.
 	},
 	"feature": {
 		"temperatureGraph": True,

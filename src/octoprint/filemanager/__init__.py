@@ -21,6 +21,12 @@ from .util import AbstractFileWrapper, StreamWrapper, DiskFileWrapper
 
 from collections import namedtuple
 
+##import sys
+##sys.path.append(os.path.dirname(os.path.abspath(__file__))+"/../..")
+##from .BEEestimator_t import *
+##from .tmpfile import *
+
+
 ContentTypeMapping = namedtuple("ContentTypeMapping", "extensions, content_type")
 ContentTypeDetector = namedtuple("ContentTypeDetector", "extensions, detector")
 
@@ -293,12 +299,27 @@ class FileManager(object):
 							gcoder_result = bvcGcoder.analyse(self.path_on_disk(dest_location, dest_path))
 							if 'estimated_duration' in gcoder_result:
 								_analysis["estimatedPrintTime"] = gcoder_result['estimated_duration']
+								print("FILE LOCATION: "+dest_location)
+								print("FILE PATH: "+dest_path)
 								_analysis["gcodeLines"] = gcoder_result['gcode_lines']
 								self._add_analysis_result(dest_location, dest_path, _analysis)
-
 					except Exception as ex:
 						self._logger.error(ex)
-
+						
+					try:
+						if analyser is not None and analyser == 'BEEt_estimator_-_beesoft4.0.7':	##se o estimador em uso for o "BEEt... ", chama este bloco
+							## importa o estimador com base no firmware da BEETHEFIRST
+							import octoprint.util.BEEt_estimator as BEEt
+							var_path = self.path_on_disk(dest_location, dest_path)					##esta variável contém o nome do ficheiro para analisar
+							print("@src/octoprint/filemanager/__init__.py, var_path:\n\t"+var_path)
+							bee_t = BEEt.main_beeestimator(var_path)								##chama-se o comando externo do nosso estimador: BEEt.main_beeestimator(), que devolve o valor do tempo estimado em segundos
+							print("OK: conclusion.")															##informa-se que concluiu a análise
+							_analysis["estimatedPrintTime"] = int(bee_t)							##atribui-se o resultado do estimador BEEt aos respecivos objectos do beesoft
+							self._add_analysis_result(dest_location, dest_path, _analysis)			##comando do beesoft p/ guardar a estimativa
+					except Exception as ex:
+						self._logger.error(ex)
+						
+						
 					end_time = time.time()
 					eventManager().fire(Events.SLICING_DONE, dict(stl=source_path,
 																  stl_location=source_location,
