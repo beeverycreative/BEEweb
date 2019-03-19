@@ -25,7 +25,7 @@ MAX_FEED_X=60000.0
 MAX_FEED_Y=60000.0
 MAX_FEED_Z=60000.0
 MAX_FEED_E0=60000.0
-MAX_SIZE_BUFFER = 10                       ## /!\ atenção
+MAX_SIZE_BUFFER = 3                         ## /!\ atenção
                                             ## -> esta variável vai determinar o tamanho do buffer, para imitar o firmware
 
 

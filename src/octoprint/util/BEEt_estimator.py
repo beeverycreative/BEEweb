@@ -29,7 +29,9 @@ from BEEt_buffer import *
 
 
 def main_beeestimator_test():
-	print "main_beeestimator_test()"
+	print("main_beeestimator_test()")
+
+
 
 
 def main_beeestimator(in_gcode_beesoft="none"):
