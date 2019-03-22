@@ -309,6 +309,18 @@ class FileManager(object):
 							print("OK: conclusion.")															##informa-se que concluiu a análise
 							_analysis["estimatedPrintTime"] = int(bee_t)							##atribui-se o resultado do estimador BEEt aos respecivos objectos do beesoft
 							self._add_analysis_result(dest_location, dest_path, _analysis)			##comando do beesoft p/ guardar a estimativa
+							
+							##add the estimated print time to the gcode file:
+							f_gcode = open(var_path, "r")		##open the gcode file in read-mode;
+							contents = f_gcode.readlines()
+							f_gcode.close()
+							contents.insert(0, ";BEEt_time: "+str(int(bee_t))+"\n")										##export the time in seconds		(add to 1st line)
+							contents.insert(1, ";Estimated print time (BEEt): "+str(BEEt.time_to_str(bee_t))+"\n")		##export the time in hh:mm:ss,xxx	(add to 2nd line).
+							f_gcode = open(var_path, "w")		##open the gcode file in write-mode;
+							contents = "".join(contents)
+							f_gcode.write(contents)
+							f_gcode.close()
+							
 					except Exception as ex:
 						self._logger.error(ex)
 						

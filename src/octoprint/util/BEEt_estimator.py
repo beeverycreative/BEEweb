@@ -15,10 +15,6 @@
 
 from math import *
 from numpy import array, mean, linalg as LA
-try:
-	import pylab
-except:
-	print("warning: no module named pylab...")
 import sys
 import argparse
 
@@ -47,7 +43,7 @@ def main_beeestimator(in_gcode_beesoft="none"):
 		parser = argparse.ArgumentParser(prog='./BEEestimator_t', description='*.GCODE time estimator - p/ BEE (python3.6)')
 		parser.add_argument('-i', '--input', type=str, default='', help="path of the input gcode file.", required=0)		## este argumento, que é a localizaçãpo do ficheiro *.gcode /*.gco é obrigatório
 	##	parser.add_argument('-p', '--precision', type=str, default='H', help="precision options: L: low; M: medium; H: high.")
-		parser.add_argument('-f', '--force', type=str, default='false', help="force options: 0/false - the program stops when it reaches a unexpected input (the default); 1/true - the program tries to continue when it finds a unexpected input.")											## há duas opções ao receber input inesperado: interromper ou tentar presseguir...
+		parser.add_argument('-f', '--force', type=str, default='true', help="force options: 0/false - the program stops when it reaches a unexpected input; 1/true - the program tries to continue when it finds a unexpected input (the default).")											## há duas opções ao receber input inesperado: interromper ou tentar presseguir...
 																															## o utilizador escolhe o tipo de acções com a opção --force
 		parser.add_argument('-g', '--graphs', type=str, default='false', help="graphs options: 0/false - the program does not plot the graphs; 1/true - the program plots the graphs.")																										   ## de acordo com o valor desta variável, a função de fazer plots será ou não será chamada.
 
@@ -66,6 +62,12 @@ def main_beeestimator(in_gcode_beesoft="none"):
 		in_graphs=vars_dictionary['graphs']
 		if (in_graphs=='1') or (in_graphs.lower()=='true'):	 ## se a opção da variável de input graphs for 1, true, TRUE, ..., então fica definida como 1
 			in_graphs=1
+			try:
+				global pylab
+				import pylab
+			except:
+				print("WARNING: could not import module named pylab\n\t-> the program will continue without graphs...")
+				in_graphs=0
 		else:												   ## caso contrário, fica 0.
 			in_graphs=0
 
@@ -77,6 +79,7 @@ def main_beeestimator(in_gcode_beesoft="none"):
 	else:				## caso contrário, se este é um subscript de um conjunto de ficheiros maior (como por exemplo na integração com o beesoft), então vai usar o a variável: "in_gcode_beesoft".
 		in_gcode=in_gcode_beesoft
 		in_force=1
+		in_graphs=0
 		
 
 	if verbose or verbose_main:
@@ -134,49 +137,90 @@ def main_beeestimator(in_gcode_beesoft="none"):
 	acceleration_t=[]
 	t=[]
 	
+	
+## 	MAX_SIZE_BUFFER =len(blocks_full_list)			   ##opção de ter um buffer com o tamanho máximo <- está desactivada
 	the_buffer = RING_BUFFER(MAX_SIZE_BUFFER)
 	
-	for i in range(0, MAX_SIZE_BUFFER):				 ##enche o buffer com os primeiros elementos
-		the_buffer.receive_move(blocks_full_list[i])
+	if MAX_SIZE_BUFFER!=len(blocks_full_list):
+		for i in range(0, MAX_SIZE_BUFFER):				 ##enche o buffer com os primeiros elementos
+			the_buffer.receive_move(blocks_full_list[i])
+		
+		for i in range(MAX_SIZE_BUFFER, len(blocks_full_list)-1+MAX_SIZE_BUFFER):	   ##percorre o estado do buffer tendo um nº total de iterações igual a length de blocks_full_list.
+			if i<=len(blocks_full_list)-1:
+				the_buffer.receive_move(blocks_full_list[i])					## em geral, quando recebe um elemento guarda-o e remove o elemnto que está a mais;
+			else:
+				the_buffer.pop()												## nas últimas passagens pelo buffer vai removendo elementos, mas já não há nenhum para adicionar.
+			if verbose or verbose_main:
+				print('- planner_reverse_pass()')							    ## esta função vai correr o buffer de trás p/ a frente, para actualizar as variáveis entry_speed de cada bloco
+			planner_reverse_pass(the_buffer)
+			
+			if verbose or verbose_main:
+				print('- planner_forward_pass()')							    ## esta função vai correr o buffer da frente p/ trás, para actualizar as variáveis entry_speed de cada bloco
+			planner_forward_pass(the_buffer)
+			
+			if verbose or verbose_main:
+				print('- planner_recalculate_trapezoids()')					    ## esta função vai calcular as distâncias de aceleração, plateau e desaceleração p/ cada bloco, de acodo com os valores previamente computados
+			planner_recalculate_trapezoids(the_buffer)
+
+		
+		##	if verbose:
+		##		print('- print_actions()')
+		##		print_actions(list_G0sG1s, ... )
+		
+			if verbose or verbose_main:
+				print('- check_instructions()')
+				
+			(speed_t, acceleration_t, t) = check_instructions(the_buffer[0])		## esta função vai avaliar os resultados das velocidades de entrada, e de saída, e as distâncias de aceleração, plateau e desaceleração - verifica se está tudo consistente, ou seja v_f [a velociade de saída, que é igual à velocidade de entrada do bloco seguinte)], tem que ser igual à v_f(v_i, delta_t_i, a_const) [a velocidade computada de acordo com as propriedades todas do bloco.]
+																					## avalia o bloco que está na cabeça do buffer
+		
+			if in_graphs:
+				if verbose or verbose_main:
+					print('- plot_graphs()')
+				plot_graphs(speed_t, acceleration_t, t)
+
+			if verbose or verbose_main:
+				print('- step_motors()')								## obtem-se a soma dos tempos de aceleração e de desaceleração, calculados de acordo com os step motors
+			##t_stepper_1st_and_3rd = step_motors(the_buffer[0])		## esta função é a que vai chamar os step motors
+																		## - está comentada p/ o resultado ser mais rápido, e também porque afinal não é necessário.
 	
-	for i in range(MAX_SIZE_BUFFER, len(blocks_full_list)-1+MAX_SIZE_BUFFER):	   ##percorre o estado do buffer tendo um nº total de iterações igual a length de blocks_full_list.
-		if i<=len(blocks_full_list)-1:
-			the_buffer.receive_move(blocks_full_list[i])					## em geral, quando recebe um elemento guarda-o e remove o elemnto que está a mais;
-		else:
-			the_buffer.pop()												## nas últimas passagens pelo buffer vai removendo elementos, mas já não há nenhum para adicionar.
-		if verbose or verbose_main:
-			print('- planner_reverse_pass()')							   ## esta função vai correr o buffer de trás p/ a frente, para actualizar as variáveis entry_speed de cada bloco
+	
+	else:
+		pass
+		## este é o caso em que se tem um buffer com tamanho máximo [opção desactivada]
+		'''
+		for i in range(0, MAX_SIZE_BUFFER):				 ##enche o buffer com todos os elementos
+			the_buffer.receive_move(blocks_full_list[i])
+			
+		if verbose or verbose_main:					     ##entra apenas uma vez em cada uma destas funções: planner_reverse_pass(), planner_forward_pass(), e planner_recalculate_trapezoids()
+			print('- planner_reverse_pass()')
 		planner_reverse_pass(the_buffer)
 		
 		if verbose or verbose_main:
-			print('- planner_forward_pass()')							   ## esta função vai correr o buffer da frente p/ trás, para actualizar as variáveis entry_speed de cada bloco
+			print('- planner_forward_pass()')
 		planner_forward_pass(the_buffer)
 		
 		if verbose or verbose_main:
-			print('- planner_recalculate_trapezoids()')					 ## esta função vai calcular as distâncias de aceleração, plateau e desaceleração p/ cada bloco, de acodo com os valores previamente computados
+			print('- planner_recalculate_trapezoids()')
 		planner_recalculate_trapezoids(the_buffer)
 
-	
-	##	if verbose:
-	##		print('- print_actions()')
-	##		print_actions(list_G0sG1s, ... )
-	
-		if verbose or verbose_main:
-			print('- check_instructions()')
 
-			
-		(speed_t, acceleration_t, t) = check_instructions(the_buffer[0])		## esta função vai avaliar os resultados das velocidades de entrada, e de saída, e as distâncias de aceleração, plateau e desaceleração - verifica se está tudo consistente, ou seja v_f [a velociade de saída, que é igual à velocidade de entrada do bloco seguinte)], tem que ser igual à v_f(v_i, delta_t_i, a_const) [a velocidade computada de acordo com as propriedades todas do bloco.]
-	
-		'''if in_graphs:
+		for i in range(len(blocks_full_list)):
 			if verbose or verbose_main:
-				print('- plot_graphs()')
-			plot_graphs(speed_t, acceleration_t, t)
-	'''
+				print('- check_instructions()')
+			(speed_t, acceleration_t, t) = check_instructions(blocks_full_list[i])	  ## avalia o bloco <i>
+			
+			if in_graphs:
+				if verbose or verbose_main:
+					print('- plot_graphs()')
+				plot_graphs(speed_t, acceleration_t, t)
 
-		if verbose or verbose_main:
-			print('- step_motors()')								## obtem-se a soma dos tempos de aceleração e de desaceleração, calculados de acordo com os step motors
-		##t_stepper_1st_and_3rd = step_motors(the_buffer[0])		## esta função é a que vai chamar os step motors
-																	## - está comentada p/ o resultado ser mais rápido, e também porque afinal não é necessário.
+			if verbose or verbose_main:
+				print('- step_motors()')
+		
+		
+		t_tupple = (t_1st/60.0, t_2nd/60.0, t_3rd/60.0, t_e0/60.0)
+		[t_acceleration, t_plateau, t_deceleration, t_extrusion0] = t_tupple
+'''	
 	
 	
 	t_tupple = (t_1st/60.0, t_2nd/60.0, t_3rd/60.0, t_e0/60.0)	  ##guarda as somas parciais dos tempos: o tempo gasto no total com todos os pedaços de aceleração, plateau, desaceleração, e movimentação de e0
@@ -185,15 +229,15 @@ def main_beeestimator(in_gcode_beesoft="none"):
 
 
 	if verbose or verbose_main:
-		print('- print_time()')
-##	print_time(t_total)										   ## tempo de acordo com o planner
+		print('- time_to_str()')
+##	print(time_to_str(t_total))										   ## tempo de acordo com o planner
 ##	t_tupple = ...												##guarda as somas parciais dos tempos: o tempo gasto no total com todos os pedaços de aceleração, plateau, desaceleração, e movimentação de e0
 ##	print("\t"+str(t_tupple))
 	t_planner= sum(t_tupple)*60.0														   ## tempo de acordo com o planner
 	##t_planner_and_stepper = t_stepper_1st_and_3rd+t_plateau*60.0+t_extrusion0*60.0		  ## tempo de acordo com o planner e o stepper
-	print_time(t_planner)
-##	print_time(t_planner_and_stepper)
-##	print_time(mean([t_planner, .... ]))
+	print("estimated time:\n\t"+time_to_str(t_planner)+"\n")
+##	print(time_to_str(t_planner_and_stepper))
+##	print(time_to_str(mean([t_planner, .... ])))
 		
 	return t_planner
 
@@ -558,13 +602,14 @@ def plot_graphs(speed_t, acceleration_t, t):
 	
 		
 		
-def print_time(t_total):
+def time_to_str(t_total):
 	time_mins = t_total/60.0
 	hours=floor(time_mins/60)				   ##converter o tempo de minutos p/ "hours:mins, seconds".
 	mins=floor(time_mins%60)
 	seconds = (time_mins-floor(time_mins))*60
 
-	print("estimated time:\n\t"+str(int(hours))+"h:"+str(int(mins))+"m, %.3fs\n" %seconds)
+	str_out = str(int(hours))+"h:"+str(int(mins))+"m, %.3fs" %seconds
+	return str_out
 
 
 
