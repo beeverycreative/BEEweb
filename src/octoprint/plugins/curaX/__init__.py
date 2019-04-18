@@ -270,7 +270,12 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 				self._logger.info(u"Running %r in %s" % (" ".join(args), working_dir))
 
 				import sarge
-				p = sarge.run(args, cwd=working_dir, async=True, stdout=sarge.Capture(), stderr=sarge.Capture())
+				import sys
+				if sys.platform == 'win32':		## Windows
+					p = sarge.run(args, cwd=working_dir, async=True, stdout=sarge.Capture(), stderr=sarge.Capture())
+				else:							## other operative systems: Mac & Linux
+					p = sarge.run(args, cwd=working_dir, async_=True, stdout=sarge.Capture(), stderr=sarge.Capture())
+					
 				p.wait_events()
 				self._slicing_commands[machinecode_path] = p.commands[0]
 
