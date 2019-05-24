@@ -268,8 +268,12 @@ $(function() {
 
                     if (data.filament !== null) {
                         self.colors().forEach(function(elem) {
-
-                            if (elem === data.filament) {
+							var flag = ((elem === data.filament) || (elem.substring("#  ".length) === data.filament) || ((elem.substring("# ".length) === data.filament)))
+//							elem = elem.replace("#  ", "")		//an alternative to the above method.
+//							elem = elem.replace("# ", "")
+//							var flag = (elem === data.filament)
+							
+                            if (flag) {
                                 self.selColor(elem);
                             }
                         });
