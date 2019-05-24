@@ -1,6 +1,6 @@
 {
-    "id": "plan-black-tmp",
-    "name": "PLA N black",
+    "id": "plan-black",
+    "name": "#  PLA N - Black",
     "version": 2,
     "inherits": "pla_n",
     "cost": 20,
