@@ -1,6 +1,6 @@
 {
     "id": "pla_teste_gen",
-    "name": "PLA BTF+ Mito",
+    "name": "PLA BTFplus Mito",
     "version": 2,
     "inherits": "pla_btfplus_mito",
     "cost": 20,
