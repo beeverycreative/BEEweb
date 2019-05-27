@@ -78,9 +78,21 @@ class ProfileReader(object):
 	# Get from each profile the overrides and also in is parent
 	@classmethod
 	def getSettingsToSlice(cls, printer, nozzle, filament, quality, overrides):
+		
+		print "DBG", "cls", 		cls
+		print "DBG", "printer", 	printer
+		print "DBG", "nozzle", 		nozzle
+		print "DBG", "filament",	filament
+		print "DBG", "quality", 	quality
+		print "DBG", "overrides", 	overrides
+		
+		
 		extruder_settings = None
 		from octoprint.server import slicingManager
 		profile_path = slicingManager.get_slicer_profile_path("curaX")+'/'
+		
+		print "DBG", "profile_path", profile_path
+		
 		printer_id = PrinterProfileManager.normalize_printer_name(printer)
 
 		#LOAD MACHINE DEFINITIONS
@@ -99,20 +111,70 @@ class ProfileReader(object):
 				inheritsList.append(machine_json)
 				done = True
 
-		raw_settings = None
+		raw_settings = {}
+		
+		print "DBG", "inheritsList", 	inheritsList
+		print "DBG", "machine_json", 	machine_json
+		print "DBG", "inheritPrinter", 	inheritPrinter
+
+		def unpack_dict(input_dict):
+			"""Receives a variable, if it is not a dictionary, returns the same value; if it is a dictionary recursively calls the same function until it can return a value
+			
+			Recursively unpacks an input dictionary and appends it into the output dictionary
+
+			input_dict		dictionary
+			
+			return			returns a single-level dictionary
+			"""
+
+			print "***", "input_dict", input_dict
+
+			output_dict={}
+			print 'DBG', type(input_dict), input_dict
+
+			if (type(input_dict)) is list:
+				for i in input_dict:
+					print 'DBG', type(i), i
+		#	if type(input_dict) is list:
+		#		print '******* IS A LIST'
+		#		for i in input_dict:
+		#			print '***********', unpack_dict(i)
+
+			for key, value in input_dict.items():
+				print '***', 'k,v=', key, value
+				if (type(value) is dict) and ('default_value' in value):
+					print '*', value 
+					output_dict[key] = value
+				else:
+					temp_dict = unpack_dict(value)
+					for k,v in temp_dict.items():
+						output_dict[k] = v
+			print "***", "output_dict", output_dict
+		
+			return output_dict
+
 
 		#Retrieve definitions from files and its inherits based in its groups
+		print "DBG", "MACHINE SETTINGS?"
+
+
 		for i in reversed(inheritsList):
 			if raw_settings is None:
-				raw_settings = i['overrides'].copy()
+				print ">>> overrides", i['overrides'].copy()
+				raw_settings = unpack_dict(i['overrides'])
 			else:
-				for key in i['overrides'].keys():
+				j = unpack_dict(i['overrides'])
+				for key in j.keys():
 					if key not in raw_settings.keys():
 						raw_settings[key] = {}
-					raw_settings[key].update(i['overrides'][key])
+						print "DBG", "adding new key:", key
+					raw_settings[key]=j[key]
+					print "DBG", "adding new key value:", key, raw_settings[key]
 
+		print "DBG", "raw_settings at MACHING SETTINGS", raw_settings
 		# Check if it is a printer with more than one extruder
 		# TODO Edit dictionaries merge for multi extruder printers
+		print "DBG", "EXTRUDER SETTINGS?"
 		if isinstance(nozzle, list) and isinstance(filament, list):
 			extruder_settings = {}
 			#for each extruder
@@ -121,35 +183,61 @@ class ProfileReader(object):
 				extruder_settings[count] = cls.getFilamentOverrides(filament[count], printer_id, nozzle[count], profile_path, quality)
 				# get nozzle overrides
 				extruder_settings[count] = cls.merge_dicts(extruder_settings[count], cls.getNozzleOverrides(nozzle[count], profile_path))
+				print "DBG", "merge_dicts", "extruder_settings", extruder_settings[count]
+				print "DBG", "merge_dicts", "nozzle overrides", cls.getNozzleOverrides(nozzle[count], profile_path)
 
+			print "DBG", 'extruder_settings', extruder_settings
 		# if single extruder
 		else:
 			# get filament and parent overrides
 			filament_Overrides = cls.getFilamentOverrides(filament, printer_id, nozzle, profile_path, quality)
 			# get nozzle overrides
 			nozzle_Overrides = cls.getNozzleOverrides(nozzle, profile_path)
+			
+			print "DBG", 'filament_Overrides', filament_Overrides
+			print "DBG", 'nozzle_Overrides', nozzle_Overrides
 
 			# merge everything together
+			print "DBG", "FILAMENT OVERRIDES"
 			for key in filament_Overrides.keys():
 				if key not in raw_settings.keys():
 					raw_settings[key] = {}
+					print ">>>", "Creating key:", key
 				raw_settings[key].update(filament_Overrides[key])
+				print ">>>", "Key value:", raw_settings[key]
+			print "DBG", "raw_settings at FILAMENT SETTINGS", raw_settings
+
+			print "DBG", "NOZZLE OVERRIDES"
 			for key in nozzle_Overrides.keys():
 				if key not in raw_settings.keys():
 					raw_settings[key] = {}
+					print ">>>", "Creating key:", key
 				raw_settings[key].update(nozzle_Overrides[key])
+				print ">>>", "Key value:", raw_settings[key]
 			#engine_settings = cls.merge_dicts(engine_settings, filament_Overrides, nozzle_Overrides)
 			# merge interface overrides
+			print "DBG", "raw_settings at NOZZLE SETTINGS", raw_settings
 
+			print "DBG", "RAW SETTINGS"
 			for key in raw_settings.keys():
+				print ">>>", "key = ", key, "value = ", raw_settings[key]
 				if 'default_value' in raw_settings[key].keys():
 					engine_settings[key] = raw_settings[key]
+					print ">>>", "default value in raw_settings[key].keys(), updating in engine_settings"
+					
 				else:
+					print ">>>", "default value NOT in raw_settings[key].keys()"
 					for k in raw_settings[key].keys():
+						print ">>>>>>>", "key = ", k, "value = ", raw_settings[key][k]
 						if 'default_value' in raw_settings[key][k].keys():
 							engine_settings[k] = raw_settings[key][k]
+							print ">>>>>>>", "default value in raw_settings[key].keys(), updating in engine_settings"
+							
+			print "DBG", "raw_settings after RAW SETTINGS", raw_settings
+
 
 			interface_overrides = cls.overrideCustomValues(engine_settings,overrides)
+			print "DBG", 'interface_overrides', interface_overrides
 			# merge interface overrides
 			engine_settings.update(interface_overrides)
 
