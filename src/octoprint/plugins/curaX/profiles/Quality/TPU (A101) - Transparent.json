@@ -1,6 +1,6 @@
 {
     "id": "tpu-transparent",
-    "name": "TPU - Transparent",
+    "name": "TPU (A101) - Transparent",
     "version": 2,
     "inherits": "tpu",
     "cost": 20,
