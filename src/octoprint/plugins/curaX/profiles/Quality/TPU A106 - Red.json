@@ -1,6 +1,6 @@
 {
-    "id": "tpu-white",
-    "name": "TPU (A102) - White",
+    "id": "tpu-red",
+    "name": "TPU A106 - Red",
     "version": 2,
     "inherits": "tpu",
     "cost": 20,
