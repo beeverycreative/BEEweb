@@ -8,10 +8,10 @@ $(function() {
         self.show_override = ko.observable(true);
 
         self.onStartupComplete = function() {
-            new PNotify({
+            /*new PNotify({
                 title: gettext("ScreenSquish Auto Off"),
                 text: gettext("ScreenSquish automatically turned itself off due to possible version incompatibility. It may need an update."),
-            });
+            }); */
         }
 
         self.onSettingsBeforeSave = function() {
