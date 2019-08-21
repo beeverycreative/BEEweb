@@ -206,7 +206,10 @@ class ProfileReader(object):
 				elif engine_settings['infill_pattern']['default_value'] in ['cross','cross_3d']:
 					multiplier = 1
 
-				infill_line_dist = (multiplier * infill_line_width * 100) / float(overrides[field])
+				if float(overrides[field]) == 0:
+					infill_line_dist = 0	##fix division by 0; this value is interpreted by cura as no infill
+				else:
+					infill_line_dist = (multiplier * infill_line_width * 100) / float(overrides[field])
 				settings['infill_line_distance'] = {'default_value': infill_line_dist}
 
 
