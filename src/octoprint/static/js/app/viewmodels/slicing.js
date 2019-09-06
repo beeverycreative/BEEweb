@@ -2,6 +2,9 @@ $(function() {
     function SlicingViewModel(parameters) {
         var self = this;
 
+		$.ajaxSetup({ cache: false });
+		
+		
         self.loginState = parameters[0];
         self.printerProfiles = parameters[1];
 
@@ -267,11 +270,15 @@ $(function() {
                     self.selNozzle(data.nozzle);
 
                     if (data.filament !== null) {
+						console.log(self.colors());
+						alert("self.colors() was written to the console...");		//<-- aqui está um problema!
+						
                         self.colors().forEach(function(elem) {
-							var flag = ((elem === data.filament) || (elem.substring("#  ".length) === data.filament) || ((elem.substring("# ".length) === data.filament)))
-//							elem = elem.replace("#  ", "")		//an alternative to the above method.
-//							elem = elem.replace("# ", "")
-//							var flag = (elem === data.filament)
+//							var flag = ((elem === data.filament) || (elem.substring("#  ".length) === data.filament) || ((elem.substring("# ".length) === data.filament)))
+							var elem_reduced = elem.replace("#  ", "");				//an alternative to the above method.
+							elem_reduced = elem_reduced.replace("# ", "");
+							console.log(elem_reduced);
+							var flag = (elem_reduced === data.filament);
 							
                             if (flag) {
                                 self.selColor(elem);
@@ -290,7 +297,7 @@ $(function() {
 						self.filamentInSpool(Math.round(data.filamentInSpool));
 					}
                 }
-            });
+			});
         };
         self.enableHighPlusResolution = ko.pureComputed(function() {
             return self.selNozzle() != "0.6";
@@ -337,6 +344,7 @@ $(function() {
         };
 
         self.profilesForSlicer = function(key) {
+			alert("key: "+key);
             if (key == undefined) {
                 key = self.slicer();
             }
@@ -344,6 +352,13 @@ $(function() {
                 return;
             }
             var slicer = self.data[key];
+			console.log("self.data: ");
+			console.log(typeof(self.data));
+			console.log(self.data);
+			console.log("slicer: ");
+			console.log(slicer);
+			console.log("slicer.profiles: ");
+			console.log(slicer.profiles);
 
             var selectedProfile = undefined;
             self.profiles.removeAll();
@@ -351,12 +366,14 @@ $(function() {
 
             _.each(_.values(slicer.profiles), function(profile) {
                 var name = profile.displayName;
+				console.log("name: " + name);
                 if (name == undefined) {
                     name = profile.key;
                 }
 
                 if (profile.default) {
                     selectedProfile = profile.key;
+					alert("default profile: "+selectedProfile);
                 }
 
                 self.profiles.push({
@@ -369,6 +386,12 @@ $(function() {
 
             });
 
+			console.log("self.colors: ");
+			console.log(self.colors);
+			
+			alert("selected profile: "+selectedProfile);
+			//este alert está a retornar sempre: "selected profile: A023 - black", o que vem de um valor de default,
+			//																				definido em ./octoprint/server/api/maintenance.py
             if (selectedProfile != undefined) {
                 self.profile(selectedProfile);
             }

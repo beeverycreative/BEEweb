@@ -1,3 +1,6 @@
+//				const { dialog } = require('electron')
+
+				
 $(function() {
     function PrinterStateViewModel(parameters) {
         var self = this;
@@ -184,7 +187,10 @@ $(function() {
 
         self.busyFiles = ko.observableArray([]);
 
-        self.filament = ko.observableArray([]);
+        self.filament = ko.observableArray([]);				//<-- suspeito!
+//		self.filament = function(){ return "# test...";}	//resultado: incocente...
+		
+		alert("FILAMENT:" + self.filament);
         self.estimatedPrintTime = ko.observable(undefined);
         self.lastPrintTime = ko.observable(undefined);
 
@@ -368,7 +374,40 @@ $(function() {
             self.stateClass("text-black");
 
             if (self.isOperational()) {
-                self.stateClass("ready");
+/*				alert("hello!");
+//				var window = app.browserWindow;
+				console.log(window);
+				location.reload(true);					//força a re-inicialização da cache e da janela @chrome, IE, firefox, safari, opera...
+*/				
+/*				session = window.webContents.session;	//@nativefier... /?/
+				session.clearStorageData(function() {
+					session.clearCache(function() {
+					});
+				});
+				alert("hey!");
+				
+				console.log(BEEwb);*/
+
+/*				dialog.showMessageBox(mainWindow, {
+        type: 'warning',
+        buttons: ['yes', 'cancel'],
+        defaultId: 1,
+        title: 'clear cache confirmation',
+        message: 'this will clear all data (cookies, local storage etc) from this app; are you sure you wish to proceed?'
+    }, response => {
+        if (response === 0) {
+            const session = mainWindow.webContents.session;
+            session.clearStorageData(() => {
+                session.clearCache(() => {
+                    mainWindow.loadURL(options.targetUrl);
+                });
+            });
+        }
+    }); */
+				
+//				alert("hi!");
+				
+				self.stateClass("ready");
             }
             if (self.isPaused()) {
                 self.stateClass("paused");
@@ -466,8 +505,26 @@ $(function() {
             // the currently selected printer profile, instead of calling the API when the application is loaded
             // in the PrinterProfilesViewModel which would cause the printer label to always show the default printer
             if (prevClosed === true && self.isErrorOrClosed() === false && self.isReady() === true) {
+				alert("from closed to ready...");
+//				##i.
+//				location.reload(true);						//força a re-inicialização da cache e da janela @chrome, IE, firefox, safari, opera...
+//				##ii.
+//				alert("...");
+				console.log(window);
+/*				//{...
+//					var window = app.browserWindow;
+					var window = mainWindow;
+					session = window.webContents.session;	//@nativefier... /?/
+					session.clearStorageData(function() {
+						session.clearCache(function() {
+						});
+					});
+				//}
+				alert("hey!"); */
+				
+//comentado p/ testes:
                 self.printerProfiles.requestData();
-
+//alert("comentado!");
 				// Checks the necessary API endpoints to know if the maintenance wizard should be shown
 				self._isMaintenanceRequired(function () {
 					self.wizard.forceShowDialog();
@@ -477,6 +534,7 @@ $(function() {
 
             // detects if the state changed from ready to closed
             if (prevClosed === false && self.isErrorOrClosed() === true && self.isOperational() === false) {
+				alert("from ready to closed...");
                 self._hidePrintFromMemory();
                 self.ignoredInsufficientFilament(false);
             }

@@ -106,6 +106,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 			profile_allow_overwrite = flask.request.values["allowOverwrite"] in valid_boolean_trues
 
 		try:
+			print("DBG.: TRY!!")
 			slicingManager.save_profile("curaX",
 			                            profile_name,
 			                            profile_dict,
@@ -114,6 +115,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 			                            description=profile_description)
 		except octoprint.slicing.ProfileAlreadyExists:
 			self._logger.warn("Profile {profile_name} already exists, aborting".format(**locals()))
+			print("DBG.: ERROR AT PLUGIN!!")
 			return flask.make_response("A profile named {profile_name} already exists for slicer cura".format(**locals()), 409)
 
 		result = dict(
@@ -128,6 +130,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 	##~~ AssetPlugin API
 
 	def get_assets(self):
+		print("DBG.: @get_assets()")
 		return {
 			"js": ["js/curaX.js"],
 			"less": ["less/curaX.less"],

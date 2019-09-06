@@ -205,6 +205,10 @@ class SlicingManager(object):
 		if require_configured and not self._slicers[slicer].is_slicer_configured():
 			raise SlicerNotConfigured(slicer)
 
+		print("DBG.: self._slicers" )
+		print(self._slicers)
+
+
 		return self._slicers[slicer]
 
 	def slice(self, slicer_name, source_path, dest_path, profile_name, callback,
@@ -268,6 +272,10 @@ class SlicingManager(object):
 		    ~octoprint.slicing.exceptions.UnknownSlicer: The slicer specified via ``slicer_name`` is unknown.
 		    ~octoprint.slicing.exceptions.SlicerNotConfigured: The slice specified via ``slicer_name`` is not configured yet.
 		"""
+		
+		print("DBG.: slicer_name: ")
+		print(slicer_name)
+		
 
 		if callback_args is None:
 			callback_args = ()
