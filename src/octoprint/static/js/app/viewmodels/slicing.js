@@ -2,6 +2,9 @@ $(function() {
     function SlicingViewModel(parameters) {
         var self = this;
 
+        $.ajaxSetup({ cache: false });		//command for do not caching the results of AJAX calls - this fixs some problems when connecting to BTFs and BTFs+ alternately.
+
+
         self.loginState = parameters[0];
         self.printerProfiles = parameters[1];
 
