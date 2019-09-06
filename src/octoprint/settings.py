@@ -348,8 +348,8 @@ default_settings = {
 	"devel": {
 		"stylesheet": "css",
 		"cache": {
-			"enabled": False,		##set to false by SR, 2019/08/29
-			"preemptive": False		##
+			"enabled": True,
+			"preemptive": True
 		},
 		"webassets": {
 			"bundle": True,

@@ -453,10 +453,6 @@ $(function() {
         };
 
         self.requestData = function() {
-            console.log("LOG:");
-            console.log(OctoPrint.printerprofiles);
-            console.log(OctoPrint.printerprofiles.list());
-			
             return OctoPrint.printerprofiles.list()
                 .done(self.fromResponse);
         };

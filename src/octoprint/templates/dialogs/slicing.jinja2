@@ -164,8 +164,8 @@
                     <div class="control-group">
                         <div class="controls">
                             <div class="filament-div">
-                                <span class="small-label">{{ _('FILAMENT') }}: aqui!</span>
-                                <span class="filament" data-bind="text: selColor, visible: !estimationDialog()"></span><!-- esta linha é importante!-->
+                                <span class="small-label">{{ _('FILAMENT') }}:</span>
+                                <span class="filament" data-bind="text: selColor, visible: !estimationDialog()"></span>
                                 <select data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
                                 <span class="remaining-filament" data-bind="visible: !estimationDialog() && filamentInSpool">
                                     <div>{{ _('Remaining filament') }}:  <span data-bind="text: filamentInSpool" ></span> (g)</div>
