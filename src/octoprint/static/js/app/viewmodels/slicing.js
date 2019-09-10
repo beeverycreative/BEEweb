@@ -270,12 +270,15 @@ $(function() {
                     self.selNozzle(data.nozzle);
 
                     if (data.filament !== null) {
+						//console.log(self.colors());
+						//alert("self.colors() was written to the console...");
+
                         self.colors().forEach(function(elem) {
-							var flag = ((elem === data.filament) || (elem.substring("#  ".length) === data.filament) || ((elem.substring("# ".length) === data.filament)))
-//							elem = elem.replace("#  ", "")		//an alternative to the above method.
-//							elem = elem.replace("# ", "")
-//							var flag = (elem === data.filament)
-							
+                            var elem_reduced = elem.replace("#  ", "");
+                            elem_reduced = elem_reduced.replace("# ", "");
+                            //console.log(elem_reduced);
+                            var flag = (elem_reduced === data.filament);
+
                             if (flag) {
                                 self.selColor(elem);
                             }
