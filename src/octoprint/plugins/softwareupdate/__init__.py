@@ -1000,6 +1000,8 @@ class SoftwareUpdatePlugin(octoprint.plugin.BlueprintPlugin,
 			if result["displayName"] is None:
 				# displayName missing or set to None
 				result["displayName"] = to_unicode(gettext("BEEweb"), errors="replace")
+			if result["displayName"] == "BEEweb":
+				result["displayName"] = "BEESOFT"
 
 			result["displayVersion"] = to_unicode(check.get("displayVersion"), errors="replace")
 			if result["displayVersion"] is None:
