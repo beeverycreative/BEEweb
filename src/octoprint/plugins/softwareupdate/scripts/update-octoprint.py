@@ -59,7 +59,12 @@ def _execute(command, **kwargs):
 		joined_command = command
 	_log_call(joined_command)
 
-	kwargs.update(dict(async_=True, stdout=sarge.Capture(), stderr=sarge.Capture()))
+
+	if sys.platform == 'win32':		## Windows
+		kwargs.update(dict(async=True, stdout=sarge.Capture(), stderr=sarge.Capture()))
+	else:							## other operative systems: Mac & Linux
+		kwargs.update(dict(async_=True, stdout=sarge.Capture(), stderr=sarge.Capture()))
+
 
 	try:
 		p = sarge.run(command, **kwargs)
