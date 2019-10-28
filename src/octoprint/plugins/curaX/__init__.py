@@ -334,12 +334,15 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 								try:
 									current_layer = float(current_layer)
 								except:
+									print("RAISE: ...")
+									raise
 									pass
 								else:
 									if not step in step_factor:
 										continue
 									on_progress_kwargs["_progress"] = (step_factor[step] * layer_count + current_layer) / (layer_count * 3)
 									on_progress(*on_progress_args, **on_progress_kwargs)
+							print("SPLIT_LINE: ", split_line)
 
 						elif line.startswith(u"Print time:"):
 							try:
