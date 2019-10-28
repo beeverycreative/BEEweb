@@ -281,11 +281,7 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 
 			try:
 				layer_count = None
-				step_factor = dict(
-					inset=0,
-					skin=1,
-					export=2
-				)
+				
 				analysis = None
 				while p.returncode is None:
 					line = p.stderr.readline(timeout=0.5)
@@ -296,30 +292,25 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 					line = octoprint.util.to_unicode(line, errors="replace")
 					self._cura_logger.debug(line.strip())
 					if on_progress is not None:
-						# The Cura slicing process has three individual steps, each consisting of <layer_count> substeps:
+						#### adjusted for compatibility with CURA_STEAMENGINE version 3.4.1
 						#
+						# The CURAENGINE slicing process has three individual steps:
 						#   - inset
 						#   - skin
 						#   - export
 						#
-						# So each layer will be processed three times, once for each step, resulting in a total amount of
-						# substeps of 3 * <layer_count>.
+						# The CURAENGINE reports the continuous progress on stderr.
 						#
-						# The CuraEngine reports the calculated layer count and the continuous progress on stderr.
-						# The layer count gets reported right at the beginning in a line of the format:
-						#
-						#   Layer count: <layer_count>
-						#
-						# The individual progress per each of the three steps gets reported on stderr in a line of
+						# The progress per each of the three steps, and the overal progress, get reported on stderr in a line of
 						# the format:
 						#
-						#   Progress:<step>:<current_layer>:<layer_count>
+						#   Progress:<step>:<current_layer>:<layer_count> \t<overall_progress>
 						#
-						# Thus, for determining the overall progress the following formula applies:
+						# ... for instance:
+						#	Progress:inset+skin:10:100 	0.049177%
 						#
-						#   progress = <step_factor> * <layer_count> + <current_layer> / <layer_count> * 3
 						#
-						# with <step_factor> being 0 for "inset", 1 for "skin" and 2 for "export".
+						# Thus, we need to catch the content "<overall_progress>".
 
 						if line.startswith(u"Layer count:") and layer_count is None:
 							try:
@@ -328,20 +319,15 @@ class CuraPlugin(octoprint.plugin.SlicerPlugin,
 								pass
 
 						elif line.startswith(u"Progress:"):
-							split_line = line[len(u"Progress:"):].strip().split(":")
-							if len(split_line) == 3:
-								step, current_layer, _ = split_line
-								try:
-									current_layer = float(current_layer)
-								except:
-									print("RAISE: ...")
-									raise
-									pass
-								else:
-									if not step in step_factor:
-										continue
-									on_progress_kwargs["_progress"] = (step_factor[step] * layer_count + current_layer) / (layer_count * 3)
-									on_progress(*on_progress_args, **on_progress_kwargs)
+							split_line = line[len(u"Progress:"):].strip().split("\t")
+							try:
+								_, progress_pct = split_line
+								on_progress_kwargs["_progress"] = 1.0*float(progress_pct[:-1])		##remove o caracter de percentagem, e guarda o valor no formato 0.0-1.0.
+								print("progresso actual: ")
+								print(on_progress_kwargs["_progress"])
+								on_progress(*on_progress_args, **on_progress_kwargs)
+							except:
+								pass
 							print("SPLIT_LINE: ", split_line)
 
 						elif line.startswith(u"Print time:"):
