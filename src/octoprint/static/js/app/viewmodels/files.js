@@ -898,13 +898,13 @@ $(function() {
                 .addClass("progress-striped")
                 .addClass("active");
             self.uploadProgressBar.css("width", "0%");
-            self.uploadProgressText(_.sprintf(gettext("Slicing ... (%(percentage)d%%)"), {percentage: 0}));
+//            self.uploadProgressText(_.sprintf(gettext("Slicing ... (%(percentage)d%%)"), {percentage: 0}));						//background bar...
         };
 
         self.onSlicingProgress = function(slicer, modelPath, machinecodePath, progress) {
             self.uploadProgressBar.css("width", progress+"%");
 			console.log("PROGRESS: "+progress);
-            self.uploadProgressText(_.sprintf(gettext("Slicing ... (%(percentage)d%%)"), {percentage: Math.round(progress)}));
+//            self.uploadProgressText(_.sprintf(gettext("Slicing ... (%(percentage)d%%)"), {percentage: Math.round(progress)}));	//background bar...
         };
 
         self.onEventSlicingCancelled = function(payload) {
