@@ -368,6 +368,10 @@ class FileManager(object):
 			return
 
 		progress_int = int(_progress * 100)
+		
+		print("PROGRESS: ")
+		print(_progress)
+		
 		if self._last_slicing_progress != progress_int:
 			self._last_slicing_progress = progress_int
 			for callback in self._slicing_progress_callbacks:

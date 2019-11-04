@@ -102,9 +102,8 @@ BEEwb.main = {
         this.objects = new THREE.Object3D();
         this.scene.add(this.objects);
 
-        // Loads the model
+/*      // option i), loads the last model:
         var lastModel = readCookie('lastModel');
-
         if (lastModel) {
             var that = this;
             $.ajax({
@@ -117,11 +116,14 @@ BEEwb.main = {
                     that.loadModel(lastModel, false, true);
                 }
             });
-        } else {
-            //lastModel = 'BEE.stl';
-            //this.loadModel(lastModel, true, true);
-        }
+        }*/
 
+/*      // option ii), loads the BEE.stl model:
+        this.loadModel('BEE.stl', true, true);*/
+
+        //when both options i) and ii) are disabled, the startup scene will be empty.
+
+            
         // Uncomment this if you want Trackball controls instead of Orbit controls
         // this.sceneControls = new THREE.TrackballControls( this.camera, this.container );
         // this.sceneControls.noZoom = false;

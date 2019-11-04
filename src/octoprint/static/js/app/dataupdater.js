@@ -168,7 +168,7 @@ function DataUpdater(allViewModels) {
     };
 
     self._onSlicingProgress = function(event) {
-        $("#gcode_upload_progress").find(".bar").text(_.sprintf(gettext("Slicing ... (%(percentage)d%%)"), {percentage: Math.round(event.data["progress"])}));
+        $("#gcode_upload_progress").find(".bar").text(_.sprintf(gettext("slicing... (%(percentage)d%%)"), {percentage: event.data["progress"]}));
 
         var data = event.data;
         callViewModels(self.allViewModels, "onSlicingProgress", [
