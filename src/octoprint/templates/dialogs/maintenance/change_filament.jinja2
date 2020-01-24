@@ -24,6 +24,12 @@
                             <select data-bind="options: filamentProfiles, value: selectedFilament, onchange: onFilamentSelect, optionsCaption: '{{ _('Select filament type...') }}'">
 
                             </select>
+                            <br />
+							<form action="">
+								<input type="radio" name="filament_type" value="mcpp" checked="true"> mcpp
+								<input type="radio" name="filament_type" value="beesupply"> beesupply
+							</form>
+                        
                         </div>
                         <div class="span8">
                             <p>{{ _('Please select the correct code for the filament. You can find that code on the spool, (e.g: A101 - Transparent).') }}
