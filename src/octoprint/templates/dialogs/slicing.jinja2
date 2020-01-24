@@ -178,7 +178,7 @@
 								<input type="radio" name="filament_type" value="beesupply"> beesupply
 								</form>
                                 <script>
-                                window.onload = function() { 
+                                function f(){
 									window.opt_actual=true;
 	//                                const array_of_items = {{colors}};
 	//                                console.log(array_of_items);
@@ -199,11 +199,67 @@
 										console.log("end.");
 										return {{ colors }};
 									}
+									
+									console.log($("#select_mcpp"));
+									console.log($("#select_beesupply"));
+									
+//									#### important: ####
+									// get all options within <select id='#select_mcpp'>...</select>
+									var op = document.getElementById("select_mcpp").options;
+									console.log(op);
+									console.log(op.length);
+									for (var i=0; i<op.length; i++){
+										console.log(op[i]);
+										console.log(op[i].value);
+										console.log(op[i].id);
+										(op[i].value.includes("#")) 
+											? op[i].hidden = false
+											: op[i].hidden = true;
+									}
+									
+									var op = $("#select_mcpp");
+									op.each(function(){
+										console.log($(this).context);
+										console.log(JSON.stringify($(this)));
+										console.log(JSON.stringify($(this).context));
+
+										if (JSON.stringify($(this)).includes("#")){
+											console.log("FALSE!");
+											$(this).disabled = false;
+										}
+										else{
+											console.log("TRUE!");
+											$(this).disabled = true;
+										}
+									});
+									
+									var list = document.getElementById("select_mcpp").getElementsByTagName("option");
+									for (let item of list) {
+										console.log(item.id);
+									}
 								}
+								window.onload = function(){
+									f();
+								}
+								
                                 </script>
-                                <select data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: window.opt_actual && estimationDialog()" ></select>
-                                <select data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: (!window.opt_actual) && estimationDialog()" ></select>
+<!--                                <ul data-bind="foreach: colors">
+									<li>the value is <span data-bind="text: $data"></span></li>
+								</ul> -->
+								
+<!--							<div data-bind="visible: my_values().length>0">
+									you will see this message only when 'my_values' has at least one member.
+								</div>
+								<script type="text/javascript">
+									var view_model = {
+										my_values: ko.observableArray([])
+									};
+								</script> -->
+                                
+                                <select id="select_mcpp" data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: window.opt_actual && estimationDialog()" ></select>
+                                <select id="select_beesupply" data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: (!window.opt_actual) && estimationDialog()" ></select>
                                 <br />
+                                <p id="button" onclick="f();">refresh...</p>
                                 
                                 ## informação adicional - não apresentada...
                                 <span class="remaining-filament" data-bind="visible: !estimationDialog() && filamentInSpool">
