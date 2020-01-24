@@ -179,26 +179,50 @@
 								</form>
                                 <script>
                                 function f(){
-									window.opt_actual=true;
-									
 									console.log($("#select_mcpp"));
 									console.log($("#select_beesupply"));
 									
 									//#### important: ####
-									// get all options within <select id='#select_mcpp'>...</select>
-									var op = document.getElementById("select_mcpp").options;
+									// the goal is to find the elements of filaments profiles list, and show only new profiles or old profiles, accordingly to the option "mcpp (default)" or "bee_supply"
+									var radios = document.getElementsByName('filament_type');
+									var option;
+									console.log("aqui!");
+									for (var j=0, length=radios.length; j<length; j++) {
+										if (radios[j].checked) {
+											// find the checked radio
+											console.log(radios[j].value);
+											//alert(radios[j].value);
+											option = radios[j].value;
+
+											// only one radio can be logically checked, don't check the rest
+											break;
+										}
+									}
+									
+									// get all options within <select id='select_supply'>...</select>
+									var op = document.getElementById("select_supply").options;
 									console.log(op);
 									console.log(op.length);
 									for (var i=0; i<op.length; i++){
 										console.log(op[i]);
 										console.log(op[i].value);
 										console.log(op[i].id);
-										(op[i].value.includes("#")) 
-											? op[i].hidden = false
-											: op[i].hidden = true;
+										
+//										//if the option mcpp is selected: display only new profiles...
+										if (option==="mcpp"){
+											(op[i].value.includes("#")) 
+												? op[i].hidden = false
+												: op[i].hidden = true;
+										}
+//										//else if the option beesupply is selected: display only old profiles...
+										else{
+											(op[i].value.includes("#")) 
+												? op[i].hidden = true
+												: op[i].hidden = false;										
+										}
 									}
 									
-									var list = document.getElementById("select_mcpp").getElementsByTagName("option");
+									var list = document.getElementById("select_supply").getElementsByTagName("option");
 									for (let item of list) {
 										console.log(item.id);
 									}
@@ -221,8 +245,7 @@
 									};
 								</script> -->
                                 
-                                <select id="select_mcpp" data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: window.opt_actual && estimationDialog()" ></select>
-                                <select id="select_beesupply" data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: (!window.opt_actual) && estimationDialog()" ></select>
+                                <select id="select_supply" data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
                                 <br />
                                 <p id="button" onclick="f();">refresh...</p>
                                 
