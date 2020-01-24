@@ -180,30 +180,11 @@
                                 <script>
                                 function f(){
 									window.opt_actual=true;
-	//                                const array_of_items = {{colors}};
-	//                                console.log(array_of_items);
-									function colors_beesupply(){
-										console.log("@colors_beesupply");
-										console.log({{ colors }});
-										var var_els = {};
-										{% for el in elements -%}
-											var_els = el;
-										{% endfor %}
-										console.log(var_els);
-										console.log("end.");
-										return {{ colors }};
-									}
-									function colors_mcpp(){
-										console.log("@colors_beemcpp");
-										console.log({{ colors }});
-										console.log("end.");
-										return {{ colors }};
-									}
 									
 									console.log($("#select_mcpp"));
 									console.log($("#select_beesupply"));
 									
-//									#### important: ####
+									//#### important: ####
 									// get all options within <select id='#select_mcpp'>...</select>
 									var op = document.getElementById("select_mcpp").options;
 									console.log(op);
@@ -216,22 +197,6 @@
 											? op[i].hidden = false
 											: op[i].hidden = true;
 									}
-									
-									var op = $("#select_mcpp");
-									op.each(function(){
-										console.log($(this).context);
-										console.log(JSON.stringify($(this)));
-										console.log(JSON.stringify($(this).context));
-
-										if (JSON.stringify($(this)).includes("#")){
-											console.log("FALSE!");
-											$(this).disabled = false;
-										}
-										else{
-											console.log("TRUE!");
-											$(this).disabled = true;
-										}
-									});
 									
 									var list = document.getElementById("select_mcpp").getElementsByTagName("option");
 									for (let item of list) {
