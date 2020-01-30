@@ -1555,7 +1555,10 @@ $(function() {
             self.newStepsResponseError(false);
 
             var mmInput = parseInt(self.measuredFilamentInput());
-            if (isNaN(mmInput) || mmInput < 125 || mmInput > 375) {
+            console.log("#mmInput=", mmInput);
+            console.log("#mesauredFilamentInput=", self.measuredFilamentInput());
+            console.log("#isNan=", (isNaN(mmInput)) );
+            if (isNaN(mmInput) || (mmInput < 125) || (mmInput > 375)) {
                 self.newStepsResponseError(true);
                 self.commandLock(false);
 
