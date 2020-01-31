@@ -164,21 +164,29 @@
                     <div class="control-group">
                         <div class="controls">
                             <div class="filament-div">
-                                ## legenda, sempre presente:
+                                <!--## legenda, sempre presente: -->
                                 <span class="small-label">{{ _('FILAMENT') }}:</span>
-                                <br />
                                 
-                                ## quando a impressora está conectada, tal que não é possível escolher filamento:
+                                <!--## quando a impressora está conectada, tal que não é possível escolher filamento: -->
                                 <span class="filament" data-bind="text: selColor, visible: !estimationDialog()"></span>
-								<br />
-                                
-                                ## quando a impressora está desconectada, tal que aparecem opções:<br />
-                                <form action="">
-								<input type="radio" name="filament_type" value="mcpp" checked="true" onclick="f();"> mcpp
-								<input type="radio" name="filament_type" value="beesupply" onclick="f();"> beesupply
-								</form>
+								
+                                <!--## quando a impressora está desconectada, tal que aparecem opções:<br /> -->
                                 <script>
-                                function f(){
+                                function f_on_change_radiobtn(on_startup){
+									var op = document.getElementById("select_supply").options;
+
+									if (on_startup==true){
+//										window.op_at_startup = JSON.parse(JSON.stringify(op));		//this is a deep copy of op which will maintain the original "#" symbols, for separation into the two sections; in op var the cardinals will be removed for a proper display to the user.
+//										window.op_at_startup = _.clone(op);
+										console.log("DBG:");
+										console.log(window.op_at_startup);
+										
+										window.types_of_filaments=[];
+										for (var i=0; i<op.length; i++){
+											window.types_of_filaments.push(op[i].value.includes("#"));
+										}
+									}
+									
 									console.log($("#select_mcpp"));
 									console.log($("#select_beesupply"));
 									
@@ -200,7 +208,6 @@
 									}
 									
 									// get all options within <select id='select_supply'>...</select>
-									var op = document.getElementById("select_supply").options;
 									console.log(op);
 									console.log(op.length);
 									for (var i=0; i<op.length; i++){
@@ -210,15 +217,22 @@
 										
 //										//if the option mcpp is selected: display only new profiles...
 										if (option==="mcpp"){
-											(op[i].value.includes("#")) 
-												? op[i].hidden = false
-												: op[i].hidden = true;
+											if (window.types_of_filaments[i]==true){		//if they contained originaly the "#" symbol
+												op[i].hidden = false;
+												if (op[i].innerHTML.includes("#")){
+													op[i].innerHTML = op[i].value.replace("#", "");
+													console.log("op[i].value: "+op[i].value);
+												}
+											}
+											else{
+												op[i].hidden = true;
+											}
 										}
 //										//else if the option beesupply is selected: display only old profiles...
 										else{
-											(op[i].value.includes("#")) 
+											(window.types_of_filaments[i])
 												? op[i].hidden = true
-												: op[i].hidden = false;										
+												: op[i].hidden = false;
 										}
 									}
 									
@@ -247,9 +261,15 @@
                                 
                                 <select id="select_supply" data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
                                 <br />
-                                <p id="button" onclick="f();">refresh...</p>
+                                <p id="button" onclick="f_on_change_radiobtn(true);">refresh...</p>
+
+                                <form action="">
+								<input type="radio" name="filament_type" value="mcpp" checked="true" onclick="f_on_change_radiobtn(false);"> mcpp
+								<input type="radio" name="filament_type" value="beesupply" onclick="f_on_change_radiobtn(false);"> beesupply
+								</form>
                                 
-                                ## informação adicional - não apresentada...
+                                
+                                <!--## informação adicional - não apresentada... -->
                                 <span class="remaining-filament" data-bind="visible: !estimationDialog() && filamentInSpool">
                                     <div>{{ _('Remaining filament') }}:  <span data-bind="text: filamentInSpool" ></span> (g)</div>
                                 </span>
