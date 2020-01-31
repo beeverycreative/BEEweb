@@ -194,7 +194,6 @@
 									// the goal is to find the elements of filaments profiles list, and show only new profiles or old profiles, accordingly to the option "mcpp (default)" or "bee_supply"
 									var radios = document.getElementsByName('filament_type');
 									var option;
-									console.log("aqui!");
 									for (var j=0, length=radios.length; j<length; j++) {
 										if (radios[j].checked) {
 											// find the checked radio
@@ -241,9 +240,10 @@
 										console.log(item.id);
 									}
 								}
-								window.onload = function(){
-									f();
-								}
+/*								window.onload = function(){
+									//f();
+									setTimeout(function(){ f_on_change_radiobtn(true); }, 1000);
+								} */
 								
                                 </script>
 <!--                                <ul data-bind="foreach: colors">
