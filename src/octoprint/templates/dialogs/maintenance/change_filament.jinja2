@@ -21,14 +21,13 @@
                 <div class="control-group">
                     <div class="row-fluid">
                         <div class="span4">
-                            <select data-bind="options: filamentProfiles, value: selectedFilament, onchange: onFilamentSelect, optionsCaption: '{{ _('Select filament type...') }}'">
+                            <select id="select_supply_mtc" onclick="save_cur_opt('select_supply_mtc');" data-bind="options: filamentProfiles, value: selectedFilament, onchange: onFilamentSelect, optionsCaption: '{{ _('Select filament type...') }}'">
 
                             </select>
                             <br />
-							<form action="">
-								<input type="radio" name="... " value="mcpp" checked="true"> mcpp
-								<input type="radio" name="... " value="beesupply"> beesupply
-							</form>
+							<!-- at maintenance... -->
+							<input type="radio" name="filament_type_mtc" value="mcpp" checked="true" onclick="f_on_change_radiobtn(false, 'select_supply_mtc');"> mcpp
+							<input type="radio" name="filament_type_mtc" value="beesupply" onclick="f_on_change_radiobtn(false, 'select_supply_mtc');"> beesupply
                         
                         </div>
                         <div class="span8">
