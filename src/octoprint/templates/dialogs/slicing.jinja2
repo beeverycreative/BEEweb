@@ -176,15 +176,19 @@
 									var op = document.getElementById("select_supply").options;
 
 									if (on_startup==true){
-//										window.op_at_startup = JSON.parse(JSON.stringify(op));		//this is a deep copy of op which will maintain the original "#" symbols, for separation into the two sections; in op var the cardinals will be removed for a proper display to the user.
+/*//										window.op_at_startup = JSON.parse(JSON.stringify(op));		//this is a deep copy of op which will maintain the original "#" symbols, for separation into the two sections; in op var the cardinals will be removed for a proper display to the user.
 //										window.op_at_startup = _.clone(op);
 										console.log("DBG:");
-										console.log(window.op_at_startup);
+										console.log(window.op_at_startup); */
 										
-										window.types_of_filaments=[];
+										window.types_of_filaments=[];									//this is a list that will contain the distinction between new and old filaments, through the presence or absence of "#".
+										var n_filaments_mcpp = 0;
 										for (var i=0; i<op.length; i++){
 											window.types_of_filaments.push(op[i].value.includes("#"));
+											if (op[i].value.includes("#"))
+												n_filaments_mcpp ++;
 										}
+										window.n_filaments_mcpp = n_filaments_mcpp;
 									}
 									
 									console.log($("#select_mcpp"));
@@ -235,6 +239,14 @@
 										}
 									}
 									
+									var select_obj = document.getElementById("select_supply");
+									if (option==="mcpp"){
+										select_obj.value = select_obj.options[0].value;
+									}
+									else{
+										select_obj.value = select_obj.options[window.n_filaments_mcpp].value;
+									}
+									
 									var list = document.getElementById("select_supply").getElementsByTagName("option");
 									for (let item of list) {
 										console.log(item.id);
@@ -261,7 +273,7 @@
                                 
                                 <select id="select_supply" data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
                                 <br />
-                                <p id="button" onclick="f_on_change_radiobtn(true);">refresh...</p>
+<!--                                <p id="button" onclick="f_on_change_radiobtn(true);">refresh...</p> -->
 
                                 <form action="">
 								<input type="radio" name="filament_type" value="mcpp" checked="true" onclick="f_on_change_radiobtn(false);"> mcpp
