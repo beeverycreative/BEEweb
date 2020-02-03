@@ -173,7 +173,8 @@
                                 <!--## quando a impressora está desconectada, tal que aparecem opções:<br /> -->
                                 <script>
                                 function f_on_change_radiobtn(on_startup){
-									var op = document.getElementById("select_supply").options;
+									var select_obj = document.getElementById("select_supply");
+									var op = select_obj.options;
 
 									if (on_startup==true){
 /*//										window.op_at_startup = JSON.parse(JSON.stringify(op));		//this is a deep copy of op which will maintain the original "#" symbols, for separation into the two sections; in op var the cardinals will be removed for a proper display to the user.
@@ -189,6 +190,9 @@
 												n_filaments_mcpp ++;
 										}
 										window.n_filaments_mcpp = n_filaments_mcpp;
+										
+										window.opt_mcpp=select_obj.options[0].value;
+										window.opt_beesupply=select_obj.options[window.n_filaments_mcpp].value;
 									}
 									
 									console.log($("#select_mcpp"));
@@ -196,19 +200,7 @@
 									
 									//#### important: ####
 									// the goal is to find the elements of filaments profiles list, and show only new profiles or old profiles, accordingly to the option "mcpp (default)" or "bee_supply"
-									var radios = document.getElementsByName('filament_type');
-									var option;
-									for (var j=0, length=radios.length; j<length; j++) {
-										if (radios[j].checked) {
-											// find the checked radio
-											console.log(radios[j].value);
-											//alert(radios[j].value);
-											option = radios[j].value;
-
-											// only one radio can be logically checked, don't check the rest
-											break;
-										}
-									}
+									var option = cur_filament_type();
 									
 									// get all options within <select id='select_supply'>...</select>
 									console.log(op);
@@ -239,12 +231,11 @@
 										}
 									}
 									
-									var select_obj = document.getElementById("select_supply");
 									if (option==="mcpp"){
-										select_obj.value = select_obj.options[0].value;
+										select_obj.value = window.opt_mcpp;
 									}
 									else{
-										select_obj.value = select_obj.options[window.n_filaments_mcpp].value;
+										select_obj.value = window.opt_beesupply;
 									}
 									
 									var list = document.getElementById("select_supply").getElementsByTagName("option");
@@ -257,7 +248,36 @@
 									setTimeout(function(){ f_on_change_radiobtn(true); }, 1000);
 								} */
 								
+								
+								function cur_filament_type(){
+									var radios = document.getElementsByName('filament_type');
+									var option;
+									
+									for (var j=0, length=radios.length; j<length; j++) {
+										if (radios[j].checked) {
+											// find the checked radio
+											console.log(radios[j].value);
+											//alert(radios[j].value);
+											option = radios[j].value;
+
+											// only one radio can be logically checked, don't check the rest
+											break;
+										}
+									}
+									return option;
+								}
+								
+								function save_cur_opt(){
+									var select_obj = document.getElementById("select_supply");
+									if (cur_filament_type()==="mcpp"){
+										window.opt_mcpp = select_obj.value;
+									}
+									else{
+										window.opt_beesupply = select_obj.value;
+									}
+								}
                                 </script>
+                                
 <!--                                <ul data-bind="foreach: colors">
 									<li>the value is <span data-bind="text: $data"></span></li>
 								</ul> -->
@@ -271,7 +291,7 @@
 									};
 								</script> -->
                                 
-                                <select id="select_supply" data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
+                                <select id="select_supply" onclick="save_cur_opt();" data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
                                 <br />
 <!--                                <p id="button" onclick="f_on_change_radiobtn(true);">refresh...</p> -->
 
