@@ -741,6 +741,8 @@ $(function() {
          */
         self.preparePrint = function () {
             self.slicing.show('local', BEEwb.helpers.generateSceneName(), false, true);
+			setTimeout(function(){ f_on_change_radiobtn(true); }, 1000);			//with this command only the new group of filaments (marked with "#") is shown by default.
+//			alert("prepareprint...");
 		};
 
         /**
@@ -748,6 +750,8 @@ $(function() {
          */
         self.estimatePrint = function () {
             self.slicing.show('local', BEEwb.helpers.generateSceneName(), true, true);
+			setTimeout(function(){ f_on_change_radiobtn(true); }, 1000);			//with this command only the new group of filaments (marked with "#") is shown by default.
+//			alert("estimateprint...");
 		};
 
 		self.resizeSidebar = function () {
