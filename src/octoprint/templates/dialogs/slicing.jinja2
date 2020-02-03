@@ -170,48 +170,23 @@
                                 <!--## quando a impressora está conectada, tal que não é possível escolher filamento: -->
                                 <span class="filament" data-bind="text: selColor, visible: !estimationDialog()"></span>
 								
-                                <!--## quando a impressora está desconectada, tal que aparecem opções:<br /> -->
-<!--                            <ul data-bind="foreach: colors">
-									<li>the value is <span data-bind="text: $data"></span></li>
-								</ul> -->
-								
-<!--							<div data-bind="visible: my_values().length>0">
-									you will see this message only when 'my_values' has at least one member.
-								</div>
-								<script type="text/javascript">
-/*									var view_model = {
-										my_values: ko.observableArray([])
-									}; */
-								</script> -->
-                                
+                                <!--## quando a impressora está desconectada, tal que aparecem opções:
+                                <br /> -->
                                 <select id="select_supply" onclick="save_cur_opt();" data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
                                 <br />
-<!--                                <p id="button" onclick="f_on_change_radiobtn(true);">refresh...</p> -->
 
 								<div id="choose_opts" data-bind="visible: estimationDialog()">
 								<input type="radio" name="filament_type" value="mcpp" checked="true" onclick="f_on_change_radiobtn(false);"> mcpp
 								<input type="radio" name="filament_type" value="beesupply" onclick="f_on_change_radiobtn(false);"> beesupply
 								</div>
-								
-								<script type="text/javascript">	//hide or show buttons of mcpp/beesupply deppending on the status of the printer: connected/disconnected
-											//-> nok.
-											//implemented with a data-bind: ok.
-/*									var choose_opts_obj = document.getElementById("choose_opts");
-									if (estimationDialog()){
-										choose_opts_obj.style.display = "block";
-									}
-									else{
-										choose_opts_obj.style.display = "none";
-									} */
-								</script>
                                 
                                 <!--## informação adicional - não apresentada... -->
                                 <span class="remaining-filament" data-bind="visible: !estimationDialog() && filamentInSpool">
                                     <div>{{ _('Remaining filament') }}:  <span data-bind="text: filamentInSpool" ></span> (g)</div>
                                 </span>
                                 <br />
-                                
                             </div>
+
                             <div class="nozzle-div">
                                 <span class="small-label">{{ _('NOZZLE') }}: </span>
                                 <span class="nozzle" data-bind="text: selNozzle, visible: !estimationDialog()"></span>
