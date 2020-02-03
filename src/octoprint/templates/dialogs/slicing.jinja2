@@ -295,9 +295,22 @@
                                 <br />
 <!--                                <p id="button" onclick="f_on_change_radiobtn(true);">refresh...</p> -->
 
+								<div id="choose_opts" data-bind="visible: estimationDialog()">
 								<input type="radio" name="filament_type" value="mcpp" checked="true" onclick="f_on_change_radiobtn(false);"> mcpp
 								<input type="radio" name="filament_type" value="beesupply" onclick="f_on_change_radiobtn(false);"> beesupply
-                                
+								</div>
+								
+								<script>	//hide or show buttons of mcpp/beesupply deppending on the status of the printer: connected/disconnected
+											//-> nok.
+											//implemented with a data-bind: ok.
+/*									var choose_opts_obj = document.getElementById("choose_opts");
+									if (estimationDialog()){
+										choose_opts_obj.style.display = "block";
+									}
+									else{
+										choose_opts_obj.style.display = "none";
+									} */
+								</script>
                                 
                                 <!--## informação adicional - não apresentada... -->
                                 <span class="remaining-filament" data-bind="visible: !estimationDialog() && filamentInSpool">
