@@ -734,6 +734,9 @@ $(function() {
          */
         self.showMaintenanceFilamentChange = function() {
             $('#navbar_show_maintenance').click();
+			//TODO: acabar a divisão da lista de filamentos no maintenance panel...
+/*			alert("aqui...");
+			setTimeout(function(){ f_on_change_radiobtn(true, 'select_supply_mtc'); }, 500);		//with this command only the new group of filaments (marked with "#") is shown by default - at the maintenance panel. */
         };
 
         /**
@@ -741,7 +744,7 @@ $(function() {
          */
         self.preparePrint = function () {
             self.slicing.show('local', BEEwb.helpers.generateSceneName(), false, true);
-			setTimeout(function(){ f_on_change_radiobtn(true, 'select_supply'); }, 500);			//with this command only the new group of filaments (marked with "#") is shown by default.
+			setTimeout(function(){ 	fix_filament_name(); }, 500);									//with this command the "#" signal is removed from the current filament.
 //			alert("prepareprint...");
 		};
 
@@ -750,7 +753,7 @@ $(function() {
          */
         self.estimatePrint = function () {
             self.slicing.show('local', BEEwb.helpers.generateSceneName(), true, true);
-			setTimeout(function(){ f_on_change_radiobtn(true, 'select_supply'); }, 500);			//with this command only the new group of filaments (marked with "#") is shown by default.
+			setTimeout(function(){ f_on_change_radiobtn(true, 'select_supply'); }, 500);			//with this command only the new group of filaments (marked with "#") is shown by default - at the estimate print panel.
 //			alert("estimateprint...");
 		};
 

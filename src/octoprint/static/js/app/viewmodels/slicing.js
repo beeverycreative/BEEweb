@@ -28,6 +28,12 @@ $(function() {
 
         self.colors = ko.observableArray();
         self.selColor = ko.observable();
+		
+/*		self.selColor_str = ko.computed(function() {
+			var tmp = "... ";
+			return tmp.replace("# ", "");
+		}, self); */
+		
         self.selDensity = ko.observable("Low");
         self.customDensity = ko.observable();
         self.selResolution = ko.observable("Medium");
@@ -280,13 +286,14 @@ $(function() {
                             var flag = (elem_reduced === data.filament);
 
                             if (flag) {
-                                self.selColor(elem);
+                                self.selColor("y.");
                             }
                         });
                     } else {
                         // Selects the first color from the list by default
                         if (self.colors().length > 0) {
-                            self.selColor(self.colors()[0]);
+//                            self.selColor(self.colors()[0]);
+                            self.selColor("y.");
                         }
                     }
 

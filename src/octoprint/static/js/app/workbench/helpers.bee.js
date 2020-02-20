@@ -295,7 +295,7 @@ function readCookie(name) {
 //#### begin section...
 function f_on_change_radiobtn(on_startup, select_id){
 	//INPUT:
-	//			on_startup is a flag tru/false that indicates if we need to initialize the vars;
+	//			on_startup is a flag true/false that indicates if we need to initialize the vars;
 	//			select_id is a string with the object id: "select_supply" or "select_supply_mtc".
 	var select_obj = document.getElementById(select_id);
 	var op = select_obj.options;
@@ -416,4 +416,14 @@ function save_cur_opt(select_id){
 		BEEwb.opt_beesupply = select_obj.value;
 	}
 }
+
+
+function fix_filament_name(){
+									var fil_colour = document.getElementById("filament_colour");
+									alert(fil_colour);
+									console.log(fil_colour);
+									console.log(fil_colour.innerHTML);
+									fil_colour.textContent=fil_colour.textContent.replace("# ", "");
+}
 //####... end section.
+
