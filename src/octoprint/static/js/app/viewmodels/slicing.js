@@ -286,14 +286,15 @@ $(function() {
                             var flag = (elem_reduced === data.filament);
 
                             if (flag) {
-                                self.selColor("y.");
+                                self.selColor(elem);
+//                              self.selColor("y.");
                             }
                         });
                     } else {
                         // Selects the first color from the list by default
                         if (self.colors().length > 0) {
-//                            self.selColor(self.colors()[0]);
-                            self.selColor("y.");
+                            self.selColor(self.colors()[0]);
+//                          self.selColor("y.");
                         }
                     }
 
