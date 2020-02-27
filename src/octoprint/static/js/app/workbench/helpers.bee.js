@@ -300,8 +300,17 @@ function f_on_change_radiobtn(on_startup, select_id){
 	var select_obj = document.getElementById(select_id);
 	var op = select_obj.options;
 	console.log(op);
-	alert(op);
+//	alert(op);
 
+	var offset;
+	if (select_id==="select_supply"){
+		offset=0;
+	}
+	else if (select_id==="select_supply_mtc"){
+		offset=1;	//there is an extra item in the list on the change filaments section: "select filament type...".
+	}
+	
+	
 	if (on_startup==true){
 /*//										window.op_at_startup = JSON.parse(JSON.stringify(op));		//this is a deep copy of op which will maintain the original "#" symbols, for separation into the two sections; in op var the cardinals will be removed for a proper display to the user.
 //										window.op_at_startup = _.clone(op);
@@ -309,7 +318,6 @@ function f_on_change_radiobtn(on_startup, select_id){
 		console.log(window.op_at_startup); */
 		
 		BEEwb.types_of_filaments=[];									//this is a list that will contain the distinction between new and old filaments, through the presence or absence of "#".
-		alert("2º passo...");
 		var n_filaments_mcpp = 0;
 		for (var i=0; i<op.length; i++){
 			BEEwb.types_of_filaments.push(op[i].value.includes("#") || (i==0));
@@ -320,7 +328,7 @@ function f_on_change_radiobtn(on_startup, select_id){
 		BEEwb.n_filaments_mcpp = n_filaments_mcpp;
 		
 		BEEwb.opt_mcpp=select_obj.options[0].value;
-		BEEwb.opt_beesupply=select_obj.options[BEEwb.n_filaments_mcpp].value;
+		BEEwb.opt_beesupply=select_obj.options[BEEwb.n_filaments_mcpp-offset].value;
 	}
 	
 	console.log($("#select_mcpp"));
@@ -333,23 +341,21 @@ function f_on_change_radiobtn(on_startup, select_id){
 	// get all options within <select id='select_supply'/'select_supply_mtc'>...</select>
 	console.log(op);
 	console.log(op.length);
-	var offset;
-	if (select_id==="select_supply"){
-		offset=0;
-	}
-	else if (select_id==="select_supply_mtc"){
-		offset=1;	//there is an extra item in the list on the change filaments section: "select filament type...".
-	}
+//	alert("op.length: "+op.length);
 
-	alert(option);
+	offset=0;
+	
+	
+//	alert(option);
 
-	for (var i=0; i<(op.length-1); i++){
+	for (var i=0; i<(op.length-offset); i++){
 		console.log(op[i]);
 		console.log(op[i].value);
 		console.log(op[i].id);
 		
 //										//if the option mcpp is selected: display only new profiles...
 		if (option==="mcpp"){
+//			alert(BEEwb.types_of_filaments[i]);
 			if (BEEwb.types_of_filaments[i]==true){		//if they contained originaly the "#" symbol
 				op[i+offset].hidden = false;
 				if (op[i+offset].innerHTML.includes("#")){
@@ -437,9 +443,12 @@ function fix_filament_name(){
 
 
 function f_click(){
-	alert("f_click()");
-	if (! BEEwb.types_of_filaments)
+//	alert("f_click()");
+/*	if (! BEEwb.types_of_filaments){
 		f_on_change_radiobtn(true, 'select_supply_mtc');
-	else
 		f_on_change_radiobtn(false, 'select_supply_mtc');
+	}
+	else{
+		f_on_change_radiobtn(false, 'select_supply_mtc');
+	} */
 }

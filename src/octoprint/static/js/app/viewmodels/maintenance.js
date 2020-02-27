@@ -279,6 +279,8 @@ $(function() {
 
             // Gets the amount of filament left in spool
             self._getFilamentInSpool();
+			
+			setTimeout(function(){ f_on_change_radiobtn(true, 'select_supply_mtc'); }, 500);
         };
 
         // Starts heating when a filament is selected
