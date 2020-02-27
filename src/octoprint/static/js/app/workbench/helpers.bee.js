@@ -299,8 +299,6 @@ function f_on_change_radiobtn(on_startup, select_id){
 	//			select_id is a string with the object id: "select_supply" or "select_supply_mtc".
 	var select_obj = document.getElementById(select_id);
 	var op = select_obj.options;
-	console.log(op);
-//	alert(op);
 
 	var offset;
 	if (select_id==="select_supply"){
@@ -312,11 +310,6 @@ function f_on_change_radiobtn(on_startup, select_id){
 	
 	
 	if (on_startup==true){
-/*//										window.op_at_startup = JSON.parse(JSON.stringify(op));		//this is a deep copy of op which will maintain the original "#" symbols, for separation into the two sections; in op var the cardinals will be removed for a proper display to the user.
-//										window.op_at_startup = _.clone(op);
-		console.log("DBG:");
-		console.log(window.op_at_startup); */
-		
 		BEEwb.types_of_filaments=[];									//this is a list that will contain the distinction between new and old filaments, through the presence or absence of "#".
 		var n_filaments_mcpp = 0;
 		for (var i=0; i<op.length; i++){
@@ -331,43 +324,28 @@ function f_on_change_radiobtn(on_startup, select_id){
 		BEEwb.opt_beesupply=select_obj.options[BEEwb.n_filaments_mcpp-offset].value;
 	}
 	
-	console.log($("#select_mcpp"));
-	console.log($("#select_beesupply"));
 	
 	//#### important: ####
 	// the goal is to find the elements of filaments profiles list, and show only new profiles or old profiles, accordingly to the option "mcpp (default)" or "bee_supply"
 	var option = cur_filament_type(select_id);
 	
 	// get all options within <select id='select_supply'/'select_supply_mtc'>...</select>
-	console.log(op);
-	console.log(op.length);
-//	alert("op.length: "+op.length);
-
 	offset=0;
 	
-	
-//	alert(option);
-
 	for (var i=0; i<(op.length-offset); i++){
-		console.log(op[i]);
-		console.log(op[i].value);
-		console.log(op[i].id);
-		
-//										//if the option mcpp is selected: display only new profiles...
+		//if the option mcpp is selected: display only new profiles...
 		if (option==="mcpp"){
-//			alert(BEEwb.types_of_filaments[i]);
 			if (BEEwb.types_of_filaments[i]==true){		//if they contained originaly the "#" symbol
 				op[i+offset].hidden = false;
 				if (op[i+offset].innerHTML.includes("#")){
 					op[i+offset].innerHTML = op[i+offset].value.replace("#", "");
-					console.log("op[i+offset].value: "+op[i+offset].value);
 				}
 			}
 			else{
 				op[i+offset].hidden = true;
 			}
 		}
-//										//else if the option beesupply is selected: display only old profiles...
+		//else [the option beesupply is selected]: display only old profiles...
 		else{
 			(BEEwb.types_of_filaments[i])
 				? op[i+offset].hidden = true
@@ -381,16 +359,7 @@ function f_on_change_radiobtn(on_startup, select_id){
 	else{
 		select_obj.value = BEEwb.opt_beesupply;
 	}
-	
-/*	var list = document.getElementById("select_supply").getElementsByTagName("option");
-	for (let item of list) {
-		console.log(item.id);
-	} */
 }
-/*window.onload = function(){
-	//f();
-	setTimeout(function(){ f_on_change_radiobtn(true); }, 1000);
-} */
 
 
 function cur_filament_type(select_id){
@@ -406,8 +375,6 @@ function cur_filament_type(select_id){
 	for (var j=0, length=radios.length; j<length; j++) {
 		if (radios[j].checked) {
 			// find the checked radio
-			console.log(radios[j].value);
-			//alert(radios[j].value);
 			option = radios[j].value;
 
 			// only one radio can be logically checked, don't check the rest
@@ -415,7 +382,6 @@ function cur_filament_type(select_id){
 		}
 	}
 	
-//	alert(option);
 	return option;
 }
 
@@ -434,21 +400,6 @@ function save_cur_opt(select_id){
 
 function fix_filament_name(){
 	var fil_colour = document.getElementById("filament_colour");
-//	alert(fil_colour);
-	console.log(fil_colour);
-	console.log(fil_colour.innerHTML);
 	fil_colour.textContent=fil_colour.textContent.replace("# ", "");
 }
 //####... end section.
-
-
-function f_click(){
-//	alert("f_click()");
-/*	if (! BEEwb.types_of_filaments){
-		f_on_change_radiobtn(true, 'select_supply_mtc');
-		f_on_change_radiobtn(false, 'select_supply_mtc');
-	}
-	else{
-		f_on_change_radiobtn(false, 'select_supply_mtc');
-	} */
-}
