@@ -299,6 +299,8 @@ function f_on_change_radiobtn(on_startup, select_id){
 	//			select_id is a string with the object id: "select_supply" or "select_supply_mtc".
 	var select_obj = document.getElementById(select_id);
 	var op = select_obj.options;
+	console.log(op);
+	alert(op);
 
 	if (on_startup==true){
 /*//										window.op_at_startup = JSON.parse(JSON.stringify(op));		//this is a deep copy of op which will maintain the original "#" symbols, for separation into the two sections; in op var the cardinals will be removed for a proper display to the user.
@@ -307,11 +309,13 @@ function f_on_change_radiobtn(on_startup, select_id){
 		console.log(window.op_at_startup); */
 		
 		BEEwb.types_of_filaments=[];									//this is a list that will contain the distinction between new and old filaments, through the presence or absence of "#".
+		alert("2º passo...");
 		var n_filaments_mcpp = 0;
 		for (var i=0; i<op.length; i++){
-			BEEwb.types_of_filaments.push(op[i].value.includes("#"));
-			if (op[i].value.includes("#"))
-				n_filaments_mcpp ++;
+			BEEwb.types_of_filaments.push(op[i].value.includes("#") || (i==0));
+			if (op[i].value.includes("#")){
+				n_filaments_mcpp++;
+			}
 		}
 		BEEwb.n_filaments_mcpp = n_filaments_mcpp;
 		
@@ -334,10 +338,12 @@ function f_on_change_radiobtn(on_startup, select_id){
 		offset=0;
 	}
 	else if (select_id==="select_supply_mtc"){
-		offset=1;	//because there is an extra item in the list on the change filaments section: "select filament type...".
+		offset=1;	//there is an extra item in the list on the change filaments section: "select filament type...".
 	}
-	
-	for (var i=0; i<(op.length-offset); i++){
+
+	alert(option);
+
+	for (var i=0; i<(op.length-1); i++){
 		console.log(op[i]);
 		console.log(op[i].value);
 		console.log(op[i].id);
@@ -402,6 +408,8 @@ function cur_filament_type(select_id){
 			break;
 		}
 	}
+	
+//	alert(option);
 	return option;
 }
 
@@ -419,11 +427,19 @@ function save_cur_opt(select_id){
 
 
 function fix_filament_name(){
-									var fil_colour = document.getElementById("filament_colour");
-									alert(fil_colour);
-									console.log(fil_colour);
-									console.log(fil_colour.innerHTML);
-									fil_colour.textContent=fil_colour.textContent.replace("# ", "");
+	var fil_colour = document.getElementById("filament_colour");
+//	alert(fil_colour);
+	console.log(fil_colour);
+	console.log(fil_colour.innerHTML);
+	fil_colour.textContent=fil_colour.textContent.replace("# ", "");
 }
 //####... end section.
 
+
+function f_click(){
+	alert("f_click()");
+	if (! BEEwb.types_of_filaments)
+		f_on_change_radiobtn(true, 'select_supply_mtc');
+	else
+		f_on_change_radiobtn(false, 'select_supply_mtc');
+}
