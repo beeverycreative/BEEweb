@@ -188,8 +188,10 @@
 
                             <div class="nozzle-div">
                                 <span class="small-label">{{ _('NOZZLE') }}: </span>
-                                <span class="nozzle" data-bind="text: selNozzle, visible: !estimationDialog()"></span>
-                                <br /><p style="display: inline-block; margin-top: 7px"><b><span data-bind="text: selNozzle, valueAllowUnset: false, visible: estimationDialog()" ></span>mm</b></p>
+                                <!--<p style="display: inline-block; margin-top: 7px"> -->
+									<b>
+									<span class="nozzle" data-bind="text: selNozzle, visible: !estimationDialog()"></span><span data-bind="text: selNozzle, valueAllowUnset: false, visible: estimationDialog()" ></span>mm</b>
+								<!--</p> -->
                             </div>
                         </div>
                     </div>
