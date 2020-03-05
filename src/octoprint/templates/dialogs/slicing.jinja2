@@ -188,10 +188,10 @@
 
                             <div class="nozzle-div">
                                 <span class="small-label">{{ _('NOZZLE') }}: </span>
-                                <!--<p style="display: inline-block; margin-top: 7px"> -->
+                                <p style="display: inline-block; margin-top: 7px" data-bind="visible: estimationDialog()">
+								</p>
 									<b>
 									<span class="nozzle" data-bind="text: selNozzle, visible: !estimationDialog()"></span><span data-bind="text: selNozzle, valueAllowUnset: false, visible: estimationDialog()" ></span>mm</b>
-								<!--</p> -->
                             </div>
                         </div>
                     </div>
