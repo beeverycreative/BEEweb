@@ -175,15 +175,18 @@
                                 <select id="select_supply" onclick="save_cur_opt('select_supply');" data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
                                 <br />
 								<div id="choose_opts" data-bind="visible: estimationDialog()">
-								<input type="radio" name="filament_type" value="mcpp" checked="true" onclick="f_on_change_radiobtn(false, 'select_supply');"> mcpp
-								<input type="radio" name="filament_type" value="beesupply" onclick="f_on_change_radiobtn(false, 'select_supply');"> beesupply
+								<p align="left">
+								&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="filament_type" value="mcpp" checked="true" onclick="f_on_change_radiobtn(false, 'select_supply');"> MCPP &amp; FILKEMP
+								</p>
+								<p align="left" style="margin: -26px 0px 0px 0px;">
+								&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="filament_type" value="beesupply" onclick="f_on_change_radiobtn(false, 'select_supply');"> BEEsupply A021-A121
+								</p>
 								</div>
                                 
                                 <!--## informação adicional - não apresentada... -->
                                 <span class="remaining-filament" data-bind="visible: !estimationDialog() && filamentInSpool">
                                     <div>{{ _('Remaining filament') }}:  <span data-bind="text: filamentInSpool" ></span> (g)</div>
                                 </span>
-                                <br />
                             </div>
 
                             <div class="nozzle-div">
