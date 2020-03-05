@@ -338,7 +338,10 @@ function f_on_change_radiobtn(on_startup, select_id){
 			if (BEEwb.types_of_filaments[i]==true){		//if they contained originaly the "#" symbol
 				op[i+offset].hidden = false;
 				if (op[i+offset].innerHTML.includes("#")){
-					op[i+offset].innerHTML = op[i+offset].value.replace("#", "");
+					op[i+offset].innerHTML = op[i+offset].value.replace("#", "")
+                                                               .replace("BTF ", "")
+                                                               .replace("BTF+ ", "")
+                                                               .replace("TPU 04 ", "TPU ");
 				}
 			}
 			else{
@@ -400,6 +403,9 @@ function save_cur_opt(select_id){
 
 function fix_filament_name(){
 	var fil_colour = document.getElementById("filament_colour");
-	fil_colour.textContent=fil_colour.textContent.replace("# ", "");
+	fil_colour.textContent=fil_colour.textContent.replace("#", "")
+                                                 .replace("BTF ", "")
+                                                 .replace("BTF+ ", "")
+                                                 .replace("TPU 04 ", "TPU ");
 }
 //####... end section.
