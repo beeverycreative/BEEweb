@@ -741,7 +741,7 @@ $(function() {
          */
         self.preparePrint = function () {
             self.slicing.show('local', BEEwb.helpers.generateSceneName(), false, true);
-			setTimeout(function(){ 	fix_filament_name(); }, 500);									//with this command the "#" signal is removed from the current filament.
+			setTimeout(function(){ 	fix_filament_name(); }, 500);									//with this command the "#" signal is removed from the current filament; in addition BTF or BTF+ words are removed, etc.
 		};
 
         /**

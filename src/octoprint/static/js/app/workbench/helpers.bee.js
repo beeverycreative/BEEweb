@@ -341,7 +341,8 @@ function f_on_change_radiobtn(on_startup, select_id){
 					op[i+offset].innerHTML = op[i+offset].value.replace("#", "")
                                                                .replace("BTF ", "")
                                                                .replace("BTF+ ", "")
-                                                               .replace("TPU 04 ", "TPU ");
+                                                               .replace("TPU 04 ", "TPU ")
+                                                               .replace("TPU 06 ", "TPU ");
 				}
 			}
 			else{
@@ -406,6 +407,8 @@ function fix_filament_name(){
 	fil_colour.textContent=fil_colour.textContent.replace("#", "")
                                                  .replace("BTF ", "")
                                                  .replace("BTF+ ", "")
-                                                 .replace("TPU 04 ", "TPU ");
+                                                 .replace("TPU 04 ", "TPU ")
+                                                 .replace("TPU 06 ", "TPU ");
+
 }
 //####... end section.
