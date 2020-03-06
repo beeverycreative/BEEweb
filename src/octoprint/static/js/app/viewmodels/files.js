@@ -913,7 +913,7 @@ $(function() {
                 .removeClass("active");
             self.uploadProgressBar
                 .css("width", "0%");
-            self.uploadProgressText("");
+            $("#gcode_upload_progress").find(".bar").text(_.sprintf(""));
         };
 
         self.onEventSlicingDone = function(payload) {
@@ -922,7 +922,7 @@ $(function() {
                 .removeClass("active");
             self.uploadProgressBar
                 .css("width", "0%");
-            self.uploadProgressText("");
+            $("#gcode_upload_progress").find(".bar").text(_.sprintf(""));
 
             new PNotify({
                 title: gettext("Slicing done"),
@@ -944,7 +944,7 @@ $(function() {
                 .removeClass("active");
             self.uploadProgressBar
                 .css("width", "0%");
-            self.uploadProgressText("");
+            $("#gcode_upload_progress").find(".bar").text(_.sprintf(""));
 
             var html = _.sprintf(gettext("Could not slice %(stl)s to %(gcode)s: %(reason)s"), payload);
             new PNotify({title: gettext("Slicing failed"), text: html, type: "error", hide: false});
