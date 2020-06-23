@@ -225,7 +225,7 @@ def getNozzlesAndFilament():
         return jsonify({
             "nozzle": '0.4',
             "nozzleList": nozzle_list,
-            "filament": 'A023 - Black',
+            "filament": 'PLA BTF+ MCPP',
             "filamentInSpool": 0.0
         })
 

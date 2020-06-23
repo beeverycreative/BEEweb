@@ -279,6 +279,8 @@ $(function() {
 
             // Gets the amount of filament left in spool
             self._getFilamentInSpool();
+			
+			setTimeout(function(){ f_on_change_radiobtn(true, 'select_supply_mtc'); }, 500);			//with this command only the new group of filaments (marked with "#") is shown by default - at the maintenance panel.
         };
 
         // Starts heating when a filament is selected

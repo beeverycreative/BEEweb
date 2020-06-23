@@ -164,17 +164,37 @@
                     <div class="control-group">
                         <div class="controls">
                             <div class="filament-div">
+                                <!--## legenda, sempre presente: -->
                                 <span class="small-label">{{ _('FILAMENT') }}:</span>
-                                <span class="filament" data-bind="text: selColor, visible: !estimationDialog()"></span>
-                                <select data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
+                                
+                                <!--## quando a impressora está conectada, tal que não é possível escolher filamento: -->
+                                <span id="filament_colour" class="filament" data-bind="text: selColor, visible: !estimationDialog()"></span>
+								
+                                <!--## quando a impressora está desconectada, tal que aparecem opções:
+                                <br /> -->
+                                <select id="select_supply" onclick="save_cur_opt('select_supply');" data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
+                                <br />
+								<div id="choose_opts" data-bind="visible: estimationDialog()">
+								<p align="left">
+								&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="filament_type" value="mcpp" checked="true" onclick="f_on_change_radiobtn(false, 'select_supply');"> MCPP &amp; FILKEMP
+								</p>
+								<p align="left" style="margin: -26px 0px 0px 0px;">
+								&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="filament_type" value="beesupply" onclick="f_on_change_radiobtn(false, 'select_supply');"> BEEsupply A021-A121
+								</p>
+								</div>
+                                
+                                <!--## informação adicional - não apresentada... -->
                                 <span class="remaining-filament" data-bind="visible: !estimationDialog() && filamentInSpool">
                                     <div>{{ _('Remaining filament') }}:  <span data-bind="text: filamentInSpool" ></span> (g)</div>
                                 </span>
                             </div>
+
                             <div class="nozzle-div">
                                 <span class="small-label">{{ _('NOZZLE') }}: </span>
-                                <span class="nozzle" data-bind="text: selNozzle, visible: !estimationDialog()"></span>
-                                <select data-bind="options: nozzleTypes, value: selNozzle, valueAllowUnset: false, visible: estimationDialog()" ></select>
+                                <p style="display: inline-block; margin-top: 7px" data-bind="visible: estimationDialog()">
+								</p>
+									<b>
+									<span class="nozzle" data-bind="text: selNozzle, visible: !estimationDialog()"></span><span data-bind="text: selNozzle, valueAllowUnset: false, visible: estimationDialog()" ></span>mm</b>
                             </div>
                         </div>
                     </div>

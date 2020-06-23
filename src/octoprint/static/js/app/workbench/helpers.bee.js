@@ -289,3 +289,126 @@ function readCookie(name) {
 	}
 	return null;
 }
+
+
+//#### additional functions for splitting the filaments list into two sub-lists:
+//#### begin section...
+function f_on_change_radiobtn(on_startup, select_id){
+	//INPUT:
+	//			on_startup is a flag true/false that indicates if we need to initialize the vars;
+	//			select_id is a string with the object id: "select_supply" or "select_supply_mtc".
+	var select_obj = document.getElementById(select_id);
+	var op = select_obj.options;
+
+	var offset;
+	if (select_id==="select_supply"){
+		offset=0;
+	}
+	else if (select_id==="select_supply_mtc"){
+		offset=1;	//there is an extra item in the list on the change filaments section: "select filament type...".
+	}
+	
+	
+	if (on_startup==true){
+		BEEwb.types_of_filaments=[];									//this is a list that will contain the distinction between new and old filaments, through the presence or absence of "#".
+		var n_filaments_mcpp = 0;
+		for (var i=0; i<op.length; i++){
+			BEEwb.types_of_filaments.push(op[i].value.includes("#") || (i==0));
+			if (op[i].value.includes("#")){
+				n_filaments_mcpp++;
+			}
+		}
+		BEEwb.n_filaments_mcpp = n_filaments_mcpp;
+		
+		BEEwb.opt_mcpp=select_obj.options[0].value;
+		BEEwb.opt_beesupply=select_obj.options[BEEwb.n_filaments_mcpp-offset].value;
+	}
+	
+	
+	//#### important: ####
+	// the goal is to find the elements of filaments profiles list, and show only new profiles or old profiles, accordingly to the option "mcpp (default)" or "bee_supply"
+	var option = cur_filament_type(select_id);
+	
+	// get all options within <select id='select_supply'/'select_supply_mtc'>...</select>
+	offset=0;
+	
+	for (var i=0; i<(op.length-offset); i++){
+		//if the option mcpp is selected: display only new profiles...
+		if (option==="mcpp"){
+			if (BEEwb.types_of_filaments[i]==true){		//if they contained originaly the "#" symbol
+				op[i+offset].hidden = false;
+				if (op[i+offset].innerHTML.includes("#")){
+					op[i+offset].innerHTML = op[i+offset].value.replace("#", "")
+                                                               .replace("BTF ", "")
+                                                               .replace("BTF+ ", "")
+                                                               .replace("TPU 04 ", "TPU ")
+                                                               .replace("TPU 06 ", "TPU ");
+				}
+			}
+			else{
+				op[i+offset].hidden = true;
+			}
+		}
+		//else [the option beesupply is selected]: display only old profiles...
+		else{
+			(BEEwb.types_of_filaments[i])
+				? op[i+offset].hidden = true
+				: op[i+offset].hidden = false;
+		}
+	}
+	
+	if (option==="mcpp"){
+		select_obj.value = BEEwb.opt_mcpp;
+	}
+	else{
+		select_obj.value = BEEwb.opt_beesupply;
+	}
+}
+
+
+function cur_filament_type(select_id){
+	var radios;
+	if (select_id==="select_supply"){
+		radios = document.getElementsByName('filament_type');
+	}
+	else if (select_id==="select_supply_mtc"){
+		radios = document.getElementsByName('filament_type_mtc');
+	}
+	var option;
+	
+	for (var j=0, length=radios.length; j<length; j++) {
+		if (radios[j].checked) {
+			// find the checked radio
+			option = radios[j].value;
+
+			// only one radio can be logically checked, don't check the rest
+			break;
+		}
+	}
+	
+	return option;
+}
+
+function save_cur_opt(select_id){
+	//INPUT:
+	//			select_id is a string with the object id: "select_supply" or "select_supply_mtc".
+	var select_obj = document.getElementById(select_id);
+	if (cur_filament_type(select_id)==="mcpp"){
+		BEEwb.opt_mcpp = select_obj.value;
+	}
+	else{
+		BEEwb.opt_beesupply = select_obj.value;
+	}
+}
+
+
+function fix_filament_name(){
+	var fil_colour = document.getElementById("filament_colour");
+	fil_colour.textContent=fil_colour.textContent.replace("#", "")
+                                                 .replace("BTF ", "")
+                                                 .replace("BTF+ ", "")
+                                                 .replace("TPU 04 ", "TPU ")
+                                                 .replace("TPU 06 ", "TPU ");
+
+}
+//####... end section.
