@@ -19,11 +19,16 @@ $(function() {
             if (self.override_version()) {
                 version = $('span.version').text();
             }
-            self.settings.settings.plugins.ScreenSquish.octoprint_max_version(version);
-            new PNotify({
-                title: gettext("ScreenSquish force enabled"),
-                text: gettext("This won't take effect until OctoPrint has been restarted.")
-            });
+            try{
+				self.settings.settings.plugins.ScreenSquish.octoprint_max_version(version);
+				new PNotify({
+					title: gettext("ScreenSquish force enabled"),
+					text: gettext("This won't take effect until OctoPrint has been restarted.")
+				});
+			}
+			catch{
+				console.log("ERROR in screensquish.")
+			}
         }
     }
 

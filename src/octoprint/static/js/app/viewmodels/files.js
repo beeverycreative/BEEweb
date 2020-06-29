@@ -726,7 +726,7 @@ $(function() {
 
                     warning += pnotifyAdditionalInfo(info);
 
-                    warning += "<p><small>You can disable this check via Settings &gt; Features &gt; \"Enable model size detection [...]\"</small></p>";
+                    warning += "<p><small>You can disable this check via Settings &gt; Options &gt; \"Enable model size detection [...]\"</small></p>";
 
                     new PNotify({
                         title: gettext("Object doesn't fit print volume"),
