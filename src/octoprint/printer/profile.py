@@ -175,9 +175,9 @@ class PrinterProfileManager(object):
 		model = "Generic BEEVERYCREATIVE Printer",
 		color = "default",
 		volume=dict(
-			width = 190,
-			depth = 135,
-			height = 125,
+			width = 190.0,
+			depth = 135.0,
+			height = 125.0,
 			formFactor = BedTypes.RECTANGULAR,
 			origin = BedOrigin.CENTER,
 			custom_box = False
@@ -547,6 +547,10 @@ class PrinterProfileManager(object):
 		if profile["volume"]["formFactor"] == BedTypes.CIRCULAR:
 			profile["volume"]["depth"] = profile["volume"]["width"]
 
+		##----- change the volume width of the current profile, assuming a BTF/BTF+,
+		##     	setting up a value compatible with the cura prime-line. ----
+		profile["volume"]["width"] = 196.0
+		
 		# if we have a custom bounding box, validate it
 		if profile["volume"]["custom_box"] and isinstance(profile["volume"]["custom_box"], dict):
 			if not len(profile["volume"]["custom_box"]):
