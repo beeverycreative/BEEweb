@@ -615,6 +615,13 @@ $(function() {
 
         self.getAdditionalData = function(data) {
             var output = "";
+			try{
+				console.log("LOG: "+data["gcodeAnalysis"]["gcode_check_progress"]);
+				console.log(JSON.stringify(data["gcodeAnalysis"]["gcode_check_progress"]));
+			}
+			catch{
+				console.log("LOG: ... ");
+			}
             if (data["gcodeAnalysis"]) {
                 if (data["gcodeAnalysis"]["dimensions"]) {
                     var dimensions = data["gcodeAnalysis"]["dimensions"];

@@ -72,7 +72,7 @@ class AnalysisQueue(object):
 
 		analyser = settings().get(['gcodeAnalysis', 'analyser'])
 
-		if analyser is not None and analyser == 'BVC':
+		if analyser is not None and (analyser=='BVC'):
 			self._queues = dict(
 				gcode=BVCGcodeAnalysisQueue(self._analysis_finished)
 			)
@@ -327,10 +327,13 @@ class GcodeAnalysisQueue(AbstractAnalysisQueue):
 			else:
 				throttle_callback = None
 
-			self._gcode = gcodeInterpreter.gcode()
+			result = dict()
+			cb=dict()
+			self._gcode = gcodeInterpreter.gcode(cb)
+
 			self._gcode.load(self._current.absolute_path, self._current.printer_profile, throttle=throttle_callback)
 
-			result = dict()
+			result["gcode_check_progress"] = cb
 			result["printingArea"] = self._gcode.printing_area
 			result["dimensions"] = self._gcode.dimensions
 			if self._gcode.totalMoveTimeMinute:
@@ -344,6 +347,7 @@ class GcodeAnalysisQueue(AbstractAnalysisQueue):
 					}
 			return result
 		except gcodeInterpreter.AnalysisAborted as ex:
+			print("ex.")
 			raise AnalysisAborted(reenqueue=ex.reenqueue)
 		finally:
 			self._gcode = None

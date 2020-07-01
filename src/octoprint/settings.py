@@ -196,8 +196,8 @@ default_settings = {
 		"throttle_normalprio": 0.01,
 		"throttle_highprio": 0.0,
 		"throttle_lines": 100,
-		"analyser": "default"	# If this option is set for BVC it uses the custom gcode analyser from previous BEESOFT version;
-								# else if it is set to another value such as "default" it uses the CURAX estimator.
+		"analyser": "BVC_4.0.11"	# If this option is set for BVC it uses the custom gcode analyser from previous BEESOFT version;
+									# else (if it is set to another value such as "default") it uses the CURAX estimator.
 	},
 	"feature": {
 		"temperatureGraph": True,
