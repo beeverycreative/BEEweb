@@ -260,7 +260,7 @@ class gcode(object):
 			if cur_pct!=self.pct:
 				print(cur_pct+"%")
 				self.pct=cur_pct
-				self.progressCallback["gcode_check_progress"]=self.pct
+				self.progressCallback["pct_progress"]=self.pct
 			i+=1
 			if self._abort:
 				raise AnalysisAborted(reenqueue=self._reenqueue)
@@ -483,7 +483,7 @@ class gcode(object):
 				throttle(lineNo, readBytes)
 		
 		try:
-			self.progressCallback["gcode_check_progress"]=100.0
+			self.progressCallback["pct_progress"]=100.0
 		except:
 			print("ERROR: sending pct. of checking of the gcode")
 

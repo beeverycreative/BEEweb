@@ -592,7 +592,12 @@ $(function() {
         };
 
         self.enablePrint = function(data) {
-            return self.loginState.isUser() && self.isOperational() && !(self.isPrinting() || self.isPaused() || self.isLoading());
+			var gcode_check_progress = "0%";
+			if (data["gcodeAnalysis"]){
+				gcode_check_progress = data["gcodeAnalysis"]["gcode_check_progress"]["pct_progress"];
+			}
+			
+			return self.loginState.isUser() && self.isOperational() && !(self.isPrinting() || self.isPaused() || self.isLoading() || (gcode_check_progress!="100"));
         };
 
         self.enableSlicing = function(data) {
