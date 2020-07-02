@@ -591,7 +591,15 @@ $(function() {
             return self.enablePrint(data) && !self.listHelper.isSelected(data);
         };
 
-        self.enablePrint = function(data) {
+        self.is_checking = function(data) {
+			var gcode_check_progress = "0%";
+			if (data["gcodeAnalysis"]){
+				gcode_check_progress = data["gcodeAnalysis"]["gcode_check_progress"]["pct_progress"];
+			}
+			return gcode_check_progress!="100";
+		};
+		
+		self.enablePrint = function(data) {
 			var gcode_check_progress = "0%";
 			if (data["gcodeAnalysis"]){
 				gcode_check_progress = data["gcodeAnalysis"]["gcode_check_progress"]["pct_progress"];
