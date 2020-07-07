@@ -178,14 +178,14 @@ class AnalysisAborted(Exception):
 
 
 class gcode(object):
-	def __init__(self):
+	def __init__(self, cb=None):
 		self._logger = logging.getLogger(__name__)
 		self.layerList = None
 		self.extrusionAmount = [0]
 		self.extrusionVolume = [0]
 		self.totalMoveTimeMinute = 0
 		self.filename = None
-		self.progressCallback = None
+		self.progressCallback = cb
 		self._abort = False
 		self._reenqueue = True
 		self._filamentDiameter = 0
@@ -221,6 +221,8 @@ class gcode(object):
 		self._reenqueue = reenqueue
 
 	def _load(self, gcodeFile, printer_profile, throttle=None):
+		print("LOADING...")
+		
 		lineNo = 0
 		readBytes = 0
 		pos = Vector3D(0.0, 0.0, 0.0)
@@ -244,7 +246,22 @@ class gcode(object):
 
 		g90InfluencesExtruder = settings().getBoolean(["feature", "g90InfluencesExtruder"])
 
+
+		i=0
+		n_lines = sum(1 for line in gcodeFile)	##get the total number of lines of the file;
+		gcodeFile.seek(0)						##go to the beginning of the file;
+
+##		import subprocess
+##		n_lines = int(subprocess.check_output(['wc', '-l', filename]).split()[0])
+		
+		self.pct = "0.0"
 		for line in gcodeFile:
+			cur_pct = (("%.1f" %(100.0*i/n_lines)))
+			if cur_pct!=self.pct:
+				print(cur_pct+"%")
+				self.pct=cur_pct
+				self.progressCallback["pct_progress"]=self.pct
+			i+=1
 			if self._abort:
 				raise AnalysisAborted(reenqueue=self._reenqueue)
 			lineNo += 1
@@ -257,11 +274,13 @@ class gcode(object):
 			else:
 				percentage = None
 
-			try:
+			'''try:		- old version: NOK.
 				if self.progressCallback is not None and (lineNo % 1000 == 0) and percentage is not None:
 					self.progressCallback(percentage)
 			except:
+				print("ERROR: computing pct.")
 				pass
+'''
 
 			if ';' in line:
 				comment = line[line.find(';')+1:].strip()
@@ -462,8 +481,11 @@ class gcode(object):
 
 			if throttle is not None:
 				throttle(lineNo, readBytes)
-		if self.progressCallback is not None:
-			self.progressCallback(100.0)
+		
+		try:
+			self.progressCallback["pct_progress"]=100.0
+		except:
+			print("ERROR: sending pct. of checking of the gcode")
 
 		self.extrusionAmount = maxExtrusion
 		self.extrusionVolume = [0] * len(maxExtrusion)
@@ -471,6 +493,7 @@ class gcode(object):
 			radius = self._filamentDiameter / 2
 			self.extrusionVolume[i] = (self.extrusionAmount[i] * (math.pi * radius * radius)) / 1000
 		self.totalMoveTimeMinute = totalMoveTimeMinute
+	print("LOADING... end.")
 
 	def _parseCuraProfileString(self, comment, prefix):
 		return {key: value for (key, value) in map(lambda x: x.split("=", 1), zlib.decompress(base64.b64decode(comment[len(prefix):])).split("\b"))}

@@ -591,8 +591,21 @@ $(function() {
             return self.enablePrint(data) && !self.listHelper.isSelected(data);
         };
 
-        self.enablePrint = function(data) {
-            return self.loginState.isUser() && self.isOperational() && !(self.isPrinting() || self.isPaused() || self.isLoading());
+        self.is_checking = function(data) {
+			var gcode_check_progress = "0%";
+			if (data["gcodeAnalysis"]){
+				gcode_check_progress = data["gcodeAnalysis"]["gcode_check_progress"]["pct_progress"];
+			}
+			return gcode_check_progress!="100";
+		};
+		
+		self.enablePrint = function(data) {
+			var gcode_check_progress = "0%";
+			if (data["gcodeAnalysis"]){
+				gcode_check_progress = data["gcodeAnalysis"]["gcode_check_progress"]["pct_progress"];
+			}
+			
+			return self.loginState.isUser() && self.isOperational() && !(self.isPrinting() || self.isPaused() || self.isLoading() || (gcode_check_progress!="100"));
         };
 
         self.enableSlicing = function(data) {
@@ -615,6 +628,13 @@ $(function() {
 
         self.getAdditionalData = function(data) {
             var output = "";
+			try{
+				console.log("LOG: "+data["gcodeAnalysis"]["gcode_check_progress"]);
+				console.log(JSON.stringify(data["gcodeAnalysis"]["gcode_check_progress"]));
+			}
+			catch{
+				console.log("LOG: ... ");
+			}
             if (data["gcodeAnalysis"]) {
                 if (data["gcodeAnalysis"]["dimensions"]) {
                     var dimensions = data["gcodeAnalysis"]["dimensions"];
@@ -726,7 +746,7 @@ $(function() {
 
                     warning += pnotifyAdditionalInfo(info);
 
-                    warning += "<p><small>You can disable this check via Settings &gt; Features &gt; \"Enable model size detection [...]\"</small></p>";
+                    warning += "<p><small>You can disable this check via Settings &gt; Options &gt; \"Enable model size detection [...]\"</small></p>";
 
                     new PNotify({
                         title: gettext("Object doesn't fit print volume"),
