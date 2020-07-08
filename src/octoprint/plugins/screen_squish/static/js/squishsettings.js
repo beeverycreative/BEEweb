@@ -26,7 +26,7 @@ $(function() {
 					text: gettext("This won't take effect until OctoPrint has been restarted.")
 				});
 			}
-			catch{
+			catch (ex){
 				console.log("ERROR in screensquish.")
 			}
         }

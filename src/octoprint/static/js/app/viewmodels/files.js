@@ -632,8 +632,8 @@ $(function() {
 				console.log("LOG: "+data["gcodeAnalysis"]["gcode_check_progress"]);
 				console.log(JSON.stringify(data["gcodeAnalysis"]["gcode_check_progress"]));
 			}
-			catch{
-				console.log("LOG: ... ");
+			catch (ex){
+				console.log("LOG: could not get data.");
 			}
             if (data["gcodeAnalysis"]) {
                 if (data["gcodeAnalysis"]["dimensions"]) {
