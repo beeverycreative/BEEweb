@@ -592,20 +592,30 @@ $(function() {
         };
 
         self.is_checking = function(data) {
-			var gcode_check_progress = "0%";
-			if (data["gcodeAnalysis"]){
-				gcode_check_progress = data["gcodeAnalysis"]["gcode_check_progress"]["pct_progress"];
+			var gcode_check_progress = "0";
+			try{
+				if (data["gcodeAnalysis"]){
+					gcode_check_progress = data["gcodeAnalysis"]["gcode_check_progress"]["pct_progress"];
+				}
+				return gcode_check_progress!="100";
 			}
-			return gcode_check_progress!="100";
+			catch (ex){		//continue to work even if there is no data (eg.: if the gcode was created by BEESOFT right now)
+				return false;
+			}
 		};
 		
 		self.enablePrint = function(data) {
-			var gcode_check_progress = "0%";
-			if (data["gcodeAnalysis"]){
-				gcode_check_progress = data["gcodeAnalysis"]["gcode_check_progress"]["pct_progress"];
+			var gcode_check_progress = "0";
+			var ret_original = self.loginState.isUser() && self.isOperational() && !(self.isPrinting() || self.isPaused() || self.isLoading());
+			try{
+				if (data["gcodeAnalysis"]){
+					gcode_check_progress = data["gcodeAnalysis"]["gcode_check_progress"]["pct_progress"];
+				}
+				return ret_original || (gcode_check_progress!="100");
 			}
-			
-			return self.loginState.isUser() && self.isOperational() && !(self.isPrinting() || self.isPaused() || self.isLoading() || (gcode_check_progress!="100"));
+			catch (ex){
+				return ret_original;
+			}
         };
 
         self.enableSlicing = function(data) {
