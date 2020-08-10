@@ -293,12 +293,33 @@ function readCookie(name) {
 
 //#### additional functions for splitting the filaments list into two sub-lists:
 //#### begin section...
+BEEwb.on_startup=true;
+BEEwb.ret="";
+function loop_filaments(on_startup, select_id){
+	// pretende-se executar a função f_on_change_radiobtn() assim que possível, após clicar no butão "PRINT..."
+	// a lista de filamentos é obtida a partir do servidor com um bind, e logo que o servidor devolve os dados, então o cliente beesoft preenche a lista visível para o utilizador;
+	// pretendemos mudar a lista do lado do cliente, por isso foi feita esta abordagem.
+	try{
+		BEEwb.ret = f_on_change_radiobtn(BEEwb.on_startup, select_id);
+		if (BEEwb.ret!="OK."){
+			setTimeout(function(){ loop_filaments(BEEwb.on_startup, select_id); }, 100);
+		}
+	}
+	catch (err){
+//		alert(err);
+		setTimeout(function(){ loop_filaments(BEEwb.on_startup, select_id); }, 100);		//tenta com um intervalo de 0.1s; pára após a 1ª execussão com sucesso.
+	}
+}
+
+
 function f_on_change_radiobtn(on_startup, select_id){
 	//INPUT:
-	//			on_startup is a flag true/false that indicates if we need to initialize the vars;
+	//			BEEwb.on_startup is a flag true/false that indicates if we need to initialize the vars;
 	//			select_id is a string with the object id: "select_supply" or "select_supply_mtc".
 	var select_obj = document.getElementById(select_id);
 	var op = select_obj.options;
+	console.log(JSON.stringify(op));
+	var NOK = true;
 
 	var offset;
 	if (select_id==="select_supply"){
@@ -309,7 +330,7 @@ function f_on_change_radiobtn(on_startup, select_id){
 	}
 	
 	
-	if (on_startup==true){
+	if (BEEwb.on_startup==true){
 		BEEwb.types_of_filaments=[];									//this is a list that will contain the distinction between new and old filaments, through the presence or absence of "#".
 		var n_filaments_mcpp = 0;
 		for (var i=0; i<op.length; i++){
@@ -322,8 +343,9 @@ function f_on_change_radiobtn(on_startup, select_id){
 		
 		BEEwb.opt_mcpp=select_obj.options[0].value;
 		BEEwb.opt_beesupply=select_obj.options[BEEwb.n_filaments_mcpp-offset].value;
+
+		BEEwb.ret = "";
 	}
-	
 	
 	//#### important: ####
 	// the goal is to find the elements of filaments profiles list, and show only new profiles or old profiles, accordingly to the option "mcpp (default)" or "bee_supply"
@@ -338,6 +360,9 @@ function f_on_change_radiobtn(on_startup, select_id){
 			if (BEEwb.types_of_filaments[i]==true){		//if they contained originaly the "#" symbol
 				op[i+offset].hidden = false;
 				if (op[i+offset].innerHTML.includes("#")){
+					if (i==0){
+						NOK = false;
+					}
 					op[i+offset].innerHTML = op[i+offset].value.replace("#", "")
                                                                .replace("BTF ", "")
                                                                .replace("BTF+ ", "")
@@ -363,6 +388,13 @@ function f_on_change_radiobtn(on_startup, select_id){
 	else{
 		select_obj.value = BEEwb.opt_beesupply;
 	}
+	
+	if ((!NOK)){
+		BEEwb.on_startup=false;
+		return "OK.";
+	}
+	BEEwb.on_startup=false;
+	return "NOK.";
 }
 
 
@@ -409,6 +441,5 @@ function fix_filament_name(){
                                                  .replace("BTF+ ", "")
                                                  .replace("TPU 04 ", "TPU ")
                                                  .replace("TPU 06 ", "TPU ");
-
 }
 //####... end section.
