@@ -741,7 +741,6 @@ $(function() {
          */
         self.preparePrint = function () {
             self.slicing.show('local', BEEwb.helpers.generateSceneName(), false, true);
-			fix_filament_name();							//with this command the "#" signal is removed from the current filament; in addition BTF or BTF+ words are removed, etc.
 		};
 
         /**
@@ -749,7 +748,7 @@ $(function() {
          */
         self.estimatePrint = function () {
             self.slicing.show('local', BEEwb.helpers.generateSceneName(), true, true);
-			loop_filaments(true, 'select_supply');			//with this command only the new group of filaments (marked with "#") is shown by default - at the estimate print panel.
+			loop_filaments(BEEwb.on_startup, 'select_supply');			//with this command only the new group of filaments (marked with "#") is shown by default - at the estimate print panel.
 		};
 
 		self.resizeSidebar = function () {

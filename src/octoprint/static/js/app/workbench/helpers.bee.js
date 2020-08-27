@@ -297,15 +297,15 @@ BEEwb.on_startup=true;
 BEEwb.ret="";
 function loop_filaments(on_startup, select_id){
 	// pretende-se executar a função f_on_change_radiobtn() assim que possível, após clicar no butão "PRINT..."
-	// a lista de filamentos é obtida a partir do servidor com um bind, e logo que o servidor devolve os dados, então o cliente beesoft preenche a lista visível para o utilizador;
-	// pretendemos mudar a lista do lado do cliente, por isso foi feita esta abordagem.
+	// a lista de filamentos é obtida a partir do servidor com um bind, e logo que o servidor devolve os dados, então o cliente beesoft preenche a uma lista através do bind e logo de caminho queremos dividir a lista em duas sub-listas na gui visível para o utilizador;
+	// pretendemos mudar a lista do lado do cliente porque o servidor contem apenas uma lista, e optou-se por fazer a sub-divisão do lado da parte gráfica do js; então foi feita esta abordagem.
 	try{
 		BEEwb.ret = f_on_change_radiobtn(BEEwb.on_startup, select_id);
 		if (BEEwb.ret!="OK."){
 			setTimeout(function(){ loop_filaments(BEEwb.on_startup, select_id); }, 100);
 		}
 	}
-	catch (err){
+	catch (err){		//if the list of filaments received from the server is not ready yet.
 //		alert(err);
 		setTimeout(function(){ loop_filaments(BEEwb.on_startup, select_id); }, 100);		//tenta com um intervalo de 0.1s; pára após a 1ª execussão com sucesso.
 	}
@@ -318,7 +318,7 @@ function f_on_change_radiobtn(on_startup, select_id){
 	//			select_id is a string with the object id: "select_supply" or "select_supply_mtc".
 	var select_obj = document.getElementById(select_id);
 	var op = select_obj.options;
-	console.log(JSON.stringify(op));
+//	console.log(JSON.stringify(op));
 	var NOK = true;
 
 	var offset;
@@ -333,8 +333,8 @@ function f_on_change_radiobtn(on_startup, select_id){
 	if (BEEwb.on_startup==true){
 		BEEwb.types_of_filaments=[];									//this is a list that will contain the distinction between new and old filaments, through the presence or absence of "#".
 		var n_filaments_mcpp = 0;
-		for (var i=0; i<op.length; i++){
-			BEEwb.types_of_filaments.push(op[i].value.includes("#") || (i==0));
+		for (var i=0+offset; i<op.length; i++){
+			BEEwb.types_of_filaments.push(op[i].value.includes("#") || ((i==0) && (select_id==="select_supply_mtc")));
 			if (op[i].value.includes("#")){
 				n_filaments_mcpp++;
 			}
@@ -342,7 +342,7 @@ function f_on_change_radiobtn(on_startup, select_id){
 		BEEwb.n_filaments_mcpp = n_filaments_mcpp;
 		
 		BEEwb.opt_mcpp=select_obj.options[0].value;
-		BEEwb.opt_beesupply=select_obj.options[BEEwb.n_filaments_mcpp-offset].value;
+		BEEwb.opt_beesupply=select_obj.options[BEEwb.n_filaments_mcpp+offset].value;
 
 		BEEwb.ret = "";
 	}
@@ -351,8 +351,6 @@ function f_on_change_radiobtn(on_startup, select_id){
 	// the goal is to find the elements of filaments profiles list, and show only new profiles or old profiles, accordingly to the option "mcpp (default)" or "bee_supply"
 	var option = cur_filament_type(select_id);
 	
-	// get all options within <select id='select_supply'/'select_supply_mtc'>...</select>
-	offset=0;
 	
 	for (var i=0; i<(op.length-offset); i++){
 		//if the option mcpp is selected: display only new profiles...
@@ -380,13 +378,6 @@ function f_on_change_radiobtn(on_startup, select_id){
 				? op[i+offset].hidden = true
 				: op[i+offset].hidden = false;
 		}
-	}
-	
-	if (option==="mcpp"){
-		select_obj.value = BEEwb.opt_mcpp;
-	}
-	else{
-		select_obj.value = BEEwb.opt_beesupply;
 	}
 	
 	if ((!NOK)){
@@ -421,25 +412,38 @@ function cur_filament_type(select_id){
 	return option;
 }
 
-function save_cur_opt(select_id){
+function reset_opt(select_id){
 	//INPUT:
 	//			select_id is a string with the object id: "select_supply" or "select_supply_mtc".
 	var select_obj = document.getElementById(select_id);
 	if (cur_filament_type(select_id)==="mcpp"){
-		BEEwb.opt_mcpp = select_obj.value;
+		select_obj.value = select_obj.options[0].value;
 	}
 	else{
-		BEEwb.opt_beesupply = select_obj.value;
+		if (select_id==="select_supply"){
+			select_obj.value = select_obj.options[BEEwb.n_filaments_mcpp].value;
+		}
+		else{
+			select_obj.value = select_obj.options[0].value;
+		}
 	}
 }
 
 
-function fix_filament_name(){
-	var fil_colour = document.getElementById("filament_colour");
-	fil_colour.textContent=fil_colour.textContent.replace("#", "")
+function fix_filament_name(selected_color){
+	//selected_color é uma função com um bind associado;
+	//com este código acrescentamos um bloco para corrigir os nomes dos filamentos 0.1s após a chamada ao fix_filament_name(selected_color).
+	if (selected_color){
+		setTimeout(function(){ fix_filament_name(); }, 100);		//with this command the "#" signal is removed from the current filament; in addition BTF or BTF+ words are removed, etc.
+	}
+	else{
+		var fil_colour = document.getElementById("filament_colour");
+		fil_colour.textContent=fil_colour.textContent.replace("#", "")
                                                  .replace("BTF ", "")
                                                  .replace("BTF+ ", "")
                                                  .replace("TPU 04 ", "TPU ")
                                                  .replace("TPU 06 ", "TPU ");
+	}
+	return selected_color;
 }
 //####... end section.
