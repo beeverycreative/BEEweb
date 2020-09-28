@@ -221,7 +221,7 @@ class gcode(object):
 		self._reenqueue = reenqueue
 
 	def _load(self, gcodeFile, printer_profile, throttle=None):
-		print("LOADING...")
+		## print("LOADING...")
 		
 		lineNo = 0
 		readBytes = 0
@@ -493,7 +493,7 @@ class gcode(object):
 			radius = self._filamentDiameter / 2
 			self.extrusionVolume[i] = (self.extrusionAmount[i] * (math.pi * radius * radius)) / 1000
 		self.totalMoveTimeMinute = totalMoveTimeMinute
-	print("LOADING... end.")
+		## print("LOADING... end.")
 
 	def _parseCuraProfileString(self, comment, prefix):
 		return {key: value for (key, value) in map(lambda x: x.split("=", 1), zlib.decompress(base64.b64decode(comment[len(prefix):])).split("\b"))}
