@@ -574,13 +574,12 @@ def _process_templates():
 		templates["settings"]["entries"]["temperatures"] = (gettext("Temperatures"), dict(template="dialogs/settings/temperatures.jinja2", _div="settings_temperature", custom_bindings=False))
 		templates["settings"]["entries"]["terminalfilters"] = (gettext("Terminal Filters"), dict(template="dialogs/settings/terminalfilters.jinja2", _div="settings_terminalFilters", custom_bindings=False))
 		templates["settings"]["entries"]["gcodescripts"] = (gettext("GCODE Scripts"), dict(template="dialogs/settings/gcodescripts.jinja2", _div="settings_gcodeScripts", custom_bindings=False))
+		templates["settings"]["entries"]["options"] = (gettext("Options"), dict(template="dialogs/settings/features.jinja2", _div="settings_features", custom_bindings=False))
 		templates["settings"]["entries"]["api"] = (gettext("API"), dict(template="dialogs/settings/api.jinja2", _div="settings_api", custom_bindings=False))
-
 		templates["settings"]["entries"]["server"] = (gettext("Server"),
 			  dict(template="dialogs/settings/server.jinja2", _div="settings_server", custom_bindings=False))
 		templates["settings"]["entries"]["webcam"] = (gettext("Webcam"),
 			  dict(template="dialogs/settings/webcam.jinja2", _div="settings_webcam", custom_bindings=False))
-	templates["settings"]["entries"]["options"] = (gettext("Options"), dict(template="dialogs/settings/features.jinja2", _div="settings_features", custom_bindings=False))
 
 	# user settings dialog
 	if enable_accesscontrol:

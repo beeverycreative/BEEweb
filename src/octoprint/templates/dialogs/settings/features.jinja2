@@ -1,11 +1,11 @@
 <form class="form-horizontal">
-<!--    <div class="control-group">
+    <div class="control-group">
         <div class="controls">
             <label class="checkbox">
                 <input type="checkbox" data-bind="checked: feature_temperatureGraph" id="settings-featureTemperatureGraph"> {{ _('Enable Temperature Graph') }}
             </label>
         </div>
-    </div> -->
+    </div>
     <div class="control-group">
         <div class="controls">
             <label class="checkbox">
@@ -13,17 +13,17 @@
                 <!--<span class="label label-info">{{ _('beta') }}</span> -->
 
                 <br /><b>WARNING:
-                <br />disabling this option will process any gcode, even those that can damage your printer (eg.: giving instructions out of bounds...).</b>
+                disabling this option will process any gcode! <!--, even those that can damage your printer (eg.: giving instructions out of bounds...).</b>
 					<br /><br />- cons of turning off:
 					<br />it is possible to send a gcode that damages the printer, when disabling this option of the compatibility tests;
 					<br />
 					<br />- pros of turning off:
-					<br />it is the possible to import customizable gcodes from different slicers; being able to change the wall thicknesses, alternative types of support, amongst other options.
+					<br />it is the possible to import customizable gcodes from different slicers; being able to change the wall thicknesses, alternative types of support, amongst other options. -->
                 
             </label>
         </div>
     </div>
-<!--    <div class="control-group">
+    <div class="control-group">
         <div class="controls">
             <label class="checkbox">
                 <input type="checkbox" data-bind="checked: feature_printCancelConfirmation" id="settings-printCancelConfirmation"> {{ _('Confirm before cancelling a print') }}
@@ -126,5 +126,5 @@
                 </label>
             </div>
         </div>
-    </div> -->
+    </div>
 </form>

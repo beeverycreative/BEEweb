@@ -728,7 +728,8 @@ $(function() {
             }
 
             // model not within bounds, we need to prepare a warning
-            var warning = "<p>" + _.sprintf(gettext("Object in %(name)s exceeds the print volume of the currently selected printer profile, be careful when printing this."), data) + "</p>";
+//            var warning = "<p>" + _.sprintf(gettext("Object in %(name)s exceeds the print volume of the currently selected printer profile, be careful when printing this."), data) + "</p>";
+            var warning = "<p>" + _.sprintf(gettext("Object in %(name)s exceeds the print volume of the currently selected printer profile."), data) + "</p>";
             var info = "";
 
             var formatData = {
@@ -756,7 +757,9 @@ $(function() {
 
                     warning += pnotifyAdditionalInfo(info);
 
-                    warning += "<p><small>You can disable this check via Settings &gt; Options &gt; \"Enable model size detection [...]\"</small></p>";
+                    //refer to disable gcode checking:
+                    //- commented since that option is not present, now.
+                    //warning += "<p><small>You can disable this check via Settings &gt; Options &gt; \"Enable model size detection [...]\"</small></p>";
 
                     new PNotify({
                         title: gettext("Object doesn't fit print volume"),
