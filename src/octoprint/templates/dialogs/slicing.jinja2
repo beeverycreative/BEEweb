@@ -172,7 +172,7 @@
 								
                                 <!--## quando a impressora está desconectada, tal que aparecem opções:
                                 <br /> -->
-                                <select id="select_supply" data-bind="options: colors, value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
+                                <select id="select_supply" data-bind="options: split_filaments_list('select_supply', colors), value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
                                 <br />
 								<div id="choose_opts" data-bind="visible: estimationDialog()">
 								<p align="left">

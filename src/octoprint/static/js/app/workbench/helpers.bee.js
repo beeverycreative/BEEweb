@@ -291,24 +291,53 @@ function readCookie(name) {
 }
 
 
+
+
 //#### additional functions for splitting the filaments list into two sub-lists:
 //#### begin section...
 BEEwb.on_startup=true;
 BEEwb.ret="";
-function loop_filaments(on_startup, select_id){
-	// pretende-se executar a função f_on_change_radiobtn() assim que possível, após clicar no butão "PRINT..."
-	// a lista de filamentos é obtida a partir do servidor com um bind, e logo que o servidor devolve os dados, então o cliente beesoft preenche a uma lista através do bind e logo de caminho queremos dividir a lista em duas sub-listas na gui visível para o utilizador;
-	// pretendemos mudar a lista do lado do cliente porque o servidor contem apenas uma lista, e optou-se por fazer a sub-divisão do lado da parte gráfica do js; então foi feita esta abordagem.
-	try{
-		BEEwb.ret = f_on_change_radiobtn(BEEwb.on_startup, select_id);
-		if (BEEwb.ret!="OK."){
-			setTimeout(function(){ loop_filaments(BEEwb.on_startup, select_id); }, 100);
+
+function split_filaments_list(select_id, lst){
+	if (lst){
+		setTimeout(function(){ split_filaments_list(select_id); }, 100);
+	}
+	else{
+//		console.log(select_id);
+		var select_obj = document.getElementById(select_id);
+		var op = select_obj.options;
+//		console.log(JSON.stringify(op));
+		var NOK = true;
+
+		var offset;
+		if (select_id==="select_supply"){
+			offset=0;
 		}
+		else if (select_id==="select_supply_mtc"){
+			offset=1;	//there is an extra item in the list on the change filaments section: "select filament type...".
+		}
+		
+		
+		if (BEEwb.on_startup==true){
+			BEEwb.types_of_filaments=[];									//this is a list that will contain the distinction between new and old filaments, through the presence or absence of "#".
+			var n_filaments_mcpp = 0;
+			for (var i=0+offset; i<op.length; i++){
+				BEEwb.types_of_filaments.push(op[i].value.includes("#") || ((i==0) && (select_id==="select_supply_mtc")));
+				if (op[i].value.includes("#")){
+					n_filaments_mcpp++;
+				}
+			}
+			BEEwb.n_filaments_mcpp = n_filaments_mcpp;
+			
+			BEEwb.opt_mcpp=select_obj.options[0].value;
+			BEEwb.opt_beesupply=select_obj.options[BEEwb.n_filaments_mcpp+offset].value;
+
+			BEEwb.ret = "";
+		}
+		
+		f_on_change_radiobtn(BEEwb.on_startup, select_id);
 	}
-	catch (err){		//if the list of filaments received from the server is not ready yet.
-//		alert(err);
-		setTimeout(function(){ loop_filaments(BEEwb.on_startup, select_id); }, 100);		//tenta com um intervalo de 0.1s; pára após a 1ª execussão com sucesso.
-	}
+	return lst;
 }
 
 
@@ -327,24 +356,6 @@ function f_on_change_radiobtn(on_startup, select_id){
 	}
 	else if (select_id==="select_supply_mtc"){
 		offset=1;	//there is an extra item in the list on the change filaments section: "select filament type...".
-	}
-	
-	
-	if (BEEwb.on_startup==true){
-		BEEwb.types_of_filaments=[];									//this is a list that will contain the distinction between new and old filaments, through the presence or absence of "#".
-		var n_filaments_mcpp = 0;
-		for (var i=0+offset; i<op.length; i++){
-			BEEwb.types_of_filaments.push(op[i].value.includes("#") || ((i==0) && (select_id==="select_supply_mtc")));
-			if (op[i].value.includes("#")){
-				n_filaments_mcpp++;
-			}
-		}
-		BEEwb.n_filaments_mcpp = n_filaments_mcpp;
-		
-		BEEwb.opt_mcpp=select_obj.options[0].value;
-		BEEwb.opt_beesupply=select_obj.options[BEEwb.n_filaments_mcpp+offset].value;
-
-		BEEwb.ret = "";
 	}
 	
 	//#### important: ####

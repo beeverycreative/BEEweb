@@ -21,11 +21,11 @@
                 <div class="control-group">
                     <div class="row-fluid">
                         <div class="span4">
-                            <select id="select_supply_mtc" data-bind="options: filamentProfiles, value: selectedFilament, onchange: onFilamentSelect, optionsCaption: '{{ _('Select filament type...') }}'">
+							<!--at maintenance... -->
+                            <select id="select_supply_mtc" data-bind="options: split_filaments_list('select_supply_mtc', filamentProfiles), value: selectedFilament, onchange: onFilamentSelect, optionsCaption: '{{ _('Select filament type...') }}'">
 
                             </select>
                             <br />
-							<!-- at maintenance... -->
 							<input type="radio" name="filament_type_mtc" value="mcpp" checked="true" onclick="reset_opt('select_supply_mtc'); f_on_change_radiobtn(false, 'select_supply_mtc');"> MCPP &amp; FILKEMP
 							<br />
 							<input type="radio" name="filament_type_mtc" value="beesupply" onclick="reset_opt('select_supply_mtc'); f_on_change_radiobtn(false, 'select_supply_mtc');"> BEEsupply A021-A121

@@ -748,7 +748,7 @@ $(function() {
          */
         self.estimatePrint = function () {
             self.slicing.show('local', BEEwb.helpers.generateSceneName(), true, true);
-			loop_filaments(BEEwb.on_startup, 'select_supply');			//with this command only the new group of filaments (marked with "#") is shown by default - at the estimate print panel.
+//			loop_filaments(BEEwb.on_startup, 'select_supply');			//with this command only the new group of filaments (marked with "#") is shown by default - at the estimate print panel.
 		};
 
 		self.resizeSidebar = function () {
