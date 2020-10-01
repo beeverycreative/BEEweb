@@ -307,14 +307,13 @@ function split_filaments_list(select_id, lst){
 		var select_obj = document.getElementById(select_id);
 		var op = select_obj.options;
 //		console.log(JSON.stringify(op));
-		var NOK = true;
 
 		var offset;
 		if (select_id==="select_supply"){
 			offset=0;
 		}
-		else if (select_id==="select_supply_mtc"){
-			offset=1;	//there is an extra item in the list on the change filaments section: "select filament type...".
+		else{			//else: we are in a sub-panel of maintenance: select_supply_mtc_01 (change filament), or select_supply_mtc_02 (calibrate extruder)
+			offset=1;	//there is an extra item in the lists on maintenace control: "select filament type...".
 		}
 		
 		
@@ -322,7 +321,7 @@ function split_filaments_list(select_id, lst){
 			BEEwb.types_of_filaments=[];									//this is a list that will contain the distinction between new and old filaments, through the presence or absence of "#".
 			var n_filaments_mcpp = 0;
 			for (var i=0+offset; i<op.length; i++){
-				BEEwb.types_of_filaments.push(op[i].value.includes("#") || ((i==0) && (select_id==="select_supply_mtc")));
+				BEEwb.types_of_filaments.push(op[i].value.includes("#") || ((i==0) && (select_id.indexOf("select_supply_mtc")!=-1)));
 				if (op[i].value.includes("#")){
 					n_filaments_mcpp++;
 				}
@@ -343,8 +342,7 @@ function split_filaments_list(select_id, lst){
 
 function f_on_change_radiobtn(select_id){
 	//INPUT:
-	//			BEEwb.on_startup is a flag true/false that indicates if we need to initialize the vars;
-	//			select_id is a string with the object id: "select_supply" or "select_supply_mtc".
+	//			select_id is a string with the object id: "select_supply" or "select_supply_mtc_xx".
 	var select_obj = document.getElementById(select_id);
 	var op = select_obj.options;
 //	console.log(JSON.stringify(op));
@@ -354,8 +352,8 @@ function f_on_change_radiobtn(select_id){
 	if (select_id==="select_supply"){
 		offset=0;
 	}
-	else if (select_id==="select_supply_mtc"){
-		offset=1;	//there is an extra item in the list on the change filaments section: "select filament type...".
+	else{
+		offset=1;
 	}
 	
 	//#### important: ####
@@ -405,8 +403,13 @@ function cur_filament_type(select_id){
 	if (select_id==="select_supply"){
 		radios = document.getElementsByName('filament_type');
 	}
-	else if (select_id==="select_supply_mtc"){
-		radios = document.getElementsByName('filament_type_mtc');
+	else{
+		if (select_id==="select_supply_mtc_01"){
+			radios = document.getElementsByName('filament_type_mtc_01');
+		}
+		else if (select_id==="select_supply_mtc_02"){
+			radios = document.getElementsByName('filament_type_mtc_02');
+		}
 	}
 	var option;
 	
@@ -425,7 +428,7 @@ function cur_filament_type(select_id){
 
 function reset_opt(select_id){
 	//INPUT:
-	//			select_id is a string with the object id: "select_supply" or "select_supply_mtc".
+	//			select_id is a string with the object id: "select_supply" or "select_supply_mtc_xx".
 	var select_obj = document.getElementById(select_id);
 	if (cur_filament_type(select_id)==="mcpp"){
 		select_obj.value = select_obj.options[0].value;

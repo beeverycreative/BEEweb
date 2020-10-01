@@ -21,7 +21,15 @@
                 <div class="control-group">
                     <div class="row-fluid">
                         <div class="span4">
-                            <select data-bind="options: filamentProfiles, value: selectedFilamentExtCalibration, optionsCaption: '{{ _('Select filament type...') }}'"></select>
+                            <!--at maintenance - calibrate extruder... -->
+                            <select id="select_supply_mtc_02" data-bind="options: split_filaments_list('select_supply_mtc_02', filamentProfiles), value: selectedFilamentExtCalibration, optionsCaption: '{{ _('Select filament type...') }}'">
+                            </select>
+                            
+                            <br />
+							<input type="radio" name="filament_type_mtc_02" value="mcpp" checked="true" onclick="reset_opt('select_supply_mtc_02'); f_on_change_radiobtn('select_supply_mtc_02');"> MCPP &amp; FILKEMP
+							<br />
+							<input type="radio" name="filament_type_mtc_02" value="beesupply" onclick="reset_opt('select_supply_mtc_02'); f_on_change_radiobtn('select_supply_mtc_02');"> BEEsupply A021-A121
+                            
                         </div>
                         <div class="span8">
                             <p>{{ _('Please select the correct code for the filament. You can find that code on the spool, (e.g: A101 - Transparent).') }}
