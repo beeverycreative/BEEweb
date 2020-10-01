@@ -62,7 +62,7 @@
 				}
             }, css: {disabled: (!$root.enableSelect($data) /*&& >>a esta função foi adicionado o teste de compatibilidade do gcode...*/)}, style: { display: $root.is_checking($data)==true ? 'none' : 'inline-block' }" title="{{ _('Print GCode') }}"><span class="m-icon printwicon"></span>{{ _('Print GCode') }}</div>
 
-            <div style="text-transform: lowercase; text-align: left" class="btn btn-mini bigbtn printnow" data-bind="css: {disabled: true, visibility: !$root.enableSelect($data)}, style: { display: !($root.is_checking($data)==true) ? 'none' : 'inline-block' }" title="{{ _('testing gcode...') }}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{ _('testing gcode...') }}</b></div>
+            <div style="text-transform: uppercase; text-align: left" class="btn btn-mini bigbtn printnow" data-bind="css: {disabled: true, visibility: !$root.enableSelect($data)}, style: { display: !($root.is_checking($data)==true) ? 'none' : 'inline-block' }" title="{{ _('testing gcode...') }}">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<b>{{ _('testing gcode...') }}</b></div>
             
             
             <div class="btn btn-mini smabtn toggleAdditionalData" data-bind="click: function() { if ($root.enableAdditionalData($data)) { $root.toggleAdditionalData($data); } else { return; } }, css: { disabled: !$root.enableAdditionalData($data) }" title="{{ _('Additional data') }}"><i class="icon-chevron-down"></i></div>
