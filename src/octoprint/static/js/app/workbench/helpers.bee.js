@@ -318,7 +318,7 @@ function split_filaments_list(select_id, lst){
 		}
 		
 		
-		if (BEEwb.on_startup==true){
+//		if (BEEwb.on_startup==true){
 			BEEwb.types_of_filaments=[];									//this is a list that will contain the distinction between new and old filaments, through the presence or absence of "#".
 			var n_filaments_mcpp = 0;
 			for (var i=0+offset; i<op.length; i++){
@@ -333,15 +333,15 @@ function split_filaments_list(select_id, lst){
 			BEEwb.opt_beesupply=select_obj.options[BEEwb.n_filaments_mcpp+offset].value;
 
 			BEEwb.ret = "";
-		}
+//		}
 		
-		f_on_change_radiobtn(BEEwb.on_startup, select_id);
+		f_on_change_radiobtn(select_id);
 	}
 	return lst;
 }
 
 
-function f_on_change_radiobtn(on_startup, select_id){
+function f_on_change_radiobtn(select_id){
 	//INPUT:
 	//			BEEwb.on_startup is a flag true/false that indicates if we need to initialize the vars;
 	//			select_id is a string with the object id: "select_supply" or "select_supply_mtc".
