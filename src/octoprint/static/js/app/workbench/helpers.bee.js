@@ -316,23 +316,25 @@ function split_filaments_list(select_id, lst){
 			offset=1;	//there is an extra item in the lists on maintenace control: "select filament type...".
 		}
 		
+//		console.log(op.length);
+		if (op.length<=1){		//data not ready yet.
+			return lst;
+		}
 		
-//		if (BEEwb.on_startup==true){
-			BEEwb.types_of_filaments=[];									//this is a list that will contain the distinction between new and old filaments, through the presence or absence of "#".
-			var n_filaments_mcpp = 0;
-			for (var i=0+offset; i<op.length; i++){
-				BEEwb.types_of_filaments.push(op[i].value.includes("#") || ((i==0) && (select_id.indexOf("select_supply_mtc")!=-1)));
-				if (op[i].value.includes("#")){
-					n_filaments_mcpp++;
-				}
+		BEEwb.types_of_filaments=[];									//this is a list that will contain the distinction between new and old filaments, through the presence or absence of "#".
+		var n_filaments_mcpp = 0;
+		for (var i=0+offset; i<op.length; i++){
+			BEEwb.types_of_filaments.push(op[i].value.includes("#") || ((i==0) && (select_id.indexOf("select_supply_mtc")!=-1)));
+			if (op[i].value.includes("#")){
+				n_filaments_mcpp++;
 			}
-			BEEwb.n_filaments_mcpp = n_filaments_mcpp;
-			
-			BEEwb.opt_mcpp=select_obj.options[0].value;
-			BEEwb.opt_beesupply=select_obj.options[BEEwb.n_filaments_mcpp+offset].value;
+		}
+		BEEwb.n_filaments_mcpp = n_filaments_mcpp;
+		
+		BEEwb.opt_mcpp=select_obj.options[0].value;
+		BEEwb.opt_beesupply=select_obj.options[BEEwb.n_filaments_mcpp+offset].value;
 
-			BEEwb.ret = "";
-//		}
+		BEEwb.ret = "";
 		
 		f_on_change_radiobtn(select_id);
 	}
