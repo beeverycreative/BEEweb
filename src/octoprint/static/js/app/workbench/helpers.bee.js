@@ -336,6 +336,7 @@ function split_filaments_list(select_id, lst){
 
 		BEEwb.ret = "";
 		
+		reset_opt(select_id);
 		f_on_change_radiobtn(select_id);
 	}
 	return lst;
