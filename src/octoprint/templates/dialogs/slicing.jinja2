@@ -172,8 +172,6 @@
 								
                                 <!--## quando a impressora está desconectada, tal que aparecem opções:
                                 <br /> -->
-                                <select id="select_supply" data-bind="options: split_filaments_list('select_supply', colors), value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
-                                <br />
 								<div id="choose_opts" data-bind="visible: estimationDialog()">
 								<p align="left">
 								&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="filament_type" value="mcpp" checked="true" onclick="reset_opt('select_supply'); f_on_change_radiobtn('select_supply');"> MCPP &amp; FILKEMP
@@ -182,6 +180,7 @@
 								&nbsp;&nbsp;&nbsp;&nbsp;<input type="radio" name="filament_type" value="beesupply" onclick="reset_opt('select_supply'); f_on_change_radiobtn('select_supply');"> BEEsupply A021-A121
 								</p>
 								</div>
+                                <select id="select_supply" data-bind="options: split_filaments_list('select_supply', colors), value: selColor, valueAllowUnset: false, visible: estimationDialog()" ></select>
                                 
                                 <!--## informação adicional - não apresentada... -->
                                 <span class="remaining-filament" data-bind="visible: !estimationDialog() && filamentInSpool">

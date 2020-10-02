@@ -438,7 +438,8 @@ function reset_opt(select_id){
 	}
 	else{
 		if (select_id==="select_supply"){
-			select_obj.value = select_obj.options[BEEwb.n_filaments_mcpp].value;
+			select_obj.value = select_obj.options[BEEwb.n_filaments_mcpp].value;	//if "select filament type..." element is shown;
+//			select_obj.value = select_obj.options[0].value;							//else.
 		}
 		else{
 			select_obj.value = select_obj.options[0].value;
