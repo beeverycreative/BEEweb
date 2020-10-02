@@ -274,14 +274,23 @@ $(function() {
 						//alert("self.colors() was written to the console...");
 
                         self.colors().forEach(function(elem) {
-                            var elem_reduced = elem.replace("#  ", "");
-                            elem_reduced = elem_reduced.replace("# ", "");
-                            //console.log(elem_reduced);
+                            var elem_reduced = elem.replace("#  ", "")
+                                                   .replace("# ", "");
+//                                                   .replace("BTF ", "")			<- not necessary.
+//                                                   .replace("BTF+ ", "")
+//                                                   .replace("TPU 04 ", "TPU ")
+//                                                   .replace("TPU 06 ", "TPU ");
+//							console.log(elem);
+//							console.log(elem_reduced);
+//							console.log(data.filament);
                             var flag = (elem_reduced === data.filament);
 
                             if (flag) {
                                 self.selColor(elem);
                             }
+/*							if (elem === data.filament){
+								self.selColor(elem);
+							} */
                         });
                     } else {
                         // Selects the first color from the list by default
