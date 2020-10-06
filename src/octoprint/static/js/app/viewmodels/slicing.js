@@ -521,7 +521,13 @@ $(function() {
             // Selects the slicing profile based on the color and resolution
             if (self.selColor() !== null && self.selResolution() !== null) {
 
-				var selected_colour = BEEwb.helpers.get_selected_filament();	//-> uses the colour or filament selecetd by the user at the estimation panel
+				var selected_colour;
+				if (self.estimationDialog()){
+					selected_colour = BEEwb.helpers.get_selected_filament();	//-> uses the filament profile selected by the user at the estimation panel;
+				}
+				else{
+					selected_colour = self.selColor();							//-> uses the filament profile at machine.
+				}
                 _.each(self.profiles(), function(profile) {
                     // checks if the profile contains the selected color and nozzle size
                     if (_.contains(profile.name, selected_colour)) {
