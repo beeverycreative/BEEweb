@@ -1,6 +1,6 @@
 {
     "id": "petg-transparent",
-    "name": "PETG - Tranasparent",
+    "name": "PETG - Transparent",
     "version": 2,
     "inherits": "petg",
     "cost": 20,
