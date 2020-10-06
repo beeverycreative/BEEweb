@@ -464,4 +464,17 @@ function fix_filament_name(selected_color){
 	}
 	return selected_color;
 }
+
+
+BEEwb.helpers.get_selected_filament = function(){
+	// ---- on slicing menu ----
+	// instead of using the filament of the data-bind of the last click on one of the sub-lists, we want to use the really selecetd profile (accordingly to the clicks on the sub-lists and on radio buttons):
+	
+	console.log("LOG.:");
+	var e = document.getElementById("select_supply");
+	var selected_item = e.value;
+	console.log(selected_item);
+	
+	return selected_item;
+}
 //####... end section.
