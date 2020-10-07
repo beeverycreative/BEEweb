@@ -477,4 +477,44 @@ BEEwb.helpers.get_selected_filament = function(){
 	
 	return selected_item;
 }
+
+
+BEEwb.helpers.msg_caption = function(select_id){
+	try{
+//		console.log("@...");
+		var e = document.getElementById(select_id);
+		var selected_item = e.value;
+//		console.log(selected_item);
+//		console.log(e.options[0].value);
+//		console.log(selected_item === e.options[0].value);
+		return selected_item === e.options[0].value;
+	}
+	catch (ex){
+//		console.log(ex);
+		return false;
+	}
+}
+
+
+/*function update_btn(){
+	console.log(OCTOPRINT_VIEWMODELS);
+	var n=OCTOPRINT_VIEWMODELS.length;
+	for (var i=0; i<n; i++){
+		var el=OCTOPRINT_VIEWMODELS[i];
+			if (el[0] && (el[0].name === "MaintenanceViewModel")){
+			console.log("yes!");
+			var f = el[0];
+			console.log(typeof(f));
+	//		console.log(... );
+		}
+	}
+//	var e = document.getElementById("select_supply_mtc_01");
+//	e.click();
+
+	var element_id = "maintenanceNextButton";
+	var el = document.getElementById(element_id);
+	var evt = document.createEvent("HTMLEvents");
+	evt.initEvent("change", false, true);
+	el.dispatchEvent(evt);
+} */
 //####... end section.

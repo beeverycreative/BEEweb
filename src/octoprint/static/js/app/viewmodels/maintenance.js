@@ -87,6 +87,22 @@ $(function() {
 
         self.selectedFilamentExtCalibration = ko.observable();
 
+		self.on_radio_btn_click_01 = ko.observable();
+		self.on_radio_btn_click_02 = ko.observable();
+/*		self.on_radio_btn_click = ko.computed(function() {
+			return !BEEwb.helpers.msg_caption();
+		}, this); */
+		
+		function f(){		//to fix the enable/disable status of next button, in maintenance panel:
+			var r_01 = !BEEwb.helpers.msg_caption("select_supply_mtc_01");	//at maintenance panel, select filament;
+			var r_02 = !BEEwb.helpers.msg_caption("select_supply_mtc_02");	//at maintenance panel, extruder calibration.
+			self.on_radio_btn_click_01(r_01);
+			self.on_radio_btn_click_02(r_02);
+			setTimeout(f, 2000);
+		}
+		f();
+		
+		
         self.onStartup = function() {
 
             /**
@@ -1726,7 +1742,7 @@ $(function() {
                 {
                     return  self.printerState.isOperational() && !self.commandLock()
                         && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser()
-						&& self.selectedFilament;
+						&& self.selectedFilament && self.on_radio_btn_click_01();
                 }
                 if(self.processStage() == 2)
                 {
@@ -1746,7 +1762,7 @@ $(function() {
                 if (self.processStage() == 0 || self.processStage() == 1) {
                     return self.printerState.isOperational() && !self.commandLock()
                         && self.printerState.isReady() && !self.printerState.isPrinting() && self.loginState.isUser()
-						&& self.selectedFilamentExtCalibration;
+						&& self.selectedFilamentExtCalibration && self.on_radio_btn_click_02();
                 }
                 if(self.processStage() == 2 || self.processStage() == 3 || self.processStage() == 4)
                 {
