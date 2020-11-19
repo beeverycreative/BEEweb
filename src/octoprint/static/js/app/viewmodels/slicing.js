@@ -276,10 +276,10 @@ $(function() {
                         self.colors().forEach(function(elem) {
                             var elem_reduced = elem.replace("#  ", "")
                                                    .replace("# ", "");
-//                                                   .replace("BTF ", "")			<- not necessary.
-//                                                   .replace("BTF+ ", "")
-//                                                   .replace("TPU 04 ", "TPU ")
-//                                                   .replace("TPU 06 ", "TPU ");
+//                                                   .replace("BTF+", "")			<- not necessary.
+//                                                   .replace("BTF", "")
+//                                                   .replace("TPU 04", "TPU")
+//                                                   .replace("TPU 06", "TPU");
 //							console.log(elem);
 //							console.log(elem_reduced);
 //							console.log(data.filament);

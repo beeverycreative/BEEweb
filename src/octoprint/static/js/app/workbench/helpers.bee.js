@@ -374,10 +374,10 @@ function f_on_change_radiobtn(select_id){
 						NOK = false;
 					}
 					op[i+offset].innerHTML = op[i+offset].value.replace("#", "")
-                                                               .replace("BTF ", "")
-                                                               .replace("BTF+ ", "")
-                                                               .replace("TPU 04 ", "TPU ")
-                                                               .replace("TPU 06 ", "TPU ");
+                                                               .replace("BTF+", "")
+                                                               .replace("BTF", "")
+                                                               .replace("TPU 04", "TPU")
+                                                               .replace("TPU 06", "TPU");
 				}
 			}
 			else{
@@ -457,10 +457,11 @@ function fix_filament_name(selected_color){
 	else{
 		var fil_colour = document.getElementById("filament_colour");
 		fil_colour.textContent=fil_colour.textContent.replace("#", "")
-                                                 .replace("BTF ", "")
-                                                 .replace("BTF+ ", "")
-                                                 .replace("TPU 04 ", "TPU ")
-                                                 .replace("TPU 06 ", "TPU ");
+                                                 .replace("BTF+", "")
+                                                 .replace("BTF", "")
+                                                 .replace("TPU 04", "TPU")
+                                                 .replace("TPU 06", "TPU");
+
 	}
 	return selected_color;
 }
