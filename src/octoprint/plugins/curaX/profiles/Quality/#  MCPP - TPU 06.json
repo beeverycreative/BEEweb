@@ -1,6 +1,6 @@
 {
     "id": "tpu-mito-06",
-    "name": "TPU 06 MCPP",
+    "name": "MCPP - TPU 06",
     "version": 2,
     "inherits": "tpu_mito",
     "cost": 20,

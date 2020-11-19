@@ -1,6 +1,6 @@
 {
-    "id": "pla_teste_gen",
-    "name": "PLA BTF+ MCPP",
+    "id": "pla_btfplus_flashforge",
+    "name": "FLASHFORGE - PLA BTF+",
     "version": 2,
     "inherits": "pla_btfplus_mito",
     "cost": 20,

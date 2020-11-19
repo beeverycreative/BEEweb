@@ -1,8 +1,8 @@
 {
-    "id": "nylon-red",
-    "name": "NYLON - Red",
+    "id": "petg-filkemp",
+    "name": "FILKEMP - PETG",
     "version": 2,
-    "inherits": "nylon",
+    "inherits": "petg",
     "cost": 20,
     "color": "#ffffff" ,
     "nozzles_supported": [0.4, 0.6],
@@ -16,8 +16,8 @@
             {
 
                 "low":
-                {		
-        		    "layer_height": { "default_value": 0.3 },
+                {       
+                    "layer_height": { "default_value": 0.3 },
                     "layer_height_0": { "default_value": 0.3 },
                     "top_layers": { "default_value": 4 },
                     "bottom_layers": { "default_value": 4 },
@@ -26,12 +26,12 @@
                     "default_material_print_temperature": { "default_value": 230 },
                     "material_initial_print_temperature": { "default_value": 230 },
                     "material_final_print_temperature": { "default_value": 230 },
-                    "material_flow": { "default_value": 100.0 }
+                    "material_flow": { "default_value": 105.9 }
                 },
 
                 "medium":
-                {		
-        		    "layer_height": { "default_value": 0.2 },
+                {       
+                    "layer_height": { "default_value": 0.2 },
                     "layer_height_0": { "default_value": 0.2 },
                     "top_layers": { "default_value": 5 },
                     "bottom_layers": { "default_value": 5 },
@@ -40,12 +40,12 @@
                     "default_material_print_temperature": { "default_value": 230 },
                     "material_initial_print_temperature": { "default_value": 230 },
                     "material_final_print_temperature": { "default_value": 230 },
-                    "material_flow": { "default_value": 100.0 }
+                    "material_flow": { "default_value": 104.8 }
                 },
 
                 "high":
-                {		
-        		    "layer_height": { "default_value": 0.1 },
+                {       
+                    "layer_height": { "default_value": 0.1 },
                     "layer_height_0": { "default_value": 0.2 },
                     "top_layers": { "default_value": 10 },
                     "bottom_layers": { "default_value": 10 },
@@ -54,12 +54,12 @@
                     "default_material_print_temperature": { "default_value": 230 },
                     "material_initial_print_temperature": { "default_value": 230 },
                     "material_final_print_temperature": { "default_value": 230 },
-                    "material_flow": { "default_value": 100.0 }
+                    "material_flow": { "default_value": 104.8 }
                 },
 
                 "high+":
-                {		
-        		    "layer_height": { "default_value": 0.05 },
+                {       
+                    "layer_height": { "default_value": 0.05 },
                     "layer_height_0": { "default_value": 0.2 },
                     "top_layers": { "default_value": 10 },
                     "bottom_layers": { "default_value": 10 },
@@ -68,7 +68,7 @@
                     "default_material_print_temperature": { "default_value": 230 },
                     "material_initial_print_temperature": { "default_value": 230 },
                     "material_final_print_temperature": { "default_value": 230 },
-                    "material_flow": { "default_value": 100.0 }
+                    "material_flow": { "default_value": 104.8 }
                 }
             }
         }

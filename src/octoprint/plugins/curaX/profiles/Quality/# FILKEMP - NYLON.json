@@ -1,6 +1,6 @@
 {
-    "id": "nylon-transparent",
-    "name": "NYLON - Transparent",
+    "id": "nylon-filkemp",
+    "name": "FILKEMP - NYLON",
     "version": 2,
     "inherits": "nylon",
     "cost": 20,
@@ -16,8 +16,8 @@
             {
 
                 "low":
-                {       
-                    "layer_height": { "default_value": 0.3 },
+                {		
+        		    "layer_height": { "default_value": 0.3 },
                     "layer_height_0": { "default_value": 0.3 },
                     "top_layers": { "default_value": 4 },
                     "bottom_layers": { "default_value": 4 },
@@ -30,8 +30,8 @@
                 },
 
                 "medium":
-                {       
-                    "layer_height": { "default_value": 0.2 },
+                {		
+        		    "layer_height": { "default_value": 0.2 },
                     "layer_height_0": { "default_value": 0.2 },
                     "top_layers": { "default_value": 5 },
                     "bottom_layers": { "default_value": 5 },
@@ -44,8 +44,8 @@
                 },
 
                 "high":
-                {       
-                    "layer_height": { "default_value": 0.1 },
+                {		
+        		    "layer_height": { "default_value": 0.1 },
                     "layer_height_0": { "default_value": 0.2 },
                     "top_layers": { "default_value": 10 },
                     "bottom_layers": { "default_value": 10 },
@@ -58,8 +58,8 @@
                 },
 
                 "high+":
-                {       
-                    "layer_height": { "default_value": 0.05 },
+                {		
+        		    "layer_height": { "default_value": 0.05 },
                     "layer_height_0": { "default_value": 0.2 },
                     "top_layers": { "default_value": 10 },
                     "bottom_layers": { "default_value": 10 },
